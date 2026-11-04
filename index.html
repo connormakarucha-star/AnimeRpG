@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime RPG - 4v4 Tactical Combat</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#121216;color:#e0e0e6;margin:0;padding:10px;display:flex;flex-direction:column;align-items:center}
+h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
+.subtitle{font-size:.75rem;color:#a0a0b0;margin-bottom:10px;text-align:center}
+#game-container{width:100%;max-width:720px;background:#1a1a24;border:2px solid #2a2a3c;border-radius:12px;padding:12px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+#order{font-size:.68rem;color:#8a8aab;margin-bottom:8px;text-align:center}
+#order b{color:#ff758c}#order s{opacity:.4}
+.battlefield{display:flex;justify-content:space-between;align-items:flex-start;min-height:280px;background:linear-gradient(#1e1e2d,#14141d);border-radius:8px;border:1px solid #2e2e42;margin-bottom:10px;padding:8px;gap:6px}
+.team-column{width:48%;display:flex;flex-direction:column;gap:6px}
+.column-header{font-size:.7rem;font-weight:bold;text-align:center;padding-bottom:4px}
+.cards{display:flex;flex-direction:column;gap:6px}
+.combatant-card{background:#12121a;border:1px solid #262638;border-radius:6px;padding:6px;font-size:.68rem;display:flex;align-items:center;gap:6px;transition:all .2s}
+.combatant-card.active-turn{border-color:#ff758c;box-shadow:0 0 10px rgba(255,117,140,.4);background:#231c26}
+.combatant-card.front-line{border-left:4px solid #00bcd4}
+.combatant-card.dead{opacity:.35;filter:grayscale(1)}
+.targetable{cursor:pointer;border-color:#00bcd4!important;animation:pulse 1s infinite alternate}
+@keyframes pulse{0%{box-shadow:0 0 3px rgba(0,188,212,.3)}100%{box-shadow:0 0 10px rgba(0,188,212,.8)}}
+.mini-sprite{width:40px;height:40px;background:#252536;border:1px dashed #4a4a6a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#8a8aab;text-align:center;flex-shrink:0}
+.enemy .mini-sprite{border-color:#ff8a80}
+.stats-info{flex-grow:1}
+.bar-container{width:100%;background:#2a2a3c;height:5px;border-radius:3px;margin:2px 0;overflow:hidden}
+.hp-fill{background:#4caf50;height:100%;transition:width .3s}
+.break-fill{background:#00bcd4;height:100%;transition:width .3s}
+.status-badge{display:inline-block;font-size:.55rem;padding:1px 3px;border-radius:3px;font-weight:bold}
+.status-armoured{background:#3f51b5;color:#fff}.status-broken{background:#e91e63;color:#fff}
+.ail{color:#ffd54f;font-weight:bold}.spd{color:#8a8aab;float:right}
+.control-panel{display:flex;flex-direction:column;gap:8px}
+.action-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+button{background:#36364f;color:#fff;border:1px solid #4a4a6e;padding:8px 4px;border-radius:5px;cursor:pointer;font-weight:bold;font-size:.75rem;text-align:center;transition:background .2s}
+button:hover:not(:disabled){background:#4a4a6e}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.sel{border-color:#ff758c;background:#4a3350}
+button small{font-weight:normal;color:#c0c0d8}
+#log-box{background:#121218;border:1px solid #262638;border-radius:6px;height:90px;overflow-y:auto;padding:6px;font-family:monospace;font-size:.7rem;color:#b0b0c0}
+.log-entry{margin-bottom:3px}
+.battlefield{position:relative}
+#cutin{display:none;position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.85);border-radius:8px;cursor:pointer;align-items:center;justify-content:center;padding:6px;box-sizing:border-box}
+#cutin.show{display:flex}
+#cutin .clip{max-width:100%;max-height:100%;object-fit:contain}
+#cutin::after{content:'tap to skip';position:absolute;bottom:6px;right:10px;font-size:.6rem;color:#8a8aab}
+.log-player{color:#81d4fa}.log-enemy{color:#ff8a80}.log-status{color:#ffd54f}.log-heal{color:#81c784}.log-round{color:#8a8aab}
+</style>
+</head>
+<body>
+<h1>Anime RPG Prototype</h1>
+<div class="subtitle">4v4 Tactical Combat: Speed-Based Turns, Elements &amp; Healing</div>
+
+<div id="game-container">
+  <div id="order"></div>
+  <div class="battlefield">
+    <div class="team-column">
+      <div class="column-header" style="color:#81d4fa">PLAYER PARTY (Top = Front)</div>
+      <div id="party-cards" class="cards"></div>
+    </div>
+    <div class="team-column">
+      <div class="column-header" style="color:#ff8a80">SENTINEL SQUAD</div>
+      <div id="enemy-cards" class="cards enemy"></div>
+    </div>
+    <div id="cutin"></div>
+  </div>
+  <div class="control-panel">
+    <div id="turn-indicator" style="text-align:center;font-weight:bold;font-size:.85rem;color:#ff758c">Preparing...</div>
+    <div class="action-grid">
+      <button id="btn0" onclick="chooseSkill(0)"></button>
+      <button id="btn1" onclick="chooseSkill(1)"></button>
+      <button id="btn2" onclick="chooseSkill(2)"></button>
+      <button id="btn-shift" onclick="doShift()">Shift Line<br><small>Swap with ally ahead (ends turn)</small></button>
+    </div>
+    <button id="btn-restart" style="display:none" onclick="location.reload()">Restart Battle</button>
+    <div id="log-box"></div>
+  </div>
+</div>
+
+<script>
+/* ============ DATA ============ */
+// Elements. Burn/bleed/poison = damage over time; ice/shock = skip next turn.
+// Tune dot (damage per turn) and dur (turns) here.
+const ELEM = {
+  fire:   { status: 'burn',    dot: 8, dur: 3 },
+  bleed:  { status: 'bleed',   dot: 6, dur: 4 },
+  poison: { status: 'poison',  dot: 5, dur: 5 },
+  ice:    { status: 'frozen',  stun: true },
+  shock:  { status: 'shocked', stun: true }
+};
+const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', shock: '⚡' };
+
+// Skill: n=name, t='dmg' | 'heal' (one ally) | 'healAll', p=power, el=element, brk=break damage, cd=cooldown in turns
+const HEROES = [
+  { id:'seria',  name:'Seria (Tank)',    tag:'SERIA',  hp:120, brk:60, spd:6, skills:[
+    { n:'Shield Bash',  t:'dmg', p:12, cd:0 },
+    { n:'Static Strike',t:'dmg', p:16, el:'shock', brk:15, cd:2 },
+    { n:'Thunderclap',  t:'dmg', p:24, el:'shock', brk:30, cd:4 } ] },
+  { id:'cermia', name:'Cermia (Fire)',   tag:'CERMIA', hp:80,  brk:30, spd:8, skills:[
+    { n:'Slash',        t:'dmg', p:18, cd:0 },
+    { n:'Flame Lash',   t:'dmg', p:14, el:'fire', brk:20, cd:2 },
+    { n:'Inferno',      t:'dmg', p:25, el:'fire', brk:35, cd:3 } ] },
+  { id:'aria',   name:'Aria (Ice)',      tag:'ARIA',   hp:80,  brk:30, spd:9, skills:[
+    { n:'Slash',        t:'dmg', p:18, cd:0 },
+    { n:'Frost Shard',  t:'dmg', p:14, el:'ice', brk:20, cd:2 },
+    { n:'Blizzard',     t:'dmg', p:25, el:'ice', brk:35, cd:3 } ] },
+  { id:'nyria',  name:'Nyria (Healer)',  tag:'NYRIA',  hp:70,  brk:25, spd:7, skills:[
+    { n:'Venom Dart',   t:'dmg',     p:10, el:'poison', brk:12, cd:0 },
+    { n:'Mend',         t:'heal',    p:35, cd:2 },
+    { n:'Rejuvenate',   t:'healAll', p:20, cd:4 } ] }
+];
+const ENEMIES = [
+  { id:'e_fire',  name:'Fire Sentinel',    tag:'FIRE',   hp:90,  brk:35, spd:7,  skills:[
+    { n:'Claw',        t:'dmg', p:12, cd:0 },
+    { n:'Flame Burst', t:'dmg', p:14, el:'fire',  brk:15, cd:3 } ] },
+  { id:'e_frost', name:'Frost Sentinel',   tag:'FROST',  hp:90,  brk:35, spd:6,  skills:[
+    { n:'Claw',        t:'dmg', p:12, cd:0 },
+    { n:'Ice Spike',   t:'dmg', p:14, el:'ice',   brk:15, cd:3 } ] },
+  { id:'e_shock', name:'Shock Sentinel',   tag:'SHOCK',  hp:90,  brk:35, spd:10, skills:[
+    { n:'Jab',         t:'dmg', p:10, cd:0 },
+    { n:'Arc Bolt',    t:'dmg', p:14, el:'shock', brk:15, cd:2 } ] },
+  { id:'e_heal',  name:'Healing Sentinel', tag:'HEAL',   hp:100, brk:40, spd:5,  skills:[
+    { n:'Thorn Lash',  t:'dmg', p:10, el:'bleed', brk:12, cd:0 },
+    { n:'Mend',        t:'heal',p:25, cd:2 } ] }
+];
+
+/* ============ STATE ============ */
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const isAlive = u => u.hp > 0;
+
+function make(d, team) {
+  return { ...d, team, maxHp: d.hp, breakBar: d.brk, maxBreak: d.brk, armoured: true,
+           status: null, cd: d.skills.map(() => 0),
+           icons: [...new Set(d.skills.map(s => s.el).filter(Boolean))].map(e => ICON[e]).join('') };
+}
+const party = HEROES.map(h => make(h, 'p'));      // array order = lineup position (index 0 = front)
+const enemies = ENEMIES.map(e => make(e, 'e'));
+
+let order = [];        // this round's turn order (by speed)
+let actor = null;      // unit whose turn it is
+let cur = null;        // hero awaiting player input
+let sel = null;        // selected skill index
+let waiting = null;    // resolver for player input
+let over = false;
+
+/* ============ ANIMATION HOOK ============ */
+// Looks for assets/<unit.id>/<armoured|broken>/<key>.(mp4|webm|webp|png) and shows it as a cut-in.
+// Videos play to the end; images hold for ANIM.hold ms. Tap the cut-in to skip. Missing file = short pause.
+// Keys used: skill1 skill2 skill3 damaged break burn poison bleed frozen shocked
+// ('break' lives in the armoured folder). IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
+const ANIM = { base: 'assets', hold: 1500, fallback: 500, exts: ['mp4', 'webm', 'webp', 'png'] };
+const stage = $('cutin'), animCache = {}, skips = new Set();
+stage.onclick = () => [...skips].forEach(f => f());
+
+function probe(url, ext) {
+  return new Promise(res => {
+    const vid = ext === 'mp4' || ext === 'webm';
+    const el = document.createElement(vid ? 'video' : 'img');
+    if (vid) { el.preload = 'metadata'; el.onloadedmetadata = () => res(true); } else el.onload = () => res(true);
+    el.onerror = () => res(false);
+    el.src = url;
+  });
+}
+
+async function findAsset(path) {            // checked once per file, then remembered
+  if (path in animCache) return animCache[path];
+  for (const ext of ANIM.exts) if (await probe(`${path}.${ext}`, ext)) return animCache[path] = { url: `${path}.${ext}`, ext };
+  return animCache[path] = null;
+}
+
+function playClip(a) {
+  return new Promise(resolve => {
+    const vid = a.ext === 'mp4' || a.ext === 'webm';
+    const el = document.createElement(vid ? 'video' : 'img');
+    el.className = 'clip'; el.src = a.url;
+    let done = false;
+    const end = () => {
+      if (done) return; done = true; skips.delete(end); el.remove();
+      if (!stage.children.length) stage.classList.remove('show');
+      resolve();
+    };
+    skips.add(end);
+    stage.appendChild(el); stage.classList.add('show');
+    if (vid) {
+      el.playsInline = true; el.onended = end; el.onerror = end;
+      el.play().catch(() => { el.muted = true; el.play().catch(end); });   // retry muted if the browser blocks sound
+      setTimeout(end, 20000);                                              // safety net
+    } else setTimeout(end, ANIM.hold);
+  });
+}
+
+async function playAnim(unit, key, state) {
+  state = state || (unit.armoured ? 'armoured' : 'broken');
+  const a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
+  if (a) await playClip(a); else await sleep(ANIM.fallback);
+}
+
+/* ============ UI ============ */
+function log(msg, cls = '') {
+  const box = $('log-box'), d = document.createElement('div');
+  d.className = 'log-entry ' + cls; d.innerHTML = msg;
+  box.appendChild(d); box.scrollTop = box.scrollHeight;
+}
+
+function card(u, team, i) {
+  const c = ['combatant-card'];
+  if (team === 'p' && i === 0) c.push('front-line');
+  if (u === actor) c.push('active-turn');
+  if (!isAlive(u)) c.push('dead');
+  if (waiting && sel !== null && isAlive(u)) {
+    const t = cur.skills[sel].t;
+    if ((t === 'dmg' && team === 'e') || (t === 'heal' && team === 'p')) c.push('targetable');
+  }
+  const st = u.status ? ` <span class="ail">[${u.status.type.toUpperCase()}${u.status.dot ? ' ' + u.status.dur : ''}]</span>` : '';
+  return `<div class="${c.join(' ')}" onclick="pick('${team}',${i})">
+    <div class="mini-sprite">${u.tag}</div>
+    <div class="stats-info">
+      <strong>${u.name}</strong> ${u.icons} ${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd}</span><br>
+      <span class="status-badge ${u.armoured ? 'status-armoured' : 'status-broken'}">${u.armoured ? 'Armoured' : 'Broken'}</span>${st}
+      <div>HP: ${Math.max(0, u.hp)}/${u.maxHp}</div>
+      <div class="bar-container"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div></div>
+      <div>Break: ${Math.max(0, u.breakBar)}/${u.maxBreak}</div>
+      <div class="bar-container"><div class="break-fill" style="width:${Math.max(0, u.breakBar / u.maxBreak * 100)}%"></div></div>
+    </div></div>`;
+}
+
+function skillDesc(s) {
+  if (s.t === 'heal') return `+${s.p} HP (ally)`;
+  if (s.t === 'healAll') return `+${s.p} HP (all)`;
+  return `${s.p} dmg${s.el ? ' ' + ICON[s.el] : ''}`;
+}
+
+function render() {
+  $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
+  $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
+  $('order').innerHTML = order.length ? 'Turn order: ' + order.map(u =>
+    u === actor ? `<b>${u.name.split(' ')[0]}</b>` : isAlive(u) ? u.name.split(' ')[0] : `<s>${u.name.split(' ')[0]}</s>`).join(' › ') : '';
+  for (let i = 0; i < 3; i++) {
+    const b = $('btn' + i);
+    if (cur) {
+      const s = cur.skills[i], cd = cur.cd[i];
+      b.innerHTML = `${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${cd > 0 ? 'CD ' + cd : 'Ready'}</small>`;
+      b.disabled = !waiting || cd > 0;
+      b.classList.toggle('sel', sel === i);
+    } else {
+      b.innerHTML = `${i + 1}. —<br><small>&nbsp;</small>`; b.disabled = true; b.classList.remove('sel');
+    }
+  }
+  $('btn-shift').disabled = !waiting;
+}
+
+/* ============ PLAYER INPUT ============ */
+function finish(action) { const r = waiting; waiting = null; if (r) r(action); }
+
+function chooseSkill(i) {
+  if (!waiting || cur.cd[i] > 0) return;
+  if (sel === i) { sel = null; render(); return; }          // click again to cancel
+  if (cur.skills[i].t === 'healAll') { finish({ i }); return; }
+  sel = i; render();
+  $('turn-indicator').innerText = `${cur.name}: pick a ${cur.skills[i].t === 'dmg' ? 'target' : 'friendly target'} for ${cur.skills[i].n}`;
+}
+
+function pick(team, idx) {
+  if (!waiting || sel === null) return;
+  const t = cur.skills[sel].t;
+  if (!((t === 'dmg' && team === 'e') || (t === 'heal' && team === 'p'))) return;
+  const target = (team === 'e' ? enemies : party)[idx];
+  if (!isAlive(target)) return;
+  finish({ i: sel, target });
+}
+
+function doShift() { if (waiting) finish({ shift: true }); }
+
+/* ============ COMBAT LOGIC ============ */
+function applyStatus(t, el) {
+  const e = ELEM[el];
+  if (t.status && t.status.stun && !e.stun) return;          // don't overwrite a pending stun with a DoT
+  t.status = { type: e.status, dot: e.dot || 0, stun: !!e.stun, dur: e.dur || 1 };
+  log(`${t.name} is afflicted with <strong>${e.status.toUpperCase()}</strong>!`, 'log-status');
+}
+
+async function hit(u, t, s) {
+  t.hp -= s.p;
+  log(`${u.name} uses ${s.n} on ${t.name} for ${s.p} damage.`, u.team === 'p' ? 'log-player' : 'log-enemy');
+  await playAnim(t, 'damaged');
+  if (t.hp <= 0) { t.hp = 0; log(`${t.name} has fallen!`, 'log-status'); render(); return; }
+  if (s.el) {
+    if (t.armoured) {
+      t.breakBar -= s.brk;
+      log(`${t.name}'s armour takes ${s.brk} break damage.`, 'log-status');
+      if (t.breakBar <= 0) {
+        t.breakBar = 0; t.armoured = false;
+        log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
+        await playAnim(t, 'break', 'armoured');   // armour was just lost, but the break clip lives in the armoured folder
+      }
+    } else applyStatus(t, s.el);
+  }
+  render();
+}
+
+async function perform(u, i, target) {
+  const s = u.skills[i];
+  u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
+  await playAnim(u, 'skill' + (i + 1));
+  if (s.t === 'dmg') { await hit(u, target, s); return; }
+  const targets = s.t === 'heal' ? [target] : (u.team === 'p' ? party : enemies).filter(isAlive);
+  for (const t of targets) {
+    const before = t.hp;
+    t.hp = Math.min(t.maxHp, t.hp + s.p);
+    log(`${u.name} uses ${s.n}: ${t.name} heals ${t.hp - before} HP.`, 'log-heal');
+  }
+  render();
+}
+
+function weightedHero() {
+  const al = party.filter(isAlive), w = [55, 25, 12, 8].slice(0, al.length);
+  let roll = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < al.length; i++) { roll -= w[i]; if (roll <= 0) return al[i]; }
+  return al[0];
+}
+
+function enemyChoose(u) {
+  const ready = u.skills.map((s, i) => i).filter(i => u.cd[i] === 0);
+  const healI = ready.find(i => u.skills[i].t === 'heal');
+  const wounded = enemies.filter(e => isAlive(e) && e.hp / e.maxHp < 0.7).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+  if (healI !== undefined && wounded.length) return { i: healI, target: wounded[0] };
+  const atk = ready.filter(i => u.skills[i].t === 'dmg');
+  return { i: atk[Math.floor(Math.random() * atk.length)], target: weightedHero() };
+}
+
+async function takeTurn(u) {
+  u.cd = u.cd.map(c => Math.max(0, c - 1));
+  // Status effects resolve at the start of the unit's turn
+  if (u.status) {
+    const st = u.status;
+    if (st.dot) {
+      u.hp -= st.dot;
+      log(`${u.name} takes ${st.dot} damage from ${st.type}!`, 'log-status');
+      await playAnim(u, st.type);
+      if (--st.dur <= 0) u.status = null;
+      if (u.hp <= 0) { u.hp = 0; log(`${u.name} has fallen!`, 'log-status'); render(); return; }
+    } else if (st.stun) {
+      u.status = null;
+      log(`${u.name} is ${st.type} and misses their turn!`, 'log-status');
+      await playAnim(u, st.type);
+      render(); return;
+    }
+  }
+  render();
+  let act;
+  if (u.team === 'p') {
+    cur = u; sel = null;
+    $('turn-indicator').innerText = `${u.name}'s turn`;
+    const input = new Promise(r => waiting = r);   // must exist before render() so buttons enable
+    render();
+    act = await input;
+    cur = null; sel = null; render();
+  } else {
+    $('turn-indicator').innerText = `${u.name} is acting...`;
+    await sleep(400);
+    act = enemyChoose(u);
+  }
+  if (act.shift) {
+    const i = party.indexOf(u), j = i === 0 ? 1 : i - 1;
+    [party[i], party[j]] = [party[j], party[i]];
+    log(`${u.name} swaps places with ${party[i].name}.`, 'log-player');
+    render(); await sleep(500);
+  } else await perform(u, act.i, act.target);
+  await sleep(300);
+}
+
+function checkEnd() {
+  const won = !enemies.some(isAlive), lost = !party.some(isAlive);
+  if (!won && !lost) return false;
+  over = true; actor = null; cur = null; waiting = null;
+  $('turn-indicator').innerText = won ? 'Victory! All Sentinels Defeated!' : 'Defeat - Party Defeated';
+  log(`<strong style="color:${won ? '#4caf50' : '#ff5252'}">${won ? 'Victory! Your party triumphed over the Sentinel Squad!' : 'Your party was defeated and must retreat to the Hub Guild Hall.'}</strong>`);
+  $('btn-restart').style.display = 'block';
+  render();
+  return true;
+}
+
+async function battle() {
+  log('Battle started! 4 heroes face 4 distinct Sentinels.');
+  for (let round = 1; ; round++) {
+    log(`— Round ${round} —`, 'log-round');
+    order = [...party, ...enemies].filter(isAlive).sort((a, b) => b.spd - a.spd || Math.random() - 0.5);
+    for (const u of order) {
+      if (!isAlive(u)) continue;      // died earlier this round
+      actor = u; render();
+      await takeTurn(u);
+      actor = null;
+      if (checkEnd()) return;
+    }
+  }
+}
+
+render();
+battle();
+</script>
+</body>
+</html>
