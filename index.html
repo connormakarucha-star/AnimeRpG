@@ -11,19 +11,48 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 #game-container{width:100%;max-width:720px;background:#1a1a24;border:2px solid #2a2a3c;border-radius:12px;padding:12px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.6)}
 #order{font-size:.68rem;color:#8a8aab;margin-bottom:8px;text-align:center}
 #order b{color:#ff758c}#order s{opacity:.4}
-.battlefield{display:flex;justify-content:space-between;align-items:flex-start;min-height:280px;background:linear-gradient(#1e1e2d,#14141d);border-radius:8px;border:1px solid #2e2e42;margin-bottom:10px;padding:8px;gap:6px}
-.team-column{width:48%;display:flex;flex-direction:column;gap:6px}
-.column-header{font-size:.7rem;font-weight:bold;text-align:center;padding-bottom:4px}
+.battlefield{position:relative;display:flex;justify-content:space-between;align-items:flex-start;min-height:280px;background-color:#141a20;background-size:cover;background-position:center bottom;border-radius:8px;border:1px solid #2e2e42;margin-bottom:10px;padding:8px;gap:6px;overflow:hidden}
+.battlefield::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 28%,rgba(130,170,180,.16),transparent 62%),linear-gradient(transparent 50%,rgba(0,0,0,.55))}
+.team-column{position:relative;z-index:1;width:48%;display:flex;flex-direction:column;gap:6px}
+.column-header{font-size:.7rem;font-weight:bold;text-align:center;padding-bottom:4px;text-shadow:0 1px 3px #000}
 .cards{display:flex;flex-direction:column;gap:6px}
-.combatant-card{background:#12121a;border:1px solid #262638;border-radius:6px;padding:6px;font-size:.68rem;display:flex;align-items:center;gap:6px;transition:all .2s}
-.combatant-card.active-turn{border-color:#ff758c;box-shadow:0 0 10px rgba(255,117,140,.4);background:#231c26}
-.combatant-card.front-line{border-left:4px solid #00bcd4}
+/* a unit = speech bubble (intent / damage preview), figure (sprite), floor bracket, stat panel */
+.combatant-card{display:grid;grid-template-columns:54px 1fr;grid-template-areas:"fig bub" "fig sts";column-gap:6px;background:rgba(10,12,18,.72);border:1px solid #262638;border-radius:6px;padding:5px;font-size:.66rem;transition:opacity .2s}
+.combatant-card .bubble{grid-area:bub;min-height:1.2em;line-height:1.3}
+.combatant-card .stats-info{grid-area:sts}
+.combatant-card .floor{display:none}
+.figure{grid-area:fig;position:relative;width:54px;height:54px;display:flex;align-items:flex-end;justify-content:center}
+.figure .ph{width:100%;height:100%;box-sizing:border-box;background:rgba(37,37,54,.8);border:1px dashed #4a4a6a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#8a8aab;text-align:center}
+.team-e .figure .ph{border-color:#ff8a80}
+.figure .spr{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none;user-select:none}
+.figure.has-art .ph{display:none}
+.figure.flip .spr,.figure.flip .ph{transform:scaleX(-1)}
+.combatant-card.active-turn{border-color:#e8b04a;box-shadow:0 0 10px rgba(232,176,74,.35)}
 .combatant-card.dead{opacity:.35;filter:grayscale(1)}
-.targetable{cursor:pointer;border-color:#00bcd4!important;animation:pulse 1s infinite alternate}
-@keyframes pulse{0%{box-shadow:0 0 3px rgba(0,188,212,.3)}100%{box-shadow:0 0 10px rgba(0,188,212,.8)}}
+.targetable{cursor:pointer}
+.targetable .figure{filter:drop-shadow(0 0 8px rgba(255,82,82,.9))}
+.targetable.team-p .figure{filter:drop-shadow(0 0 8px rgba(79,195,247,.95))}
+.combatant-card.targetable{border-color:#ff5252}
+.combatant-card.targetable.team-p{border-color:#4fc3f7}
+.figure.hurt{animation:hurt .4s}
+@keyframes hurt{0%{filter:brightness(2.2) saturate(0)}25%{transform:translateX(-6px)}50%{transform:translateX(5px)}100%{transform:none;filter:none}}
+.team-p .figure.lunge{animation:lungeR .35s}.team-e .figure.lunge{animation:lungeL .35s}
+@keyframes lungeR{40%{transform:translateX(34px)}100%{transform:none}}
+@keyframes lungeL{40%{transform:translateX(-34px)}100%{transform:none}}
 .mini-sprite{width:40px;height:40px;background:#252536;border:1px dashed #4a4a6a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#8a8aab;text-align:center;flex-shrink:0}
 .enemy .mini-sprite{border-color:#ff8a80}
-.stats-info{flex-grow:1}
+.stats-info{flex-grow:1;min-width:0}
+.stats-info .nm{display:flex;align-items:baseline;gap:4px;white-space:nowrap}
+.stats-info .nm strong{overflow:hidden;text-overflow:ellipsis}
+.stats-info .nm .spd{margin-left:auto;float:none}
+.stats-info .tags{display:flex;flex-wrap:wrap;align-items:center;gap:2px 0;margin:2px 0}
+.hpnum{display:block;margin-top:1px}
+.arm{color:#9aa4b8;font-size:.9em}
+.chips{display:flex;gap:3px;margin-top:4px}
+.sk2{flex:1;min-width:0;background:#171a23;border:1px solid #333a4a;border-radius:4px;text-align:center;padding:2px 1px;line-height:1.15;white-space:nowrap;overflow:hidden}
+.sk2 .ic{display:block;font-size:1.05em}.sk2 b{font-size:.92em}
+.sk2 i{display:block;font-style:normal;color:#ff8a65;font-size:.8em}
+.sk2.cd{opacity:.5}.sk2.sel{border-color:#ff758c;background:#3a2330}
 .bar-container{width:100%;background:#2a2a3c;height:5px;border-radius:3px;margin:2px 0;overflow:hidden}
 .hp-fill{background:#4caf50;height:100%;transition:width .3s}
 .break-fill{background:#00bcd4;height:100%;transition:width .3s}
@@ -31,7 +60,11 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .status-armoured{background:#3f51b5;color:#fff}.status-broken{background:#e91e63;color:#fff}
 .ail{color:#ffd54f;font-weight:bold}.spd{color:#8a8aab;float:right}
 .control-panel{display:flex;flex-direction:column;gap:8px}
-.action-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+#inv{display:none;flex-direction:column;gap:5px;background:#12121a;border:1px solid #4a4a6e;border-radius:6px;padding:6px}
+#inv button{text-align:left;padding:8px 10px}
+.method{align-items:center}.method .mini-sprite{font-size:1.8rem;width:64px;height:64px}
+.pick.off{opacity:.4;cursor:not-allowed}
 button{background:#36364f;color:#fff;border:1px solid #4a4a6e;padding:8px 4px;border-radius:5px;cursor:pointer;font-weight:bold;font-size:.75rem;text-align:center;transition:background .2s}
 button:hover:not(:disabled){background:#4a4a6e}
 button:disabled{opacity:.4;cursor:not-allowed}
@@ -39,30 +72,425 @@ button.sel{border-color:#ff758c;background:#4a3350}
 button small{font-weight:normal;color:#c0c0d8}
 #log-box{background:#121218;border:1px solid #262638;border-radius:6px;height:90px;overflow-y:auto;padding:6px;font-family:monospace;font-size:.7rem;color:#b0b0c0}
 .log-entry{margin-bottom:3px}
-.battlefield{position:relative}
 #cutin{display:none;position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.85);border-radius:8px;cursor:pointer;align-items:center;justify-content:center;padding:6px;box-sizing:border-box}
 #cutin.show{display:flex}
 #cutin .clip{max-width:100%;max-height:100%;object-fit:contain}
 #cutin::after{content:'tap to skip';position:absolute;bottom:6px;right:10px;font-size:.6rem;color:#8a8aab}
+#title{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 50% 30%,#241c30,#0e0e14);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;box-sizing:border-box;text-align:center;overflow-y:auto}
+#title.hide{display:none}
+#title h2{margin:0;font-size:2rem;color:#ff758c;letter-spacing:.05em}
+#title p{margin:0 0 14px;color:#a0a0b0;font-size:.8rem}
+#title .menu{display:flex;flex-direction:column;gap:8px;width:100%;max-width:300px}
+#title button{padding:12px 8px;font-size:.9rem}
+#title .info{font-size:.7rem;color:#8a8aab;max-width:300px}
+#title .info.warn,#title .warn{color:#ffd54f}
+#title .panel{display:none;width:100%;max-width:340px;background:#1a1a24;border:1px solid #2e2e42;border-radius:8px;padding:12px;box-sizing:border-box;flex-direction:column;gap:8px;font-size:.75rem}
+#title .panel.show{display:flex}
+#title textarea{width:100%;height:90px;background:#121218;color:#b0b0c0;border:1px solid #262638;border-radius:5px;font-family:monospace;font-size:.65rem;box-sizing:border-box;resize:none}
+.danger{background:#7a2a3a;border-color:#b04058}
+.scene{display:none;flex-direction:column;align-items:center;width:100%}
+.scene.show{display:flex}
+.hub-wrap{width:100%;max-width:720px;box-sizing:border-box;padding:6px 4px;text-align:center}
+.hub-hall{background:linear-gradient(#241c30,#17141f);border:2px solid #2a2a3c;border-radius:12px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+.hub-title{margin:4px 0 2px;font-size:1.5rem;color:#ff758c;letter-spacing:.04em;font-weight:bold}
+.hub-sub{font-size:.75rem;color:#a0a0b0;margin-bottom:12px}
+.hub-gold{color:#ffd54f;font-weight:bold}
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.hub-btn{padding:16px 6px;font-size:.9rem}
+.hub-btn small{display:block;font-weight:normal;color:#9a9ab8;font-size:.62rem;margin-top:2px}
+.hub-btn.embark{grid-column:1/-1;background:#7a2a46;border-color:#ff758c;font-size:1.05rem;padding:18px 6px}
+.hub-btn.embark:hover:not(:disabled){background:#923357}
+#hub-msg{min-height:1.2em;font-size:.72rem;color:#ffd54f;margin:4px 0 8px}
+.hub-section{font-size:.7rem;font-weight:bold;color:#8a8aab;text-align:left;margin:10px 0 6px;letter-spacing:.06em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#12121a;border:1px solid #262638;border-radius:6px;padding:4px 8px;font-size:.68rem}
+.slots{font-size:.72rem;color:#c0c0d8;background:#12121a;border:1px solid #262638;border-radius:6px;padding:8px;margin-bottom:6px;line-height:1.5}
+.pick-list{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.pick{position:relative;display:flex;align-items:center;gap:8px;background:#12121a;border:1px solid #262638;border-radius:6px;padding:8px;text-align:left;font-size:.7rem;cursor:pointer;transition:all .15s}
+.pick.on{border-color:#ff758c;background:#231c26;box-shadow:0 0 8px rgba(255,117,140,.3)}
+.pick.full{opacity:.45}
+.pick .slot{position:absolute;top:6px;right:8px;background:#ff758c;color:#121216;font-weight:bold;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.7rem}
+.pick .sk{color:#9a9ab8;font-size:.62rem;margin-top:2px}
+.row{display:flex;gap:8px}.row button{flex:1}
+#end-buttons{gap:8px}#end-buttons button{flex:1}
+.primary{background:#7a2a46;border-color:#ff758c}
+.campfire{position:relative;width:100%;max-width:320px;aspect-ratio:1/1;margin:6px auto 10px;border-radius:50%;background:radial-gradient(circle,#4a2a18 0%,#2a1f2c 40%,transparent 70%)}
+.fire{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:2.8rem;animation:flicker 1.1s infinite alternate}
+@keyframes flicker{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-50%) scale(1.14)}}
+.camper{position:absolute;transform:translate(-50%,-50%);width:84px;text-align:center;font-size:.62rem;line-height:1.3}
+.camper .mini-sprite{width:56px;height:56px;margin:0 auto 2px;font-size:.6rem}
+#camp-msg{min-height:1.2em;font-size:.72rem;color:#81c784;margin:4px 0 8px}
+.camp-gold{color:#ffd54f;font-weight:bold}
+.broken-tag{color:#ff5252;font-weight:bold}
+.shop-row{display:flex;align-items:center;gap:8px;background:#12121a;border:1px solid #262638;border-radius:6px;padding:8px;margin-bottom:6px;text-align:left;font-size:.68rem}
+.shop-row .who{flex:1;min-width:0}
+.shop-row .btns{display:flex;flex-direction:column;gap:4px}
+.shop-row button{padding:6px 8px;font-size:.68rem;white-space:nowrap}
+.status-super{background:#b71c1c;color:#fff}
+.break2-fill{background:#ff9800;height:100%;transition:width .3s}
+.bar-container.thin{height:4px;margin-top:0}
+.break2-fill.dim{opacity:.35}
+.super-tag{color:#ff1744;font-weight:bold}
+.quest-pick{padding-right:36px}
+#spa-board{position:relative;width:100%;max-width:400px;margin:8px auto;display:grid;gap:3px;border-radius:8px}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:12;overflow:hidden;border-radius:8px}
+.float{position:absolute;transform:translate(-50%,-50%);font-weight:900;font-size:1.3rem;color:#fff;text-shadow:0 2px 3px #000,0 0 6px #000;animation:floatup 1s ease-out forwards;white-space:nowrap;text-align:center;line-height:1}
+.float small{display:block;font-size:.5em;letter-spacing:.1em;margin-bottom:2px;color:#ffd54f}
+.float.hurt{color:#ff6b6b}
+.float.heal{color:#69f0ae}
+.float.ward{color:#4fc3f7}
+.float.dot{color:#ce93d8;font-size:1.05rem}
+.float.tag{font-size:.95rem;color:#ffb74d;animation-duration:1.3s}
+.float.crit{font-size:2rem;color:#ffd54f;text-shadow:0 0 12px #ff9800,0 2px 3px #000;animation-name:floatcrit;animation-duration:1.2s}
+@keyframes floatup{0%{opacity:0;transform:translate(-50%,-20%) scale(.6)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-190%) scale(1)}}
+@keyframes floatcrit{0%{opacity:0;transform:translate(-50%,-20%) scale(.5)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.55)}30%{transform:translate(-50%,-85%) scale(1.25)}100%{opacity:0;transform:translate(-50%,-230%) scale(1.1)}}
+.shake{animation:shk .3s linear}
+@keyframes shk{0%,100%{transform:translate(0,0)}12%{transform:translate(calc(var(--sh)*-1),calc(var(--sh)*.4))}25%{transform:translate(var(--sh),calc(var(--sh)*-.4))}40%{transform:translate(calc(var(--sh)*-.7),calc(var(--sh)*.3))}55%{transform:translate(calc(var(--sh)*.7),0)}75%{transform:translate(calc(var(--sh)*-.35),0)}90%{transform:translate(calc(var(--sh)*.2),0)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+.fxbar{display:flex;gap:6px;justify-content:center;margin:0 0 6px}
+.fxbar button{padding:3px 8px;font-size:.62rem;font-weight:normal;color:#b0b0c8}
+#inspect{display:none;position:fixed;inset:0;z-index:125;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+#inspect.show{display:flex}
+#inspect-box{background:#1a1a24;border:2px solid #4a4a6e;border-radius:12px;padding:16px;max-width:460px;width:100%;max-height:92vh;overflow-y:auto;box-sizing:border-box;font-size:.8rem;line-height:1.5}
+#inspect-box h3{margin:0 0 4px;color:#ff758c;font-size:1.05rem}
+#inspect-box table{width:100%;border-collapse:collapse;margin-top:6px}
+#inspect-box td{padding:4px 6px;border-top:1px solid #2e2e42;vertical-align:top}
+#inspect-box .dim{color:#9a9ab8;font-size:.7rem}
+.info{cursor:pointer;color:#81d4fa;padding:0 4px;font-size:.85em}
+.mt{font-size:.62rem;color:#b0b0c8;margin-left:5px;white-space:nowrap}
+.intent{color:#ffb74d;font-size:.66rem;font-weight:bold;margin-left:4px}
+.crit{font-size:.66rem;font-weight:bold;margin-left:4px;color:#b0b0c8}.crit.weak{color:#ffd54f}.crit.resist{color:#8a8aab}
+.pm{font-size:.66rem;font-weight:bold;margin-left:4px}.pm.up{color:#69f0ae}.pm.down{color:#ff8a65}
+.dmgprev{font-size:.7rem;font-weight:bold;color:#e0e0f0;margin-left:4px}
+.shield{color:#4fc3f7;font-weight:bold;margin-left:4px}
+.rowtag{font-size:.56rem;letter-spacing:.08em;padding:1px 5px;border-radius:3px;margin-right:4px;background:#26263a;color:#9aa0c0}.rowtag.f{color:#4dd0e1}
+#notice{display:none;position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
+#notice.show{display:flex}
+.notice-box{background:#1a1a24;border:2px solid #ff758c;border-radius:12px;padding:20px;max-width:380px;width:100%;box-sizing:border-box;text-align:center;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 30px rgba(255,117,140,.35)}
+.notice-title{font-size:1.2rem;font-weight:bold;color:#ffd54f}
+.notice-box .mini-sprite{width:96px;height:96px;margin:0 auto;font-size:.8rem}
+#spa-bg{display:none;position:fixed;inset:0;z-index:-1;background:#0e0e14 center/cover no-repeat}
+#spa .hub-hall{background:transparent;border-color:transparent;box-shadow:none}
+#spa .hub-title,#spa .hub-sub,#spa-msg{text-shadow:0 1px 4px #000,0 0 8px #000}
+#spa .slots{background:rgba(18,18,26,.82)}
+#spa .hub-sub{color:#f2f2f8}
+#spa-board.zap{animation:zap .35s}
+@keyframes zap{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.sp{border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:.95rem;user-select:none;-webkit-tap-highlight-color:transparent}
+.sp.off{visibility:hidden}
+.sp.hid{background:rgba(125,92,150,.8);border:1px solid #9a78b4;cursor:pointer}
+.sp.hid:active{background:rgba(170,130,195,.9)}
+.sp.safe{background:rgba(18,18,26,.6);border:1px solid #262638}
+.sp.nerve{background:rgba(255,64,84,.85);border:1px solid #ff8a80}
+.sp.nerve.shown{background:rgba(255,64,84,.4)}
+.n1{color:#4fc3f7}.n2{color:#81c784}.n3{color:#ff8a80}.n4{color:#ba68c8}.n5,.n6,.n7,.n8{color:#ffb74d}
+#spa-msg{min-height:1.2em;font-size:.75rem;color:#ffd54f;margin:2px 0 6px}
+.pips{color:#ff5252;letter-spacing:2px}
+.panel-result{display:none;flex-direction:column;gap:6px;background:#12121a;border:1px solid #262638;border-radius:8px;padding:10px;margin-top:6px;font-size:.8rem}
+#spa-cutin{display:none;position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.9);cursor:pointer;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}
+#spa-cutin.show{display:flex}
+#spa-cutin .clip{max-width:100%;max-height:100%;object-fit:contain}
+#spa-cutin::after{content:'tap to skip';position:absolute;bottom:10px;right:14px;font-size:.65rem;color:#8a8aab}
+.pick.done{opacity:.75;cursor:default}
+/* ===== Wide screens (PC / landscape). Phones keep the layout above. ===== */
+@media (min-width:900px){
+  body{padding:14px 24px}
+  h1{font-size:1.5rem}
+  #game-container{max-width:1280px;padding:16px}
+  #order{font-size:.8rem;margin-bottom:10px}
+  .mini-sprite{width:84px;height:84px;font-size:.7rem}
+  .bar-container{height:7px;margin:3px 0}
+  .bar-container.thin{height:6px}
+  .status-badge{font-size:.68rem;padding:2px 5px}
+  .control-panel{display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:auto 1fr;gap:10px 16px}
+  #turn-indicator{grid-column:1/-1;font-size:1rem!important}
+  .action-grid{grid-column:1;gap:8px;grid-template-columns:repeat(5,1fr)}
+  #inv{grid-column:1}
+  .action-grid button{padding:16px 6px;font-size:.9rem}
+  #end-buttons{grid-column:1}
+  #log-box{grid-column:2;grid-row:2 / span 2;height:auto;min-height:150px;max-height:210px;font-size:.78rem}
+
+  .hub-wrap{max-width:1200px}
+  .hub-hall{padding:22px 28px}
+  .hub-title{font-size:2rem}
+  .hub-sub{font-size:.9rem}
+  .hub-grid{grid-template-columns:repeat(4,1fr);gap:12px}
+  .hub-btn{padding:26px 8px;font-size:1.05rem}
+  .hub-btn.embark{grid-column:auto!important;font-size:1.15rem;padding:26px 8px}
+  .hub-grid .hub-btn[style]{grid-column:auto!important}
+  #hub-msg{font-size:.85rem}
+  .chip{font-size:.8rem;padding:6px 12px}
+  .slots{font-size:.85rem;padding:12px}
+  .pick-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  #quest-list{grid-template-columns:repeat(2,1fr)}
+  .pick{font-size:.82rem;padding:12px}
+  .pick .sk{font-size:.72rem}
+  .pick .mini-sprite{width:64px;height:64px}
+  .row{max-width:520px;margin:0 auto}
+  #spa-select > .hub-wrap > .hub-hall > button{max-width:520px;display:block;margin:0 auto}
+
+  /* camp: fire on the left, supplies on the right */
+  #camp .hub-hall{display:grid;grid-template-columns:1fr 1fr;column-gap:36px;align-items:start}
+  #camp .hub-title,#camp #camp-sub{grid-column:1/-1}
+  #camp .campfire{grid-column:1;grid-row:3 / span 5;max-width:480px;margin:0 auto;width:100%}
+  #camp #camp-msg,#camp .hub-section,#camp #camp-shop,#camp #btn-next{grid-column:2}
+  .camper{width:110px;font-size:.78rem}
+  .camper .mini-sprite{width:76px;height:76px}
+  .fire{font-size:3.6rem}
+  .shop-row{font-size:.82rem;padding:10px 12px}
+  .shop-row button{font-size:.8rem;padding:8px 12px}
+  #camp-msg{font-size:.85rem}
+
+  /* spa: a rectangle in the middle of the screen, over the hero's picture */
+  #spa .hub-hall{display:flex;flex-direction:column;align-items:center}
+  #spa #spa-board{width:min(720px,100%,calc((100vh - 260px) * 1.25));max-width:none;margin:8px auto}
+  #spa .slots{width:min(720px,100%);box-sizing:border-box}
+  #spa #btn-spa-quit,#spa #spa-result{width:min(420px,100%)!important;box-sizing:border-box}
+  #spa #spa-msg{font-size:.95rem}
+  .sp{font-size:1.05rem}
+}
+@media (min-width:900px) and (max-height:860px){      /* laptops / short windows: fit the whole battle on screen */
+  body{padding-top:6px}
+  h1{font-size:1.2rem}.subtitle{margin-bottom:4px}
+  #game-container{padding:10px}
+  .mini-sprite{width:62px;height:62px}
+  .bar-container{height:5px;margin:2px 0}.bar-container.thin{height:4px}
+  .action-grid button{padding:8px 6px}
+  #log-box{min-height:90px;max-height:130px}
+}
+@media (min-width:1500px){
+  html{font-size:18px}
+}
+/* ===== Battle stage on PC: two lines of fighters facing each other, front rows in the middle ===== */
+@media (min-width:900px){
+  body.in-battle{padding:0}
+  #battle-scene{position:relative;min-height:100vh;width:100%}
+  #battle-scene h1{display:none}
+  #battle-scene .subtitle{position:absolute;top:8px;left:16px;z-index:6;margin:0;text-align:left;font-size:.85rem;color:#c8ccd8;text-shadow:0 1px 3px #000}
+  #battle-scene .fxbar{position:absolute;top:6px;right:12px;z-index:6;margin:0}
+  #battle-scene #game-container{position:relative;max-width:none;flex:1;display:flex;flex-direction:column;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+  #battle-scene #order{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:6;margin:0;background:rgba(0,0,0,.55);padding:3px 14px;border-radius:12px;font-size:.78rem;white-space:nowrap}
+  #battle-scene .battlefield{--figH:clamp(120px,calc(100vh - 470px),640px);flex:1;min-height:0;border:0;border-radius:0;margin:0;padding:40px 1.2vw 8px;gap:1.6vw;align-items:flex-end;justify-content:center}
+  #battle-scene .team-column{flex:1;width:auto;align-self:stretch;justify-content:flex-end;gap:0}
+  #battle-scene .column-header{position:absolute;top:-30px;left:0;right:0;font-size:.85rem;letter-spacing:.12em;padding:0}
+  #battle-scene .cards{flex-direction:row;align-items:flex-start;justify-content:flex-start;gap:.5vw}
+  #battle-scene #party-cards{flex-direction:row-reverse}          /* slot 0 (front) sits at the centre, the back of the line at the outer edge */
+  #battle-scene .combatant-card{display:flex;flex-direction:column;flex:0 0 calc(25% - .4vw);max-width:290px;min-width:0;background:none;border:0;border-radius:0;padding:0;font-size:clamp(10px,.5vw + 5px,15px);box-shadow:none}
+  #battle-scene .combatant-card .bubble{min-height:3.7em;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:0 .2em .3em;text-shadow:0 1px 3px #000}
+  #battle-scene .figure{width:100%;height:var(--figH)}
+  #battle-scene .figure .ph{width:56%;height:62%;margin-bottom:0;font-size:.9em;border-radius:8px}
+  #battle-scene .combatant-card .floor{display:block;height:10px;margin:2px 6%;border-bottom:2px solid rgba(255,255,255,.14);border-left:2px solid rgba(255,255,255,.14);border-right:2px solid rgba(255,255,255,.14);border-radius:0 0 4px 4px;transition:all .2s}
+  #battle-scene .combatant-card.active-turn .floor{border-color:#e8b04a;box-shadow:0 3px 8px rgba(232,176,74,.55)}
+  #battle-scene .combatant-card.active-turn .figure{transform:translateY(-4px)}
+  #battle-scene .combatant-card.targetable .floor{border-color:#ff5252;box-shadow:0 3px 10px rgba(255,82,82,.8);animation:pulse 1s infinite alternate}
+  #battle-scene .combatant-card.targetable.team-p .floor{border-color:#4fc3f7;box-shadow:0 3px 10px rgba(79,195,247,.8)}
+  #battle-scene .combatant-card.targetable:hover .figure{transform:translateY(-6px)}
+  #battle-scene .combatant-card.active-turn,#battle-scene .combatant-card.targetable{box-shadow:none}
+  #battle-scene .combatant-card .stats-info{background:rgba(8,10,16,.8);border:1px solid #2a2f3c;border-radius:6px;padding:.45em .55em;margin-top:.15em}
+  #battle-scene .combatant-card.active-turn .stats-info{border-color:#e8b04a}
+  #battle-scene .combatant-card.dead .stats-info{opacity:.6}
+  #battle-scene .bar-container{height:.7em;margin:.15em 0}
+  #battle-scene .bar-container.thin{height:.5em;margin-top:0}
+  #battle-scene .sk2{padding:.25em .1em}
+  #battle-scene .control-panel{background:rgba(10,12,18,.92);border-top:1px solid #2e2e42;padding:10px 16px;flex:0 0 auto}
+  #battle-scene #log-box{max-height:120px;min-height:80px;height:auto}
+}
+@media (min-width:900px) and (max-height:800px){
+  #battle-scene .action-grid button{padding:6px}
+  #battle-scene #log-box{max-height:90px;min-height:60px}
+  #battle-scene .control-panel{padding:6px 16px;gap:6px 16px}
+}
 .log-player{color:#81d4fa}.log-enemy{color:#ff8a80}.log-status{color:#ffd54f}.log-heal{color:#81c784}.log-round{color:#8a8aab}
 </style>
 </head>
 <body>
+<div id="spa-bg"></div>
+<div id="inspect" onclick="closeInspect()"><div id="inspect-box" onclick="event.stopPropagation()"></div></div>
+<div id="notice"><div class="notice-box">
+  <div class="notice-title" id="notice-title"></div>
+  <div class="mini-sprite" id="notice-sprite"></div>
+  <div id="notice-text" style="font-size:.85rem;line-height:1.5"></div>
+  <div class="sk" id="notice-skills" style="font-size:.7rem;color:#9a9ab8"></div>
+  <button class="primary" onclick="dismissNotice()">Welcome!</button>
+</div></div>
+<div id="spa-cutin"></div>
+<div id="title">
+  <h2>Anime RPG</h2>
+  <p>Prototype</p>
+  <div class="menu" id="menu-main">
+    <button id="btn-continue" onclick="doContinue()">Continue</button>
+    <button id="btn-new" onclick="doNew()">New Game</button>
+    <button onclick="openPanel('data')">Export / Import Save</button>
+  </div>
+  <div class="info" id="title-info"></div>
+  <div class="panel" id="panel-confirm">
+    <div>Starting a new game will <b>erase your saved progress</b>. This can't be undone unless you exported your save first. Continue?</div>
+    <button class="danger" onclick="startNew()">Yes, erase and start over</button>
+    <button onclick="openPanel(null)">Cancel</button>
+  </div>
+  <div class="panel" id="panel-data">
+    <div>Export shows your save as a block of text you can keep. Import loads a save from that text.</div>
+    <textarea id="save-text" placeholder="Save code appears here, or paste one to import" spellcheck="false" oninput="importArmed=false"></textarea>
+    <button onclick="exportSave()">Export (show save code)</button>
+    <button onclick="copySave()">Copy to clipboard</button>
+    <button onclick="importSave()">Import from the box</button>
+    <div class="info" id="data-msg"></div>
+    <button onclick="openPanel(null)">Close</button>
+  </div>
+</div>
+
+<div id="hub" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">Guild Hall</div>
+      <div class="hub-sub">Home of the guild · <span class="hub-gold" id="hub-gold">Gold: 0</span></div>
+      <div class="hub-grid">
+        <button class="hub-btn" onclick="openShop()">🛒 Shop<small>Healing potions</small></button>
+        <button class="hub-btn" onclick="openSpa()">♨️ Spa<small>Boost a hero's HP</small></button>
+        <button class="hub-btn" style="grid-column:1/-1" onclick="openTrain()">🎯 Training Ground<small>Temporary damage boost</small></button>
+        <button class="hub-btn embark" onclick="openParty()">⚔️ Embark<small>Choose a party, then a quest</small></button>
+      </div>
+      <div id="hub-msg"></div>
+      <div class="hub-section">GUILD ROSTER</div>
+      <div class="chips" id="hub-roster"></div>
+      <div class="hub-section">SUPPLIES (go with your party on the next quest)</div>
+      <div class="chips" id="hub-items"></div>
+    </div>
+    <button style="margin-top:10px" onclick="location.reload()">Back to Title</button>
+  </div>
+</div>
+
+<div id="party-select" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">Choose Your Party</div>
+      <div class="hub-sub">Tap up to 4 heroes. The first one you pick stands at the front.</div>
+      <div class="slots" id="party-slots"></div>
+      <div class="pick-list" id="roster-pick"></div>
+      <div class="row">
+        <button onclick="showScene('hub')">Back</button>
+        <button class="primary" id="btn-begin" onclick="toQuestSelect()">Choose Quest ▶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="spa-select" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">♨️ Spa</div>
+      <div class="hub-sub" id="spa-intro"></div>
+      <div class="pick-list" id="spa-list"></div>
+      <button style="width:100%" onclick="showScene('hub')">Back to Hub</button>
+    </div>
+  </div>
+</div>
+
+<div id="spa" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title" id="spa-title">Massage</div>
+      <div class="hub-sub">Tap the squares to find the knots. Numbers show how many nerves touch a tile. Hit three nerves and it's over!</div>
+      <div class="slots" id="spa-status"></div>
+      <div id="spa-board"></div>
+      <div id="spa-msg"></div>
+      <button id="btn-spa-quit" style="width:100%" onclick="showScene('spa-select')">Give Up (no refund)</button>
+      <div class="panel-result" id="spa-result">
+        <div id="spa-result-text"></div>
+        <button class="primary" id="btn-spa-again" onclick="startSpa(spaGame.hero.id)">Treat Again</button>
+        <button onclick="showScene('spa-select')">Choose Another Hero</button>
+        <button onclick="showScene('hub')">Leave Spa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="shop" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">🛒 Shop</div>
+      <div class="hub-sub" id="shop-sub"></div>
+      <div class="pick-list" id="shop-list"></div>
+      <div id="shop-msg" style="min-height:1.2em;font-size:.8rem;color:#81c784;margin:4px 0 8px"></div>
+      <button style="width:100%" onclick="showScene('hub')">Back to Hub</button>
+    </div>
+  </div>
+</div>
+
+<div id="train-select" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">🎯 Training Ground</div>
+      <div class="hub-sub" id="train-intro"></div>
+      <div class="pick-list" id="train-list"></div>
+      <button style="width:100%" onclick="showScene('hub')">Back to Hub</button>
+    </div>
+  </div>
+</div>
+
+<div id="train-method" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title" id="train-title">Training</div>
+      <div class="hub-sub" id="train-sub"></div>
+      <div class="pick-list" id="train-methods"></div>
+      <div class="panel-result" id="train-result">
+        <div id="train-result-text"></div>
+        <button class="primary" onclick="showScene('train-select')">Train Another Hero</button>
+        <button onclick="showScene('hub')">Back to Hub</button>
+      </div>
+      <button id="btn-train-back" style="width:100%" onclick="showScene('train-select')">Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="quest-select" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">Choose a Quest</div>
+      <div class="hub-sub">Where will your party venture?</div>
+      <div class="slots" id="quest-party"></div>
+      <div class="pick-list" id="quest-list"></div>
+      <div class="row">
+        <button onclick="showScene('party-select')">Back</button>
+        <button class="primary" id="btn-start-quest" onclick="beginQuest()">Begin Quest</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="camp" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">Camp</div>
+      <div class="hub-sub" id="camp-sub"></div>
+      <div class="campfire" id="campfire"></div>
+      <div id="camp-msg"></div>
+      <div class="hub-section">CAMP SUPPLIES <span class="camp-gold" id="camp-gold" style="float:right"></span></div>
+      <div id="camp-shop"></div>
+      <button class="hub-btn embark" id="btn-next" onclick="nextFight()" style="width:100%;margin-top:8px">Next Fight</button>
+    </div>
+  </div>
+</div>
+
+<div id="battle-scene" class="scene">
 <h1>Anime RPG Prototype</h1>
-<div class="subtitle">4v4 Tactical Combat: Speed-Based Turns, Elements &amp; Healing</div>
+<div class="subtitle" id="battle-sub">Quest battle</div>
+<div class="fxbar"><button id="fx-n" onclick="toggleFx('numbers')"></button><button id="fx-s" onclick="toggleFx('shake')"></button></div>
 
 <div id="game-container">
   <div id="order"></div>
   <div class="battlefield">
     <div class="team-column">
-      <div class="column-header" style="color:#81d4fa">PLAYER PARTY (Top = Front)</div>
+      <div class="column-header" style="color:#81d4fa">PLAYER PARTY</div>
       <div id="party-cards" class="cards"></div>
     </div>
     <div class="team-column">
-      <div class="column-header" style="color:#ff8a80">SENTINEL SQUAD</div>
+      <div class="column-header" style="color:#ff8a80" id="enemy-head">SENTINEL SQUAD</div>
       <div id="enemy-cards" class="cards enemy"></div>
     </div>
     <div id="cutin"></div>
+    <div id="fx"></div>
   </div>
   <div class="control-panel">
     <div id="turn-indicator" style="text-align:center;font-weight:bold;font-size:.85rem;color:#ff758c">Preparing...</div>
@@ -71,10 +499,16 @@ button small{font-weight:normal;color:#c0c0d8}
       <button id="btn1" onclick="chooseSkill(1)"></button>
       <button id="btn2" onclick="chooseSkill(2)"></button>
       <button id="btn-shift" onclick="doShift()">Shift Line<br><small>Swap with ally ahead (ends turn)</small></button>
+      <button id="btn-items" onclick="toggleInv()">🎒 Items</button>
     </div>
-    <button id="btn-restart" style="display:none" onclick="location.reload()">Restart Battle</button>
+    <div id="inv"></div>
+    <div id="end-buttons" style="display:none">
+      <button id="btn-end-main" class="primary">Continue</button>
+      <button onclick="location.reload()">Back to Title</button>
+    </div>
     <div id="log-box"></div>
   </div>
+</div>
 </div>
 
 <script>
@@ -88,70 +522,440 @@ const ELEM = {
   ice:    { status: 'frozen',  stun: true },
   shock:  { status: 'shocked', stun: true }
 };
+const ELEM_NAME = { fire: 'Fire', ice: 'Ice', shock: 'Shock', poison: 'Poison', bleed: 'Bleed' };
+// Damage and crits. Every damage skill has d:[min,max] (a flat roll in that range). Each unit lists weak:[elements] and
+// resist:[elements]. A skill with an element gets CRIT.weak extra crit chance vs a weak target and CRIT.resist (negative)
+// vs a resistant one. A crit adds CRIT.bonus flat damage. Skills may add their own crit:N (extra chance).
+// Chances are always clamped to CRIT.min..CRIT.max, so a bad number can never make a negative or over-100% chance.
+const CRIT = { base: 5, weak: 20, resist: -5, bonus: 5, min: 0, max: 100 };
+// Positions. Slot 0 of a line is the front; the first POS.front slots are the FRONT row, the rest the BACK row (both teams).
+// Melee skills deal +POS.bonus damage to the front row and -POS.bonus to the back row; ranged is the reverse. Dead units drop to the back.
+// Traits then change the damage a unit TAKES (see HEROES). The final multiplier is clamped to POS.min..POS.max so stacking can never make a unit immune.
+const POS = { front: 2, bonus: 0.20, min: 0.5, max: 1.4 };
+const RICON = { melee: '⚔️', ranged: '🏹' };
 const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', shock: '⚡' };
 
-// Skill: n=name, t='dmg' | 'heal' (one ally) | 'healAll', p=power, el=element, brk=break damage, cd=cooldown in turns
+// Skill: n=name, t='dmg' | 'barrier' (one ally, never the caster) | 'barrierAll' (every other ally) | 'buff' (self; buff:'wrath'), d=[min,max] damage, p=barrier size,
+//        chaos:true on a damage skill = right after it lands, the caster also hits a random OTHER unit (friend or foe) with her skill 1,
+//        r='melee'|'ranged' (damage skills, default melee), el=element, brk=break damage, cd=cooldown in turns.
+// Barriers soak damage AND armour-break damage, and vanish at the end of the turn of the unit that carries them.
+// Optional unit traits (see POS): frontMod / backMod = extra damage taken (+) or avoided (-) while standing in that row,
+// evasive = multiplies the damage penalty an attacker suffers from a bad position (a melee hit on the back row is -20%, x2 = -40%).
 const HEROES = [
-  { id:'seria',  name:'Seria (Tank)',    tag:'SERIA',  hp:120, brk:60, spd:6, skills:[
-    { n:'Shield Bash',  t:'dmg', p:12, cd:0 },
-    { n:'Static Strike',t:'dmg', p:16, el:'shock', brk:15, cd:2 },
-    { n:'Thunderclap',  t:'dmg', p:24, el:'shock', brk:30, cd:4 } ] },
-  { id:'cermia', name:'Cermia (Fire)',   tag:'CERMIA', hp:80,  brk:30, spd:8, skills:[
-    { n:'Slash',        t:'dmg', p:18, cd:0 },
-    { n:'Flame Lash',   t:'dmg', p:14, el:'fire', brk:20, cd:2 },
-    { n:'Inferno',      t:'dmg', p:25, el:'fire', brk:35, cd:3 } ] },
-  { id:'aria',   name:'Aria (Ice)',      tag:'ARIA',   hp:80,  brk:30, spd:9, skills:[
-    { n:'Slash',        t:'dmg', p:18, cd:0 },
-    { n:'Frost Shard',  t:'dmg', p:14, el:'ice', brk:20, cd:2 },
-    { n:'Blizzard',     t:'dmg', p:25, el:'ice', brk:35, cd:3 } ] },
-  { id:'nyria',  name:'Nyria (Healer)',  tag:'NYRIA',  hp:70,  brk:25, spd:7, skills:[
-    { n:'Venom Dart',   t:'dmg',     p:10, el:'poison', brk:12, cd:0 },
-    { n:'Mend',         t:'heal',    p:35, cd:2 },
-    { n:'Rejuvenate',   t:'healAll', p:20, cd:4 } ] }
+  { id:'seria', weak:['poison'], resist:['shock'], frontMod:-0.15, name:'Seria (Tank)',    tag:'SERIA',  hp:120, brk:60, spd:6, skills:[
+    { n:'Shield Bash',  t:'dmg', r:'melee',  d:[11,13], cd:0 },
+    { n:'Static Strike',t:'dmg', r:'melee',  d:[14,17], el:'shock', brk:15, cd:2 },
+    { n:'Thunderclap',  t:'dmg', r:'ranged', d:[22,25], el:'shock', brk:30, cd:4 } ] },
+  { id:'cermia', weak:['ice'], resist:['fire'], name:'Cermia (Fire)',   tag:'CERMIA', hp:80,  brk:30, spd:8, skills:[
+    { n:'Slash',        t:'dmg', r:'melee',  d:[16,19], cd:0 },
+    { n:'Flame Lash',   t:'dmg', r:'ranged', d:[13,15], el:'fire', brk:20, cd:2 },
+    { n:'Inferno',      t:'dmg', r:'ranged', d:[23,26], el:'fire', brk:35, cd:3 } ] },
+  { id:'aria', weak:['fire'], resist:['ice'],   name:'Aria (Ice)',      tag:'ARIA',   hp:80,  brk:30, spd:9, skills:[
+    { n:'Slash',        t:'dmg', r:'melee',  d:[16,19], cd:0 },
+    { n:'Frost Shard',  t:'dmg', r:'ranged', d:[13,15], el:'ice', brk:20, cd:2 },
+    { n:'Blizzard',     t:'dmg', r:'ranged', d:[23,26], el:'ice', brk:35, cd:3 } ] },
+  { id:'nyria', weak:['bleed'], resist:['poison'],  name:'Nyria (Ward)',  tag:'NYRIA',  hp:70,  brk:25, spd:13, skills:[
+    { n:'Venom Dart',   t:'dmg', r:'ranged', d:[11,13], el:'poison', brk:12, cd:0 },
+    { n:'Ward',         t:'barrier',    p:35, cd:0 },
+    { n:'Aegis',        t:'barrierAll', p:20, cd:2 } ] },
+  { id:'celeste', weak:['shock'], resist:['bleed'], evasive:1.5, name:'Celeste (Bleed)', tag:'CELESTE', hp:85, brk:30, spd:10, skills:[
+    { n:'Razor Cut',     t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:10, cd:0 },
+    { n:'Hemorrhage',    t:'dmg', r:'melee', d:[14,16], el:'bleed', brk:20, cd:2 },
+    { n:'Crimson Waltz', t:'dmg', r:'melee', d:[20,23], el:'bleed', brk:32, cd:3 } ] },
+  { id:'vesper', weak:['ice'], resist:['shock'], evasive:2, name:'Vesper (Storm)', tag:'VESPER', hp:70, brk:22, spd:12, skills:[        // fast glass cannon: stuns once armour is broken
+    { n:'Spark Step',      t:'dmg', r:'melee',  d:[10,12], el:'shock', brk:8,  cd:0 },
+    { n:'Chain Lightning', t:'dmg', r:'ranged', d:[14,17], el:'shock', brk:24, cd:2 },
+    { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[25,29], el:'shock', brk:38, cd:4 } ] },
+  { id:'iris', weak:['poison'], resist:['fire'], frontMod:-0.1, name:'Iris (Dragon)', tag:'IRIS', hp:105, brk:45, spd:9, skills:[      // martial artist, front liner
+    { n:'Iron Fist',       t:'dmg', r:'melee', d:[12,14], cd:0 },
+    { n:'Blazing Kick',    t:'dmg', r:'melee', d:[16,19], el:'fire', brk:22, cd:2 },
+    { n:"Dragon's Wrath",  t:'buff', buff:'wrath', cd:4 } ] },    // next turn: an extra Iron Fist on a random enemy, then it wears off
+  { id:'aneesah', weak:['ice'], resist:['shock'], backMod:-0.15, name:'Aneesah (Storm)', tag:'ANEESAH', hp:65, brk:20, spd:11, skills:[   // chaotic storm mage, back liner
+    { n:'Static Spark',    t:'dmg', r:'ranged', d:[6,8], el:'shock', brk:6, cd:0 },
+    { n:'Lightning Bolt',  t:'dmg', r:'ranged', d:[17,20], el:'shock', brk:22, cd:2 },
+    { n:'Tempest Unbound', t:'dmg', r:'ranged', d:[32,38], el:'shock', brk:40, cd:4, chaos:true } ] },
+  // locked:true = not owned at the start. A quest with unlocks:'<hero id>' adds her to the roster the first time its boss falls.
+  { id:'siren', weak:['shock'], resist:['poison'],  name:'Siren (Poison)', tag:'SIREN', hp:75, brk:28, spd:9, locked:true,
+    unlockMsg:'The Siren has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
+    { n:'Toxic Note',   t:'dmg', r:'ranged', d:[11,13], el:'poison', brk:10, cd:0 },
+    { n:'Venom Song',   t:'dmg', r:'ranged', d:[15,18], el:'poison', brk:22, cd:2 },
+    { n:'Deadly Dirge', t:'dmg', r:'ranged', d:[24,28], el:'poison', brk:36, cd:4 } ] }
 ];
 const ENEMIES = [
-  { id:'e_fire',  name:'Fire Sentinel',    tag:'FIRE',   hp:90,  brk:35, spd:7,  skills:[
-    { n:'Claw',        t:'dmg', p:12, cd:0 },
-    { n:'Flame Burst', t:'dmg', p:14, el:'fire',  brk:15, cd:3 } ] },
-  { id:'e_frost', name:'Frost Sentinel',   tag:'FROST',  hp:90,  brk:35, spd:6,  skills:[
-    { n:'Claw',        t:'dmg', p:12, cd:0 },
-    { n:'Ice Spike',   t:'dmg', p:14, el:'ice',   brk:15, cd:3 } ] },
-  { id:'e_shock', name:'Shock Sentinel',   tag:'SHOCK',  hp:90,  brk:35, spd:10, skills:[
-    { n:'Jab',         t:'dmg', p:10, cd:0 },
-    { n:'Arc Bolt',    t:'dmg', p:14, el:'shock', brk:15, cd:2 } ] },
-  { id:'e_heal',  name:'Healing Sentinel', tag:'HEAL',   hp:100, brk:40, spd:5,  skills:[
-    { n:'Thorn Lash',  t:'dmg', p:10, el:'bleed', brk:12, cd:0 },
-    { n:'Mend',        t:'heal',p:25, cd:2 } ] }
+  { id:'e_fire', weak:['ice'], resist:['fire'],  name:'Fire Sentinel',    tag:'FIRE',   hp:90,  brk:35, spd:7,  skills:[
+    { n:'Claw',        t:'dmg', r:'melee',  d:[11,13], cd:0 },
+    { n:'Flame Burst', t:'dmg', r:'ranged', d:[13,15], el:'fire',  brk:15, cd:3 } ] },
+  { id:'e_frost', weak:['fire'], resist:['ice'], name:'Frost Sentinel',   tag:'FROST',  hp:90,  brk:35, spd:6,  skills:[
+    { n:'Claw',        t:'dmg', r:'melee',  d:[11,13], cd:0 },
+    { n:'Ice Spike',   t:'dmg', r:'ranged', d:[13,15], el:'ice',   brk:15, cd:3 } ] },
+  { id:'e_shock', weak:['bleed'], resist:['shock'], name:'Shock Sentinel',   tag:'SHOCK',  hp:90,  brk:35, spd:10, skills:[
+    { n:'Jab',         t:'dmg', r:'melee',  d:[9,11], cd:0 },
+    { n:'Arc Bolt',    t:'dmg', r:'ranged', d:[13,15], el:'shock', brk:15, cd:2 } ] },
+  { id:'e_heal', weak:['fire'], resist:['bleed'],  name:'Warding Sentinel', tag:'WARD',   hp:100, brk:40, spd:5,  skills:[
+    { n:'Thorn Lash',  t:'dmg', r:'melee', d:[9,11], el:'bleed', brk:12, cd:0 },
+    { n:'Ward',        t:'barrier', p:25, cd:2 } ] },
+  { id:'e_drone', weak:['shock'], resist:[], name:'Drone Sentinel',   tag:'DRONE',  hp:60,  brk:20, spd:6,  skills:[
+    { n:'Strike',      t:'dmg', r:'melee', d:[8,9], cd:0 } ] },
+  { id:'e_venom', weak:['fire'], resist:['poison'], name:'Venom Sentinel',   tag:'VENOM',  hp:85,  brk:30, spd:8,  skills:[
+    { n:'Fang',        t:'dmg', r:'melee',  d:[9,11], cd:0 },
+    { n:'Toxic Spit',  t:'dmg', r:'ranged', d:[10,12], el:'poison', brk:15, cd:2 } ] },
+  { id:'e_boss', weak:['poison'], resist:['shock'],  name:'Sentinel Warden',  short:'Warden', tag:'WARDEN', hp:260, brk:90, spd:7,  skills:[
+    { n:'Crushing Blow', t:'dmg', r:'melee',  d:[18,21], cd:0 },
+    { n:'Overload',      t:'dmg', r:'ranged', d:[18,21], el:'shock', brk:25, cd:3 } ] },
+  // ---- the coast (electric + poison) ----
+  { id:'e_eel', weak:['poison'], resist:['shock'], evasive:2,  name:'Storm Eel',        tag:'EEL',    hp:80,  brk:30, spd:11, skills:[
+    { n:'Bite',        t:'dmg', r:'melee',  d:[9,11], cd:0 },
+    { n:'Zap',         t:'dmg', r:'ranged', d:[12,14], el:'shock',  brk:15, cd:2 } ] },
+  { id:'e_jelly', weak:['fire'], resist:['poison'], name:'Venom Jelly',      tag:'JELLY',  hp:70,  brk:25, spd:5,  skills:[
+    { n:'Sting',       t:'dmg', r:'melee',  d:[8,9],  el:'poison', brk:10, cd:0 },
+    { n:'Toxic Pulse', t:'dmg', r:'ranged', d:[11,13], el:'poison', brk:18, cd:3 } ] },
+  { id:'e_crab', weak:['shock'], resist:['bleed'], frontMod:-0.2, name:'Brine Crab',       tag:'CRAB',   hp:120, brk:50, spd:4,  skills:[
+    { n:'Pinch',       t:'dmg', r:'melee',  d:[12,14], cd:0 },
+    { n:'Venom Spray', t:'dmg', r:'ranged', d:[9,11], el:'poison', brk:15, cd:3 } ] },
+  { id:'e_ray', weak:['poison'], resist:['shock'],   name:'Thunder Ray',      tag:'RAY',    hp:85,  brk:32, spd:9,  skills:[
+    { n:'Wing Slap',    t:'dmg', r:'melee',  d:[10,12], cd:0 },
+    { n:'Static Surge', t:'dmg', r:'ranged', d:[14,16], el:'shock',  brk:18, cd:2 } ] },
+  { id:'e_urchin', weak:['ice'], resist:['poison'],name:'Toxic Urchin',     tag:'URCHIN', hp:60,  brk:20, spd:6,  skills:[
+    { n:'Spine',       t:'dmg', r:'ranged', d:[8,9],  el:'poison', brk:10, cd:0 } ] },
+  { id:'e_tide', weak:['poison'], resist:['shock'],  name:'Tide Warder',      tag:'WARDER', hp:90,  brk:35, spd:6,  skills:[
+    { n:'Salt Bolt',   t:'dmg', r:'ranged', d:[8,9],  el:'shock',  brk:10, cd:0 },
+    { n:'Brine Ward',  t:'barrier', p:28, cd:2 } ] },
+  { id:'e_siren', weak:['bleed'], resist:['shock'], name:'The Siren',        short:'Siren', tag:'SIREN', hp:340, brk:100, spd:10, skills:[
+    { n:'Crashing Wave', t:'dmg', r:'melee',  d:[18,21], cd:0 },
+    { n:'Venom Song',    t:'dmg', r:'ranged', d:[14,17], el:'poison', brk:25, cd:2 },
+    { n:'Storm Aria',    t:'dmg', r:'ranged', d:[16,19], el:'shock',  brk:25, cd:3 },
+    { n:'Tidal Ward',    t:'barrier', p:30, cd:4 } ] }
 ];
+
+/* ============ QUEST DATA ============ */
+// A quest is a list of nodes fought in order, with a camp after each win. gold = reward for winning that fight.
+// scale (optional) multiplies the enemies' HP and attack power. A quest can also have its own scale: {hp, atk} that applies to every node (the main difficulty knob). Mark the final node boss:true.
+// Enemies reference ids from ENEMIES above; repeats are fine (they get labelled A, B).
+const QUESTS = [{
+  id: 'ruins', name: "The Warden's Throne",       // id is stored in saves, so keep it even if the name changes
+  desc: 'Fight through the Sentinel Ruins and defeat the Warden on its throne.',
+  scale: { hp: 1.3, atk: 1.3 },     // quest-wide difficulty (tuned with the balance simulator; see notes in the chat)
+  nodes: [
+    { name: 'Outer Gate',      enemies: ['e_drone', 'e_frost', 'e_drone'],          gold: 30 },
+    { name: 'Sentinel Hall',   enemies: ['e_fire', 'e_frost', 'e_shock', 'e_heal'], gold: 45 },
+    { name: 'Inner Sanctum',   enemies: ['e_venom', 'e_shock', 'e_fire', 'e_heal'], gold: 60, scale: { hp: 1.15, atk: 1.1 } },
+    { name: 'Throne Room',     enemies: ['e_drone', 'e_boss', 'e_drone'],           gold: 100, boss: true, scale: { hp: 1.6, atk: 1.25 } }
+  ]
+}, {
+  id: 'cove', name: "The Siren's Cove",
+  desc: 'Storm-lashed shores crawling with shock and venom. Something sings from the deep.',
+  unlocks: 'siren',            // first boss win adds this hero to the roster
+  scale: { hp: 1.2, atk: 1.45 },
+  nodes: [
+    { name: 'Tidal Shallows',   enemies: ['e_jelly', 'e_crab', 'e_jelly'],                gold: 40 },
+    { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly'],                gold: 50 },
+    { name: 'Sunken Wreck',     enemies: ['e_ray', 'e_crab', 'e_eel', 'e_tide'],          gold: 65, scale: { hp: 1.1, atk: 1.1 } },
+    { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, scale: { hp: 1.2, atk: 1.15 } },
+    { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, scale: { hp: 1.25, atk: 1.12 } },
+    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, boss: true, scale: { hp: 1.45, atk: 1.2 } }
+  ]
+}];
+// Camp shop prices: one gold buys this much healing / armour (break bar) repair.
+const SHOP = { hpPerGold: 8, breakPerGold: 3 };
+// Camp rest: at each camp a hero can recover at most this fraction of their MAX HP by paying for rest (potions are separate).
+const CAMP = { healCap: 0.5 };
+// Items: bought at the hub Shop, carried on a quest, used from the Items button in battle (uses the hero's turn).
+// To add an item: add an entry here (and handle its `type` in useItem). Counts are stored per id in the save.
+const ITEMS = {
+  potion: { id: 'potion', name: 'Healing Potion', icon: '🧪', price: 20, type: 'heal', heal: 40, desc: 'Restores 40 HP to one hero' }
+};
+const itemCount = () => quest && quest.items ? Object.values(quest.items).reduce((a, b) => a + b, 0) : 0;
+const enemyById = id => ENEMIES.find(e => e.id === id);
+
+/* ============ SPA DATA ============ */
+// The spa minigame: a minesweeper on a hero's back. Tap tiles to find safe spots; each number says how many
+// nerves touch that tile (8 neighbours). Hit nerves = strikes. Reveal every safe tile to win.
+// mask: '#' = tappable tile, '.' = empty. Now a plain rectangle (10 x 8) sitting in the middle of the screen, over
+// the hero's picture. Any size or shape works as long as every row has the same width.
+// Optional art, all per hero and only used if the file exists (like battle animations):
+//   assets/<hero id>/spa/back.png|jpg|webp   full-screen backdrop: the hero lying face down (covers the screen)
+//   assets/<hero id>/spa/hit.*               plays when a nerve is hit (1st and 2nd hit)
+//   assets/<hero id>/spa/fail.*              plays when the third nerve is hit
+//   assets/<hero id>/spa/success.*           plays when the back is cleared
+const SPA = {
+  cost: 15,           // gold per massage, paid when it starts (no refund for failing or giving up)
+  hpBoost: 0.15,      // a won massage = +15% max HP for that hero on their next quest (wears off when it ends)
+  maxStrikes: 3,
+  nerves: 12,
+  mask: Array(8).fill('##########')
+};
+
+/* ============ TRAINING DATA ============ */
+// Train a hero for gold: +boost damage for their next quest only (wears off when that quest ends).
+// 'physical' boosts skills with no element; 'elemental' boosts skills that have one. Optional art per hero:
+//   assets/<hero id>/train/physical.*   and   assets/<hero id>/train/elemental.*   (played when training starts)
+const TRAIN = {
+  cost: 25, boost: 0.15,
+  methods: {
+    physical:  { name: 'Weapon Drills',   icon: '🗡️', word: 'physical',  desc: 'physical damage' },
+    elemental: { name: 'Elemental Focus', icon: '🔮', word: 'elemental', desc: 'elemental damage' }
+  }
+};
+const hasKind = (h, k) => h.skills.some(s => s.t === 'dmg' && (k === 'physical' ? !s.el : !!s.el));
+
+/* ============ EFFECTS (hit numbers, screen shake) ============ */
+// Visual feedback only. The two toggles are remembered on this device (not part of the game save).
+const FX = { numbers: true, shake: true };
+try {
+  const saved = JSON.parse(localStorage.getItem('animeRpgFx') || 'null');
+  if (saved) { FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; }
+  else if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) FX.shake = false;
+} catch (e) {}
+function renderFx() { $('fx-n').textContent = `Hit numbers: ${FX.numbers ? 'ON' : 'OFF'}`; $('fx-s').textContent = `Screen shake: ${FX.shake ? 'ON' : 'OFF'}`; }
+function toggleFx(k) { FX[k] = !FX[k]; try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} renderFx(); }
+function cardEl(u) {
+  const i = party.indexOf(u); if (i >= 0) return $('party-cards').children[i];
+  const j = enemies.indexOf(u); return j >= 0 ? $('enemy-cards').children[j] : null;
+}
+function floatText(u, html, cls = '') {      // a number or label that drifts up from a unit's card
+  if (!FX.numbers) return;
+  const c0 = cardEl(u), host = $('fx'); if (!c0 || !host) return;
+  const c = c0.querySelector('.figure') || c0;
+  const hb = host.getBoundingClientRect(), cb = c.getBoundingClientRect();
+  if (!hb.width || !cb.width) return;       // battle screen not visible
+  const el = document.createElement('div');
+  el.className = 'float ' + cls; el.innerHTML = html;
+  el.style.left = (cb.left - hb.left + cb.width * (0.3 + Math.random() * 0.4)) + 'px';
+  el.style.top = (cb.top - hb.top + cb.height * (c0 === c ? 0.35 : 0.3)) + 'px';
+  host.appendChild(el); setTimeout(() => el.remove(), 1400);
+}
+function shake(level) {                      // 1 = hit, 2 = crit / armour break, 3 = super break
+  if (!FX.shake) return;
+  const b = document.querySelector('#battle-scene .battlefield'), px = [0, 3, 6, 10][level] || 0;
+  if (!b || !px) return;
+  b.classList.remove('shake'); void b.offsetWidth;
+  b.style.setProperty('--sh', px + 'px'); b.classList.add('shake');
+  setTimeout(() => b.classList.remove('shake'), 350);
+}
+
+/* ============ DAMAGE ============ */
+let rand = Math.random;      // replaceable for testing
+const num = (v, d = 0) => Number.isFinite(Number(v)) ? Number(v) : d;
+function dmgRange(s) {       // [min, max] whole numbers, never negative, max >= min. Falls back to a flat p if there is no d.
+  let lo, hi;
+  if (s && Array.isArray(s.d)) { lo = s.d[0]; hi = s.d[1] === undefined ? s.d[0] : s.d[1]; } else { lo = hi = s && s.p; }
+  lo = Math.max(0, Math.round(num(lo))); hi = Math.max(lo, Math.round(num(hi)));
+  return [lo, hi];
+}
+const rangeText = s => { const [a, b] = dmgRange(s); return a === b ? `${a}` : `${a}–${b}`; };
+const scaleDmg = (s, k) => { const [a, b] = dmgRange(s); return { ...s, d: [Math.round(a * k), Math.round(b * k)] }; };
+// 'weak' | 'resist' | null: how the skill's element matches the target (physical skills never match)
+function matchup(s, t) {
+  if (!s || !s.el || !t) return null;
+  const w = (t.weak || []).includes(s.el), r = (t.resist || []).includes(s.el);
+  return w === r ? null : (w ? 'weak' : 'resist');
+}
+function critChance(s, t) {
+  const m = matchup(s, t);
+  const c = num(CRIT.base) + num(s && s.crit) + (m === 'weak' ? num(CRIT.weak) : m === 'resist' ? num(CRIT.resist) : 0);
+  return Math.min(num(CRIT.max, 100), Math.max(num(CRIT.min, 0), c));
+}
+const rangeOf = s => s && s.r === 'ranged' ? 'ranged' : 'melee';
+const slotOf = t => { const l = t && t.team === 'p' ? party : t && t.team === 'e' ? enemies : null; return l ? l.indexOf(t) : -1; };
+// Fractional damage change (+0.2 = 20% more) a damage skill gets against t from range vs row plus t's traits. 0 if t isn't standing in a line.
+function posMod(s, t) {
+  const slot = slotOf(t); if (slot < 0 || !s || s.t !== 'dmg') return 0;
+  const front = slot < POS.front;
+  let m = (rangeOf(s) === 'melee') === front ? POS.bonus : -POS.bonus;       // right range for the row = bonus, wrong range = penalty
+  if (m < 0) m *= Math.max(1, num(t.evasive, 1));                            // evasive units shrug off bad-position hits even more
+  m += num(front ? t.frontMod : t.backMod);
+  return Math.min(num(POS.max, 1.4), Math.max(num(POS.min, 0.5), 1 + m)) - 1;
+}
+const scaleBy = (v, k) => v > 0 ? Math.max(1, Math.round(v * k)) : 0;
+function adjRange(s, t) { const [a, b] = dmgRange(s), k = 1 + posMod(s, t); return [scaleBy(a, k), scaleBy(b, k)]; }
+function rollDamage(s, t) {
+  const [lo, hi] = dmgRange(s), chance = critChance(s, t), mod = posMod(s, t);
+  let amount = scaleBy(lo + Math.floor(rand() * (hi - lo + 1)), 1 + mod);
+  const crit = rand() * 100 < chance;
+  if (crit) amount += Math.max(0, num(CRIT.bonus));
+  return { amount, crit, chance, mod };
+}
+const pmTag = m => m > 0.001 ? `<span class="pm up">▲+${Math.round(m * 100)}%</span>` : m < -0.001 ? `<span class="pm down">▼−${Math.round(-m * 100)}%</span>` : '';
+const pmText = m => m > 0.001 ? `+${Math.round(m * 100)}%` : m < -0.001 ? `−${Math.round(-m * 100)}%` : '';
+const traitList = u => {
+  const t = [], pct = v => Math.round(Math.abs(v) * 100) + '%';
+  if (u.frontMod) t.push(u.frontMod < 0 ? `🧱 <b>Bulwark</b>: takes ${pct(u.frontMod)} less damage in the front row` : `💔 <b>Exposed</b>: takes ${pct(u.frontMod)} more damage in the front row`);
+  if (u.backMod) t.push(u.backMod < 0 ? `🌫️ <b>Sheltered</b>: takes ${pct(u.backMod)} less damage in the back row` : `💔 <b>Exposed</b>: takes ${pct(u.backMod)} more damage in the back row`);
+  if (u.evasive > 1) t.push(`💨 <b>Evasive ×${u.evasive}</b>: attacks with the wrong range for its row lose ${Math.round(POS.bonus * 100 * u.evasive)}% instead of ${Math.round(POS.bonus * 100)}%`);
+  return t;
+};
+const traitIcons = u => `${u.frontMod < 0 ? '🧱' : ''}${u.backMod < 0 ? '🌫️' : ''}${u.evasive > 1 ? '💨' : ''}${u.frontMod > 0 || u.backMod > 0 ? '💔' : ''}`;
+const elemList = l => l && l.length ? l.map(e => `${ICON[e]} ${ELEM_NAME[e]}`).join(', ') : 'none';
+const elemIcons = l => (l || []).map(e => ICON[e]).join('');
 
 /* ============ STATE ============ */
 const $ = id => document.getElementById(id);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const isAlive = u => u.hp > 0;
 
-function make(d, team) {
-  return { ...d, team, maxHp: d.hp, breakBar: d.brk, maxBreak: d.brk, armoured: true,
-           status: null, cd: d.skills.map(() => 0),
+// Armour has two layers. Layer 1 (breakBar) protects from status effects. When it empties the unit is BROKEN:
+// statuses land, and hits now drain layer 2 (break2). When that empties too the unit is SUPER BROKEN:
+// same as broken in combat, but it can't be repaired at camp. unit.state = 'armoured' | 'broken' | 'super'.
+// Layer 2 size defaults to BREAK2_RATIO x layer 1; give a unit brk2:N to override.
+const BREAK2_RATIO = 0.75;
+const break2Max = d => d.brk2 || Math.max(1, Math.round(d.brk * BREAK2_RATIO));
+const scaleSkills = (skills, k) => k === 1 ? skills : skills.map(s => s.t === 'dmg' ? scaleDmg(s, k) : s);
+function make(d, team, sc = { hp: 1, atk: 1 }) {
+  return { ...d, hp: Math.round(d.hp * (sc.hp || 1)), skills: scaleSkills(d.skills, sc.atk || 1), short: d.short || d.name.split(' ')[0],
+           team, maxHp: Math.round(d.hp * (sc.hp || 1)), breakBar: d.brk, maxBreak: d.brk, break2: break2Max(d), maxBreak2: break2Max(d), state: 'armoured',
+           status: null, barrier: 0, cd: d.skills.map(() => 0),
            icons: [...new Set(d.skills.map(s => s.el).filter(Boolean))].map(e => ICON[e]).join('') };
 }
-const party = HEROES.map(h => make(h, 'p'));      // array order = lineup position (index 0 = front)
-const enemies = ENEMIES.map(e => make(e, 'e'));
+let party = [];   // the quest's hero units (HP and armour carry over between fights);      // array order = lineup position (index 0 = front)
+let enemies = [];  // fresh set built for every battle
 
 let order = [];        // this round's turn order (by speed)
+let roundNo = 0;       // shown in the top bar
 let actor = null;      // unit whose turn it is
 let cur = null;        // hero awaiting player input
 let sel = null;        // selected skill index
+let selItem = null;    // item chosen from the bag, waiting for a target
+let invOpen = false;   // is the bag open
 let waiting = null;    // resolver for player input
 let over = false;
 
+/* ============ SAVE SYSTEM ============ */
+// All persistent progress lives in ONE object, `game`, stored as JSON in the browser's localStorage.
+// To save something new: add a field in newSave(), update validSave(), and bump SAVE.version with a migration
+// so older saves get upgraded instead of breaking. Saves are per browser and per device.
+const START_GOLD = 500;   // gold a brand new game starts with (enough to try the spa, training and shop)
+const SAVE = { key: 'animeRpgSave', version: 8, prefix: 'ARPG1:' };   // prefix marks the export format, not the save version
+const migrations = {
+  // Each entry upgrades a save FROM that version to the next one.
+  1: s => { s.roster = HEROES.filter(h => !h.locked).map(h => h.id); s.lastParty = []; s.scene = 'hub'; s.version = 2; return s; },
+  2: s => { s.quest = null; s.version = 3; return s; },
+  3: s => {                      // two armour layers (quest party entries get state/break2) + the 6th hero
+    if (Array.isArray(s.roster) && !s.roster.includes('vesper')) s.roster.push('vesper');
+    if (s.quest && Array.isArray(s.quest.party)) s.quest.party.forEach(p => {
+      if (p && typeof p === 'object') { p.state = p.armoured === false ? 'broken' : 'armoured'; delete p.armoured; }
+    });
+    s.version = 4; return s;
+  },
+  4: s => { s.relaxed = {}; s.version = 5; return s; },     // spa boosts waiting for the next quest
+  5: s => { s.trained = {}; s.items = {}; s.version = 6; return s; },   // training buffs + inventory
+  6: s => { s.notices = []; s.version = 7; return s; },        // pop-ups waiting to be shown at the hub (hero unlocks)
+  7: s => { ['iris', 'aneesah'].forEach(id => { if (Array.isArray(s.roster) && !s.roster.includes(id)) s.roster.push(id); }); s.version = 8; return s; },     // two new heroes
+  // Example for later: 8: s => { s.newField = 0; s.version = 9; return s; },
+  // When a new hero is added to HEROES, add a migration that pushes their id into s.roster (or unlock them in-game).
+};
+let game = null;          // the active save
+let storageOk = true;     // false if the browser blocks storage (e.g. private mode)
+let importArmed = false;  // import asks for a second press when it would replace an existing save
+
+function newSave() {
+  const t = Date.now();
+  return { version: SAVE.version, created: t, updated: t,
+           scene: 'hub',          // where the player is: 'hub' | 'quest' | 'battle' (Continue always opens the hub for now)
+           gold: START_GOLD,
+           roster: HEROES.filter(h => !h.locked).map(h => h.id),   // heroes the player owns (locked ones are earned in quests)
+           lastParty: [],                    // last party sent on a quest, preselected next time
+           notices: [],                      // hub pop-ups still to show, e.g. { type: 'unlock', id: 'siren' }
+           trained: {},                      // training buffs: hero id -> 'physical' | 'elemental', used on that hero's next quest
+           items: {},                        // inventory at home: item id -> count
+           relaxed: {},                      // spa boosts: hero id -> max HP fraction, used on that hero's next quest
+           quest: null,                      // quest in progress (checkpoint taken at embark and each camp), or null
+           stats: { won: 0, lost: 0 } };
+}
+function validSave(s) {
+  return !!(s && s.stats && typeof s.stats.won === 'number' && typeof s.stats.lost === 'number'
+            && typeof s.gold === 'number' && Array.isArray(s.roster) && Array.isArray(s.lastParty)
+            && s.relaxed && typeof s.relaxed === 'object' && !Array.isArray(s.relaxed)
+            && Array.isArray(s.notices) && s.trained && typeof s.trained === 'object' && s.items && typeof s.items === 'object'
+            && (s.quest === null || typeof s.quest === 'object'));
+}
+function upgrade(s) {
+  if (!s || typeof s !== 'object' || typeof s.version !== 'number') return null;
+  if (s.version > SAVE.version) return null;                         // made by a newer version of the game
+  while (s.version < SAVE.version) { const m = migrations[s.version]; if (!m) return null; s = m(s); }
+  return validSave(s) ? s : null;
+}
+function hasRawSave() { try { return localStorage.getItem(SAVE.key) !== null; } catch (e) { return false; } }
+function readSave() {
+  try { const raw = localStorage.getItem(SAVE.key); return raw ? upgrade(JSON.parse(raw)) : null; }
+  catch (e) { return null; }
+}
+function writeSave() {
+  if (!game) return false;
+  try { game.updated = Date.now(); localStorage.setItem(SAVE.key, JSON.stringify(game)); return true; }
+  catch (e) { storageOk = false; return false; }
+}
+const encode = o => SAVE.prefix + btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const decode = t => JSON.parse(decodeURIComponent(escape(atob(t.slice(SAVE.prefix.length)))));
+
+/* ============ TITLE SCREEN ============ */
+function fmtDate(t) {
+  try { return new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+  catch (e) { return ''; }
+}
+function refreshTitle() {
+  const s = readSave(), c = $('btn-continue'), info = $('title-info');
+  c.disabled = !s;
+  c.innerHTML = s ? `Continue<br><small>Quests: ${s.stats.won} cleared · ${s.stats.lost} failed${s.quest ? ' · quest in progress' : ''} · ${fmtDate(s.updated)}</small>` : 'Continue';
+  info.className = 'info'; info.textContent = '';
+  if (!storageOk) { info.className = 'info warn'; info.textContent = "Saving is unavailable in this browser (private mode?). Progress won't be kept."; }
+  else if (!s && hasRawSave()) { info.className = 'info warn'; info.textContent = "A save was found but can't be read (damaged, or from a newer version). Starting a new game will replace it."; }
+}
+function openPanel(name) {
+  ['confirm', 'data'].forEach(n => $('panel-' + n).classList.toggle('show', n === name));
+  $('menu-main').style.display = name ? 'none' : '';
+  $('title-info').style.display = name ? 'none' : '';
+  importArmed = false; $('data-msg').textContent = '';
+  if (!name) refreshTitle();
+}
+function startGame() {
+  $('title').classList.add('hide');
+  if (game.quest) {                          // resume a quest in progress at its last checkpoint
+    quest = restoreQuest(game.quest);
+    if (quest) { if (quest.node === 0) startNode(); else showCamp(); return; }
+    game.quest = null; writeSave();          // unreadable quest data: drop it and go home
+  }
+  showScene('hub');
+}
+function doContinue() { game = readSave(); if (!game) { refreshTitle(); return; } startGame(); }
+function doNew() { if (readSave() || hasRawSave()) openPanel('confirm'); else startNew(); }
+function startNew() { game = newSave(); writeSave(); startGame(); }
+
+function exportSave() {
+  const s = readSave();
+  if (!s) { $('data-msg').textContent = 'There is no save to export yet.'; return; }
+  $('save-text').value = encode(s);
+  $('data-msg').textContent = 'Copy this code and keep it somewhere safe.';
+}
+async function copySave() {
+  const ta = $('save-text');
+  if (!ta.value) exportSave();
+  if (!ta.value) return;
+  ta.select();
+  try { await navigator.clipboard.writeText(ta.value); $('data-msg').textContent = 'Copied to clipboard.'; }
+  catch (e) { $('data-msg').textContent = "Couldn't copy automatically. The text is selected, so copy it by hand."; }
+}
+function importSave() {
+  const msg = $('data-msg'), txt = $('save-text').value.trim();
+  if (!txt.startsWith(SAVE.prefix)) { msg.textContent = "That doesn't look like a save code."; return; }
+  let s = null;
+  try { s = upgrade(decode(txt)); } catch (e) { s = null; }
+  if (!s) { msg.textContent = 'That save code is damaged, or from a newer version of the game.'; return; }
+  if ((readSave() || hasRawSave()) && !importArmed) { importArmed = true; msg.textContent = 'This will replace your current save. Press Import again to confirm.'; return; }
+  game = s;
+  if (!writeSave()) { msg.textContent = "Couldn't write to browser storage."; return; }
+  importArmed = false; msg.textContent = 'Save imported! Close this and press Continue.';
+}
+
 /* ============ ANIMATION HOOK ============ */
-// Looks for assets/<unit.id>/<armoured|broken>/<key>.(mp4|webm|webp|png) and shows it as a cut-in.
+// Looks for assets/<unit.id>/<armoured|broken|superbroken>/<key>.(mp4|webm|webp|png) and shows it as a cut-in.
 // Videos play to the end; images hold for ANIM.hold ms. Tap the cut-in to skip. Missing file = short pause.
-// Keys used: skill1 skill2 skill3 damaged break burn poison bleed frozen shocked
-// ('break' lives in the armoured folder). IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
-const ANIM = { base: 'assets', hold: 1500, fallback: 500, exts: ['mp4', 'webm', 'webp', 'png'] };
+// Keys used: skill1 skill2 skill3 damaged break superbreak burn poison bleed frozen shocked
+// 'break' (armour breaking) plays from the armoured folder, 'superbreak' from the broken folder: the state being left.
+// broken/ and superbroken/ both use the full set (skills, damaged, burn, poison, bleed, frozen, shocked).
+// IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
+const ANIM = { base: 'assets', hold: 1500, fallback: 500, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
 const stage = $('cutin'), animCache = {}, skips = new Set();
-stage.onclick = () => [...skips].forEach(f => f());
+stage.onclick = $('spa-cutin').onclick = () => [...skips].forEach(f => f());   // tap any cut-in to skip it
 
 function probe(url, ext) {
   return new Promise(res => {
@@ -169,7 +973,7 @@ async function findAsset(path) {            // checked once per file, then remem
   return animCache[path] = null;
 }
 
-function playClip(a) {
+function playClip(a, host = stage) {            // host = the overlay element to show the clip in
   return new Promise(resolve => {
     const vid = a.ext === 'mp4' || a.ext === 'webm';
     const el = document.createElement(vid ? 'video' : 'img');
@@ -177,11 +981,11 @@ function playClip(a) {
     let done = false;
     const end = () => {
       if (done) return; done = true; skips.delete(end); el.remove();
-      if (!stage.children.length) stage.classList.remove('show');
+      if (!host.children.length) host.classList.remove('show');
       resolve();
     };
     skips.add(end);
-    stage.appendChild(el); stage.classList.add('show');
+    host.appendChild(el); host.classList.add('show');
     if (vid) {
       el.playsInline = true; el.onended = end; el.onerror = end;
       el.play().catch(() => { el.muted = true; el.play().catch(end); });   // retry muted if the browser blocks sound
@@ -190,10 +994,66 @@ function playClip(a) {
   });
 }
 
-async function playAnim(unit, key, state) {
-  state = state || (unit.armoured ? 'armoured' : 'broken');
+async function playAnim(unit, key, state, host) {      // state = folder name; host = overlay (defaults to the battle one)
+  state = state || ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[unit.state];
   const a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
-  if (a) await playClip(a); else await sleep(ANIM.fallback);
+  if (a) await playClip(a, host || stage); else await sleep(ANIM.fallback);
+}
+
+/* ---- idle sprites + stage background (all optional art) ----
+   assets/<unit id>/<armoured|broken|superbroken>/idle.(png|webp|gif|mp4|webm)   standing pose, per armour state (falls back to armoured/)
+   assets/ui/battle_<quest id>_<fight number>.*, assets/ui/battle_<quest id>.*, assets/ui/battle_bg.*   stage background (first one found)
+   No file = a labelled placeholder box. Set SPR.flipParty / SPR.flipEnemy to true if your drawings face the other way
+   (heroes should face right, enemies left). */
+const SPR = { flipParty: false, flipEnemy: false };
+const figs = new WeakMap();      // one persistent figure element per unit, so animated sprites keep playing between renders
+let spriteRenderQueued = false;
+function spriteFor(u) {
+  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
+  for (const st of [...new Set([folder, 'armoured'])]) {
+    const p = `${ANIM.base}/${u.id}/${st}/idle`;
+    if (!(p in animCache)) {
+      findAsset(p).then(() => { if (!spriteRenderQueued) { spriteRenderQueued = true; setTimeout(() => { spriteRenderQueued = false; render(); }, 30); } });
+      return null;
+    }
+    if (animCache[p]) return animCache[p];
+  }
+  return null;
+}
+function figureEl(u, team) {
+  let el = figs.get(u);
+  if (!el) { el = document.createElement('div'); el.className = 'figure'; el.innerHTML = `<div class="ph">${u.tag}</div>`; figs.set(u, el); }
+  const a = spriteFor(u), want = a ? a.url : '';
+  if (el.dataset.src !== want) {
+    el.dataset.src = want; el.querySelectorAll('.spr').forEach(x => x.remove());
+    if (a) {
+      const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
+      m.className = 'spr'; m.src = a.url; m.draggable = false;
+      if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; }
+      el.prepend(m);
+    }
+    el.classList.toggle('has-art', !!a);
+  }
+  el.classList.toggle('flip', team === 'p' ? SPR.flipParty : SPR.flipEnemy);
+  return el;
+}
+function mountFigures(host, list, team) {
+  [...host.children].forEach((c, i) => {
+    const slot = c.querySelector('.figure-slot'), u = list[i]; if (!slot || !u) return;
+    const f = figureEl(u, team); slot.replaceWith(f);
+    f.querySelectorAll('video').forEach(v => { if (v.paused) v.play().catch(() => {}); });
+  });
+}
+function bump(u, cls) {          // quick visual nudge on a unit's figure: 'hurt' (flash + wobble) or 'lunge' (step toward the enemy)
+  const el = figs.get(u); if (!el) return;
+  el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 450);
+}
+async function loadStageBg() {
+  const b = document.querySelector('#battle-scene .battlefield'); if (!b || !quest) return;
+  const id = quest.def.id;
+  let a = null;
+  for (const p of [`battle_${id}_${quest.node + 1}`, `battle_${id}`, 'battle_bg']) { a = await findAsset(`${ANIM.base}/ui/${p}`); if (a) break; }
+  b.style.backgroundImage = a && a.ext !== 'mp4' && a.ext !== 'webm' ? `url("${a.url}")` : '';
 }
 
 /* ============ UI ============ */
@@ -203,74 +1063,159 @@ function log(msg, cls = '') {
   box.appendChild(d); box.scrollTop = box.scrollHeight;
 }
 
+function chips(u) {              // one small tile per skill: icons, damage / barrier size, cooldown
+  return '<div class="chips">' + u.skills.map((s, i) => {
+    const cd = u.cd[i] || 0, on = u === cur && sel === i;
+    let ic, val;
+    if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.chaos ? '🌀' : ''); val = rangeText(s); }
+    else if (s.t === 'buff') { ic = '🐉'; val = 'buff'; }
+    else { ic = '🛡️'; val = '+' + s.p + (s.t === 'barrierAll' ? ' all' : ''); }
+    return `<div class="sk2${cd > 0 ? ' cd' : ''}${on ? ' sel' : ''}" title="${s.n} · cooldown ${s.cd}"><span class="ic">${ic}</span><b>${val}</b>${cd > 0 ? `<i>CD ${cd}</i>` : ''}</div>`;
+  }).join('') + '</div>';
+}
 function card(u, team, i) {
-  const c = ['combatant-card'];
-  if (team === 'p' && i === 0) c.push('front-line');
+  const c = ['combatant-card', 'team-' + team], alive = isAlive(u), front = i < POS.front;
+  if (alive) c.push(front ? 'row-front' : 'row-back');
   if (u === actor) c.push('active-turn');
-  if (!isAlive(u)) c.push('dead');
-  if (waiting && sel !== null && isAlive(u)) {
-    const t = cur.skills[sel].t;
-    if ((t === 'dmg' && team === 'e') || (t === 'heal' && team === 'p')) c.push('targetable');
-  }
+  if (!alive) c.push('dead');
+  const sk = waiting && sel !== null ? cur.skills[sel] : null;
+  if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'barrier' && team === 'p' && u !== cur))) c.push('targetable');
+  if (waiting && selItem && team === 'p' && alive && u.hp < u.maxHp) c.push('targetable');   // bag item: wounded living heroes
   const st = u.status ? ` <span class="ail">[${u.status.type.toUpperCase()}${u.status.dot ? ' ' + u.status.dur : ''}]</span>` : '';
+  let extra = '';
+  if (sk && team === 'e' && alive && sk.t === 'dmg') {      // exact damage and crit chance of the selected skill against this enemy
+    const m = matchup(sk, u), [lo, hi] = adjRange(sk, u), pm = posMod(sk, u);
+    extra = `<span><span class="dmgprev">${lo === hi ? lo : lo + '–' + hi}</span>${pmTag(pm)}<span class="crit ${m || ''}">Crit ${critChance(sk, u)}%${m === 'weak' ? ' ▲weak' : m === 'resist' ? ' ▼resists' : ''}</span></span>`;
+  } else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
+  const inc = team === 'p' && alive ? incoming(u) : 0;
+  let incTxt = '';
+  if (inc) {
+    const [a, b] = incomingRange(u);
+    let after = '';
+    if (sk && sk.t === 'barrier' && u !== cur) {                     // what this ward would really stop: only hits that land before the carrier's own turn ends
+      const [c2, d] = windowRange(u, cur);
+      after = ` → ${a - c2 + Math.max(0, c2 - sk.p)}–${b - d + Math.max(0, d - sk.p)} with ${sk.n}`;
+    }
+    incTxt = `<span class="intent">🎯×${inc} ${a}–${b}${after}</span>`;
+  }
+  const mt = (u.weak && u.weak.length ? `<span class="mt" title="Weak to">⚠️${elemIcons(u.weak)}</span>` : '') + (u.resist && u.resist.length ? `<span class="mt" title="Resists">🛡️${elemIcons(u.resist)}</span>` : '');
   return `<div class="${c.join(' ')}" onclick="pick('${team}',${i})">
-    <div class="mini-sprite">${u.tag}</div>
+    <div class="bubble">${extra}${incTxt}</div>
+    <div class="figure-slot"></div>
+    <div class="floor"></div>
     <div class="stats-info">
-      <strong>${u.name}</strong> ${u.icons} ${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd}</span><br>
-      <span class="status-badge ${u.armoured ? 'status-armoured' : 'status-broken'}">${u.armoured ? 'Armoured' : 'Broken'}</span>${st}
-      <div>HP: ${Math.max(0, u.hp)}/${u.maxHp}</div>
+      <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
+      <div class="tags">${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
       <div class="bar-container"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div></div>
-      <div>Break: ${Math.max(0, u.breakBar)}/${u.maxBreak}</div>
+      <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of their turn">🛡️ ${u.barrier}</span>` : ''}</div>
+      <div class="arm">Break: ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2}</div>
       <div class="bar-container"><div class="break-fill" style="width:${Math.max(0, u.breakBar / u.maxBreak * 100)}%"></div></div>
+      <div class="bar-container thin"><div class="break2-fill${u.state === 'armoured' ? ' dim' : ''}" style="width:${Math.max(0, u.break2 / u.maxBreak2 * 100)}%"></div></div>
+      ${chips(u)}
     </div></div>`;
 }
 
+const isWard = s => !!s && (s.t === 'barrier' || s.t === 'barrierAll');
+const wardTargets = u => (u.team === 'p' ? party : enemies).filter(a => a !== u && isAlive(a));    // a barrier never goes on its caster (it would vanish at the end of that same turn)
+const usable = (u, i) => u.cd[i] === 0 && !(isWard(u.skills[i]) && !wardTargets(u).length);
 function skillDesc(s) {
-  if (s.t === 'heal') return `+${s.p} HP (ally)`;
-  if (s.t === 'healAll') return `+${s.p} HP (all)`;
-  return `${s.p} dmg${s.el ? ' ' + ICON[s.el] : ''}`;
+  if (s.t === 'barrier') return `+${s.p} 🛡️ barrier (ally)`;
+  if (s.t === 'barrierAll') return `+${s.p} 🛡️ barrier (all others)`;
+  if (s.t === 'buff') return '🐉 extra strike next turn';
+  if (s.chaos) return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]} 🌀 chaos`;
+  return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]}`;
 }
 
 function render() {
   $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
   $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
-  $('order').innerHTML = order.length ? 'Turn order: ' + order.map(u =>
-    u === actor ? `<b>${u.name.split(' ')[0]}</b>` : isAlive(u) ? u.name.split(' ')[0] : `<s>${u.name.split(' ')[0]}</s>`).join(' › ') : '';
+  mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e');
+  $('order').innerHTML = order.length ? `Round ${roundNo} · Turn order: ` + order.map(u =>
+    u === actor ? `<b>${u.short}</b>` : isAlive(u) ? u.short : `<s>${u.short}</s>`).join(' › ') : '';
   for (let i = 0; i < 3; i++) {
     const b = $('btn' + i);
     if (cur) {
-      const s = cur.skills[i], cd = cur.cd[i];
-      b.innerHTML = `${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${cd > 0 ? 'CD ' + cd : 'Ready'}</small>`;
-      b.disabled = !waiting || cd > 0;
+      const s = cur.skills[i], cd = cur.cd[i], ok = usable(cur, i);
+      b.innerHTML = `${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${cd > 0 ? 'CD ' + cd : ok ? 'Ready' : 'No ally'}</small>`;
+      b.disabled = !waiting || !ok;
       b.classList.toggle('sel', sel === i);
     } else {
       b.innerHTML = `${i + 1}. —<br><small>&nbsp;</small>`; b.disabled = true; b.classList.remove('sel');
     }
   }
-  $('btn-shift').disabled = !waiting;
+  $('btn-shift').disabled = !waiting || party.filter(isAlive).length < 2;
+  const n = itemCount();
+  $('btn-items').innerHTML = `🎒 Items<br><small>${n} in bag</small>`;
+  $('btn-items').disabled = !waiting || n <= 0;
+  $('btn-items').classList.toggle('sel', !!waiting && (invOpen || !!selItem));
+  const inv = $('inv'); inv.style.display = waiting && invOpen ? 'flex' : 'none';
+  if (waiting && invOpen) inv.innerHTML = Object.values(ITEMS).map(it => { const c = quest.items[it.id] || 0;
+    return `<button onclick="chooseItem('${it.id}')" ${c <= 0 ? 'disabled' : ''}>${it.icon} ${it.name} ×${c}<br><small>${it.desc}</small></button>`; }).join('');
 }
 
 /* ============ PLAYER INPUT ============ */
 function finish(action) { const r = waiting; waiting = null; if (r) r(action); }
 
+function toggleInv() {
+  if (!waiting) return;
+  if (selItem) selItem = null; else invOpen = !invOpen;      // pressing Items again cancels
+  sel = null; $('turn-indicator').innerText = `${cur.name}'s turn`; render();
+}
+function chooseItem(id) {
+  if (!waiting || (quest.items[id] || 0) <= 0) return;
+  selItem = id; invOpen = false; sel = null;
+  $('turn-indicator').innerText = `${cur.name}: pick a wounded hero to use ${ITEMS[id].name} on`;
+  render();
+}
+
+function inspect(team, idx) {
+  const u = (team === 'p' ? party : enemies)[idx]; if (!u) return;
+  const rows = u.skills.map(s => {
+    const what = s.t === 'dmg' ? `${rangeText(s)} dmg · ${RICON[rangeOf(s)]} ${rangeOf(s)} · ${s.el ? ICON[s.el] + ' ' + ELEM_NAME[s.el] + ' · break ' + (s.brk || 0) : 'physical'} · crit ${critChance(s, null)}%${s.chaos ? ` · 🌀 then ${u.skills[0].n} hits a random other unit, friend or foe` : ''}`
+               : s.t === 'buff' ? `🐉 Buff: on her next turn she also uses ${u.skills[0].n} on a random enemy, then it wears off`
+               : s.t === 'barrierAll' ? `🛡️ +${s.p} barrier to every other ally` : `🛡️ +${s.p} barrier to one ally`;
+    return `<tr><td><b>${s.n}</b></td><td>${what}<div class="dim">cooldown ${s.cd}${u.cd && u.cd[u.skills.indexOf(s)] > 0 ? ` (ready in ${u.cd[u.skills.indexOf(s)]})` : ''}</div></td></tr>`;
+  }).join('');
+  const next = team === 'e' && isAlive(u) && u.intent ? `<div style="color:#ffb74d;margin-top:6px"><b>Next move:</b> ${intentText(u)}</div>` : '';
+  const tr = traitList(u).map(t => `<div>${t}</div>`).join('');
+  const pb = Math.round(POS.bonus * 100);
+  $('inspect-box').innerHTML = `<h3>${u.name} ${u.icons}</h3>
+    <div>${isAlive(u) ? (idx < POS.front ? 'Front row' : 'Back row') + ' · ' : ''}${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]} · HP ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` · 🛡️ ${u.barrier}` : ''} · Armour ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2} · SPD ${u.spd}${u.status ? ' · ' + u.status.type.toUpperCase() : ''}</div>
+    <div style="margin-top:6px">⚠️ <b>Weak to:</b> ${elemList(u.weak)} <span class="dim">(+${CRIT.weak}% crit chance against it)</span></div>
+    <div>🛡️ <b>Resists:</b> ${elemList(u.resist)} <span class="dim">(${CRIT.resist}% crit chance against it)</span></div>
+    ${tr ? `<div style="margin-top:6px">${tr}</div>` : ''}
+    <div class="dim" style="margin-top:6px">⚔️ Melee hits the front row for +${pb}% and the back row for −${pb}%. 🏹 Ranged is the reverse. Fallen units drop to the back.</div>${next}
+    <table>${rows}</table>
+    <button style="width:100%;margin-top:10px" onclick="closeInspect()">Close</button>`;
+  $('inspect').classList.add('show');
+}
+function closeInspect() { $('inspect').classList.remove('show'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInspect(); });
+
 function chooseSkill(i) {
-  if (!waiting || cur.cd[i] > 0) return;
+  if (!waiting || !usable(cur, i)) return;
+  selItem = null; invOpen = false;
   if (sel === i) { sel = null; render(); return; }          // click again to cancel
-  if (cur.skills[i].t === 'healAll') { finish({ i }); return; }
+  if (cur.skills[i].t === 'barrierAll' || cur.skills[i].t === 'buff') { finish({ i }); return; }
   sel = i; render();
   $('turn-indicator').innerText = `${cur.name}: pick a ${cur.skills[i].t === 'dmg' ? 'target' : 'friendly target'} for ${cur.skills[i].n}`;
 }
 
 function pick(team, idx) {
+  if (waiting && selItem) {
+    const t = party[idx];
+    if (team === 'p' && t && isAlive(t) && t.hp < t.maxHp) finish({ item: selItem, target: t });
+    return;
+  }
   if (!waiting || sel === null) return;
   const t = cur.skills[sel].t;
-  if (!((t === 'dmg' && team === 'e') || (t === 'heal' && team === 'p'))) return;
+  if (!((t === 'dmg' && team === 'e') || (t === 'barrier' && team === 'p'))) return;
   const target = (team === 'e' ? enemies : party)[idx];
-  if (!isAlive(target)) return;
+  if (!target || !isAlive(target) || (t === 'barrier' && target === cur)) return;
   finish({ i: sel, target });
 }
 
-function doShift() { if (waiting) finish({ shift: true }); }
+function doShift() { if (waiting && party.filter(isAlive).length > 1) finish({ shift: true }); }
 
 /* ============ COMBAT LOGIC ============ */
 function applyStatus(t, el) {
@@ -280,37 +1225,79 @@ function applyStatus(t, el) {
   log(`${t.name} is afflicted with <strong>${e.status.toUpperCase()}</strong>!`, 'log-status');
 }
 
+function sinkDead(t) {          // a fallen unit drops to the back of its line and the living step forward
+  const l = t.team === 'p' ? party : enemies, i = l.indexOf(t);
+  if (i < 0) return;
+  l.splice(i, 1); l.push(t);
+}
+
 async function hit(u, t, s) {
-  t.hp -= s.p;
-  log(`${u.name} uses ${s.n} on ${t.name} for ${s.p} damage.`, u.team === 'p' ? 'log-player' : 'log-enemy');
-  await playAnim(t, 'damaged');
-  if (t.hp <= 0) { t.hp = 0; log(`${t.name} has fallen!`, 'log-status'); render(); return; }
+  const r = rollDamage(s, t), m = matchup(s, t);
+  const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = s.el ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
+  const dmg = r.amount - soak;
+  t.barrier = b - soak;                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
+  t.hp -= dmg;
+  log(`${u.name} uses ${s.n} on ${t.name} for ${dmg} damage${soak ? ` (🛡️ ${soak} blocked)` : ''}${r.crit ? ` <strong style="color:#ffd54f">CRITICAL! (+${Math.max(0, num(CRIT.bonus))})</strong>` : ''}${m === 'weak' ? ` · weak to ${ELEM_NAME[s.el]}` : m === 'resist' ? ` · resists ${ELEM_NAME[s.el]}` : ''}${pmText(r.mod) ? ` · position ${pmText(r.mod)}` : ''}.`, u.team === 'p' ? 'log-player' : 'log-enemy');
+  render();
+  floatText(t, `${m === 'weak' ? '<small>WEAK</small>' : m === 'resist' ? '<small>RESIST</small>' : soak ? `<small>🛡️ ${soak} BLOCKED</small>` : ''}${dmg}${r.crit ? '!' : ''}`, (t.team === 'p' ? 'hurt ' : '') + (r.crit ? 'crit' : ''));
+  shake(r.crit ? 2 : 1); if (dmg > 0) bump(t, 'hurt');
+  if (dmg > 0) await playAnim(t, 'damaged'); else await sleep(250);
+  if (t.hp <= 0) { t.hp = 0; t.barrier = 0; log(`${t.name} has fallen!`, 'log-status'); sinkDead(t); render(); return; }
   if (s.el) {
-    if (t.armoured) {
-      t.breakBar -= s.brk;
-      log(`${t.name}'s armour takes ${s.brk} break damage.`, 'log-status');
+    if (t.state === 'armoured') {                       // layer 1: protected from status effects, only break damage
+      t.breakBar -= brk;
+      log(brk ? `${t.name}'s armour takes ${brk} break damage.` : `${t.name}'s barrier shields the armour.`, 'log-status');
       if (t.breakBar <= 0) {
-        t.breakBar = 0; t.armoured = false;
+        t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2);
         log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
-        await playAnim(t, 'break', 'armoured');   // armour was just lost, but the break clip lives in the armoured folder
+        await playAnim(t, 'break', 'armoured');         // transition clips play from the folder of the state being left
       }
-    } else applyStatus(t, s.el);
+    } else {                                            // broken or super broken: status effects land
+      applyStatus(t, s.el);
+      if (t.state === 'broken') {                       // layer 2 takes break damage too
+        t.break2 -= brk;
+        log(brk ? `${t.name}'s damaged armour takes ${brk} break damage.` : `${t.name}'s barrier shields the damaged armour.`, 'log-status');
+        if (t.break2 <= 0) {
+          t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3);
+          log(`<strong style="color:#ff1744">${t.name} is SUPER BROKEN!</strong>`);
+          await playAnim(t, 'superbreak', 'broken');
+        }
+      }
+    }
   }
   render();
+}
+
+async function useItem(u, id, t) {          // using an item takes the hero's turn
+  const it = ITEMS[id];
+  quest.items[id] = Math.max(0, (quest.items[id] || 0) - 1);
+  if (it.type === 'heal') {
+    const before = t.hp; t.hp = Math.min(t.maxHp, t.hp + it.heal);
+    log(`${u.name} uses a ${it.name} on ${t.name}: heals ${t.hp - before} HP. (${quest.items[id]} left)`, 'log-heal');
+    render(); floatText(t, '+' + (t.hp - before), 'heal');
+  }
+  render(); await sleep(400);
 }
 
 async function perform(u, i, target) {
   const s = u.skills[i];
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
+  if (s.t === 'dmg') bump(u, 'lunge');
   await playAnim(u, 'skill' + (i + 1));
-  if (s.t === 'dmg') { await hit(u, target, s); return; }
-  const targets = s.t === 'heal' ? [target] : (u.team === 'p' ? party : enemies).filter(isAlive);
-  for (const t of targets) {
-    const before = t.hp;
-    t.hp = Math.min(t.maxHp, t.hp + s.p);
-    log(`${u.name} uses ${s.n}: ${t.name} heals ${t.hp - before} HP.`, 'log-heal');
+  if (s.t === 'buff') { u.wrath = true; log(`${u.name} channels ${s.n}! Next turn she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
+  if (s.t === 'dmg') {
+    await hit(u, target, s);
+    if (s.chaos && isAlive(u) && enemies.some(isAlive)) {          // the storm lashes out at someone else: a random other unit, friend or foe
+      const pool = [...party, ...enemies].filter(x => isAlive(x) && x !== u && x !== target);
+      if (pool.length) { const v = pool[Math.floor(Math.random() * pool.length)]; log(`🌀 The storm runs wild! ${u.name} lashes out at ${v.name}.`, 'log-status'); await playAnim(u, 'skill1'); await hit(u, v, u.skills[0]); }
+    }
+    return;
   }
+  const targets = s.t === 'barrier' ? (target && isAlive(target) && target !== u ? [target] : []) : wardTargets(u);
+  if (!targets.length) { log(`${u.name} has no one to protect.`, 'log-round'); return; }
+  targets.forEach(t => { t.barrier = (t.barrier || 0) + s.p; log(`${u.name} uses ${s.n}: ${t.name} gains a ${s.p} barrier.`, 'log-heal'); });
   render();
+  targets.forEach(t => floatText(t, `+${s.p} 🛡️`, 'ward'));
 }
 
 function weightedHero() {
@@ -320,16 +1307,62 @@ function weightedHero() {
   return al[0];
 }
 
-function enemyChoose(u) {
-  const ready = u.skills.map((s, i) => i).filter(i => u.cd[i] === 0);
-  const healI = ready.find(i => u.skills[i].t === 'heal');
-  const wounded = enemies.filter(e => isAlive(e) && e.hp / e.maxHp < 0.7).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
-  if (healI !== undefined && wounded.length) return { i: healI, target: wounded[0] };
+function enemyChoose(u, ahead = false) {      // ahead = planning for its coming turn: cooldowns tick down by 1 first
+  const ready = u.skills.map((s, i) => i).filter(i => u.cd[i] <= (ahead ? 1 : 0));
+  const wardI = ready.find(i => isWard(u.skills[i]));
+  if (wardI !== undefined) {                  // barrier whenever it can: the most wounded ally that has none yet
+    const mates = wardTargets(u).filter(e => !e.barrier).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+    if (mates.length) return { i: wardI, target: u.skills[wardI].t === 'barrier' ? mates[0] : null };
+  }
   const atk = ready.filter(i => u.skills[i].t === 'dmg');
+  if (!atk.length) return { skip: true };         // nothing usable this turn
   return { i: atk[Math.floor(Math.random() * atk.length)], target: weightedHero() };
 }
 
+// Enemies pick their move at the start of each round and show it (u.intent). If things changed by their turn
+// (target died, target already has a barrier, skill not ready) they choose again.
+function resolveIntent(u) {
+  const it = u.intent, s = it && !it.skip ? u.skills[it.i] : null;
+  const ok = s && u.cd[it.i] === 0 && (s.t === 'barrierAll' ? wardTargets(u).length > 0
+    : it.target && isAlive(it.target) && it.target !== u && !(s.t === 'barrier' && it.target.barrier));
+  return ok ? { i: it.i, target: it.target } : enemyChoose(u);
+}
+const stunned = u => !!(u.status && u.status.stun);
+function intentText(u) {
+  const it = u.intent; if (!it) return '';
+  if (stunned(u)) return '💤 stunned, skips its turn';
+  if (it.skip) return '▶ waits';
+  const s = u.skills[it.i];
+  if (s.t === 'barrierAll') return `▶ ${s.n} +${s.p}🛡️ → all allies`;
+  if (s.t === 'barrier') return `▶ ${s.n} +${s.p}🛡️ → ${it.target.short}`;
+  const [a, b] = adjRange(s, it.target);
+  return `▶ ${s.n} ${a === b ? a : a + '–' + b}${s.el ? ICON[s.el] : ''}${RICON[rangeOf(s)]}${pmTag(posMod(s, it.target))} → ${it.target.short}`;
+}
+const incoming = h => enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && e.intent.target === h && e.skills[e.intent.i].t === 'dmg').length;
+// Telegraphed damage a barrier cast on h by `caster` could still absorb: attacks by enemies who haven't acted yet, up to the end of h's own turn
+// (everything left this round if h has already acted). A barrier keeps absorbing until the end of h's next turn, but next round isn't telegraphed yet.
+function windowRange(h, caster) {
+  let lo = 0, hi = 0; const ic = order.indexOf(caster), ih = order.indexOf(h);
+  enemies.forEach(e => {
+    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || e.intent.target !== h) return;
+    const s = e.skills[e.intent.i]; if (s.t !== 'dmg') return;
+    const ie = order.indexOf(e);
+    if (ie > ic && (ih < ic || ie < ih)) { const [a, b] = adjRange(s, h); lo += a; hi += b; }
+  });
+  return [lo, hi];
+}
+function incomingRange(h) {       // total damage range of every telegraphed attack aimed at this hero, with position bonuses/penalties applied
+  let lo = 0, hi = 0;
+  enemies.forEach(e => {
+    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || e.intent.target !== h) return;
+    const s = e.skills[e.intent.i]; if (s.t !== 'dmg') return;
+    const [a, b] = adjRange(s, h); lo += a; hi += b;
+  });
+  return [lo, hi];
+}
+
 async function takeTurn(u) {
+  const hadWrath = !!u.wrath;                // set on an earlier turn: this turn it pays off, then wears off
   u.cd = u.cd.map(c => Math.max(0, c - 1));
   // Status effects resolve at the start of the unit's turn
   if (u.status) {
@@ -337,12 +1370,14 @@ async function takeTurn(u) {
     if (st.dot) {
       u.hp -= st.dot;
       log(`${u.name} takes ${st.dot} damage from ${st.type}!`, 'log-status');
+      render(); floatText(u, st.dot, 'dot');
       await playAnim(u, st.type);
       if (--st.dur <= 0) u.status = null;
-      if (u.hp <= 0) { u.hp = 0; log(`${u.name} has fallen!`, 'log-status'); render(); return; }
+      if (u.hp <= 0) { u.hp = 0; log(`${u.name} has fallen!`, 'log-status'); sinkDead(u); render(); return; }
     } else if (st.stun) {
       u.status = null;
       log(`${u.name} is ${st.type} and misses their turn!`, 'log-status');
+      u.wrath = false;
       await playAnim(u, st.type);
       render(); return;
     }
@@ -350,54 +1385,537 @@ async function takeTurn(u) {
   render();
   let act;
   if (u.team === 'p') {
-    cur = u; sel = null;
+    cur = u; sel = null; selItem = null; invOpen = false;
     $('turn-indicator').innerText = `${u.name}'s turn`;
     const input = new Promise(r => waiting = r);   // must exist before render() so buttons enable
     render();
     act = await input;
-    cur = null; sel = null; render();
+    cur = null; sel = null; selItem = null; invOpen = false; render();
   } else {
     $('turn-indicator').innerText = `${u.name} is acting...`;
     await sleep(400);
-    act = enemyChoose(u);
+    act = resolveIntent(u);
+    u.intent = null;
   }
   if (act.shift) {
     const i = party.indexOf(u), j = i === 0 ? 1 : i - 1;
-    [party[i], party[j]] = [party[j], party[i]];
-    log(`${u.name} swaps places with ${party[i].name}.`, 'log-player');
-    render(); await sleep(500);
-  } else await perform(u, act.i, act.target);
+    if (j >= party.length || !isAlive(party[j])) { log(`${u.name} has nobody to swap with.`, 'log-round'); }
+    else {
+      const a = party[i], b = party[j];
+      [party[i], party[j]] = [b, a]; [a.rank, b.rank] = [b.rank, a.rank];      // rank = the line-up order the camp restores after a fight
+      log(`${u.name} swaps places with ${b.name}.`, 'log-player');
+      render(); await sleep(500);
+    }
+  } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(300); }
+  else if (act.item) await useItem(u, act.item, act.target);
+  else await perform(u, act.i, act.target);
+  if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on a random enemy, then the buff is gone
+    u.wrath = false;
+    const foes = enemies.filter(isAlive);
+    if (isAlive(u) && foes.length) {
+      const v = foes[Math.floor(Math.random() * foes.length)];
+      log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
+      await playAnim(u, 'skill1'); await hit(u, v, u.skills[0]);
+    }
+  }
   await sleep(300);
 }
 
+// Quest rules: win a fight = +gold, camp, next fight. Win the boss = all gold goes home.
+// Whole party down = quest over, only HALF the carried gold goes home.
 function checkEnd() {
   const won = !enemies.some(isAlive), lost = !party.some(isAlive);
   if (!won && !lost) return false;
   over = true; actor = null; cur = null; waiting = null;
-  $('turn-indicator').innerText = won ? 'Victory! All Sentinels Defeated!' : 'Defeat - Party Defeated';
-  log(`<strong style="color:${won ? '#4caf50' : '#ff5252'}">${won ? 'Victory! Your party triumphed over the Sentinel Squad!' : 'Your party was defeated and must retreat to the Hub Guild Hall.'}</strong>`);
-  $('btn-restart').style.display = 'block';
+  const node = quest.def.nodes[quest.node], last = quest.node === quest.def.nodes.length - 1;
+  const main = $('btn-end-main');
+  let saved;
+  if (lost) {
+    const kept = Math.floor(quest.gold / 2);
+    game.gold += kept; game.stats.lost++; game.quest = null; wearOffBoosts();
+    const pn = returnItems(false);
+    hubNote = `Quest failed. Half your gold made it home: +${kept} (of ${quest.gold} carried).${pn}`;
+    $('turn-indicator').innerText = 'Defeat - Party Defeated';
+    log(`<strong style="color:#ff5252">Your party was defeated and retreats to the Guild Hall.</strong>`);
+    log(`You were carrying ${quest.gold} gold; half (${kept}) makes it home.`, 'log-heal');
+    main.textContent = 'Return to Hub'; main.onclick = () => showScene('hub');
+    quest = null; saved = writeSave();
+  } else {
+    quest.gold += node.gold;
+    log(`<strong style="color:#4caf50">Victory!</strong> +${node.gold} gold.`, 'log-heal');
+    if (last) {
+      game.gold += quest.gold; game.stats.won++; game.quest = null; wearOffBoosts();
+      const pn = returnItems(true);
+      const un = quest.def.unlocks;
+      if (un && heroById(un) && !game.roster.includes(un)) { game.roster.push(un); game.notices.push({ type: 'unlock', id: un }); }   // first clear unlocks the hero
+      hubNote = `Quest complete! You brought home ${quest.gold} gold.${pn}`;
+      $('turn-indicator').innerText = 'Quest Complete!';
+      log(`<strong style="color:#4caf50">The boss falls and the quest is complete! All ${quest.gold} gold goes home with you.</strong>`);
+      main.textContent = 'Return to Hub'; main.onclick = () => showScene('hub');
+      quest = null; saved = writeSave();
+    } else {
+      quest.node++;
+      quest.party.forEach(u => { u.campHeal = 0; });          // a new camp: the rest allowance starts over
+      $('turn-indicator').innerText = 'Victory! Time to make camp.';
+      main.textContent = '⛺ Go to Camp'; main.onclick = showCamp;
+      saved = saveQuest();
+    }
+  }
+  log(saved ? 'Progress saved.' : 'Could not save: browser storage is unavailable.', 'log-round');
+  $('end-buttons').style.display = 'flex';
   render();
   return true;
 }
 
 async function battle() {
-  log('Battle started! 4 heroes face 4 distinct Sentinels.');
+  log(`${quest.def.nodes[quest.node].name}: ${party.length} hero${party.length > 1 ? 'es' : ''} face ${enemies.length} enem${enemies.length > 1 ? 'ies' : 'y'}.`);
   for (let round = 1; ; round++) {
-    log(`— Round ${round} —`, 'log-round');
+    roundNo = round; log(`— Round ${round} —`, 'log-round');
     order = [...party, ...enemies].filter(isAlive).sort((a, b) => b.spd - a.spd || Math.random() - 0.5);
+    enemies.forEach(e => { e.intent = isAlive(e) ? enemyChoose(e, true) : null; });      // telegraph this round's moves
     for (const u of order) {
       if (!isAlive(u)) continue;      // died earlier this round
       actor = u; render();
       await takeTurn(u);
+      if (u.barrier) { const had = u.barrier; u.barrier = 0; if (isAlive(u)) log(`${u.name}'s ${had} barrier fades.`, 'log-round'); render(); }      // a barrier ends with the turn of the unit that carries it
       actor = null;
       if (checkEnd()) return;
     }
   }
 }
 
-render();
-battle();
+/* ============ HUB & PARTY SELECT ============ */
+const MAX_PARTY = 4;
+let picked = [];     // hero ids chosen for the quest, in lineup order (first = front line)
+const heroById = id => HEROES.find(h => h.id === id);
+const buffIcons = id => (game.relaxed[id] ? '✨' : '') + ((TRAIN.methods[game.trained[id]] || {}).icon || '');
+const elIcons = h => [...new Set(h.skills.map(s => s.el).filter(Boolean))].map(e => ICON[e]).join('');
+
+function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
+  ['hub', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'train-select', 'train-method'].forEach(id => $(id).classList.toggle('show', id === name));
+  if (name === 'hub') renderHub();
+  if (name === 'party-select') renderParty();
+  if (name === 'quest-select') renderQuests();
+  $('spa-bg').style.display = name === 'spa' ? 'block' : 'none';
+  if (name === 'spa-select') { spaGame = null; renderSpaSelect(); }
+  if (name === 'camp') renderCamp();
+  if (name === 'shop') renderShop();
+  if (name === 'train-select') renderTrainSelect();
+  if (name === 'train-method') renderTrainMethods();
+  document.body.classList.toggle('in-battle', name === 'battle-scene');
+  window.scrollTo(0, 0);
+}
+function renderHub() {
+  $('hub-gold').textContent = `Gold: ${game.gold}`;
+  $('hub-roster').innerHTML = game.roster.map(id => {
+    const h = heroById(id); return h ? `<div class="chip">${h.name} ${elIcons(h)}${buffIcons(id) ? ' ' + buffIcons(id) : ''}</div>` : '';
+  }).join('');
+  $('hub-items').innerHTML = Object.values(ITEMS).map(it => `<div class="chip">${it.icon} ${it.name} ×${game.items[it.id] || 0}</div>`).join('');
+  $('hub-msg').textContent = hubNote; hubNote = '';
+  showNotice();      // e.g. the result of the last quest
+}
+function showNotice() {                      // pending pop-ups (saved, so they survive a reload until dismissed)
+  const n = game.notices && game.notices[0], box = $('notice');
+  const h = n && n.type === 'unlock' ? heroById(n.id) : null;
+  if (n && !h) { game.notices.shift(); writeSave(); return showNotice(); }      // unknown hero: drop it
+  box.classList.toggle('show', !!h);
+  if (!h) return;
+  $('notice-title').textContent = `✨ ${h.name.split(' ')[0]} unlocked! ✨`;
+  $('notice-sprite').textContent = h.tag;
+  $('notice-text').textContent = h.unlockMsg || `${h.name} has joined your guild! You can now pick them in Party Select.`;
+  $('notice-skills').textContent = `${h.name} · HP ${h.hp} · SPD ${h.spd} · ${h.skills.map(s => s.n).join(' · ')}`;
+}
+function dismissNotice() { if (game.notices.length) game.notices.shift(); writeSave(); showNotice(); }
+function soon(place) { $('hub-msg').textContent = `${place} isn't open yet. Coming soon!`; }
+
+function openParty() {
+  picked = game.lastParty.filter(id => game.roster.includes(id)).slice(0, MAX_PARTY);   // reselect last run's party
+  showScene('party-select');
+}
+function togglePick(id) {
+  const i = picked.indexOf(id);
+  if (i >= 0) picked.splice(i, 1);
+  else if (picked.length < MAX_PARTY) picked.push(id);
+  renderParty();
+}
+function renderParty() {
+  $('party-slots').innerHTML = `<b>Party ${picked.length}/${MAX_PARTY}</b> (front → back)<br>` +
+    Array.from({ length: MAX_PARTY }, (_, i) => `${i + 1}. ${picked[i] ? heroById(picked[i]).name.split(' ')[0] : '—'}`).join(' &nbsp; ');
+  $('roster-pick').innerHTML = game.roster.map(id => {
+    const h = heroById(id); if (!h) return '';
+    const n = picked.indexOf(id) + 1;
+    return `<div class="pick${n ? ' on' : ''}${!n && picked.length >= MAX_PARTY ? ' full' : ''}" onclick="togglePick('${id}')">
+      <div class="mini-sprite">${h.tag}</div>
+      <div><strong>${h.name}</strong> ${elIcons(h)}<br>HP ${h.hp}${game.relaxed[id] ? ` (+${Math.round(h.hp * game.relaxed[id])} ✨)` : ''} · Break ${h.brk} · SPD ${h.spd}${TRAIN.methods[game.trained[id]] ? `<br>${TRAIN.methods[game.trained[id]].icon} +${Math.round(TRAIN.boost * 100)}% ${TRAIN.methods[game.trained[id]].desc}` : ''}
+        <div class="sk">${h.skills.map(s => s.n).join(' · ')}</div>
+        <div class="sk">⚠️ Weak: ${elemIcons(h.weak) || '-'} · 🛡️ Resists: ${elemIcons(h.resist) || '-'}</div></div>
+      ${n ? `<div class="slot">${n}</div>` : ''}</div>`;
+  }).join('');
+  $('btn-begin').disabled = picked.length === 0;
+}
+let pickedQuest = null;     // id of the quest chosen on the quest select screen
+const questGold = q => q.nodes.reduce((a, n) => a + n.gold, 0);
+function toQuestSelect() {
+  if (!picked.length) return;
+  if (!QUESTS.some(q => q.id === pickedQuest)) pickedQuest = QUESTS[0].id;     // default: the first available quest
+  showScene('quest-select');
+}
+function pickQuest(id) { pickedQuest = id; renderQuests(); }
+function renderQuests() {
+  $('quest-party').innerHTML = '<b>Party</b> (front → back)<br>' +
+    picked.map((id, i) => `${i + 1}. ${heroById(id).name.split(' ')[0]}`).join(' &nbsp; ') +
+    '<br>' + (Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 ? 's' : ''} will come along` : '').filter(Boolean).join(' · ') || 'No supplies in the bag. The Shop sells healing potions.');
+  $('quest-list').innerHTML = QUESTS.map(q => {
+    const on = q.id === pickedQuest;
+    return `<div class="pick quest-pick${on ? ' on' : ''}" onclick="pickQuest('${q.id}')">
+      <div><strong>${q.name}</strong><br>${q.desc}
+        <div class="sk">${q.nodes.length} battles, boss at the end · up to ${questGold(q)} gold${q.unlocks && !game.roster.includes(q.unlocks) ? ` · defeat the boss to unlock ${heroById(q.unlocks).name.split(' ')[0]}` : ''}</div></div>
+      ${on ? '<div class="slot">✓</div>' : ''}</div>`;
+  }).join('');
+  $('btn-start-quest').disabled = !pickedQuest;
+}
+function beginQuest() {
+  if (!pickedQuest) return;
+  if (!picked.length) return;
+  game.lastParty = [...picked]; writeSave();
+  startQuest([...picked], pickedQuest);
+}
+
+/* ============ QUEST & CAMP ============ */
+let quest = null;      // { def, node, gold, party } while a quest runs. gold = the quest purse (not hub gold)
+let campMsg = '';
+let hubNote = '';
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, Number(v) || 0));
+
+// The quest is checkpointed into game.quest at embark, after each win, on entering camp and after each purchase.
+// Continue resumes there: node 0 = start of the first fight, otherwise the camp before that node.
+function snapshotQuest() {
+  return { id: quest.def.id, node: quest.node, gold: quest.gold,
+           items: { ...quest.items },
+           party: quest.party.map(u => ({ id: u.id, hp: u.hp, breakBar: u.breakBar, break2: u.break2, state: u.state, boost: u.boost || 0, trained: u.trained || '', rank: u.rank, campHeal: u.campHeal || 0 })) };
+}
+// Spa boost: raises max HP (and starts the hero full) for the quest. It wears off when the quest ends,
+// for the heroes who went on it. A boosted hero left at home keeps the boost for their next quest.
+function applyBoost(u, f) {
+  if (!f || f <= 0) return;
+  u.boost = f; u.maxHp += Math.round(u.maxHp * f); u.hp = u.maxHp; u.icons += '✨';
+}
+function wearOffBoosts() {      // spa and training buffs end with the quest, for the heroes who went on it
+  if (quest) quest.party.forEach(u => { if (u.boost) delete game.relaxed[u.id]; if (u.trained) delete game.trained[u.id]; });
+}
+function applyTraining(u, kind) {
+  const m = TRAIN.methods[kind]; if (!m) return;
+  u.trained = kind; u.icons += m.icon;
+  u.skills = u.skills.map(s => s.t === 'dmg' && (kind === 'physical' ? !s.el : !!s.el) ? scaleDmg(s, 1 + TRAIN.boost) : s);
+}
+// Potions at home go with the party. After the quest: a win brings every unused one home, a defeat only half.
+function returnItems(won) {
+  let carried = 0, kept = 0;
+  Object.keys(ITEMS).forEach(id => {
+    const n = quest.items[id] || 0, back = won ? n : Math.floor(n / 2);
+    carried += n; kept += back; game.items[id] = (game.items[id] || 0) + back;
+  });
+  return carried ? (won ? ` ${kept} unused item${kept === 1 ? '' : 's'} came home.` : ` ${kept} of ${carried} carried item${carried === 1 ? '' : 's'} made it home.`) : '';
+}
+function saveQuest() { game.quest = snapshotQuest(); return writeSave(); }
+function restoreQuest(s) {
+  const def = s && QUESTS.find(q => q.id === s.id);
+  if (!def || !Array.isArray(s.party) || !s.party.length || s.party.length > MAX_PARTY) return null;
+  if (!Number.isInteger(s.node) || s.node < 0 || s.node >= def.nodes.length) return null;
+  const members = [];
+  for (const p of s.party) {
+    const h = heroById(p && p.id); if (!h) return null;
+    const u = make(h, 'p');
+    applyBoost(u, clamp(p.boost, 0, 1));
+    applyTraining(u, p.trained);
+    u.hp = clamp(p.hp, 0, u.maxHp);
+    u.campHeal = clamp(p.campHeal, 0, u.maxHp);
+    u.rank = Number.isFinite(p.rank) ? p.rank : members.length;
+    let st = ['armoured', 'broken', 'super'].includes(p.state) ? p.state : (p.armoured === false ? 'broken' : 'armoured');
+    u.breakBar = clamp(p.breakBar, 0, u.maxBreak);
+    u.break2 = p.break2 == null ? u.maxBreak2 : clamp(p.break2, 0, u.maxBreak2);
+    if (st === 'armoured') u.break2 = u.maxBreak2;                     // layer 2 only takes damage once layer 1 is gone
+    else { u.breakBar = 0; if (st === 'broken' && u.break2 <= 0) st = 'super'; if (st === 'super') u.break2 = 0; }
+    u.state = st;
+    members.push(u);
+  }
+  const items = {}; Object.keys(ITEMS).forEach(id => { items[id] = Math.max(0, Math.floor(Number(s.items && s.items[id]) || 0)); });
+  return { def, node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items };
+}
+
+function startQuest(ids, questId) {
+  quest = { def: QUESTS.find(q => q.id === questId) || QUESTS[0], node: 0, gold: 0, party: ids.map(id => { const u = make(heroById(id), 'p'); applyBoost(u, game.relaxed[id]); applyTraining(u, game.trained[id]); return u; }), items: {} };
+  Object.keys(ITEMS).forEach(id => { quest.items[id] = game.items[id] || 0; game.items[id] = 0; });     // the bag goes with the party
+  saveQuest();
+  return startNode();
+}
+function startNode() {
+  const node = quest.def.nodes[quest.node], total = quest.def.nodes.length;
+  party = quest.party;                                               // same unit objects: HP/armour carry over
+  party.forEach((u, i) => { u.status = null; u.barrier = 0; u.wrath = false; u.rank = i; u.cd = u.skills.map(() => 0); });
+  const qs = quest.def.scale || {}, ns = node.scale || {};            // quest-wide difficulty x this node's own scaling
+  enemies = node.enemies.map(id => make(enemyById(id), 'e', { hp: (qs.hp || 1) * (ns.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) }));
+  const count = {}, used = {};                                       // label repeats: Drone Sentinel A / B
+  enemies.forEach(e => count[e.id] = (count[e.id] || 0) + 1);
+  enemies.forEach(e => {
+    if (count[e.id] > 1) { const L = 'ABCD'[(used[e.id] = (used[e.id] || 0) + 1) - 1]; e.name += ' ' + L; e.short += ' ' + L; }
+  });
+  order = []; actor = null; cur = null; sel = null; waiting = null; over = false;
+  $('log-box').innerHTML = ''; $('fx').innerHTML = '';
+  $('end-buttons').style.display = 'none';
+  $('turn-indicator').innerText = 'Preparing...';
+  $('battle-sub').textContent = `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''} · Quest gold: ${quest.gold}`;
+  $('enemy-head').textContent = node.name.toUpperCase();
+  showScene('battle-scene');
+  renderFx(); loadStageBg();
+  render(); return battle();
+}
+
+const healRoom = u => Math.max(0, Math.min(u.maxHp - u.hp, Math.floor(u.maxHp * CAMP.healCap) - (u.campHeal || 0)));   // HP resting can still restore at this camp
+const healCost = u => Math.ceil(healRoom(u) / SHOP.hpPerGold);
+const repairCost = u => u.state === 'super' ? 0   // super broken armour can't be repaired at all
+  : Math.ceil(((u.maxBreak - u.breakBar) + (u.maxBreak2 - u.break2)) / SHOP.breakPerGold);
+const armourTag = u => u.state === 'armoured' ? '' : `<br><span class="${u.state === 'super' ? 'super' : 'broken'}-tag">${u.state === 'super' ? 'SUPER BROKEN' : 'Armour broken'}</span>`;
+const armourWord = u => ({ armoured: 'intact', broken: '<span class="broken-tag">broken</span>', super: '<span class="super-tag">SUPER BROKEN</span>' })[u.state];
+const armourBars = u => u.state === 'armoured' ? `${u.breakBar}/${u.maxBreak}` : `${u.breakBar}/${u.maxBreak} · ${u.break2}/${u.maxBreak2}`;
+
+function reviveAtCamp() {
+  quest.party.sort((a, b) => (a.rank || 0) - (b.rank || 0));        // heroes who fell (and sank to the back) return to their place in the line
+  const down = quest.party.filter(u => u.hp <= 0);                   // no permadeath: downed heroes get up with 1 HP
+  down.forEach(u => { u.hp = 1; });
+  return down.length ? `${down.map(u => u.short).join(', ')} got back on their feet with 1 HP.` : '';
+}
+function showCamp() {
+  campMsg = reviveAtCamp();
+  saveQuest();
+  showScene('camp');
+}
+function renderCamp() {
+  const q = quest, next = q.def.nodes[q.node], n = q.party.length;
+  $('camp-sub').textContent = `${q.def.name} · Cleared ${q.node} of ${q.def.nodes.length} battles · Rest restores up to ${Math.round(CAMP.healCap * 100)}% of max HP per camp`;
+  $('camp-gold').textContent = `Gold: ${q.gold}`;
+  $('camp-msg').textContent = campMsg;
+  $('campfire').innerHTML = '<div class="fire">🔥</div>' + q.party.map((u, i) => {      // heroes evenly spaced around the fire
+    const a = (-90 + i * 360 / n) * Math.PI / 180, R = 33;
+    return `<div class="camper" style="left:${50 + R * Math.cos(a)}%;top:${50 + R * Math.sin(a)}%">
+      <div class="mini-sprite">${u.tag}</div><strong>${u.short}</strong><br>HP ${u.hp}/${u.maxHp}${armourTag(u)}</div>`;
+  }).join('');
+  $('camp-shop').innerHTML = q.party.map((u, i) => {
+    const hc = healCost(u), room = healRoom(u), rc = repairCost(u), sup = u.state === 'super';
+    return `<div class="shop-row"><div class="who"><strong>${u.name}</strong><br>HP ${u.hp}/${u.maxHp} · Armour ${armourWord(u)} (${armourBars(u)})</div>
+      <div class="btns"><button onclick="buyHeal(${i})" ${hc <= 0 || q.gold < hc ? 'disabled' : ''}>${room > 0 ? `Rest +${room} HP · ${hc}g` : u.hp >= u.maxHp ? 'HP full' : 'Rested'}</button>
+      <button onclick="buyRepair(${i})" ${sup || rc <= 0 || q.gold < rc ? 'disabled' : ''}>${sup ? 'Too damaged' : rc > 0 ? `Repair · ${rc}g` : 'Armour full'}</button></div></div>`;
+  }).join('');
+  $('btn-next').innerHTML = `${next.boss ? '💀 Face the Boss' : '⚔️ Next Fight'}<small>${next.name}</small>`;
+}
+function buyHeal(i) {
+  const u = quest.party[i], c = healCost(u), amt = healRoom(u);
+  if (c <= 0 || amt <= 0 || quest.gold < c) return;
+  quest.gold -= c; u.hp += amt; u.campHeal = (u.campHeal || 0) + amt; campMsg = `${u.short} rested: +${amt} HP for ${c} gold.`;
+  saveQuest(); renderCamp();
+}
+function buyRepair(i) {
+  const u = quest.party[i], c = repairCost(u);
+  if (c <= 0 || quest.gold < c) return;
+  quest.gold -= c; u.breakBar = u.maxBreak; u.break2 = u.maxBreak2; u.state = 'armoured'; campMsg = `${u.short}'s armour repaired for ${c} gold.`;
+  saveQuest(); renderCamp();
+}
+function nextFight() { campMsg = ''; return startNode(); }
+
+/* ============ SHOP ============ */
+let shopMsg = '';
+function openShop() { shopMsg = ''; showScene('shop'); }
+function renderShop() {
+  $('shop-sub').innerHTML = `Supplies for the road. Whatever is in your bag goes with the party on the next quest. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('shop-list').innerHTML = Object.values(ITEMS).map(it => `<div class="shop-row"><div class="mini-sprite" style="font-size:1.6rem">${it.icon}</div>
+    <div class="who"><strong>${it.name}</strong><br>${it.desc}<br>In your bag: <b>${game.items[it.id] || 0}</b></div>
+    <div class="btns"><button onclick="buyItem('${it.id}')" ${game.gold < it.price ? 'disabled' : ''}>Buy · ${it.price}g</button></div></div>`).join('');
+  $('shop-msg').textContent = shopMsg;
+}
+function buyItem(id) {
+  const it = ITEMS[id]; if (!it || game.gold < it.price) return;
+  game.gold -= it.price; game.items[id] = (game.items[id] || 0) + 1;
+  shopMsg = `Bought a ${it.name} for ${it.price} gold.`;
+  writeSave(); renderShop();
+}
+
+/* ============ TRAINING GROUND ============ */
+let trainHero = null, trainBusy = false;
+function openTrain() { showScene('train-select'); }
+function renderTrainSelect() {
+  const pct = Math.round(TRAIN.boost * 100);
+  $('train-intro').innerHTML = `Training costs ${TRAIN.cost} gold. Pick a hero, then a method: +${pct}% physical or elemental damage on their next quest only. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('train-list').innerHTML = game.roster.map(id => {
+    const h = heroById(id); if (!h) return '';
+    const k = game.trained[id], m = TRAIN.methods[k], poor = game.gold < TRAIN.cost;
+    const sub = m ? `${m.icon} Trained: +${pct}% ${m.desc} on the next quest` : poor ? `Costs ${TRAIN.cost} gold (you don't have enough)` : `Costs ${TRAIN.cost} gold · tap to choose a method`;
+    return `<div class="pick${m ? ' done' : poor ? ' full' : ''}" ${m || poor ? '' : `onclick="pickTrainHero('${id}')"`}><div class="mini-sprite">${h.tag}</div>
+      <div><strong>${h.name}</strong> ${elIcons(h)}<div class="sk">${sub}</div></div></div>`;
+  }).join('');
+}
+function pickTrainHero(id) {
+  if (!heroById(id) || game.trained[id] || game.gold < TRAIN.cost) return;
+  trainHero = id; showScene('train-method');
+}
+function renderTrainMethods() {
+  const h = heroById(trainHero); if (!h) { showScene('train-select'); return; }
+  const pct = Math.round(TRAIN.boost * 100);
+  $('train-title').textContent = `${h.name}: Training`;
+  $('train-sub').innerHTML = `Choose how ${h.name.split(' ')[0]} trains (${TRAIN.cost} gold). <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('train-result').style.display = 'none'; $('btn-train-back').style.display = ''; $('train-methods').style.display = '';
+  $('train-methods').innerHTML = Object.entries(TRAIN.methods).map(([k, m]) => {
+    const ok = hasKind(h, k);
+    return `<div class="pick method${ok ? '' : ' off'}" ${ok ? `onclick="doTrain('${k}')"` : ''}><div class="mini-sprite">${m.icon}</div>
+      <div><strong>${m.name}</strong><br>+${pct}% ${m.desc} on the next quest
+      <div class="sk">${ok ? 'Boosts: ' + h.skills.filter(s => s.t === 'dmg' && (k === 'physical' ? !s.el : !!s.el)).map(s => s.n).join(', ') : `${h.name.split(' ')[0]} has no ${m.word} skills to improve`}</div></div></div>`;
+  }).join('');
+}
+async function doTrain(kind) {
+  const h = heroById(trainHero);
+  if (!h || trainBusy || game.trained[h.id] || game.gold < TRAIN.cost || !TRAIN.methods[kind] || !hasKind(h, kind)) return;
+  trainBusy = true;
+  game.gold -= TRAIN.cost; game.trained[h.id] = kind; writeSave();            // paid and recorded right away
+  $('train-methods').style.display = 'none'; $('btn-train-back').style.display = 'none';
+  await playAnim(h, kind, 'train', $('spa-cutin'));                           // plays only if assets/<hero>/train/<kind> exists
+  trainBusy = false;
+  if (trainHero !== h.id || !$('train-method').classList.contains('show')) return;
+  const m = TRAIN.methods[kind];
+  $('train-result-text').textContent = `${h.name.split(' ')[0]} trained hard: ${m.icon} +${Math.round(TRAIN.boost * 100)}% ${m.desc} on the next quest!`;
+  $('train-result').style.display = 'flex';
+}
+
+/* ============ SPA ============ */
+let spaGame = null;     // { hero, cells, placed, strikes, over, safeLeft, nerves, cols, rows }
+
+function openSpa() { showScene('spa-select'); }
+function renderSpaSelect() {
+  const pct = Math.round(SPA.hpBoost * 100);
+  $('spa-intro').innerHTML = `Each massage costs ${SPA.cost} gold. Win for +${pct}% max HP on that hero's next quest; it wears off when the quest ends. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('spa-list').innerHTML = game.roster.map(id => {
+    const h = heroById(id); if (!h) return '';
+    const f = game.relaxed[id], poor = game.gold < SPA.cost;
+    const sub = f ? `✨ Relaxed: +${Math.round(f * 100)}% max HP on the next quest` : poor ? `Costs ${SPA.cost} gold (you don't have enough)` : `Costs ${SPA.cost} gold · tap to start`;
+    return `<div class="pick${f ? ' done' : poor ? ' full' : ''}" ${f || poor ? '' : `onclick="startSpa('${id}')"`}><div class="mini-sprite">${h.tag}</div>
+      <div><strong>${h.name}</strong> ${elIcons(h)}<div class="sk">${sub}</div></div></div>`;
+  }).join('');
+}
+
+function spaNeighbors(g, i) {
+  const r = Math.floor(i / g.cols), c = i % g.cols, out = [];
+  for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+    if (!dr && !dc) continue;
+    const rr = r + dr, cc = c + dc;
+    if (rr < 0 || cc < 0 || rr >= g.rows || cc >= g.cols) continue;
+    const j = rr * g.cols + cc;
+    if (g.cells[j]) out.push(j);
+  }
+  return out;
+}
+
+function startSpa(id) {
+  const hero = heroById(id); if (!hero) return;
+  if (game.relaxed[id] || game.gold < SPA.cost) return;        // already relaxed, or can't afford it
+  game.gold -= SPA.cost; writeSave();                          // paid up front: no refund for failing or giving up
+  const rows = SPA.mask.length, cols = SPA.mask[0].length, cells = [];
+  SPA.mask.forEach(row => [...row].forEach(ch => cells.push(ch === '#' ? { nerve: false, count: 0, revealed: false, hit: false } : null)));
+  const total = cells.filter(Boolean).length, nerves = Math.max(0, Math.min(SPA.nerves, total - 10));
+  const g = spaGame = { hero, cells, rows, cols, nerves, placed: false, strikes: 0, over: false, safeLeft: total - nerves };
+  const board = $('spa-board');
+  board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  board.style.aspectRatio = `${cols} / ${rows}`;
+  $('spa-bg').style.backgroundImage = 'none';
+  $('spa-title').textContent = `${hero.name}: Massage`;
+  $('spa-msg').textContent = 'Tap anywhere to start. Your first tap is always safe.';
+  $('spa-result').style.display = 'none';
+  $('btn-spa-quit').style.display = '';
+  showScene('spa');
+  renderSpa();
+  // optional backdrop art, only if the file exists
+  findAsset(`${ANIM.base}/${hero.id}/spa/back`).then(a => {
+    if (spaGame === g && a && ['png', 'jpg', 'webp'].includes(a.ext)) $('spa-bg').style.backgroundImage = `url("${a.url}")`;
+  });
+}
+
+function renderSpa() {
+  const g = spaGame;
+  $('spa-status').innerHTML = `Nerve hits: <span class="pips">${'●'.repeat(g.strikes)}${'○'.repeat(SPA.maxStrikes - g.strikes)}</span> · Safe spots left: <b>${g.safeLeft}</b> · Gold: ${game.gold}`;
+  $('spa-board').innerHTML = g.cells.map((c, i) => {
+    if (!c) return '<div class="sp off"></div>';
+    if (!c.revealed) return `<div class="sp hid" onclick="spaTap(${i})"></div>`;
+    if (c.nerve) return `<div class="sp nerve${c.hit ? '' : ' shown'}">⚡</div>`;
+    return `<div class="sp safe n${c.count}">${c.count || ''}</div>`;
+  }).join('');
+}
+
+function spaPlaceNerves(g, safeIdx) {          // nerves are placed after the first tap, away from it
+  const skip = new Set([safeIdx, ...spaNeighbors(g, safeIdx)]);
+  const pool = [];
+  g.cells.forEach((c, i) => { if (c && !skip.has(i)) pool.push(i); });
+  for (let k = pool.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [pool[k], pool[j]] = [pool[j], pool[k]]; }
+  pool.slice(0, g.nerves).forEach(i => { g.cells[i].nerve = true; });
+  g.cells.forEach((c, i) => { if (c) c.count = spaNeighbors(g, i).filter(j => g.cells[j].nerve).length; });
+  g.placed = true;
+}
+
+function spaReveal(g, start) {                  // reveal a tile; empty (0) tiles open their neighbours too
+  const stack = [start];
+  while (stack.length) {
+    const k = stack.pop(), c = g.cells[k];
+    if (c.revealed || c.nerve) continue;
+    c.revealed = true; g.safeLeft--;
+    if (c.count === 0) spaNeighbors(g, k).forEach(j => stack.push(j));
+  }
+}
+
+function spaTap(i) {
+  const g = spaGame;
+  if (!g || g.over) return;
+  const c = g.cells[i];
+  if (!c || c.revealed) return;
+  if (!g.placed) spaPlaceNerves(g, i);
+  if (c.nerve) {
+    c.revealed = true; c.hit = true; g.strikes++;
+    const board = $('spa-board'); board.classList.remove('zap'); void board.offsetWidth; board.classList.add('zap');
+    if (g.strikes >= SPA.maxStrikes) {
+      g.over = true;
+      g.cells.forEach(x => { if (x && x.nerve) x.revealed = true; });
+      renderSpa(); spaEnd(g, false); return;
+    }
+    $('spa-msg').textContent = `Ouch! A nerve. ${SPA.maxStrikes - g.strikes} hit${SPA.maxStrikes - g.strikes > 1 ? 's' : ''} left.`;
+    findAsset(`${ANIM.base}/${g.hero.id}/spa/hit`).then(a => { if (a && spaGame === g && !g.over) playClip(a, $('spa-cutin')); });   // optional nerve-hit clip
+  } else {
+    spaReveal(g, i);
+    $('spa-msg').textContent = '';
+  }
+  if (g.safeLeft <= 0) { g.over = true; renderSpa(); spaEnd(g, true); return; }
+  renderSpa();
+}
+
+async function spaEnd(g, won) {
+  const first = g.hero.name.split(' ')[0];
+  $('btn-spa-quit').style.display = 'none';
+  $('spa-msg').textContent = won ? 'Every knot is gone...' : 'Too many nerves hit!';
+  [...skips].forEach(f => f());                                                 // cut off any nerve-hit clip still playing
+  spaFinished(g.hero, won);                                                     // reward is recorded right away, even if the player leaves during the clip
+  await playAnim(g.hero, won ? 'success' : 'fail', 'spa', $('spa-cutin'));      // plays only if the file exists
+  if (spaGame !== g) return;                                                    // left the screen meanwhile
+  const pct = Math.round(SPA.hpBoost * 100);
+  $('spa-result-text').textContent = won ? `${first} is relaxed: +${pct}% max HP on the next quest!`
+                                         : `${first} flinched and the treatment failed. The ${SPA.cost} gold is gone.`;
+  const again = $('btn-spa-again');
+  again.style.display = won ? 'none' : '';                                      // a relaxed hero can't be treated again
+  again.textContent = `Treat Again (${SPA.cost}g)`; again.disabled = game.gold < SPA.cost;
+  $('spa-result').style.display = 'flex';
+}
+// Called once per finished treatment. A win relaxes the hero (stored in the save); a fail does nothing.
+function spaFinished(hero, won) {
+  if (!won) return;
+  game.relaxed[hero.id] = SPA.hpBoost; writeSave();
+}
+
+try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); } catch (e) { storageOk = false; }
+refreshTitle();      // the game itself starts from the title screen buttons (startGame)
 </script>
 </body>
 </html>
