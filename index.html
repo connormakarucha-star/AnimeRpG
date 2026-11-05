@@ -49,6 +49,17 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .figure .dmg{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none}
 .figure.flip .dmg{transform:scaleX(-1)}
 .figure.playing .spr,.figure.playing .ph{visibility:hidden}
+/* casting flare: an elemental glow + particles around the caster (purely cosmetic), and projectiles / bolts for ranged elemental skills */
+.figure.aura-fire{filter:drop-shadow(0 0 10px #ff8a1f) drop-shadow(0 0 28px rgba(255,90,0,.75))}
+.figure.aura-ice{filter:drop-shadow(0 0 10px #8fe3ff) drop-shadow(0 0 28px rgba(60,170,255,.75))}
+.figure.aura-shock{filter:drop-shadow(0 0 10px #fff59d) drop-shadow(0 0 28px rgba(255,235,60,.8))}
+.figure.aura-poison{filter:drop-shadow(0 0 10px #b2ff59) drop-shadow(0 0 26px rgba(80,200,0,.7))}
+.figure.aura-bleed{filter:drop-shadow(0 0 10px #ff5252) drop-shadow(0 0 26px rgba(200,0,30,.7))}
+.vfx-aura span{font-size:clamp(14px,1.6vw,30px);animation-duration:1s;animation-iteration-count:1}
+.proj{position:absolute;z-index:14;pointer-events:none;font-size:clamp(26px,3vw,56px);line-height:1;transform:translate(-50%,-50%);filter:drop-shadow(0 0 10px currentColor)}
+.bolt{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:14;animation:boltFlash .42s both}
+.bolt polyline{fill:none;stroke-linecap:round;stroke-linejoin:round}
+@keyframes boltFlash{0%{opacity:0}8%,40%,70%{opacity:1}25%,55%{opacity:.25}100%{opacity:0}}
 .vfx{position:absolute;inset:0;pointer-events:none;z-index:5}
 .vfx span{position:absolute;font-size:clamp(18px,2.4vw,46px);opacity:0;line-height:1;animation:vRise .8s ease-out both}
 .vfx-fall span{animation-name:vFall}.vfx-zap span{animation-name:vZap;animation-duration:.6s}.vfx-burst span{animation-name:vBurst;animation-duration:.55s}
@@ -1117,6 +1128,33 @@ function fx(u, kind, ms = 800) {
   }
   el.appendChild(box); setTimeout(() => box.remove(), ms + 500);
 }
+function aura(u, kind, ms = 950) {
+  const el = figs.get(u), v = VFX[kind]; if (!el || !v || !v[0]) return;
+  el.classList.add('aura-' + kind); setTimeout(() => el.classList.remove('aura-' + kind), ms);
+  const box = document.createElement('div'); box.className = 'vfx vfx-aura vfx-' + v[2];
+  for (let i = 0; i < 12; i++) {                                   // particles hugging the whole outline of the sprite, not just its middle
+    const sp = document.createElement('span'); sp.textContent = v[0];
+    const edge = Math.random() < .5; sp.style.left = (edge ? (Math.random() < .5 ? -5 + Math.random() * 25 : 70 + Math.random() * 30) : Math.random() * 90) + '%';
+    sp.style.top = (10 + Math.random() * 75) + '%'; sp.style.animationDelay = (i * 55) + 'ms'; box.appendChild(sp);
+  }
+  el.appendChild(box); setTimeout(() => box.remove(), ms + 600);
+}
+async function projectile(u, t, kind) {            // ranged elemental skills: a bolt / fireball / shard flies from the caster to the target
+  const a = figs.get(u), b = figs.get(t), host = $('fx'), v = VFX[kind]; if (!a || !b || !host || !v || !v[0] || !a.isConnected || !b.isConnected) return;
+  const hb = host.getBoundingClientRect(), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect(); if (!hb.width || !ra.width) return;
+  const x1 = ra.left - hb.left + ra.width / 2, y1 = ra.top - hb.top + ra.height * .42, x2 = rb.left - hb.left + rb.width / 2, y2 = rb.top - hb.top + rb.height * .42;
+  if (kind === 'shock') {
+    const n = 9, dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len; let pts = '';
+    for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * 60; pts += `${(x1 + dx * k + nx * j).toFixed(1)},${(y1 + dy * k + ny * j).toFixed(1)} `; }
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bolt'); svg.setAttribute('viewBox', `0 0 ${hb.width} ${hb.height}`);
+    svg.innerHTML = `<polyline points="${pts}" stroke="#fff59d" stroke-width="12" opacity=".35"/><polyline points="${pts}" stroke="#ffffff" stroke-width="4" style="filter:drop-shadow(0 0 6px #ffee58)"/>`;
+    host.appendChild(svg); await sleep(340); setTimeout(() => svg.remove(), 120); return;
+  }
+  const p = document.createElement('div'); p.className = 'proj'; p.textContent = v[0]; p.style.left = x1 + 'px'; p.style.top = y1 + 'px';
+  p.style.color = { fire: '#ff8a1f', ice: '#8fe3ff', poison: '#b2ff59', bleed: '#ff5252' }[kind] || '#fff'; host.appendChild(p);
+  const an = p.animate([{ transform: 'translate(-50%,-50%) scale(.7) rotate(0)' }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) scale(1.25) rotate(300deg)` }], { duration: 340, easing: 'ease-in', fill: 'forwards' });
+  await Promise.race([an.finished.catch(() => {}), sleep(500)]); p.remove();
+}
 /* ---- attackers move: melee charges across the stage to the target, ranged steps back away from it (PC layout only) ---- */
 const MOVE = { on: true, inMs: 240, outMs: 280, rangedStep: 0.35 };
 const wide = () => window.matchMedia && window.matchMedia('(min-width:900px)').matches;
@@ -1400,7 +1438,9 @@ async function perform(u, i, target) {
   const s = effSkill(u, i);
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
   const back = s.t === 'dmg' && target ? await advance(u, target, s) : null;
+  if (s.el) aura(u, s.el);
   await playAnim(u, 'skill' + (i + 1));
+  if (s.t === 'dmg' && s.el && target && rangeOf(s) === 'ranged') await projectile(u, target, s.el);
   if (s.t === 'buff') { u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
     await hit(u, target, s);
@@ -1539,6 +1579,7 @@ async function takeTurn(u) {
       const v = foes[Math.floor(Math.random() * foes.length)];
       log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
       const w = wrathStrike(u), back2 = await advance(u, v, w);
+      if (w.el) aura(u, w.el);
       await playAnim(u, 'skill1'); await hit(u, v, w); await back2();
     }
   }
