@@ -1226,7 +1226,7 @@ function floatText(u, html, cls = '') {      // a number or label that drifts up
   const el = document.createElement('div');
   el.className = 'float ' + cls; el.innerHTML = html;
   el.style.left = (cb.left - hb.left + cb.width * (0.3 + Math.random() * 0.4)) + 'px';
-  el.style.top = (cb.top - hb.top + cb.height * (c0 === c ? 0.35 : 0.3)) + 'px';
+  el.style.top = (cb.top - hb.top + cb.height * (c0 === c ? bodyAt(.3) : 0.3)) + 'px';
   host.appendChild(el); setTimeout(() => el.remove(), 1400);
 }
 function shake(level) {                      // 1 = hit, 2 = crit / armour break, 3 = super break
@@ -1482,7 +1482,10 @@ function importSave() {
 // Keys: skill1 skill2 skill3 damaged (damaged covers every hit and status tick; the fire/ice/... effect is drawn over it). Idle: idle.
 // Spa and training still use full-screen cut-ins (assets/<hero>/spa/*, assets/<hero>/train/*).
 // IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
-const ANIM = { base: 'assets', hold: 1500, fallback: 400, impact: 160, hitHold: 500, skillHold: 600, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
+// Sprites only fill the lower part of their figure box (art tops out around 75% of the box height), so effects aim at the BODY, not the box centre.
+const BODY_TOP = 0.25;
+const bodyAt = k => BODY_TOP + (1 - BODY_TOP) * k;          // k = 0 is the top of the sprite, 1 its feet
+const ANIM = { base: 'assets', hold: 1500, fallback: 400, impact: 160, hitHold: 500, skillHold: 700, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
 const stage = $('cutin'), animCache = {}, skips = new Set();
 stage.onclick = $('spa-cutin').onclick = () => [...skips].forEach(f => f());   // tap any cut-in to skip it
 
@@ -1523,8 +1526,8 @@ function playClip(a, host = stage) {            // host = the overlay element to
   });
 }
 
-async function playAnim(unit, key, state, host) {      // spa / training pass a host overlay (full-screen cut-in); combat clips play on the figure itself
-  if (!host && !state && figs.get(unit)) return playOnFigure(unit, key);
+async function playAnim(unit, key, state, host, onStart) {      // spa / training pass a host overlay (full-screen cut-in); combat clips play on the figure itself
+  if (!host && !state && figs.get(unit)) return playOnFigure(unit, key, undefined, undefined, onStart);
   state = state || ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[unit.state];
   let a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
   if (!a && key === 'damaged' && state !== 'armoured') a = await findAsset(`${ANIM.base}/${unit.id}/armoured/damaged`);   // one 'damaged' picture is enough
@@ -1580,15 +1583,15 @@ function mountFigures(host, list, team) {
 }
 /* Every combat clip (skill1-3, damaged) plays ON the unit's own figure in place of its idle, from its current armour folder (else armoured/).
    For a hit or status tick `kind` is the stock effect (fire, ice, ...) drawn on top. */
-async function playOnFigure(u, key, kind, tier) {
+async function playOnFigure(u, key, kind, tier, onStart) {      // onStart fires the moment the clip is actually on screen (or at once if there is no art)
   const el = figs.get(u), folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
   if (kind) fx(u, kind, 800, tier);
   let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/${key}`);
   if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/${key}`);
-  if (!a || !el || !el.isConnected) { await sleep(a ? 0 : ANIM.fallback || 0); return; }
+  if (!a || !el || !el.isConnected) { if (onStart) onStart(); await sleep(a ? 0 : ANIM.fallback || 0); return; }
   const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
   m.className = 'dmg'; m.src = a.url; m.draggable = false;
-  el.classList.add('playing'); el.appendChild(m);
+  el.classList.add('playing'); el.appendChild(m); if (onStart) onStart();
   await new Promise(res => {
     let done = false; const end = () => { if (done) return; done = true; skips.delete(end); res(); };
     skips.add(end);
@@ -1696,7 +1699,7 @@ function burst(u, red) {                       // physical impact: quick comic b
   const el = figs.get(u); if (!el) return;
   el.classList.add('tint-slash'); setTimeout(() => el.classList.remove('tint-slash'), 160);
   const b = document.createElement('div'); b.className = 'vfx-impact' + (red ? ' red' : '');
-  b.style.setProperty('--by', Math.round(rnd(34, 54)) + '%'); b.style.setProperty('--br', Math.round(rnd(-25, 25)) + 'deg'); b.style.setProperty('--bs', Math.round(rnd(74, 96)) + '%');
+  b.style.setProperty('--by', Math.round(rnd(bodyAt(.25), bodyAt(.55)) * 100) + '%'); b.style.setProperty('--br', Math.round(rnd(-25, 25)) + 'deg'); b.style.setProperty('--bs', Math.round(rnd(74, 96)) + '%');
   b.innerHTML = burstSVG(); el.appendChild(b); setTimeout(() => b.remove(), 400);
 }
 function tail(u, kind) {                         // the slow second half of an elemental hit, after the strike has landed
@@ -1704,7 +1707,7 @@ function tail(u, kind) {                         // the slow second half of an e
   const box = document.createElement('div'); box.className = 'vfx vfx-' + v.cls + ' vfx-tail' + (kind === 'snow' ? ' snow' : '');
   for (let i = 0; i < v.n; i++) {
     const sp = particle(kind, i, rnd(.8, 1.2)); sp.style.left = (10 + Math.random() * 70) + '%';
-    sp.style.top = (kind === 'snow' ? Math.random() * 25 : 20 + Math.random() * 40) + '%'; sp.style.animationDelay = (i * (kind === 'snow' ? 80 : 110)) + 'ms'; box.appendChild(sp);
+    sp.style.top = (kind === 'snow' ? bodyAt(0) * 100 - 20 + Math.random() * 25 : bodyAt(.15) * 100 + Math.random() * 30) + '%'; sp.style.animationDelay = (i * (kind === 'snow' ? 80 : 110)) + 'ms'; box.appendChild(sp);
   }
   el.appendChild(box); setTimeout(() => box.remove(), 3000);
 }
@@ -1717,7 +1720,7 @@ function fx(u, kind, ms = 800, tier = false) {
   el.classList.add('tint-' + kind); setTimeout(() => el.classList.remove('tint-' + kind), ms);
   const box = document.createElement('div'); box.className = 'vfx vfx-' + v.cls;
   for (let i = 0; i < v.n; i++) {
-    const sp = particle(kind, i); sp.style.left = (12 + Math.random() * 68) + '%'; sp.style.top = (14 + Math.random() * 58) + '%'; sp.style.animationDelay = (i * 60) + 'ms';
+    const sp = particle(kind, i); sp.style.left = (12 + Math.random() * 68) + '%'; sp.style.top = (bodyAt(.1) * 100 + Math.random() * 58 * .75).toFixed(0) + '%'; sp.style.animationDelay = (i * 60) + 'ms';
     box.appendChild(sp);
   }
   el.appendChild(box); setTimeout(() => box.remove(), ms + 500);
@@ -1731,7 +1734,7 @@ function aura(u, kind, ms = AURA_MS) {               // quick charge-up flare on
   for (let i = 0; i < 12; i++) {                      // particles hugging the whole outline of the sprite, not just its middle
     const sp = particle(kind, i, .75), edge = Math.random() < .55;
     sp.style.left = (edge ? (Math.random() < .5 ? -6 + Math.random() * 24 : 68 + Math.random() * 30) : Math.random() * 86) + '%';
-    sp.style.top = (10 + Math.random() * 72) + '%'; sp.style.animationDelay = (i * 14) + 'ms'; sp.style.animationDuration = Math.round(ms * .8) + 'ms'; box.appendChild(sp);
+    sp.style.top = (bodyAt(.05) * 100 + Math.random() * 72 * .75).toFixed(0) + '%'; sp.style.animationDelay = (i * 14) + 'ms'; sp.style.animationDuration = Math.round(ms * .8) + 'ms'; box.appendChild(sp);
   }
   el.appendChild(box); setTimeout(() => box.remove(), ms + 200);
   return sleep(ms);
@@ -1762,7 +1765,7 @@ function syncAmbient(u) {
 async function projectile(u, t, kind) {            // ranged elemental skills: a bolt / fireball / shard flies from the caster to the target
   const a = figs.get(u), b = figs.get(t), host = $('fx'), v = VFX[kind]; if (!a || !b || !host || !v || !v.mk || !a.isConnected || !b.isConnected) return;
   const hb = host.getBoundingClientRect(), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect(); if (!hb.width || !ra.width) return;
-  const x1 = ra.left - hb.left + ra.width / 2, y1 = ra.top - hb.top + ra.height * .42, x2 = rb.left - hb.left + rb.width / 2, y2 = rb.top - hb.top + rb.height * .42;
+  const x1 = ra.left - hb.left + ra.width / 2, y1 = ra.top - hb.top + ra.height * bodyAt(.4), x2 = rb.left - hb.left + rb.width / 2, y2 = rb.top - hb.top + rb.height * bodyAt(.4);
   if (kind === 'shock') {
     const bolt = (n, jit, w) => { const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len; let pts = '';
       for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * jit; pts += `${(x1 + dx * k + nx * j).toFixed(1)},${(y1 + dy * k + ny * j).toFixed(1)} `; } return pts; };
@@ -2204,9 +2207,12 @@ async function perform(u, i, target) {
   say(target && s.t !== 'barrierAll' && s.t !== 'buff' ? `${u.name} uses ${s.n} on ${target.name}` : `${u.name} uses ${s.n}`);
   if (target && (s.t === 'dmg' || s.t === 'barrier')) setSpot([u, target]);
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
-  if (s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);                  // charge up first, then strike
+  // The order of a hit: 1) her skill picture replaces the idle  2) a short charge-up effect for elemental attacks  3) the attack connects (bolt flies / blow lands)  4) the target's damaged picture and hit effects (in hit()).
+  let begun; const started = new Promise(r => begun = r);
+  const clip = playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
   const back = s.t === 'dmg' && target ? await advance(u, target, s) : null;
-  const clip = playAnim(u, 'skill' + (i + 1));                      // the attacker's clip keeps playing while the target is already reacting
+  await Promise.race([started, sleep(700)]);                                      // wait until the skill picture is really showing
+  if (s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
   if (s.t === 'dmg') await (s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
@@ -2505,9 +2511,13 @@ async function takeTurn(u) {
       const v = foes[Math.floor(Math.random() * foes.length)];
       log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
       const w = wrathStrike(u); setSpot([u, v]);
-      if (auraFits(u, w)) await aura(u, w.el);
+      let begun2; const started2 = new Promise(r => begun2 = r);
+      const clip2 = playAnim(u, 'skill1', undefined, undefined, begun2);
       const back2 = await advance(u, v, w);
-      await Promise.all([playAnim(u, 'skill1'), sleep(ANIM.impact).then(() => hit(u, v, w))]); back2();
+      await Promise.race([started2, sleep(700)]);
+      if (auraFits(u, w)) await aura(u, w.el);
+      await sleep(ANIM.impact);
+      await Promise.all([clip2, hit(u, v, w)]); back2();
     }
   }
   u.wrathNow = false;
