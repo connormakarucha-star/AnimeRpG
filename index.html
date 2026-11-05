@@ -35,7 +35,31 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .combatant-card.targetable{border-color:#ff5252}
 .combatant-card.targetable.team-p{border-color:#4fc3f7}
 .figure.hurt{animation:hurt .4s}
-@keyframes hurt{0%{filter:brightness(2.2) saturate(0)}25%{transform:translateX(-6px)}50%{transform:translateX(5px)}100%{transform:none;filter:none}}
+@keyframes hurt{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}100%{transform:none}}
+.figure{transition:filter .12s}
+/* stock effects drawn over ANY sprite, so each character only needs one 'damaged' picture */
+.figure.tint-slash{filter:brightness(1.9) contrast(1.1)}
+.figure.tint-fire{filter:drop-shadow(0 0 14px #ff6a00) sepia(.7) saturate(4) hue-rotate(-20deg) brightness(1.15)}
+.figure.tint-ice{filter:drop-shadow(0 0 14px #4fc3f7) hue-rotate(150deg) saturate(1.6) brightness(1.2)}
+.figure.tint-shock{filter:drop-shadow(0 0 14px #fff176) brightness(1.7) contrast(1.2)}
+.figure.tint-poison{filter:drop-shadow(0 0 12px #76ff03) hue-rotate(60deg) saturate(1.8)}
+.figure.tint-bleed{filter:drop-shadow(0 0 12px #ff1744) sepia(.8) saturate(5) hue-rotate(-50deg)}
+.figure.tint-shatter{filter:brightness(2.2) saturate(.3)}
+.figure.tint-ward{filter:drop-shadow(0 0 16px #4fc3f7) brightness(1.25)}
+.figure .dmg{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none}
+.figure.flip .dmg{transform:scaleX(-1)}
+.figure.playing .spr,.figure.playing .ph{visibility:hidden}
+.vfx{position:absolute;inset:0;pointer-events:none;z-index:5}
+.vfx span{position:absolute;font-size:clamp(18px,2.4vw,46px);opacity:0;line-height:1;animation:vRise .8s ease-out both}
+.vfx-fall span{animation-name:vFall}.vfx-zap span{animation-name:vZap;animation-duration:.6s}.vfx-burst span{animation-name:vBurst;animation-duration:.55s}
+@keyframes vRise{0%{opacity:0;transform:translateY(25%) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-110%) scale(1.3)}}
+@keyframes vFall{0%{opacity:0;transform:translateY(-70%) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translateY(90%) rotate(200deg)}}
+@keyframes vZap{0%,100%{opacity:0}10%,50%,80%{opacity:1;transform:scale(1.5)}30%,65%{opacity:.15;transform:scale(1)}}
+@keyframes vBurst{0%{opacity:0;transform:scale(.2)}30%{opacity:1;transform:scale(1.5)}100%{opacity:0;transform:scale(2.3)}}
+.vfx-slash::before,.vfx-slash::after{content:'';position:absolute;left:12%;right:12%;top:42%;height:6px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 14px 4px rgba(255,255,255,.85);transform:rotate(-35deg);animation:vSlash .38s ease-out both}
+.vfx-slash::after{top:52%;transform:rotate(-22deg);animation-delay:.1s}
+@keyframes vSlash{0%{clip-path:inset(0 100% 0 0);opacity:1}60%{clip-path:inset(0 0 0 0);opacity:1}100%{clip-path:inset(0 0 0 0);opacity:0}}
+#active-portrait{display:none}
 .team-p .figure.lunge{animation:lungeR .35s}.team-e .figure.lunge{animation:lungeL .35s}
 @keyframes lungeR{40%{transform:translateX(34px)}100%{transform:none}}
 @keyframes lungeL{40%{transform:translateX(-34px)}100%{transform:none}}
@@ -264,6 +288,17 @@ button small{font-weight:normal;color:#c0c0d8}
 /* ===== Battle stage on PC: two lines of fighters facing each other, front rows in the middle ===== */
 @media (min-width:900px){
   body.in-battle{padding:0}
+  /* columns no longer make their own layer, so bubbles / panels / the active portrait / a charging figure can be ordered against each other */
+  #battle-scene .team-column{z-index:auto}
+  #battle-scene .combatant-card .bubble,#battle-scene .combatant-card .stats-info,#battle-scene .combatant-card .floor{position:relative;z-index:6}
+  #battle-scene .figure{z-index:1}
+  /* the acting hero, big, over the figures but under every bubble / panel / button, and never clickable */
+  #active-portrait{display:block;position:absolute;left:0;z-index:4;pointer-events:none;width:40vw;opacity:0;transform:translateX(-4vw);transition:opacity .25s,transform .25s;
+    -webkit-mask-image:linear-gradient(to right,#000 80%,transparent);mask-image:linear-gradient(to right,#000 80%,transparent)}
+  #active-portrait.on{opacity:1;transform:none}
+  #active-portrait.on.dim{opacity:.3}
+  #active-portrait.flip img,#active-portrait.flip video{transform:scaleX(-1)}
+  #active-portrait img,#active-portrait video{width:100%;height:100%;object-fit:contain;object-position:left bottom;display:block;filter:drop-shadow(0 0 18px rgba(0,0,0,.7))}
   #battle-scene{position:relative;min-height:100vh;width:100%}
   #battle-scene h1{display:none}
   #battle-scene .subtitle{position:absolute;top:8px;left:16px;z-index:6;margin:0;text-align:left;font-size:.85rem;color:#c8ccd8;text-shadow:0 1px 3px #000}
@@ -481,6 +516,7 @@ button small{font-weight:normal;color:#c0c0d8}
 <div id="game-container">
   <div id="order"></div>
   <div class="battlefield">
+    <div id="active-portrait"></div>
     <div class="team-column">
       <div class="column-header" style="color:#81d4fa">PLAYER PARTY</div>
       <div id="party-cards" class="cards"></div>
@@ -535,7 +571,7 @@ const POS = { front: 2, bonus: 0.20, min: 0.5, max: 1.4 };
 const RICON = { melee: '⚔️', ranged: '🏹' };
 const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', shock: '⚡' };
 
-// Skill: n=name, t='dmg' | 'barrier' (one ally, never the caster) | 'barrierAll' (every other ally) | 'buff' (self; buff:'wrath'), d=[min,max] damage, p=barrier size,
+// Skill: n=name, t='dmg' | 'barrier' (one ally or the caster; lasts to the end of the round) | 'barrierAll' (every other ally) | 'buff' (self; buff:'wrath'), d=[min,max] damage, p=barrier size,
 //        chaos:true on a damage skill = right after it lands, the caster also hits a random OTHER unit (friend or foe) with her skill 1,
 //        r='melee'|'ranged' (damage skills, default melee), el=element, brk=break damage, cd=cooldown in turns.
 // Barriers soak damage AND armour-break damage, and vanish at the end of the turn of the unit that carries them.
@@ -556,8 +592,8 @@ const HEROES = [
     { n:'Blizzard',     t:'dmg', r:'ranged', d:[23,26], el:'ice', brk:35, cd:3 } ] },
   { id:'nyria', weak:['bleed'], resist:['poison'],  name:'Nyria (Ward)',  tag:'NYRIA',  hp:70,  brk:25, spd:13, skills:[
     { n:'Venom Dart',   t:'dmg', r:'ranged', d:[11,13], el:'poison', brk:12, cd:0 },
-    { n:'Ward',         t:'barrier',    p:35, cd:0 },
-    { n:'Aegis',        t:'barrierAll', p:20, cd:2 } ] },
+    { n:'Ward',         t:'barrier',    p:30, cd:0 },
+    { n:'Aegis',        t:'barrierAll', p:16, cd:2 } ] },
   { id:'celeste', weak:['shock'], resist:['bleed'], evasive:1.5, name:'Celeste (Bleed)', tag:'CELESTE', hp:85, brk:30, spd:10, skills:[
     { n:'Razor Cut',     t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:10, cd:0 },
     { n:'Hemorrhage',    t:'dmg', r:'melee', d:[14,16], el:'bleed', brk:20, cd:2 },
@@ -569,7 +605,7 @@ const HEROES = [
   { id:'iris', weak:['poison'], resist:['fire'], frontMod:-0.1, name:'Iris (Dragon)', tag:'IRIS', hp:105, brk:45, spd:9, skills:[      // martial artist, front liner
     { n:'Iron Fist',       t:'dmg', r:'melee', d:[12,14], cd:0 },
     { n:'Blazing Kick',    t:'dmg', r:'melee', d:[16,19], el:'fire', brk:22, cd:2 },
-    { n:"Dragon's Wrath",  t:'buff', buff:'wrath', cd:4 } ] },    // next turn: an extra Iron Fist on a random enemy, then it wears off
+    { n:"Dragon's Wrath",  t:'buff', buff:'wrath', fire:{ mult:1.75, el:'fire', brk:12 }, cd:4 } ] },    // next turn: every Iron Fist burns (+75% damage, fire, +12 break) and she gets a free one on a random enemy, then it wears off
   { id:'aneesah', weak:['ice'], resist:['shock'], backMod:-0.15, name:'Aneesah (Storm)', tag:'ANEESAH', hp:65, brk:20, spd:11, skills:[   // chaotic storm mage, back liner
     { n:'Static Spark',    t:'dmg', r:'ranged', d:[6,8], el:'shock', brk:6, cd:0 },
     { n:'Lightning Bolt',  t:'dmg', r:'ranged', d:[17,20], el:'shock', brk:22, cd:2 },
@@ -996,13 +1032,16 @@ function playClip(a, host = stage) {            // host = the overlay element to
 
 async function playAnim(unit, key, state, host) {      // state = folder name; host = overlay (defaults to the battle one)
   state = state || ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[unit.state];
-  const a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
+  let a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
+  if (!a && key === 'damaged' && state !== 'armoured') a = await findAsset(`${ANIM.base}/${unit.id}/armoured/damaged`);   // one 'damaged' picture is enough
   if (a) await playClip(a, host || stage); else await sleep(ANIM.fallback);
 }
 
 /* ---- idle sprites + stage background (all optional art) ----
    assets/<unit id>/<armoured|broken|superbroken>/idle.(png|webp|gif|mp4|webm)   standing pose, per armour state (falls back to armoured/)
    assets/ui/battle_<quest id>_<fight number>.*, assets/ui/battle_<quest id>.*, assets/ui/battle_bg.*   stage background (first one found)
+   assets/<unit id>/<armoured|broken|superbroken>/damaged.*    ONE picture/clip for every hit AND every status tick; plays in place of the idle with the stock effect (fire, ice, shock...) drawn on top
+   assets/<hero id>/<state>/active_idle.*                      big 'your turn' picture shown at the left of the stage (falls back to idle, enlarged)
    No file = a labelled placeholder box. Set SPR.flipParty / SPR.flipEnemy to true if your drawings face the other way
    (heroes should face right, enemies left). */
 const SPR = { flipParty: false, flipEnemy: false };
@@ -1044,6 +1083,81 @@ function mountFigures(host, list, team) {
     f.querySelectorAll('video').forEach(v => { if (v.paused) v.play().catch(() => {}); });
   });
 }
+/* A hit or status tick: the unit's own 'damaged' picture/clip (from its current armour folder, else armoured/) plays IN PLACE of its idle,
+   and the stock effect (fire, ice, ...) is drawn over it. */
+async function playDamaged(u, kind) {
+  const el = figs.get(u), folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
+  if (kind) fx(u, kind);
+  let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/damaged`);
+  if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/damaged`);
+  if (!a || !el || !el.isConnected) { await sleep(a ? 0 : ANIM.fallback || 0); return; }
+  const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
+  m.className = 'dmg'; m.src = a.url; m.draggable = false;
+  el.classList.add('playing'); el.appendChild(m);
+  await new Promise(res => {
+    let done = false; const end = () => { if (done) return; done = true; res(); };
+    if (vid) { m.playsInline = true; m.muted = true; m.onended = end; m.onerror = end; m.play().catch(end); setTimeout(end, 8000); }
+    else setTimeout(end, Math.min(ANIM.hold, 700));
+  });
+  m.remove(); if (!el.querySelector('.dmg')) el.classList.remove('playing');
+}
+/* ---- stock visual effects: drawn on top of the unit's figure, so one 'damaged' picture per character is all the art needed ---- */
+const VFX = { fire: ['🔥', 7, 'rise'], ice: ['❄️', 7, 'fall'], shock: ['⚡', 5, 'zap'], poison: ['☠️', 6, 'rise'], bleed: ['🩸', 6, 'fall'], slash: ['', 0, 'slash'], shatter: ['💥', 3, 'burst'], ward: ['🛡️', 3, 'burst'] };
+const STATUS_FX = { burn: 'fire', bleed: 'bleed', poison: 'poison', frozen: 'ice', shocked: 'shock' };
+function fx(u, kind, ms = 800) {
+  const el = figs.get(u), v = VFX[kind]; if (!el || !v) return;
+  el.classList.add('tint-' + kind); setTimeout(() => el.classList.remove('tint-' + kind), ms);
+  const box = document.createElement('div'); box.className = 'vfx vfx-' + v[2];
+  for (let i = 0; i < v[1]; i++) {
+    const sp = document.createElement('span'); sp.textContent = v[0];
+    sp.style.left = (15 + Math.random() * 65) + '%'; sp.style.top = (18 + Math.random() * 55) + '%'; sp.style.animationDelay = (i * 70) + 'ms';
+    box.appendChild(sp);
+  }
+  el.appendChild(box); setTimeout(() => box.remove(), ms + 500);
+}
+/* ---- attackers move: melee charges across the stage to the target, ranged steps back away from it (PC layout only) ---- */
+const MOVE = { on: true, inMs: 240, outMs: 280, rangedStep: 0.35 };
+const wide = () => window.matchMedia && window.matchMedia('(min-width:900px)').matches;
+async function advance(u, t, s) {                 // returns an async function that walks the figure home again
+  const el = figs.get(u), tf = figs.get(t);
+  if (!MOVE.on || !el || !tf || !wide() || !el.animate || !el.isConnected) { bump(u, 'lunge'); return async () => {}; }
+  const a = el.getBoundingClientRect(), b = tf.getBoundingClientRect(), bf = document.querySelector('#battle-scene .battlefield').getBoundingClientRect();
+  if (!a.width || !b.width) { bump(u, 'lunge'); return async () => {}; }
+  const ac = a.left + a.width / 2, bc = b.left + b.width / 2, dir = Math.sign(bc - ac) || (u.team === 'p' ? 1 : -1);
+  let dx;
+  if (rangeOf(s) === 'melee') { dx = bc - ac - dir * Math.min(a.width, b.width) * 0.55; if (Math.sign(dx) !== dir) dx = 0; }
+  else dx = -dir * Math.min(a.width * MOVE.rangedStep, 110);
+  dx = Math.max(bf.left + 6 - a.left, Math.min(bf.right - 6 - a.right, dx));          // stay on the stage
+  el.style.zIndex = 40;
+  const go = el.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], { duration: MOVE.inMs, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+  await Promise.race([go.finished.catch(() => {}), sleep(MOVE.inMs + 150)]);
+  return async () => {
+    const back = el.animate([{ transform: `translateX(${dx}px)` }, { transform: 'translateX(0)' }], { duration: MOVE.outMs, easing: 'ease-in-out' });
+    go.cancel();
+    await Promise.race([back.finished.catch(() => {}), sleep(MOVE.outMs + 150)]);
+    el.style.zIndex = '';
+  };
+}
+/* ---- active idle: a big picture of the hero whose turn it is. assets/<id>/<state>/active_idle.*  (falls back to armoured/, then to the normal idle, enlarged) ---- */
+let portraitTok = 0;
+async function showPortrait(u) {
+  const host = $('active-portrait'); if (!host || u.team !== 'p' || !wide()) return;
+  const tok = ++portraitTok, folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
+  let a = null;
+  for (const key of ['active_idle', 'active', 'idle']) { for (const st of [...new Set([folder, 'armoured'])]) { a = await findAsset(`${ANIM.base}/${u.id}/${st}/${key}`); if (a) break; } if (a) break; }
+  if (tok !== portraitTok) return;
+  host.innerHTML = ''; host.classList.remove('on');
+  const f = figs.get(u), bf = document.querySelector('#battle-scene .battlefield'); if (!a || !f || !bf) return;
+  const fr = f.getBoundingClientRect(), br = bf.getBoundingClientRect(); if (!br.height) return;
+  host.style.bottom = Math.max(0, br.bottom - fr.bottom) + 'px';                      // feet on the floor line, so the stat panels stay clear
+  host.style.height = Math.min(fr.height * 1.45, fr.bottom - br.top - 8) + 'px';
+  const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
+  m.src = a.url; m.draggable = false; if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; m.play().catch(() => {}); }
+  host.classList.toggle('flip', SPR.flipParty); host.appendChild(m);
+  requestAnimationFrame(() => host.classList.add('on'));
+}
+function hidePortrait() { portraitTok++; const h = $('active-portrait'); if (h) h.classList.remove('on'); }
+
 function bump(u, cls) {          // quick visual nudge on a unit's figure: 'hurt' (flash + wobble) or 'lunge' (step toward the enemy)
   const el = figs.get(u); if (!el) return;
   el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 450);
@@ -1065,7 +1179,7 @@ function log(msg, cls = '') {
 
 function chips(u) {              // one small tile per skill: icons, damage / barrier size, cooldown
   return '<div class="chips">' + u.skills.map((s, i) => {
-    const cd = u.cd[i] || 0, on = u === cur && sel === i;
+    const cd = u.cd[i] || 0, on = u === cur && sel === i; s = effSkill(u, i);
     let ic, val;
     if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.chaos ? '🌀' : ''); val = rangeText(s); }
     else if (s.t === 'buff') { ic = '🐉'; val = 'buff'; }
@@ -1078,8 +1192,8 @@ function card(u, team, i) {
   if (alive) c.push(front ? 'row-front' : 'row-back');
   if (u === actor) c.push('active-turn');
   if (!alive) c.push('dead');
-  const sk = waiting && sel !== null ? cur.skills[sel] : null;
-  if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'barrier' && team === 'p' && u !== cur))) c.push('targetable');
+  const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
+  if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'barrier' && team === 'p'))) c.push('targetable');
   if (waiting && selItem && team === 'p' && alive && u.hp < u.maxHp) c.push('targetable');   // bag item: wounded living heroes
   const st = u.status ? ` <span class="ail">[${u.status.type.toUpperCase()}${u.status.dot ? ' ' + u.status.dur : ''}]</span>` : '';
   let extra = '';
@@ -1092,7 +1206,7 @@ function card(u, team, i) {
   if (inc) {
     const [a, b] = incomingRange(u);
     let after = '';
-    if (sk && sk.t === 'barrier' && u !== cur) {                     // what this ward would really stop: only hits that land before the carrier's own turn ends
+    if (sk && sk.t === 'barrier') {                     // what this ward would really stop: only hits that land later this round
       const [c2, d] = windowRange(u, cur);
       after = ` → ${a - c2 + Math.max(0, c2 - sk.p)}–${b - d + Math.max(0, d - sk.p)} with ${sk.n}`;
     }
@@ -1107,7 +1221,7 @@ function card(u, team, i) {
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
       <div class="tags">${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
       <div class="bar-container"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div></div>
-      <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of their turn">🛡️ ${u.barrier}</span>` : ''}</div>
+      <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of the round">🛡️ ${u.barrier}</span>` : ''}</div>
       <div class="arm">Break: ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2}</div>
       <div class="bar-container"><div class="break-fill" style="width:${Math.max(0, u.breakBar / u.maxBreak * 100)}%"></div></div>
       <div class="bar-container thin"><div class="break2-fill${u.state === 'armoured' ? ' dim' : ''}" style="width:${Math.max(0, u.break2 / u.maxBreak2 * 100)}%"></div></div>
@@ -1116,12 +1230,12 @@ function card(u, team, i) {
 }
 
 const isWard = s => !!s && (s.t === 'barrier' || s.t === 'barrierAll');
-const wardTargets = u => (u.team === 'p' ? party : enemies).filter(a => a !== u && isAlive(a));    // a barrier never goes on its caster (it would vanish at the end of that same turn)
-const usable = (u, i) => u.cd[i] === 0 && !(isWard(u.skills[i]) && !wardTargets(u).length);
+const wardTargets = u => (u.team === 'p' ? party : enemies).filter(a => a !== u && isAlive(a));    // every OTHER living ally (Aegis, and what enemies ward)
+const usable = (u, i) => u.cd[i] === 0 && !(u.skills[i].t === 'barrierAll' && !wardTargets(u).length);   // a single ward can always go on the caster herself
 function skillDesc(s) {
-  if (s.t === 'barrier') return `+${s.p} 🛡️ barrier (ally)`;
+  if (s.t === 'barrier') return `+${s.p} 🛡️ barrier (ally or self)`;
   if (s.t === 'barrierAll') return `+${s.p} 🛡️ barrier (all others)`;
-  if (s.t === 'buff') return '🐉 extra strike next turn';
+  if (s.t === 'buff') return '🐉 next turn: burning Iron Fists + a free strike';
   if (s.chaos) return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]} 🌀 chaos`;
   return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]}`;
 }
@@ -1130,12 +1244,13 @@ function render() {
   $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
   $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
   mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e');
+  { const ap = $('active-portrait'); if (ap) ap.classList.toggle('dim', !!(waiting && sel !== null && cur && cur.skills[sel].t === 'barrier')); }
   $('order').innerHTML = order.length ? `Round ${roundNo} · Turn order: ` + order.map(u =>
     u === actor ? `<b>${u.short}</b>` : isAlive(u) ? u.short : `<s>${u.short}</s>`).join(' › ') : '';
   for (let i = 0; i < 3; i++) {
     const b = $('btn' + i);
     if (cur) {
-      const s = cur.skills[i], cd = cur.cd[i], ok = usable(cur, i);
+      const s = effSkill(cur, i), cd = cur.cd[i], ok = usable(cur, i);
       b.innerHTML = `${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${cd > 0 ? 'CD ' + cd : ok ? 'Ready' : 'No ally'}</small>`;
       b.disabled = !waiting || !ok;
       b.classList.toggle('sel', sel === i);
@@ -1172,8 +1287,8 @@ function inspect(team, idx) {
   const u = (team === 'p' ? party : enemies)[idx]; if (!u) return;
   const rows = u.skills.map(s => {
     const what = s.t === 'dmg' ? `${rangeText(s)} dmg · ${RICON[rangeOf(s)]} ${rangeOf(s)} · ${s.el ? ICON[s.el] + ' ' + ELEM_NAME[s.el] + ' · break ' + (s.brk || 0) : 'physical'} · crit ${critChance(s, null)}%${s.chaos ? ` · 🌀 then ${u.skills[0].n} hits a random other unit, friend or foe` : ''}`
-               : s.t === 'buff' ? `🐉 Buff: on her next turn she also uses ${u.skills[0].n} on a random enemy, then it wears off`
-               : s.t === 'barrierAll' ? `🛡️ +${s.p} barrier to every other ally` : `🛡️ +${s.p} barrier to one ally`;
+               : s.t === 'buff' ? `🐉 Buff: on her next turn ${u.skills[0].n} burns (+75% damage, fire) and she also strikes a random enemy with it, then it wears off`
+               : s.t === 'barrierAll' ? `🛡️ +${s.p} barrier to every other ally` : `🛡️ +${s.p} barrier to one ally (or herself) until the end of the round`;
     return `<tr><td><b>${s.n}</b></td><td>${what}<div class="dim">cooldown ${s.cd}${u.cd && u.cd[u.skills.indexOf(s)] > 0 ? ` (ready in ${u.cd[u.skills.indexOf(s)]})` : ''}</div></td></tr>`;
   }).join('');
   const next = team === 'e' && isAlive(u) && u.intent ? `<div style="color:#ffb74d;margin-top:6px"><b>Next move:</b> ${intentText(u)}</div>` : '';
@@ -1211,7 +1326,7 @@ function pick(team, idx) {
   const t = cur.skills[sel].t;
   if (!((t === 'dmg' && team === 'e') || (t === 'barrier' && team === 'p'))) return;
   const target = (team === 'e' ? enemies : party)[idx];
-  if (!target || !isAlive(target) || (t === 'barrier' && target === cur)) return;
+  if (!target || !isAlive(target) || false) return;
   finish({ i: sel, target });
 }
 
@@ -1241,7 +1356,7 @@ async function hit(u, t, s) {
   render();
   floatText(t, `${m === 'weak' ? '<small>WEAK</small>' : m === 'resist' ? '<small>RESIST</small>' : soak ? `<small>🛡️ ${soak} BLOCKED</small>` : ''}${dmg}${r.crit ? '!' : ''}`, (t.team === 'p' ? 'hurt ' : '') + (r.crit ? 'crit' : ''));
   shake(r.crit ? 2 : 1); if (dmg > 0) bump(t, 'hurt');
-  if (dmg > 0) await playAnim(t, 'damaged'); else await sleep(250);
+  if (dmg > 0) await playDamaged(t, s.el || 'slash'); else { fx(t, 'ward'); await sleep(250); }
   if (t.hp <= 0) { t.hp = 0; t.barrier = 0; log(`${t.name} has fallen!`, 'log-status'); sinkDead(t); render(); return; }
   if (s.el) {
     if (t.state === 'armoured') {                       // layer 1: protected from status effects, only break damage
@@ -1250,7 +1365,7 @@ async function hit(u, t, s) {
       if (t.breakBar <= 0) {
         t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2);
         log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
-        await playAnim(t, 'break', 'armoured');         // transition clips play from the folder of the state being left
+        fx(t, 'shatter', 700); await sleep(450);
       }
     } else {                                            // broken or super broken: status effects land
       applyStatus(t, s.el);
@@ -1260,7 +1375,7 @@ async function hit(u, t, s) {
         if (t.break2 <= 0) {
           t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3);
           log(`<strong style="color:#ff1744">${t.name} is SUPER BROKEN!</strong>`);
-          await playAnim(t, 'superbreak', 'broken');
+          fx(t, 'shatter', 700); await sleep(450);
         }
       }
     }
@@ -1280,20 +1395,21 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
 }
 
 async function perform(u, i, target) {
-  const s = u.skills[i];
+  const s = effSkill(u, i);
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
-  if (s.t === 'dmg') bump(u, 'lunge');
+  const back = s.t === 'dmg' && target ? await advance(u, target, s) : null;
   await playAnim(u, 'skill' + (i + 1));
-  if (s.t === 'buff') { u.wrath = true; log(`${u.name} channels ${s.n}! Next turn she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
+  if (s.t === 'buff') { u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
     await hit(u, target, s);
     if (s.chaos && isAlive(u) && enemies.some(isAlive)) {          // the storm lashes out at someone else: a random other unit, friend or foe
       const pool = [...party, ...enemies].filter(x => isAlive(x) && x !== u && x !== target);
       if (pool.length) { const v = pool[Math.floor(Math.random() * pool.length)]; log(`🌀 The storm runs wild! ${u.name} lashes out at ${v.name}.`, 'log-status'); await playAnim(u, 'skill1'); await hit(u, v, u.skills[0]); }
     }
+    if (back) await back();
     return;
   }
-  const targets = s.t === 'barrier' ? (target && isAlive(target) && target !== u ? [target] : []) : wardTargets(u);
+  const targets = s.t === 'barrier' ? (target && isAlive(target) ? [target] : []) : wardTargets(u);
   if (!targets.length) { log(`${u.name} has no one to protect.`, 'log-round'); return; }
   targets.forEach(t => { t.barrier = (t.barrier || 0) + s.p; log(`${u.name} uses ${s.n}: ${t.name} gains a ${s.p} barrier.`, 'log-heal'); });
   render();
@@ -1339,15 +1455,14 @@ function intentText(u) {
   return `▶ ${s.n} ${a === b ? a : a + '–' + b}${s.el ? ICON[s.el] : ''}${RICON[rangeOf(s)]}${pmTag(posMod(s, it.target))} → ${it.target.short}`;
 }
 const incoming = h => enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && e.intent.target === h && e.skills[e.intent.i].t === 'dmg').length;
-// Telegraphed damage a barrier cast on h by `caster` could still absorb: attacks by enemies who haven't acted yet, up to the end of h's own turn
-// (everything left this round if h has already acted). A barrier keeps absorbing until the end of h's next turn, but next round isn't telegraphed yet.
+// Telegraphed damage a barrier cast on h by `caster` could still absorb: attacks by enemies who haven't acted yet this round (a barrier fades when the round ends).
 function windowRange(h, caster) {
-  let lo = 0, hi = 0; const ic = order.indexOf(caster), ih = order.indexOf(h);
+  let lo = 0, hi = 0; const ic = order.indexOf(caster);
   enemies.forEach(e => {
     if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || e.intent.target !== h) return;
     const s = e.skills[e.intent.i]; if (s.t !== 'dmg') return;
     const ie = order.indexOf(e);
-    if (ie > ic && (ih < ic || ie < ih)) { const [a, b] = adjRange(s, h); lo += a; hi += b; }
+    if (ie > ic) { const [a, b] = adjRange(s, h); lo += a; hi += b; }
   });
   return [lo, hi];
 }
@@ -1361,8 +1476,14 @@ function incomingRange(h) {       // total damage range of every telegraphed att
   return [lo, hi];
 }
 
+const effSkill = (u, i) => (u.wrathNow && i === 0 && u.skills[0].t === 'dmg') ? wrathStrike(u) : u.skills[i];
+function wrathStrike(u) {                      // Dragon's Wrath: her Skill 1 comes back as a fire attack with bonus damage
+  const w = (u.skills.find(x => x.buff === 'wrath') || {}).fire, b = u.skills[0];
+  if (!w) return b;
+  return { ...b, n: b.n + ' 🔥', el: w.el, brk: (b.brk || 0) + w.brk, d: [Math.round(b.d[0] * w.mult), Math.round(b.d[1] * w.mult)] };
+}
 async function takeTurn(u) {
-  const hadWrath = !!u.wrath;                // set on an earlier turn: this turn it pays off, then wears off
+  const hadWrath = !!u.wrath; u.wrathNow = hadWrath;     // set on an earlier turn: this turn it pays off, then wears off
   u.cd = u.cd.map(c => Math.max(0, c - 1));
   // Status effects resolve at the start of the unit's turn
   if (u.status) {
@@ -1371,14 +1492,14 @@ async function takeTurn(u) {
       u.hp -= st.dot;
       log(`${u.name} takes ${st.dot} damage from ${st.type}!`, 'log-status');
       render(); floatText(u, st.dot, 'dot');
-      await playAnim(u, st.type);
+      await playDamaged(u, STATUS_FX[st.type] || 'slash'); await sleep(250);
       if (--st.dur <= 0) u.status = null;
       if (u.hp <= 0) { u.hp = 0; log(`${u.name} has fallen!`, 'log-status'); sinkDead(u); render(); return; }
     } else if (st.stun) {
       u.status = null;
       log(`${u.name} is ${st.type} and misses their turn!`, 'log-status');
-      u.wrath = false;
-      await playAnim(u, st.type);
+      u.wrath = false; u.wrathNow = false;
+      await playDamaged(u, STATUS_FX[st.type] || 'slash'); await sleep(250);
       render(); return;
     }
   }
@@ -1388,8 +1509,8 @@ async function takeTurn(u) {
     cur = u; sel = null; selItem = null; invOpen = false;
     $('turn-indicator').innerText = `${u.name}'s turn`;
     const input = new Promise(r => waiting = r);   // must exist before render() so buttons enable
-    render();
-    act = await input;
+    render(); showPortrait(u);
+    act = await input; hidePortrait();
     cur = null; sel = null; selItem = null; invOpen = false; render();
   } else {
     $('turn-indicator').innerText = `${u.name} is acting...`;
@@ -1415,9 +1536,11 @@ async function takeTurn(u) {
     if (isAlive(u) && foes.length) {
       const v = foes[Math.floor(Math.random() * foes.length)];
       log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
-      await playAnim(u, 'skill1'); await hit(u, v, u.skills[0]);
+      const w = wrathStrike(u), back2 = await advance(u, v, w);
+      await playAnim(u, 'skill1'); await hit(u, v, w); await back2();
     }
   }
+  u.wrathNow = false;
   await sleep(300);
 }
 
@@ -1426,7 +1549,7 @@ async function takeTurn(u) {
 function checkEnd() {
   const won = !enemies.some(isAlive), lost = !party.some(isAlive);
   if (!won && !lost) return false;
-  over = true; actor = null; cur = null; waiting = null;
+  over = true; actor = null; cur = null; waiting = null; hidePortrait();
   const node = quest.def.nodes[quest.node], last = quest.node === quest.def.nodes.length - 1;
   const main = $('btn-end-main');
   let saved;
@@ -1477,10 +1600,10 @@ async function battle() {
       if (!isAlive(u)) continue;      // died earlier this round
       actor = u; render();
       await takeTurn(u);
-      if (u.barrier) { const had = u.barrier; u.barrier = 0; if (isAlive(u)) log(`${u.name}'s ${had} barrier fades.`, 'log-round'); render(); }      // a barrier ends with the turn of the unit that carries it
       actor = null;
       if (checkEnd()) return;
     }
+    if ([...party, ...enemies].some(x => x.barrier)) { [...party, ...enemies].forEach(x => { x.barrier = 0; }); log('🛡️ The round ends: every barrier fades.', 'log-round'); render(); }      // barriers last until the end of the round
   }
 }
 
@@ -1652,7 +1775,7 @@ function startQuest(ids, questId) {
 function startNode() {
   const node = quest.def.nodes[quest.node], total = quest.def.nodes.length;
   party = quest.party;                                               // same unit objects: HP/armour carry over
-  party.forEach((u, i) => { u.status = null; u.barrier = 0; u.wrath = false; u.rank = i; u.cd = u.skills.map(() => 0); });
+  party.forEach((u, i) => { u.status = null; u.barrier = 0; u.wrath = false; u.wrathNow = false; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = node.scale || {};            // quest-wide difficulty x this node's own scaling
   enemies = node.enemies.map(id => make(enemyById(id), 'e', { hp: (qs.hp || 1) * (ns.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) }));
   const count = {}, used = {};                                       // label repeats: Drone Sentinel A / B
