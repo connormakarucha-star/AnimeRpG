@@ -983,11 +983,10 @@ function importSave() {
 }
 
 /* ============ ANIMATION HOOK ============ */
-// Looks for assets/<unit.id>/<armoured|broken|superbroken>/<key>.(mp4|webm|webp|png) and shows it as a cut-in.
-// Videos play to the end; images hold for ANIM.hold ms. Tap the cut-in to skip. Missing file = short pause.
-// Keys used: skill1 skill2 skill3 damaged break superbreak burn poison bleed frozen shocked
-// 'break' (armour breaking) plays from the armoured folder, 'superbreak' from the broken folder: the state being left.
-// broken/ and superbroken/ both use the full set (skills, damaged, burn, poison, bleed, frozen, shocked).
+// Combat clips: assets/<unit.id>/<armoured|broken|superbroken>/<key>.(mp4|webm|webp|png|jpg) plays ON the unit's own sprite, in place of its idle
+// (melee attackers have run to the target first). Videos play to the end; images hold ~0.7s. Missing file = short pause (falls back to armoured/).
+// Keys: skill1 skill2 skill3 damaged (damaged covers every hit and status tick; the fire/ice/... effect is drawn over it). Idle: idle, active_idle.
+// Spa and training still use full-screen cut-ins (assets/<hero>/spa/*, assets/<hero>/train/*).
 // IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
 const ANIM = { base: 'assets', hold: 1500, fallback: 500, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
 const stage = $('cutin'), animCache = {}, skips = new Set();
@@ -1030,7 +1029,8 @@ function playClip(a, host = stage) {            // host = the overlay element to
   });
 }
 
-async function playAnim(unit, key, state, host) {      // state = folder name; host = overlay (defaults to the battle one)
+async function playAnim(unit, key, state, host) {      // spa / training pass a host overlay (full-screen cut-in); combat clips play on the figure itself
+  if (!host && !state && figs.get(unit)) return playOnFigure(unit, key);
   state = state || ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[unit.state];
   let a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
   if (!a && key === 'damaged' && state !== 'armoured') a = await findAsset(`${ANIM.base}/${unit.id}/armoured/damaged`);   // one 'damaged' picture is enough
@@ -1083,24 +1083,26 @@ function mountFigures(host, list, team) {
     f.querySelectorAll('video').forEach(v => { if (v.paused) v.play().catch(() => {}); });
   });
 }
-/* A hit or status tick: the unit's own 'damaged' picture/clip (from its current armour folder, else armoured/) plays IN PLACE of its idle,
-   and the stock effect (fire, ice, ...) is drawn over it. */
-async function playDamaged(u, kind) {
+/* Every combat clip (skill1-3, damaged) plays ON the unit's own figure in place of its idle, from its current armour folder (else armoured/).
+   For a hit or status tick `kind` is the stock effect (fire, ice, ...) drawn on top. */
+async function playOnFigure(u, key, kind) {
   const el = figs.get(u), folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
   if (kind) fx(u, kind);
-  let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/damaged`);
-  if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/damaged`);
+  let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/${key}`);
+  if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/${key}`);
   if (!a || !el || !el.isConnected) { await sleep(a ? 0 : ANIM.fallback || 0); return; }
   const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
   m.className = 'dmg'; m.src = a.url; m.draggable = false;
   el.classList.add('playing'); el.appendChild(m);
   await new Promise(res => {
-    let done = false; const end = () => { if (done) return; done = true; res(); };
-    if (vid) { m.playsInline = true; m.muted = true; m.onended = end; m.onerror = end; m.play().catch(end); setTimeout(end, 8000); }
+    let done = false; const end = () => { if (done) return; done = true; skips.delete(end); res(); };
+    skips.add(end);
+    if (vid) { m.playsInline = true; m.onended = end; m.onerror = end; m.play().catch(() => { m.muted = true; m.play().catch(end); }); setTimeout(end, 20000); }
     else setTimeout(end, Math.min(ANIM.hold, 700));
   });
   m.remove(); if (!el.querySelector('.dmg')) el.classList.remove('playing');
 }
+const playDamaged = (u, kind) => playOnFigure(u, 'damaged', kind);
 /* ---- stock visual effects: drawn on top of the unit's figure, so one 'damaged' picture per character is all the art needed ---- */
 const VFX = { fire: ['🔥', 7, 'rise'], ice: ['❄️', 7, 'fall'], shock: ['⚡', 5, 'zap'], poison: ['☠️', 6, 'rise'], bleed: ['🩸', 6, 'fall'], slash: ['', 0, 'slash'], shatter: ['💥', 3, 'burst'], ward: ['🛡️', 3, 'burst'] };
 const STATUS_FX = { burn: 'fire', bleed: 'bleed', poison: 'poison', frozen: 'ice', shocked: 'shock' };
