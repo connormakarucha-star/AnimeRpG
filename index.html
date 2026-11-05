@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anime RPG - 4v4 Tactical Combat</title>
 <style>
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#121216;color:#e0e0e6;margin:0;padding:10px;display:flex;flex-direction:column;align-items:center}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#121216;color:#e0e0e6;margin:0;padding:10px;min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column;align-items:center}
 h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .subtitle{font-size:.75rem;color:#a0a0b0;margin-bottom:10px;text-align:center}
 #game-container{width:100%;max-width:720px;background:#1a1a24;border:2px solid #2a2a3c;border-radius:12px;padding:12px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.6)}
@@ -24,7 +24,7 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .figure{grid-area:fig;position:relative;width:54px;height:54px;display:flex;align-items:flex-end;justify-content:center}
 .figure .ph{width:100%;height:100%;box-sizing:border-box;background:rgba(37,37,54,.8);border:1px dashed #4a4a6a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#8a8aab;text-align:center}
 .team-e .figure .ph{border-color:#ff8a80}
-.figure .spr{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none;user-select:none}
+.figure .spr{animation:breathe var(--bt,4.2s) ease-in-out var(--bd,0s) infinite;transform-origin:50% 100%;position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none;user-select:none}
 .figure.has-art .ph{display:none}
 .figure.flip .spr,.figure.flip .ph{transform:scaleX(-1)}
 .combatant-card.active-turn{border-color:#e8b04a;box-shadow:0 0 10px rgba(232,176,74,.35)}
@@ -46,6 +46,36 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .figure.tint-bleed{filter:drop-shadow(0 0 12px #ff1744) sepia(.8) saturate(5) hue-rotate(-50deg)}
 .figure.tint-shatter{filter:brightness(2.2) saturate(.3)}
 .figure.tint-ward{filter:drop-shadow(0 0 16px #4fc3f7) brightness(1.25)}
+.bgp{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bgp svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bgv{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 45%,rgba(0,0,0,.55) 100%),linear-gradient(to bottom,transparent 60%,rgba(0,0,0,.45))}
+.bgfx{position:absolute;inset:0}.bgfx span{position:absolute;display:block}
+.bgp-dust .bgfx span{width:var(--s);height:var(--s);border-radius:50%;background:rgba(255,200,130,.65);box-shadow:0 0 6px rgba(255,170,90,.8);opacity:0;animation:bgRise linear infinite}
+.bgp-wisps .bgfx span{width:var(--s);height:var(--s);border-radius:50%;background:rgba(190,255,110,.8);box-shadow:0 0 14px 5px rgba(150,230,40,.55);opacity:0;animation:bgDrift ease-in-out infinite}
+.bgp-rain .bgfx span{top:-12%;width:1.5px;height:42px;background:linear-gradient(transparent,rgba(190,235,255,.55));transform:rotate(14deg);opacity:0;animation:bgRain linear infinite}
+.bgflash{position:absolute;inset:0;background:#cfeaff;opacity:0;animation:bgBolt 9s infinite}
+@keyframes bgRise{0%{opacity:0;transform:translate(0,0)}15%{opacity:.9}100%{opacity:0;transform:translate(40px,-240px)}}
+@keyframes bgDrift{0%,100%{opacity:0;transform:translate(0,0)}30%{opacity:.9}60%{opacity:.7;transform:translate(60px,-50px)}}
+@keyframes bgRain{0%{opacity:0;transform:translate(0,0) rotate(14deg)}10%{opacity:1}100%{opacity:.8;transform:translate(120px,700px) rotate(14deg)}}
+@keyframes bgBolt{0%,92%,96%,100%{opacity:0}93%{opacity:.35}94%{opacity:.05}95%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.bgfx,.bgflash{display:none}}
+.figure.fallen .spr,.figure.playing .spr{animation:none}
+@keyframes breathe{0%,100%{scale:1 1;translate:0 0}50%{scale:.992 1.02;translate:0 -.4%}}
+@media (prefers-reduced-motion:reduce){.figure .spr{animation:none}}
+.skull-fx{position:absolute;left:50%;top:18%;width:62%;max-width:150px;transform:translateX(-50%);z-index:8;pointer-events:none;filter:drop-shadow(0 0 14px #ff1744) drop-shadow(0 0 4px #000);animation:vSkull .95s ease-out forwards}
+.skull-fx svg{display:block;width:100%;height:auto}
+@keyframes vSkull{0%{opacity:0;transform:translateX(-50%) scale(.2)}18%{opacity:1;transform:translateX(-50%) scale(1.35)}32%{transform:translateX(-50%) scale(1)}60%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(1.15) translateY(-14px)}}
+.vfx-shards{overflow:visible;z-index:7}
+.vfx.vfx-shards span{position:absolute;left:50%;top:46%;width:var(--sz);height:calc(var(--sz) * 1.5);margin:-10px 0 0 -8px;opacity:0;animation:vShard .55s cubic-bezier(.12,.7,.3,1) forwards}
+.vfx.vfx-shards span svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 3px rgba(160,120,255,.7))}
+@keyframes vShard{0%{opacity:1;transform:translate(0,0) rotate(0) scale(.5)}12%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(1)}}
+.shard-flash{position:absolute;left:50%;top:46%;width:70%;aspect-ratio:1;margin:-35% 0 0 -35%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.55),rgba(150,110,230,.35) 40%,transparent 70%);opacity:0;animation:vBurst .3s ease-out}
+.figure.fallen,.figure.vanish{transition:transform .5s cubic-bezier(.3,0,.5,1),opacity .4s,filter .5s}
+.team-p .figure.fallen{transform-origin:50% 100%;transform:translate(12%,-17%) rotate(88deg) scale(.9);z-index:0;filter:grayscale(.6) brightness(.85)}
+.team-e .figure.fallen{transform-origin:50% 100%;transform:translate(-12%,-17%) rotate(-88deg) scale(.9);z-index:0;filter:grayscale(.6) brightness(.85)}
+.figure.vanish{opacity:0}
+#battle-scene .figure.fallen{z-index:0}
+.combatant-card.gone{visibility:hidden}
 .figure .dmg{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none}
 .figure.flip .dmg{transform:scaleX(-1)}
 .figure.playing .spr,.figure.playing .ph{visibility:hidden}
@@ -55,14 +85,25 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .figure.aura-shock{filter:drop-shadow(0 0 10px #fff59d) drop-shadow(0 0 28px rgba(255,235,60,.8))}
 .figure.aura-poison{filter:drop-shadow(0 0 10px #b2ff59) drop-shadow(0 0 26px rgba(80,200,0,.7))}
 .figure.aura-bleed{filter:drop-shadow(0 0 10px #ff5252) drop-shadow(0 0 26px rgba(200,0,30,.7))}
-.vfx-aura span{font-size:clamp(14px,1.6vw,30px);animation-duration:1s;animation-iteration-count:1}
-.proj{position:absolute;z-index:14;pointer-events:none;font-size:clamp(26px,3vw,56px);line-height:1;transform:translate(-50%,-50%);filter:drop-shadow(0 0 10px currentColor)}
+.vfx-aura span{animation-duration:1s;animation-iteration-count:1}
+.proj{position:absolute;z-index:14;pointer-events:none;width:max(26px,3.2vw);height:max(26px,3.2vw);transform:translate(-50%,-50%);filter:drop-shadow(0 0 10px var(--glow,#fff))}
+.proj svg,.vfx span svg{width:100%;height:100%;display:block;overflow:visible}
 .bolt{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:14;animation:boltFlash .42s both}
 .bolt polyline{fill:none;stroke-linecap:round;stroke-linejoin:round}
 @keyframes boltFlash{0%{opacity:0}8%,40%,70%{opacity:1}25%,55%{opacity:.25}100%{opacity:0}}
 .vfx{position:absolute;inset:0;pointer-events:none;z-index:5}
-.vfx span{position:absolute;font-size:clamp(18px,2.4vw,46px);opacity:0;line-height:1;animation:vRise .8s ease-out both}
-.vfx-fall span{animation-name:vFall}.vfx-zap span{animation-name:vZap;animation-duration:.6s}.vfx-burst span{animation-name:vBurst;animation-duration:.55s}
+.vfx span{position:absolute;width:max(10px,var(--w,1.6vw));height:max(10px,var(--h,2vw));opacity:0;animation:vRise .8s ease-out both;transform:rotate(var(--r,0deg))}
+.vfx-fall span{animation-name:vFall}.vfx-zap span{animation-name:vZap;animation-duration:.6s}.vfx-burst span{animation-name:vBurst;animation-duration:.55s}.vfx-bub span{animation-name:vBub;animation-duration:1.1s}
+@keyframes vBub{0%{opacity:0;transform:translate(0,30%) scale(.5)}25%{opacity:.95}60%{transform:translate(12%,-45%) scale(1)}100%{opacity:0;transform:translate(-8%,-110%) scale(1.15)}}
+/* ambient: stays on while the unit is afflicted; strength is shared out between its ailments (set in JS via --o and the particle count) */
+.amb{position:absolute;inset:0;pointer-events:none;z-index:4;opacity:var(--o,1)}
+.amb .vfx{z-index:4}.amb .vfx span{animation-iteration-count:infinite;animation-duration:1.7s}.amb .vfx-zap span{animation-duration:1.3s}.amb .vfx-bub span{animation-duration:2.4s}
+.amb .iceblock{position:absolute;left:6%;right:6%;top:2%;bottom:0;z-index:6;border-radius:14% 14% 6% 6%/10% 10% 4% 4%;
+  background:linear-gradient(135deg,rgba(215,244,255,.62) 0%,rgba(120,195,255,.34) 38%,rgba(190,235,255,.5) 60%,rgba(255,255,255,.62) 100%);
+  border:2px solid rgba(235,250,255,.85);box-shadow:inset 0 0 22px rgba(255,255,255,.55),0 0 18px rgba(90,190,255,.7);clip-path:polygon(0 8%,10% 0,28% 5%,46% 0,64% 4%,82% 0,100% 7%,100% 100%,0 100%)}
+.amb .iceblock::before{content:'';position:absolute;left:14%;top:8%;width:9%;height:70%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0));transform:rotate(8deg)}
+.amb .iceblock::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.55) 48%,transparent 56%);animation:iceGlint 3.2s infinite}
+@keyframes iceGlint{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 @keyframes vRise{0%{opacity:0;transform:translateY(25%) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-110%) scale(1.3)}}
 @keyframes vFall{0%{opacity:0;transform:translateY(-70%) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translateY(90%) rotate(200deg)}}
 @keyframes vZap{0%,100%{opacity:0}10%,50%,80%{opacity:1;transform:scale(1.5)}30%,65%{opacity:.15;transform:scale(1)}}
@@ -70,7 +111,6 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .vfx-slash::before,.vfx-slash::after{content:'';position:absolute;left:12%;right:12%;top:42%;height:6px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 14px 4px rgba(255,255,255,.85);transform:rotate(-35deg);animation:vSlash .38s ease-out both}
 .vfx-slash::after{top:52%;transform:rotate(-22deg);animation-delay:.1s}
 @keyframes vSlash{0%{clip-path:inset(0 100% 0 0);opacity:1}60%{clip-path:inset(0 0 0 0);opacity:1}100%{clip-path:inset(0 0 0 0);opacity:0}}
-#active-portrait{display:none}
 .team-p .figure.lunge{animation:lungeR .35s}.team-e .figure.lunge{animation:lungeL .35s}
 @keyframes lungeR{40%{transform:translateX(34px)}100%{transform:none}}
 @keyframes lungeL{40%{transform:translateX(-34px)}100%{transform:none}}
@@ -105,7 +145,7 @@ button:hover:not(:disabled){background:#4a4a6e}
 button:disabled{opacity:.4;cursor:not-allowed}
 button.sel{border-color:#ff758c;background:#4a3350}
 button small{font-weight:normal;color:#c0c0d8}
-#log-box{background:#121218;border:1px solid #262638;border-radius:6px;height:90px;overflow-y:auto;padding:6px;font-family:monospace;font-size:.7rem;color:#b0b0c0}
+#log-box{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 16px);mask-image:linear-gradient(to bottom,transparent 0,#000 16px);background:#121218;border:1px solid #262638;border-radius:6px;height:90px;overflow-y:auto;padding:6px;font-family:monospace;font-size:.7rem;color:#b0b0c0}
 .log-entry{margin-bottom:3px}
 #cutin{display:none;position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.85);border-radius:8px;cursor:pointer;align-items:center;justify-content:center;padding:6px;box-sizing:border-box}
 #cutin.show{display:flex}
@@ -124,6 +164,7 @@ button small{font-weight:normal;color:#c0c0d8}
 #title textarea{width:100%;height:90px;background:#121218;color:#b0b0c0;border:1px solid #262638;border-radius:5px;font-family:monospace;font-size:.65rem;box-sizing:border-box;resize:none}
 .danger{background:#7a2a3a;border-color:#b04058}
 .scene{display:none;flex-direction:column;align-items:center;width:100%}
+.scene:not(#battle-scene){margin-block:auto}
 .scene.show{display:flex}
 .hub-wrap{width:100%;max-width:720px;box-sizing:border-box;padding:6px 4px;text-align:center}
 .hub-hall{background:linear-gradient(#241c30,#17141f);border:2px solid #2a2a3c;border-radius:12px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.6)}
@@ -182,6 +223,14 @@ button small{font-weight:normal;color:#c0c0d8}
 .shake{animation:shk .3s linear}
 @keyframes shk{0%,100%{transform:translate(0,0)}12%{transform:translate(calc(var(--sh)*-1),calc(var(--sh)*.4))}25%{transform:translate(var(--sh),calc(var(--sh)*-.4))}40%{transform:translate(calc(var(--sh)*-.7),calc(var(--sh)*.3))}55%{transform:translate(calc(var(--sh)*.7),0)}75%{transform:translate(calc(var(--sh)*-.35),0)}90%{transform:translate(calc(var(--sh)*.2),0)}}
 @media (prefers-reduced-motion:reduce){.shake{animation:none}}
+@media (max-width:600px){      /* phone portrait: slimmer cards so names and skill chips fit */
+  .combatant-card{grid-template-columns:34px 1fr;column-gap:4px;padding:4px;font-size:.62rem}
+  .figure{width:34px;height:34px}
+  .combatant-card .mini-sprite{width:34px;height:34px;font-size:.45rem}
+  .sk2{padding:2px 0}.sk2 b{font-size:.78em}.sk2 .ic{font-size:.95em}
+  .stats-info .nm .spd{font-size:.85em}
+  .chips{gap:2px}
+}
 .fxbar{display:flex;gap:6px;justify-content:center;margin:0 0 6px}
 .fxbar button{padding:3px 8px;font-size:.62rem;font-weight:normal;color:#b0b0c8}
 #inspect{display:none;position:fixed;inset:0;z-index:125;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
@@ -299,17 +348,10 @@ button small{font-weight:normal;color:#c0c0d8}
 /* ===== Battle stage on PC: two lines of fighters facing each other, front rows in the middle ===== */
 @media (min-width:900px){
   body.in-battle{padding:0}
-  /* columns no longer make their own layer, so bubbles / panels / the active portrait / a charging figure can be ordered against each other */
+  /* columns no longer make their own layer, so bubbles / panels / a charging figure can be ordered against each other */
   #battle-scene .team-column{z-index:auto}
   #battle-scene .combatant-card .bubble,#battle-scene .combatant-card .stats-info,#battle-scene .combatant-card .floor{position:relative;z-index:6}
   #battle-scene .figure{z-index:1}
-  /* the acting hero, big, over the figures but under every bubble / panel / button, and never clickable */
-  #active-portrait{display:block;position:absolute;left:0;z-index:4;pointer-events:none;width:40vw;opacity:0;transform:translateX(-4vw);transition:opacity .25s,transform .25s;
-    -webkit-mask-image:linear-gradient(to right,#000 80%,transparent);mask-image:linear-gradient(to right,#000 80%,transparent)}
-  #active-portrait.on{opacity:1;transform:none}
-  #active-portrait.on.dim{opacity:.3}
-  #active-portrait.flip img,#active-portrait.flip video{transform:scaleX(-1)}
-  #active-portrait img,#active-portrait video{width:100%;height:100%;object-fit:contain;object-position:left bottom;display:block;filter:drop-shadow(0 0 18px rgba(0,0,0,.7))}
   #battle-scene{position:relative;min-height:100vh;width:100%}
   #battle-scene h1{display:none}
   #battle-scene .subtitle{position:absolute;top:8px;left:16px;z-index:6;margin:0;text-align:left;font-size:.85rem;color:#c8ccd8;text-shadow:0 1px 3px #000}
@@ -334,7 +376,8 @@ button small{font-weight:normal;color:#c0c0d8}
   #battle-scene .combatant-card.active-turn,#battle-scene .combatant-card.targetable{box-shadow:none}
   #battle-scene .combatant-card .stats-info{background:rgba(8,10,16,.8);border:1px solid #2a2f3c;border-radius:6px;padding:.45em .55em;margin-top:.15em}
   #battle-scene .combatant-card.active-turn .stats-info{border-color:#e8b04a}
-  #battle-scene .combatant-card.dead .stats-info{opacity:.6}
+  #battle-scene .combatant-card.dead{opacity:1;filter:none}
+  #battle-scene .combatant-card.dead .stats-info,#battle-scene .combatant-card.dead .bubble{opacity:.45;filter:grayscale(1)}
   #battle-scene .bar-container{height:.7em;margin:.15em 0}
   #battle-scene .bar-container.thin{height:.5em;margin-top:0}
   #battle-scene .sk2{padding:.25em .1em}
@@ -350,6 +393,14 @@ button small{font-weight:normal;color:#c0c0d8}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b3200a"/><stop offset=".35" stop-color="#ff5a1a"/><stop offset=".75" stop-color="#ffb52e"/><stop offset="1" stop-color="#fff2a0"/></linearGradient>
+  <linearGradient id="gFlameCore" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a1f"/><stop offset="1" stop-color="#fffbe0"/></linearGradient>
+  <linearGradient id="gDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a72b4"/><stop offset="1" stop-color="#2a1d3d"/></linearGradient>
+<linearGradient id="gIce" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#bdefff"/><stop offset="1" stop-color="#4fb0ff"/></linearGradient>
+  <linearGradient id="gBlood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a6a"/><stop offset=".6" stop-color="#c1001f"/><stop offset="1" stop-color="#6a0010"/></linearGradient>
+  <radialGradient id="gPoison" cx=".38" cy=".35" r=".75"><stop offset="0" stop-color="#f1ffc4" stop-opacity=".95"/><stop offset=".55" stop-color="#8be21b" stop-opacity=".85"/><stop offset="1" stop-color="#2f8a0b" stop-opacity=".9"/></radialGradient>
+</defs></svg>
 <div id="spa-bg"></div>
 <div id="inspect" onclick="closeInspect()"><div id="inspect-box" onclick="event.stopPropagation()"></div></div>
 <div id="notice"><div class="notice-box">
@@ -527,7 +578,6 @@ button small{font-weight:normal;color:#c0c0d8}
 <div id="game-container">
   <div id="order"></div>
   <div class="battlefield">
-    <div id="active-portrait"></div>
     <div class="team-column">
       <div class="column-header" style="color:#81d4fa">PLAYER PARTY</div>
       <div id="party-cards" class="cards"></div>
@@ -560,12 +610,12 @@ button small{font-weight:normal;color:#c0c0d8}
 
 <script>
 /* ============ DATA ============ */
-// Elements. Burn/bleed/poison = damage over time; ice/shock = skip next turn.
-// Tune dot (damage per turn) and dur (turns) here.
+// Elements. Burn/bleed/poison = damage over time; ice/shock = skip next turn. A broken unit can carry SEVERAL of these at once.
+// Tune dot (damage per turn) and dur (turns) here. Fire: short and brutal. Poison: long and gentle. Bleed: in between (similar total damage each).
 const ELEM = {
-  fire:   { status: 'burn',    dot: 8, dur: 3 },
-  bleed:  { status: 'bleed',   dot: 6, dur: 4 },
-  poison: { status: 'poison',  dot: 5, dur: 5 },
+  fire:   { status: 'burn',    dot: 12, dur: 2 },
+  bleed:  { status: 'bleed',   dot: 8,  dur: 3 },
+  poison: { status: 'poison',  dot: 4,  dur: 6 },
   ice:    { status: 'frozen',  stun: true },
   shock:  { status: 'shocked', stun: true }
 };
@@ -589,40 +639,29 @@ const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', sho
 // Optional unit traits (see POS): frontMod / backMod = extra damage taken (+) or avoided (-) while standing in that row,
 // evasive = multiplies the damage penalty an attacker suffers from a bad position (a melee hit on the back row is -20%, x2 = -40%).
 const HEROES = [
-  { id:'seria', weak:['poison'], resist:['shock'], frontMod:-0.15, name:'Seria (Tank)',    tag:'SERIA',  hp:120, brk:60, spd:6, skills:[
+  { id:'seria', weak:['poison'], resist:['shock'], frontMod:-0.15, name:'Seria', tag:'SERIA',  hp:120, brk:60, spd:6, skills:[
     { n:'Shield Bash',  t:'dmg', r:'melee',  d:[11,13], cd:0 },
     { n:'Static Strike',t:'dmg', r:'melee',  d:[14,17], el:'shock', brk:15, cd:2 },
     { n:'Thunderclap',  t:'dmg', r:'ranged', d:[22,25], el:'shock', brk:30, cd:4 } ] },
-  { id:'cermia', weak:['ice'], resist:['fire'], name:'Cermia (Fire)',   tag:'CERMIA', hp:80,  brk:30, spd:8, skills:[
-    { n:'Slash',        t:'dmg', r:'melee',  d:[16,19], cd:0 },
-    { n:'Flame Lash',   t:'dmg', r:'ranged', d:[13,15], el:'fire', brk:20, cd:2 },
-    { n:'Inferno',      t:'dmg', r:'ranged', d:[23,26], el:'fire', brk:35, cd:3 } ] },
-  { id:'aria', weak:['fire'], resist:['ice'],   name:'Aria (Ice)',      tag:'ARIA',   hp:80,  brk:30, spd:9, skills:[
-    { n:'Slash',        t:'dmg', r:'melee',  d:[16,19], cd:0 },
-    { n:'Frost Shard',  t:'dmg', r:'ranged', d:[13,15], el:'ice', brk:20, cd:2 },
-    { n:'Blizzard',     t:'dmg', r:'ranged', d:[23,26], el:'ice', brk:35, cd:3 } ] },
-  { id:'nyria', weak:['bleed'], resist:['poison'],  name:'Nyria (Ward)',  tag:'NYRIA',  hp:70,  brk:25, spd:13, skills:[
-    { n:'Venom Dart',   t:'dmg', r:'ranged', d:[11,13], el:'poison', brk:12, cd:0 },
+  { id:'aria', weak:['fire'], resist:['ice'], backMod:-0.1, name:'Aria', tag:'ARIA',  hp:70,  brk:25, spd:13, skills:[       // the support: fast, so her barriers are up before the enemy acts
+    { n:'Frost Shard',  t:'dmg', r:'ranged', d:[11,13], el:'ice', brk:12, cd:0 },
     { n:'Ward',         t:'barrier',    p:30, cd:0 },
     { n:'Aegis',        t:'barrierAll', p:16, cd:2 } ] },
-  { id:'celeste', weak:['shock'], resist:['bleed'], evasive:1.5, name:'Celeste (Bleed)', tag:'CELESTE', hp:85, brk:30, spd:10, skills:[
-    { n:'Razor Cut',     t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:10, cd:0 },
-    { n:'Hemorrhage',    t:'dmg', r:'melee', d:[14,16], el:'bleed', brk:20, cd:2 },
-    { n:'Crimson Waltz', t:'dmg', r:'melee', d:[20,23], el:'bleed', brk:32, cd:3 } ] },
-  { id:'vesper', weak:['ice'], resist:['shock'], evasive:2, name:'Vesper (Storm)', tag:'VESPER', hp:70, brk:22, spd:12, skills:[        // fast glass cannon: stuns once armour is broken
+  { id:'vesper', weak:['ice'], resist:['shock'], evasive:2, name:'Vesper', tag:'VESPER', hp:70, brk:22, spd:12, locked:true,
+    unlockMsg:'Vesper has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[        // fast glass cannon: stuns once armour is broken
     { n:'Spark Step',      t:'dmg', r:'melee',  d:[10,12], el:'shock', brk:8,  cd:0 },
     { n:'Chain Lightning', t:'dmg', r:'ranged', d:[14,17], el:'shock', brk:24, cd:2 },
     { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[25,29], el:'shock', brk:38, cd:4 } ] },
-  { id:'iris', weak:['poison'], resist:['fire'], frontMod:-0.1, name:'Iris (Dragon)', tag:'IRIS', hp:105, brk:45, spd:9, skills:[      // martial artist, front liner
+  { id:'iris', weak:['poison'], resist:['fire'], frontMod:-0.1, name:'Iris', tag:'IRIS', hp:105, brk:45, spd:9, skills:[      // martial artist, front liner
     { n:'Iron Fist',       t:'dmg', r:'melee', d:[12,14], cd:0 },
     { n:'Blazing Kick',    t:'dmg', r:'melee', d:[16,19], el:'fire', brk:22, cd:2 },
     { n:"Dragon's Wrath",  t:'buff', buff:'wrath', fire:{ mult:1.75, el:'fire', brk:12 }, cd:4 } ] },    // next turn: every Iron Fist burns (+75% damage, fire, +12 break) and she gets a free one on a random enemy, then it wears off
-  { id:'aneesah', weak:['ice'], resist:['shock'], backMod:-0.15, name:'Aneesah (Storm)', tag:'ANEESAH', hp:65, brk:20, spd:11, skills:[   // chaotic storm mage, back liner
+  { id:'aneesah', weak:['ice'], resist:['shock'], backMod:-0.15, name:'Aneesah', tag:'ANEESAH', hp:65, brk:20, spd:11, skills:[   // chaotic storm mage, back liner
     { n:'Static Spark',    t:'dmg', r:'ranged', d:[6,8], el:'shock', brk:6, cd:0 },
     { n:'Lightning Bolt',  t:'dmg', r:'ranged', d:[17,20], el:'shock', brk:22, cd:2 },
     { n:'Tempest Unbound', t:'dmg', r:'ranged', d:[32,38], el:'shock', brk:40, cd:4, chaos:true } ] },
   // locked:true = not owned at the start. A quest with unlocks:'<hero id>' adds her to the roster the first time its boss falls.
-  { id:'siren', weak:['shock'], resist:['poison'],  name:'Siren (Poison)', tag:'SIREN', hp:75, brk:28, spd:9, locked:true,
+  { id:'siren', weak:['shock'], resist:['poison'],  name:'Siren', tag:'SIREN', hp:75, brk:28, spd:9, locked:true,
     unlockMsg:'The Siren has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
     { n:'Toxic Note',   t:'dmg', r:'ranged', d:[11,13], el:'poison', brk:10, cd:0 },
     { n:'Venom Song',   t:'dmg', r:'ranged', d:[15,18], el:'poison', brk:22, cd:2 },
@@ -671,7 +710,31 @@ const ENEMIES = [
     { n:'Crashing Wave', t:'dmg', r:'melee',  d:[18,21], cd:0 },
     { n:'Venom Song',    t:'dmg', r:'ranged', d:[14,17], el:'poison', brk:25, cd:2 },
     { n:'Storm Aria',    t:'dmg', r:'ranged', d:[16,19], el:'shock',  brk:25, cd:3 },
-    { n:'Tidal Ward',    t:'barrier', p:30, cd:4 } ] }
+    { n:'Tidal Ward',    t:'barrier', p:30, cd:4 } ] },
+  // ---- the necromancer's crypt (poison, ice and undead) ----
+  { id:'e_rat', weak:['fire'], resist:['poison'], evasive:1.5, name:'Plague Rat',     tag:'RAT',    hp:55,  brk:20, spd:10, skills:[
+    { n:'Gnaw',        t:'dmg', r:'melee',  d:[7,9],  el:'poison', brk:8, cd:0 },
+    { n:'Scurry Bite', t:'dmg', r:'melee',  d:[9,11], el:'poison', brk:12, cd:2 } ] },
+  { id:'e_skel', weak:['fire'], resist:['poison','bleed'], name:'Bone Soldier',   tag:'BONES',  hp:85,  brk:30, spd:6,  skills:[
+    { n:'Rusty Blade', t:'dmg', r:'melee',  d:[10,12], cd:0 },
+    { n:'Bone Throw',  t:'dmg', r:'ranged', d:[11,13], el:'bleed',  brk:12, cd:2 } ] },
+  { id:'e_ghoul', weak:['fire'], resist:['poison'], frontMod:-0.1, name:'Crypt Ghoul', tag:'GHOUL', hp:110, brk:40, spd:5, skills:[
+    { n:'Rend',        t:'dmg', r:'melee',  d:[11,13], el:'bleed',  brk:12, cd:0 },
+    { n:'Foul Bite',   t:'dmg', r:'melee',  d:[13,15], el:'poison', brk:16, cd:3 } ] },
+  { id:'e_wraith', weak:['fire'], resist:['ice','poison'], evasive:2, name:'Grave Wraith', tag:'WRAITH', hp:70, brk:28, spd:11, skills:[
+    { n:'Chill Touch', t:'dmg', r:'ranged', d:[10,12], el:'ice',    brk:14, cd:0 },
+    { n:'Death Wail',  t:'dmg', r:'ranged', d:[14,16], el:'ice',    brk:18, cd:3 } ] },
+  { id:'e_warder', weak:['fire'], resist:['poison'], name:'Bone Warder',  tag:'WARDER', hp:90, brk:35, spd:6, skills:[
+    { n:'Dark Bolt',   t:'dmg', r:'ranged', d:[8,9],   el:'poison', brk:10, cd:0 },
+    { n:'Bone Ward',   t:'barrier', p:28, cd:2 } ] },
+  { id:'e_bloat', weak:['fire'], resist:['poison','bleed'], frontMod:-0.2, name:'Plague Bloat', tag:'BLOAT', hp:140, brk:55, spd:3, skills:[
+    { n:'Burst',       t:'dmg', r:'melee',  d:[13,15], el:'poison', brk:15, cd:0 },
+    { n:'Miasma',      t:'dmg', r:'ranged', d:[9,11],  el:'poison', brk:18, cd:3 } ] },
+  { id:'e_necro', boss:true, weak:['fire'], resist:['poison','ice'], name:'The Necromancer', short:'Necromancer', tag:'NECRO', hp:340, brk:100, spd:9, skills:[
+    { n:'Bone Spear',  t:'dmg', r:'ranged', d:[17,20], cd:0 },
+    { n:'Plague Wave', t:'dmg', r:'ranged', d:[14,17], el:'poison', brk:25, cd:2 },
+    { n:'Death Chill', t:'dmg', r:'ranged', d:[16,19], el:'ice',    brk:25, cd:3 },
+    { n:'Grave Ward',  t:'barrier', p:30, cd:4 } ] }
 ];
 
 /* ============ QUEST DATA ============ */
@@ -681,6 +744,7 @@ const ENEMIES = [
 const QUESTS = [{
   id: 'ruins', name: "The Warden's Throne",       // id is stored in saves, so keep it even if the name changes
   desc: 'Fight through the Sentinel Ruins and defeat the Warden on its throne.',
+  unlocks: 'vesper',           // first boss win adds this hero to the roster
   scale: { hp: 1.3, atk: 1.3 },     // quest-wide difficulty (tuned with the balance simulator; see notes in the chat)
   nodes: [
     { name: 'Outer Gate',      enemies: ['e_drone', 'e_frost', 'e_drone'],          gold: 30 },
@@ -692,7 +756,7 @@ const QUESTS = [{
   id: 'cove', name: "The Siren's Cove",
   desc: 'Storm-lashed shores crawling with shock and venom. Something sings from the deep.',
   unlocks: 'siren',            // first boss win adds this hero to the roster
-  scale: { hp: 1.2, atk: 1.45 },
+  scale: { hp: 1.15, atk: 1.3 },
   nodes: [
     { name: 'Tidal Shallows',   enemies: ['e_jelly', 'e_crab', 'e_jelly'],                gold: 40 },
     { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly'],                gold: 50 },
@@ -700,6 +764,18 @@ const QUESTS = [{
     { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, scale: { hp: 1.2, atk: 1.15 } },
     { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, scale: { hp: 1.25, atk: 1.12 } },
     { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+  ]
+}, {
+  id: 'crypt', name: "The Necromancer's Crypt",
+  desc: 'Plague-ridden catacombs where the dead refuse to lie still. Fire burns them best; something ancient watches from the deep vault.',
+  scale: { hp: 0.95, atk: 1.15 },
+  nodes: [
+    { name: 'Bone-Strewn Road', enemies: ['e_rat', 'e_skel', 'e_rat'],                     gold: 40 },
+    { name: 'Charnel Cellar',   enemies: ['e_ghoul', 'e_wraith', 'e_rat'],                 gold: 50 },
+    { name: 'Plague Pits',      enemies: ['e_skel', 'e_bloat', 'e_ghoul', 'e_warder'],     gold: 65, scale: { hp: 1.0, atk: 1.0 } },
+    { name: 'Whispering Ossuary', enemies: ['e_wraith', 'e_ghoul', 'e_skel', 'e_warder'],  gold: 80, scale: { hp: 1.0, atk: 1.1 } },
+    { name: 'The Bone Gallery', enemies: ['e_bloat', 'e_wraith', 'e_skel', 'e_warder'],    gold: 100, scale: { hp: 1.0, atk: 1.1 } },
+    { name: "The Necromancer's Vault", enemies: ['e_skel', 'e_necro', 'e_ghoul'],          gold: 150, boss: true, scale: { hp: 1.0, atk: 1.1 } }
   ]
 }];
 // Anti stun-lock (hidden, never shown in the UI): when a BOSS is the last enemy standing and loses `stunMisses` turns in a row to stun,
@@ -851,10 +927,14 @@ const isAlive = u => u.hp > 0;
 const BREAK2_RATIO = 0.75;
 const break2Max = d => d.brk2 || Math.max(1, Math.round(d.brk * BREAK2_RATIO));
 const scaleSkills = (skills, k) => k === 1 ? skills : skills.map(s => s.t === 'dmg' ? scaleDmg(s, k) : s);
+// Enemies are never armoured below this fraction of their (scaled) max HP, so a fight can't be settled by popping armour early.
+const ENEMY_ARMOUR_MIN = 0.5;
 function make(d, team, sc = { hp: 1, atk: 1 }) {
-  return { ...d, hp: Math.round(d.hp * (sc.hp || 1)), skills: scaleSkills(d.skills, sc.atk || 1), short: d.short || d.name.split(' ')[0],
-           team, maxHp: Math.round(d.hp * (sc.hp || 1)), breakBar: d.brk, maxBreak: d.brk, break2: break2Max(d), maxBreak2: break2Max(d), state: 'armoured',
-           status: null, barrier: 0, cd: d.skills.map(() => 0),
+  const mhp = Math.round(d.hp * (sc.hp || 1)), brk = team === 'e' ? Math.max(d.brk, Math.ceil(mhp * ENEMY_ARMOUR_MIN)) : d.brk;
+  const brk2 = team === 'e' ? Math.max(1, Math.round(brk * BREAK2_RATIO)) : break2Max(d);
+  return { ...d, brk, hp: mhp, skills: scaleSkills(d.skills, sc.atk || 1), short: d.short || d.name.split(' ')[0],
+           team, maxHp: mhp, breakBar: brk, maxBreak: brk, break2: brk2, maxBreak2: brk2, state: 'armoured',
+           statuses: [], barrier: 0, cd: d.skills.map(() => 0),
            icons: [...new Set(d.skills.map(s => s.el).filter(Boolean))].map(e => ICON[e]).join('') };
 }
 let party = [];   // the quest's hero units (HP and armour carry over between fights);      // array order = lineup position (index 0 = front)
@@ -875,7 +955,7 @@ let over = false;
 // To save something new: add a field in newSave(), update validSave(), and bump SAVE.version with a migration
 // so older saves get upgraded instead of breaking. Saves are per browser and per device.
 const START_GOLD = 500;   // gold a brand new game starts with (enough to try the spa, training and shop)
-const SAVE = { key: 'animeRpgSave', version: 8, prefix: 'ARPG1:' };   // prefix marks the export format, not the save version
+const SAVE = { key: 'animeRpgSave', version: 9, prefix: 'ARPG1:' };   // prefix marks the export format, not the save version
 const migrations = {
   // Each entry upgrades a save FROM that version to the next one.
   1: s => { s.roster = HEROES.filter(h => !h.locked).map(h => h.id); s.lastParty = []; s.scene = 'hub'; s.version = 2; return s; },
@@ -891,7 +971,17 @@ const migrations = {
   5: s => { s.trained = {}; s.items = {}; s.version = 6; return s; },   // training buffs + inventory
   6: s => { s.notices = []; s.version = 7; return s; },        // pop-ups waiting to be shown at the hub (hero unlocks)
   7: s => { ['iris', 'aneesah'].forEach(id => { if (Array.isArray(s.roster) && !s.roster.includes(id)) s.roster.push(id); }); s.version = 8; return s; },     // two new heroes
-  // Example for later: 8: s => { s.newField = 0; s.version = 9; return s; },
+  8: s => {                      // the roster was cut down to Seria, Aria, Iris, Aneesah (+ Vesper and Siren as unlocks)
+    const ok = id => HEROES.some(h => h.id === id);
+    s.roster = (Array.isArray(s.roster) ? s.roster : []).filter(ok);
+    HEROES.filter(h => !h.locked).forEach(h => { if (!s.roster.includes(h.id)) s.roster.push(h.id); });
+    if (Array.isArray(s.lastParty)) s.lastParty = s.lastParty.filter(ok);
+    ['relaxed', 'trained'].forEach(k => { if (s[k] && typeof s[k] === 'object') Object.keys(s[k]).forEach(id => { if (!ok(id)) delete s[k][id]; }); });
+    if (s.quest && Array.isArray(s.quest.party) && s.quest.party.some(p => !p || !ok(p.id))) s.quest = null;   // a run with a retired hero can't continue
+    (s.notices || []).forEach(() => {}); if (Array.isArray(s.notices)) s.notices = s.notices.filter(n => !n || !n.id || ok(n.id));
+    s.version = 9; return s;
+  },
+  // Example for later: 9: s => { s.newField = 0; s.version = 10; return s; },
   // When a new hero is added to HEROES, add a migration that pushes their id into s.roster (or unlock them in-game).
 };
 let game = null;          // the active save
@@ -1000,10 +1090,10 @@ function importSave() {
 /* ============ ANIMATION HOOK ============ */
 // Combat clips: assets/<unit.id>/<armoured|broken|superbroken>/<key>.(mp4|webm|webp|png|jpg) plays ON the unit's own sprite, in place of its idle
 // (melee attackers have run to the target first). Videos play to the end; images hold ~0.7s. Missing file = short pause (falls back to armoured/).
-// Keys: skill1 skill2 skill3 damaged (damaged covers every hit and status tick; the fire/ice/... effect is drawn over it). Idle: idle, active_idle.
+// Keys: skill1 skill2 skill3 damaged (damaged covers every hit and status tick; the fire/ice/... effect is drawn over it). Idle: idle.
 // Spa and training still use full-screen cut-ins (assets/<hero>/spa/*, assets/<hero>/train/*).
 // IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
-const ANIM = { base: 'assets', hold: 1500, fallback: 500, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
+const ANIM = { base: 'assets', hold: 1500, fallback: 400, impact: 160, hitHold: 500, skillHold: 600, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
 const stage = $('cutin'), animCache = {}, skips = new Set();
 stage.onclick = $('spa-cutin').onclick = () => [...skips].forEach(f => f());   // tap any cut-in to skip it
 
@@ -1056,16 +1146,16 @@ async function playAnim(unit, key, state, host) {      // spa / training pass a 
    assets/<unit id>/<armoured|broken|superbroken>/idle.(png|webp|gif|mp4|webm)   standing pose, per armour state (falls back to armoured/)
    assets/ui/battle_<quest id>_<fight number>.*, assets/ui/battle_<quest id>.*, assets/ui/battle_bg.*   stage background (first one found)
    assets/<unit id>/<armoured|broken|superbroken>/damaged.*    ONE picture/clip for every hit AND every status tick; plays in place of the idle with the stock effect (fire, ice, shock...) drawn on top
-   assets/<hero id>/<state>/active_idle.*                      big 'your turn' picture shown at the left of the stage (falls back to idle, enlarged)
    No file = a labelled placeholder box. Set SPR.flipParty / SPR.flipEnemy to true if your drawings face the other way
    (heroes should face right, enemies left). */
 const SPR = { flipParty: false, flipEnemy: false };
 const figs = new WeakMap();      // one persistent figure element per unit, so animated sprites keep playing between renders
 let spriteRenderQueued = false;
 function spriteFor(u) {
-  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
-  for (const st of [...new Set([folder, 'armoured'])]) {
-    const p = `${ANIM.base}/${u.id}/${st}/idle`;
+  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state], down = !!u.fell && u.hp <= 0;
+  const stand = [...new Set([folder, 'armoured'])].map(st => `${ANIM.base}/${u.id}/${st}/idle`);
+  const paths = down ? [...[...new Set([u.state === 'super' ? 'superbroken' : 'broken', folder, 'armoured'])].map(st => `${ANIM.base}/${u.id}/${st}/damaged`), ...stand] : stand;
+  for (const p of paths) {
     if (!(p in animCache)) {
       findAsset(p).then(() => { if (!spriteRenderQueued) { spriteRenderQueued = true; setTimeout(() => { spriteRenderQueued = false; render(); }, 30); } });
       return null;
@@ -1076,7 +1166,7 @@ function spriteFor(u) {
 }
 function figureEl(u, team) {
   let el = figs.get(u);
-  if (!el) { el = document.createElement('div'); el.className = 'figure'; el.innerHTML = `<div class="ph">${u.tag}</div>`; figs.set(u, el); }
+  if (!el) { el = document.createElement('div'); el.className = 'figure'; el.innerHTML = `<div class="ph">${u.tag}</div>`; figs.set(u, el); el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's'); }
   const a = spriteFor(u), want = a ? a.url : '';
   if (el.dataset.src !== want) {
     el.dataset.src = want; el.querySelectorAll('.spr').forEach(x => x.remove());
@@ -1089,11 +1179,12 @@ function figureEl(u, team) {
     el.classList.toggle('has-art', !!a);
   }
   el.classList.toggle('flip', team === 'p' ? SPR.flipParty : SPR.flipEnemy);
+  el.classList.toggle('fallen', !!u.fell && u.hp <= 0); el.classList.toggle('vanish', !!u.vanish);
   return el;
 }
 function mountFigures(host, list, team) {
   [...host.children].forEach((c, i) => {
-    const slot = c.querySelector('.figure-slot'), u = list[i]; if (!slot || !u) return;
+    const slot = c.querySelector('.figure-slot'), u = list[i]; if (!slot || !u || u.gone) return;
     const f = figureEl(u, team); slot.replaceWith(f);
     f.querySelectorAll('video').forEach(v => { if (v.paused) v.play().catch(() => {}); });
   });
@@ -1113,54 +1204,141 @@ async function playOnFigure(u, key, kind) {
     let done = false; const end = () => { if (done) return; done = true; skips.delete(end); res(); };
     skips.add(end);
     if (vid) { m.playsInline = true; m.onended = end; m.onerror = end; m.play().catch(() => { m.muted = true; m.play().catch(end); }); setTimeout(end, 20000); }
-    else setTimeout(end, Math.min(ANIM.hold, 700));
+    else setTimeout(end, Math.min(ANIM.hold, key === 'damaged' ? ANIM.hitHold : ANIM.skillHold));
   });
   m.remove(); if (!el.querySelector('.dmg')) el.classList.remove('playing');
 }
 const playDamaged = (u, kind) => playOnFigure(u, 'damaged', kind);
-/* ---- stock visual effects: drawn on top of the unit's figure, so one 'damaged' picture per character is all the art needed ---- */
-const VFX = { fire: ['🔥', 7, 'rise'], ice: ['❄️', 7, 'fall'], shock: ['⚡', 5, 'zap'], poison: ['☠️', 6, 'rise'], bleed: ['🩸', 6, 'fall'], slash: ['', 0, 'slash'], shatter: ['💥', 3, 'burst'], ward: ['🛡️', 3, 'burst'] };
+/* ---- stock visual effects (small vector drawings, no emoji): drawn on top of the unit's figure, so one 'damaged' picture per character is all the art needed ---- */
+const rnd = (a, b) => a + Math.random() * (b - a);
+const SVGD = {
+  flame: () => `<svg viewBox="0 0 24 34"><path d="M12 1c1 7 9 10 9 19a9 9 0 0 1-18 0c0-4 2-7 4-9 0 3 1 5 3 6 0-6-1-11 2-16z" fill="url(#gFlame)"/><path d="M12 17c1 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-4 2-5 0 2 1 3 2 3 0-3-1-5 1-7z" fill="url(#gFlameCore)"/></svg>`,
+  shard: () => `<svg viewBox="0 0 16 40"><polygon points="8,0 15,14 11,40 5,40 1,14" fill="url(#gIce)" stroke="#eaffff" stroke-width=".9"/><polyline points="8,3 8,34" stroke="rgba(255,255,255,.75)" stroke-width="1"/><polyline points="8,14 15,14 11,40" fill="rgba(80,170,255,.25)" stroke="none"/></svg>`,
+  spark: () => `<svg viewBox="0 0 20 20"><path d="M10 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#fff" style="filter:drop-shadow(0 0 3px #7fd8ff)"/></svg>`,
+  bubble: () => `<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="url(#gPoison)" stroke="#d9ff94" stroke-width="1"/><ellipse cx="6.8" cy="6.4" rx="2.6" ry="1.6" fill="rgba(255,255,255,.85)" transform="rotate(-30 6.8 6.4)"/></svg>`,
+  drop: () => `<svg viewBox="0 0 16 24"><path d="M8 0C8 7 15 11 15 17a7 7 0 0 1-14 0C1 11 8 7 8 0z" fill="url(#gBlood)"/><ellipse cx="5.4" cy="15" rx="1.5" ry="2.6" fill="rgba(255,255,255,.45)" transform="rotate(12 5.4 15)"/></svg>`,
+  arc: () => {                                            // a little crackle of electricity: a jagged main line plus a side branch, glowing
+    const pts = []; let x = rnd(14, 26); for (let k = 0; k <= 7; k++) { pts.push([x, k * 5.4 + 1]); x = Math.max(4, Math.min(36, x + rnd(-11, 11))); }
+    const main = pts.map(p => p.map(n => n.toFixed(1)).join(',')).join(' '), m = pts[3], br = `${m[0].toFixed(1)},${m[1].toFixed(1)} ${(m[0] + rnd(-12, 12)).toFixed(1)},${(m[1] + 5).toFixed(1)} ${(m[0] + rnd(-16, 16)).toFixed(1)},${(m[1] + 11).toFixed(1)}`;
+    return `<svg viewBox="0 0 40 40" style="filter:drop-shadow(0 0 3px #ffe94d)"><g fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="${main}" stroke="#ffe066" stroke-width="4.5" opacity=".45"/><polyline points="${main}" stroke="#fff" stroke-width="1.7"/><polyline points="${br}" stroke="#fff" stroke-width="1.1" opacity=".9"/></g></svg>`;
+  },
+  piece: () => `<svg viewBox="0 0 20 20"><polygon points="10,0 20,13 7,20 0,7" fill="url(#gIce)" stroke="#fff" stroke-width=".7"/></svg>`,
+  ring: () => `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="rgba(120,200,255,.18)" stroke="#aee8ff" stroke-width="2.5"/><circle cx="20" cy="20" r="11" fill="none" stroke="#fff" stroke-width="1.2" opacity=".6"/></svg>`
+};
+const VFX = {
+  fire:    { n: 7, cls: 'rise',  mk: () => SVGD.flame(),  w: 1.5, h: 2.2, glow: '#ff8a1f' },
+  ice:     { n: 7, cls: 'fall',  mk: i => i % 3 === 2 ? SVGD.spark() : SVGD.shard(), w: 0.9, h: 2.4, glow: '#8fe3ff' },
+  shock:   { n: 5, cls: 'zap',   mk: () => SVGD.arc(),    w: 2.6, h: 2.6, glow: '#ffe94d' },
+  poison:  { n: 7, cls: 'bub',   mk: () => SVGD.bubble(), w: 1.3, h: 1.3, glow: '#9be21b' },
+  bleed:   { n: 6, cls: 'fall',  mk: () => SVGD.drop(),   w: 1.0, h: 1.5, glow: '#ff3b52' },
+  slash:   { n: 0, cls: 'slash' },
+  shatter: { n: 7, cls: 'burst', mk: () => SVGD.piece(),  w: 1.5, h: 1.5, glow: '#8fe3ff' },
+  ward:    { n: 2, cls: 'burst', mk: () => SVGD.ring(),   w: 4.5, h: 4.5, glow: '#8fe3ff' }
+};
+SVGD.skull = () => `<svg viewBox="0 0 64 72"><path d="M32 2C14 2 5 15 5 29c0 9 4 15 10 19v11c0 3 2 5 5 5h24c3 0 5-2 5-5V48c6-4 10-10 10-19C59 15 50 2 32 2z" fill="#f4f0e6" stroke="#1a1014" stroke-width="3"/><ellipse cx="21" cy="30" rx="8.5" ry="10" fill="#1a1014"/><ellipse cx="43" cy="30" rx="8.5" ry="10" fill="#1a1014"/><path d="M32 38l-5 9h10z" fill="#1a1014"/><path d="M22 52v10M32 52v10M42 52v10" stroke="#1a1014" stroke-width="3" stroke-linecap="round"/></svg>`;
+SVGD.dshard = () => `<svg viewBox="0 0 20 30"><polygon points="10,0 20,12 14,30 3,22 0,8" fill="url(#gDark)" stroke="#d8c8ff" stroke-width="1.4"/><polyline points="10,2 9,24" stroke="rgba(255,255,255,.35)" stroke-width="1"/></svg>`;
+function skullFx(u) {                                   // a big skull flashes over a unit the moment it hits 0 HP
+  const el = figs.get(u); if (!el) return;
+  const k = document.createElement('div'); k.className = 'skull-fx'; k.innerHTML = SVGD.skull(); el.appendChild(k); setTimeout(() => k.remove(), 1000);
+}
+function armourBreak(u, big) {                          // dark armour shards explode outward fast
+  const el = figs.get(u); if (!el) return;
+  el.classList.add('tint-shatter'); setTimeout(() => el.classList.remove('tint-shatter'), 260);
+  const box = document.createElement('div'); box.className = 'vfx vfx-shards';
+  const n = big ? 20 : 14;
+  for (let i = 0; i < n; i++) {
+    const sp = document.createElement('span'), a = (i / n) * Math.PI * 2 + rnd(-.3, .3), d = rnd(90, big ? 240 : 190);
+    sp.innerHTML = SVGD.dshard();
+    sp.style.setProperty('--dx', Math.round(Math.cos(a) * d) + 'px'); sp.style.setProperty('--dy', Math.round(Math.sin(a) * d * .8 - 14) + 'px');
+    sp.style.setProperty('--rot', Math.round(rnd(-300, 300)) + 'deg'); sp.style.setProperty('--sz', Math.round(rnd(big ? 20 : 16, big ? 40 : 32)) + 'px');
+    box.appendChild(sp);
+  }
+  const f = document.createElement('i'); f.className = 'shard-flash'; box.appendChild(f);
+  el.appendChild(box); setTimeout(() => box.remove(), 800);
+}
+/* A unit at 0 HP: skull flash, then its 'damaged' picture (broken / super broken folder) tips over sideways.
+   Heroes stay on the field lying at the back (they revive at camp); enemies fade out and leave the fight. */
+async function fall(t) {
+  t.hp = 0; t.barrier = 0; t.statuses = [];
+  log(`${t.name} has fallen!`, 'log-status');
+  skullFx(t); sinkDead(t); render();
+  await sleep(420);
+  t.fell = true; render();                               // swaps to the fallen picture; CSS tips it over
+  if (t.team === 'e') { await sleep(520); t.vanish = true; render(); await sleep(380); t.gone = true; render(); }
+  else await sleep(260);
+}
 const STATUS_FX = { burn: 'fire', bleed: 'bleed', poison: 'poison', frozen: 'ice', shocked: 'shock' };
+function particle(kind, i, k = 1) {
+  const v = VFX[kind], sp = document.createElement('span'); sp.innerHTML = v.mk(i);
+  sp.style.setProperty('--w', (v.w * k).toFixed(2) + 'vw'); sp.style.setProperty('--h', (v.h * k).toFixed(2) + 'vw');
+  if (v.cls === 'burst' || kind === 'ice') sp.style.setProperty('--r', Math.round(rnd(-40, 40)) + 'deg');
+  return sp;
+}
 function fx(u, kind, ms = 800) {
   const el = figs.get(u), v = VFX[kind]; if (!el || !v) return;
   el.classList.add('tint-' + kind); setTimeout(() => el.classList.remove('tint-' + kind), ms);
-  const box = document.createElement('div'); box.className = 'vfx vfx-' + v[2];
-  for (let i = 0; i < v[1]; i++) {
-    const sp = document.createElement('span'); sp.textContent = v[0];
-    sp.style.left = (15 + Math.random() * 65) + '%'; sp.style.top = (18 + Math.random() * 55) + '%'; sp.style.animationDelay = (i * 70) + 'ms';
+  const box = document.createElement('div'); box.className = 'vfx vfx-' + v.cls;
+  for (let i = 0; i < v.n; i++) {
+    const sp = particle(kind, i); sp.style.left = (12 + Math.random() * 68) + '%'; sp.style.top = (14 + Math.random() * 58) + '%'; sp.style.animationDelay = (i * 60) + 'ms';
     box.appendChild(sp);
   }
   el.appendChild(box); setTimeout(() => box.remove(), ms + 500);
 }
-function aura(u, kind, ms = 950) {
-  const el = figs.get(u), v = VFX[kind]; if (!el || !v || !v[0]) return;
+function aura(u, kind, ms = 950) {                   // casting flare around the caster
+  const el = figs.get(u), v = VFX[kind]; if (!el || !v || !v.mk) return;
   el.classList.add('aura-' + kind); setTimeout(() => el.classList.remove('aura-' + kind), ms);
-  const box = document.createElement('div'); box.className = 'vfx vfx-aura vfx-' + v[2];
-  for (let i = 0; i < 12; i++) {                                   // particles hugging the whole outline of the sprite, not just its middle
-    const sp = document.createElement('span'); sp.textContent = v[0];
-    const edge = Math.random() < .5; sp.style.left = (edge ? (Math.random() < .5 ? -5 + Math.random() * 25 : 70 + Math.random() * 30) : Math.random() * 90) + '%';
-    sp.style.top = (10 + Math.random() * 75) + '%'; sp.style.animationDelay = (i * 55) + 'ms'; box.appendChild(sp);
+  const box = document.createElement('div'); box.className = 'vfx vfx-aura vfx-' + v.cls;
+  for (let i = 0; i < 12; i++) {                      // particles hugging the whole outline of the sprite, not just its middle
+    const sp = particle(kind, i, .75), edge = Math.random() < .55;
+    sp.style.left = (edge ? (Math.random() < .5 ? -6 + Math.random() * 24 : 68 + Math.random() * 30) : Math.random() * 86) + '%';
+    sp.style.top = (10 + Math.random() * 72) + '%'; sp.style.animationDelay = (i * 55) + 'ms'; box.appendChild(sp);
   }
   el.appendChild(box); setTimeout(() => box.remove(), ms + 600);
 }
+/* Ambient ailment visuals: they stay on the figure the whole time the unit is afflicted (even off its turn).
+   The strength is divided between the ailments, so burning + poisoned + bleeding is three gentle effects, not three loud ones. */
+const AMB_N = { fire: 6, poison: 6, bleed: 5, shock: 3, ice: 4 };
+function syncAmbient(u) {
+  const el = figs.get(u); if (!el) return;
+  const sts = isAlive(u) ? (u.statuses || []) : [], sig = sts.map(x => x.type).sort().join(',');
+  if ((el.dataset.amb || '') === sig) return;
+  el.dataset.amb = sig; const old = el.querySelector(':scope > .amb'); if (old) old.remove();
+  if (!sts.length) return;
+  const k = sts.length, box = document.createElement('div'); box.className = 'amb'; box.style.setProperty('--o', (0.4 + 0.6 / k).toFixed(2));
+  sts.forEach(x => {
+    const kind = STATUS_FX[x.type]; if (!kind) return;
+    if (x.type === 'frozen') { const b = document.createElement('div'); b.className = 'iceblock'; box.appendChild(b); }
+    const g = document.createElement('div'); g.className = 'vfx vfx-' + VFX[kind].cls;
+    const n = Math.max(2, Math.round(AMB_N[kind] / k));
+    for (let i = 0; i < n; i++) {
+      const sp = particle(kind, i, .8); sp.style.left = (kind === 'ice' ? 8 + Math.random() * 74 : 12 + Math.random() * 66) + '%'; sp.style.top = (kind === 'fire' ? 38 + Math.random() * 40 : 15 + Math.random() * 60) + '%';
+      sp.style.animationDelay = (-Math.random() * 2) + 's'; g.appendChild(sp);
+    }
+    box.appendChild(g);
+  });
+  el.appendChild(box);
+}
 async function projectile(u, t, kind) {            // ranged elemental skills: a bolt / fireball / shard flies from the caster to the target
-  const a = figs.get(u), b = figs.get(t), host = $('fx'), v = VFX[kind]; if (!a || !b || !host || !v || !v[0] || !a.isConnected || !b.isConnected) return;
+  const a = figs.get(u), b = figs.get(t), host = $('fx'), v = VFX[kind]; if (!a || !b || !host || !v || !v.mk || !a.isConnected || !b.isConnected) return;
   const hb = host.getBoundingClientRect(), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect(); if (!hb.width || !ra.width) return;
   const x1 = ra.left - hb.left + ra.width / 2, y1 = ra.top - hb.top + ra.height * .42, x2 = rb.left - hb.left + rb.width / 2, y2 = rb.top - hb.top + rb.height * .42;
   if (kind === 'shock') {
-    const n = 9, dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len; let pts = '';
-    for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * 60; pts += `${(x1 + dx * k + nx * j).toFixed(1)},${(y1 + dy * k + ny * j).toFixed(1)} `; }
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bolt'); svg.setAttribute('viewBox', `0 0 ${hb.width} ${hb.height}`);
-    svg.innerHTML = `<polyline points="${pts}" stroke="#fff59d" stroke-width="12" opacity=".35"/><polyline points="${pts}" stroke="#ffffff" stroke-width="4" style="filter:drop-shadow(0 0 6px #ffee58)"/>`;
+    const bolt = (n, jit, w) => { const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len; let pts = '';
+      for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * jit; pts += `${(x1 + dx * k + nx * j).toFixed(1)},${(y1 + dy * k + ny * j).toFixed(1)} `; } return pts; };
+    const m = bolt(10, 64), side = bolt(7, 90), svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bolt'); svg.setAttribute('viewBox', `0 0 ${hb.width} ${hb.height}`);
+    svg.innerHTML = `<polyline points="${m}" stroke="#ffe94d" stroke-width="13" opacity=".35"/><polyline points="${m}" stroke="#fff" stroke-width="3.6" style="filter:drop-shadow(0 0 6px #ffee58)"/><polyline points="${side}" stroke="#fff6a8" stroke-width="1.6" opacity=".8"/>`;
     host.appendChild(svg); await sleep(340); setTimeout(() => svg.remove(), 120); return;
   }
-  const p = document.createElement('div'); p.className = 'proj'; p.textContent = v[0]; p.style.left = x1 + 'px'; p.style.top = y1 + 'px';
-  p.style.color = { fire: '#ff8a1f', ice: '#8fe3ff', poison: '#b2ff59', bleed: '#ff5252' }[kind] || '#fff'; host.appendChild(p);
-  const an = p.animate([{ transform: 'translate(-50%,-50%) scale(.7) rotate(0)' }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) scale(1.25) rotate(300deg)` }], { duration: 340, easing: 'ease-in', fill: 'forwards' });
-  await Promise.race([an.finished.catch(() => {}), sleep(500)]); p.remove();
+  const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI + 90;                 // flames / shards point where they're going
+  const p = document.createElement('div'); p.className = 'proj'; p.innerHTML = v.mk(0); p.style.left = x1 + 'px'; p.style.top = y1 + 'px'; p.style.setProperty('--glow', v.glow);
+  if (kind === 'poison' || kind === 'bleed') p.style.transform = 'translate(-50%,-50%)';
+  host.appendChild(p);
+  const rot = kind === 'poison' ? 0 : ang;
+  const an = p.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scale(.7)` }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) rotate(${rot}deg) scale(1.3)` }], { duration: 320, easing: 'ease-in', fill: 'forwards' });
+  await Promise.race([an.finished.catch(() => {}), sleep(480)]); p.remove();
 }
 /* ---- attackers move: melee charges across the stage to the target, ranged steps back away from it (PC layout only) ---- */
-const MOVE = { on: true, inMs: 240, outMs: 280, rangedStep: 0.35 };
+const MOVE = { on: true, inMs: 200, outMs: 220, rangedStep: 0.35 };
 const wide = () => window.matchMedia && window.matchMedia('(min-width:900px)').matches;
 async function advance(u, t, s) {                 // returns an async function that walks the figure home again
   const el = figs.get(u), tf = figs.get(t);
@@ -1182,36 +1360,84 @@ async function advance(u, t, s) {                 // returns an async function t
     el.style.zIndex = '';
   };
 }
-/* ---- active idle: a big picture of the hero whose turn it is. assets/<id>/<state>/active_idle.*  (falls back to armoured/, then to the normal idle, enlarged) ---- */
-let portraitTok = 0;
-async function showPortrait(u) {
-  const host = $('active-portrait'); if (!host || u.team !== 'p' || !wide()) return;
-  const tok = ++portraitTok, folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
-  let a = null;
-  for (const key of ['active_idle', 'active', 'idle']) { for (const st of [...new Set([folder, 'armoured'])]) { a = await findAsset(`${ANIM.base}/${u.id}/${st}/${key}`); if (a) break; } if (a) break; }
-  if (tok !== portraitTok) return;
-  host.innerHTML = ''; host.classList.remove('on');
-  const f = figs.get(u), bf = document.querySelector('#battle-scene .battlefield'); if (!a || !f || !bf) return;
-  const fr = f.getBoundingClientRect(), br = bf.getBoundingClientRect(); if (!br.height) return;
-  host.style.bottom = Math.max(0, br.bottom - fr.bottom) + 'px';                      // feet on the floor line, so the stat panels stay clear
-  host.style.height = Math.min(fr.height * 1.45, fr.bottom - br.top - 8) + 'px';
-  const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
-  m.src = a.url; m.draggable = false; if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; m.play().catch(() => {}); }
-  host.classList.toggle('flip', SPR.flipParty); host.appendChild(m);
-  requestAnimationFrame(() => host.classList.add('on'));
-}
-function hidePortrait() { portraitTok++; const h = $('active-portrait'); if (h) h.classList.remove('on'); }
 
 function bump(u, cls) {          // quick visual nudge on a unit's figure: 'hurt' (flash + wobble) or 'lunge' (step toward the enemy)
   const el = figs.get(u); if (!el) return;
   el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 450);
 }
+/* Rough stage backgrounds drawn in code (layered SVG silhouettes + drifting particles), used whenever there is no picture in assets/ui/.
+   One look per quest id; the fight number shifts the layout and the boss fight burns a little hotter. */
+const BGT = {
+  ruins: { sky: ['#1d1119', '#5a2f2c', '#d98a45'], far: '#3a2229', mid: '#24161c', ground: ['#3a2a2a', '#0f0a0e'], glow: '#ffb15c', fx: 'dust' },
+  cove:  { sky: ['#050f18', '#0d3446', '#2f8793'], far: '#0a2a38', mid: '#071a24', ground: ['#0d2a36', '#03090d'], glow: '#7fe3ff', fx: 'rain' },
+  crypt: { sky: ['#0a0810', '#1e1830', '#46405e'], far: '#1c1729', mid: '#120d1b', ground: ['#1e1c26', '#07060a'], glow: '#9be21b', fx: 'wisps' },
+  _:     { sky: ['#101018', '#1d2030', '#363b52'], far: '#1a1d2a', mid: '#12141d', ground: ['#222432', '#08080c'], glow: '#9fb4ff', fx: 'dust' }
+};
+function seeded(str) { let h = 1779033703 ^ str.length; for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
+  return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+function bgShapes(id, R, far, mid) {                       // returns the svg for the far + mid silhouette layers (viewBox 1600x900, floor near y=720)
+  const F = [], M = [], r = (a, b) => a + R() * (b - a);
+  if (id === 'ruins') {
+    for (let x = -40; x < 1640; x += r(150, 260)) {          // broken columns
+      const w = r(46, 84), h = r(220, 460), top = 720 - h, j = () => r(-14, 14);
+      F.push(`<polygon points="${x},720 ${x},${top + 20} ${x + w * .3},${top + j()} ${x + w * .55},${top + 26} ${x + w * .8},${top + j()} ${x + w},${top + 18} ${x + w},720" fill="${far}"/>`);
+    }
+    const ax = r(500, 900); F.push(`<path d="M${ax} 720V330a150 150 0 0 1 300 0V720h-46V340a104 104 0 0 0-208 0V720z" fill="${far}"/>`);   // a ruined arch
+    for (let x = -30; x < 1640; x += r(120, 220)) { const w = r(80, 170), h = r(40, 120); M.push(`<polygon points="${x},760 ${x},${760 - h} ${x + w * .4},${760 - h - r(0, 22)} ${x + w},${760 - h + r(0, 18)} ${x + w},760" fill="${mid}"/>`); }
+  } else if (id === 'cove') {
+    for (let x = 60; x < 1640; x += r(280, 460)) {           // sea stacks
+      const w = r(90, 190), h = r(180, 400);
+      F.push(`<path d="M${x} 640 Q${x + w * .1} ${640 - h * .6} ${x + w * .35} ${640 - h} Q${x + w * .6} ${640 - h * .85} ${x + w * .75} ${640 - h * .4} Q${x + w} ${640 - h * .1} ${x + w} 640z" fill="${far}"/>`);
+    }
+    let d = 'M-20 690'; for (let x = -20; x <= 1640; x += 40) d += ` Q${x + 20} ${690 + r(-16, 16)} ${x + 40} 690`;   // choppy horizon waves
+    M.push(`<path d="${d}V900H-20z" fill="${mid}"/>`);
+    for (let x = -30; x < 1640; x += r(260, 420)) { const w = r(120, 220), h = r(50, 120); M.push(`<path d="M${x} 800Q${x + w * .3} ${800 - h} ${x + w * .6} ${800 - h * .7}T${x + w} 800z" fill="${mid}"/>`); }
+  } else {                                                   // crypt: gravestones, dead trees, a gothic arch
+    for (let x = -20; x < 1640; x += r(90, 200)) {
+      const w = r(50, 90), h = r(80, 190), t = 720 - h;
+      F.push(`<path d="M${x} 720V${t + w / 2}a${w / 2} ${w / 2} 0 0 1 ${w} 0V720z" fill="${far}"/>`);
+      if (R() < .3) F.push(`<path d="M${x + w / 2 - 5} ${t - 40}h10v${50}h26v10h-26v40h-10v-40h-26v-10h26z" fill="${far}"/>`);
+    }
+    for (let k = 0; k < 3; k++) {                            // twisted dead trees
+      let x = r(120, 1480), y = 730, d = `M${x} ${y}`; for (let i = 0; i < 6; i++) { x += r(-34, 34); y -= r(40, 70); d += ` L${x} ${y}`; if (R() < .6) d += ` l${r(-70, 70)} ${r(-50, -10)} L${x} ${y}`; }
+      F.push(`<path d="${d}" fill="none" stroke="${far}" stroke-width="${r(8, 14)}" stroke-linecap="round" stroke-linejoin="round"/>`);
+    }
+    for (let x = -30; x < 1640; x += r(70, 150)) { const w = r(40, 70), h = r(40, 90); M.push(`<path d="M${x} 790V${790 - h + w / 2}a${w / 2} ${w / 2} 0 0 1 ${w} 0V790z" fill="${mid}"/>`); }
+  }
+  return [F.join(''), M.join('')];
+}
+function buildBg(id, node, last) {
+  const T = BGT[id] || BGT._, R = seeded(id + ':' + node), [far, mid] = bgShapes(id, R, T.far, T.mid), k = last ? 1 : .55 + .1 * (node % 3);
+  const d = document.createElement('div'); d.className = 'bgp bgp-' + T.fx;
+  d.innerHTML = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+    <defs><linearGradient id="bgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.sky[0]}"/><stop offset=".55" stop-color="${T.sky[1]}"/><stop offset="1" stop-color="${T.sky[2]}"/></linearGradient>
+    <linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.ground[0]}"/><stop offset="1" stop-color="${T.ground[1]}"/></linearGradient>
+    <radialGradient id="bgL" cx=".5" cy=".62" r=".55"><stop offset="0" stop-color="${T.glow}" stop-opacity="${(.5 * k).toFixed(2)}"/><stop offset="1" stop-color="${T.glow}" stop-opacity="0"/></radialGradient></defs>
+    <rect width="1600" height="900" fill="url(#bgS)"/><rect width="1600" height="900" fill="url(#bgL)"/>
+    ${id === 'cove' ? '<circle cx="1180" cy="190" r="70" fill="#d8f6ff" opacity=".35"/><circle cx="1180" cy="190" r="140" fill="#9fe7ff" opacity=".1"/>' : ''}
+    ${far}${mid}<rect y="720" width="1600" height="180" fill="url(#bgG)"/><rect y="720" width="1600" height="3" fill="${T.glow}" opacity=".22"/></svg><div class="bgv"></div>`;
+  const fxl = document.createElement('div'); fxl.className = 'bgfx';
+  const n = T.fx === 'rain' ? 46 : T.fx === 'wisps' ? 9 : 22;
+  for (let i = 0; i < n; i++) {
+    const sp = document.createElement('span'); sp.style.left = (Math.random() * 100).toFixed(1) + '%'; sp.style.animationDelay = (-Math.random() * 9).toFixed(2) + 's';
+    sp.style.animationDuration = (T.fx === 'rain' ? 0.7 + Math.random() * .5 : 7 + Math.random() * 8).toFixed(2) + 's';
+    if (T.fx !== 'rain') { sp.style.top = (30 + Math.random() * 60).toFixed(0) + '%'; sp.style.setProperty('--s', (3 + Math.random() * (T.fx === 'wisps' ? 8 : 4)).toFixed(1) + 'px'); }
+    fxl.appendChild(sp);
+  }
+  d.appendChild(fxl);
+  if (T.fx === 'rain') { const f = document.createElement('div'); f.className = 'bgflash'; d.appendChild(f); }
+  return d;
+}
 async function loadStageBg() {
   const b = document.querySelector('#battle-scene .battlefield'); if (!b || !quest) return;
-  const id = quest.def.id;
+  const id = quest.def.id, node = quest.node, last = node === quest.def.nodes.length - 1;
   let a = null;
-  for (const p of [`battle_${id}_${quest.node + 1}`, `battle_${id}`, 'battle_bg']) { a = await findAsset(`${ANIM.base}/ui/${p}`); if (a) break; }
-  b.style.backgroundImage = a && a.ext !== 'mp4' && a.ext !== 'webm' ? `url("${a.url}")` : '';
+  for (const p of [`battle_${id}_${node + 1}`, `battle_${id}`, 'battle_bg']) { a = await findAsset(`${ANIM.base}/ui/${p}`); if (a) break; }
+  if (!quest || quest.def.id !== id || quest.node !== node) return;        // the quest moved on while the picture was loading
+  const pic = a && a.ext !== 'mp4' && a.ext !== 'webm';
+  b.style.backgroundImage = pic ? `url("${a.url}")` : '';
+  b.querySelectorAll(':scope > .bgp').forEach(x => x.remove());
+  if (!pic) b.prepend(buildBg(id, node, last));    // no picture: draw one in code
 }
 
 /* ============ UI ============ */
@@ -1234,12 +1460,13 @@ function chips(u) {              // one small tile per skill: icons, damage / ba
 function card(u, team, i) {
   const c = ['combatant-card', 'team-' + team], alive = isAlive(u), front = i < POS.front;
   if (alive) c.push(front ? 'row-front' : 'row-back');
-  if (u === actor) c.push('active-turn');
+  if (u === actor && alive) c.push('active-turn');
   if (!alive) c.push('dead');
+  if (u.gone) c.push('gone');
   const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
   if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'barrier' && team === 'p'))) c.push('targetable');
   if (waiting && selItem && team === 'p' && alive && u.hp < u.maxHp) c.push('targetable');   // bag item: wounded living heroes
-  const st = u.status ? ` <span class="ail">[${u.status.type.toUpperCase()}${u.status.dot ? ' ' + u.status.dur : ''}]</span>` : '';
+  const st = (u.statuses || []).map(x => ` <span class="ail ail-${x.type}">[${x.type.toUpperCase()}${x.dot ? ' ' + x.dur : ''}]</span>`).join('');
   let extra = '';
   if (sk && team === 'e' && alive && sk.t === 'dmg') {      // exact damage and crit chance of the selected skill against this enemy
     const m = matchup(sk, u), [lo, hi] = adjRange(sk, u), pm = posMod(sk, u);
@@ -1288,7 +1515,7 @@ function render() {
   $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
   $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
   mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e');
-  { const ap = $('active-portrait'); if (ap) ap.classList.toggle('dim', !!(waiting && sel !== null && cur && cur.skills[sel].t === 'barrier')); }
+  [...party, ...enemies].forEach(syncAmbient);
   $('order').innerHTML = order.length ? `Round ${roundNo} · Turn order: ` + order.map(u =>
     u === actor ? `<b>${u.short}</b>` : isAlive(u) ? u.short : `<s>${u.short}</s>`).join(' › ') : '';
   for (let i = 0; i < 3; i++) {
@@ -1378,9 +1605,9 @@ function doShift() { if (waiting && party.filter(isAlive).length > 1) finish({ s
 
 /* ============ COMBAT LOGIC ============ */
 function applyStatus(t, el) {
-  const e = ELEM[el];
-  if (t.status && t.status.stun && !e.stun) return;          // don't overwrite a pending stun with a DoT
-  t.status = { type: e.status, dot: e.dot || 0, stun: !!e.stun, dur: e.dur || 1 };
+  const e = ELEM[el], have = t.statuses.find(x => x.type === e.status);
+  if (have) { have.dur = Math.max(have.dur, e.dur || 1); log(`${t.name}'s <strong>${e.status.toUpperCase()}</strong> is renewed!`, 'log-status'); return; }   // same ailment: refresh, never stack twice
+  t.statuses.push({ type: e.status, dot: e.dot || 0, stun: !!e.stun, dur: e.dur || 1 });          // different ailments all stick at once
   log(`${t.name} is afflicted with <strong>${e.status.toUpperCase()}</strong>!`, 'log-status');
 }
 
@@ -1395,13 +1622,13 @@ async function hit(u, t, s) {
   const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = s.el ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
   const dmg = r.amount - soak;
   t.barrier = b - soak;                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
-  t.hp -= dmg;
+  t.hp = Math.max(0, t.hp - dmg);                              // never below 0, even for a frame
   log(`${u.name} uses ${s.n} on ${t.name} for ${dmg} damage${soak ? ` (🛡️ ${soak} blocked)` : ''}${r.crit ? ` <strong style="color:#ffd54f">CRITICAL! (+${Math.max(0, num(CRIT.bonus))})</strong>` : ''}${m === 'weak' ? ` · weak to ${ELEM_NAME[s.el]}` : m === 'resist' ? ` · resists ${ELEM_NAME[s.el]}` : ''}${pmText(r.mod) ? ` · position ${pmText(r.mod)}` : ''}.`, u.team === 'p' ? 'log-player' : 'log-enemy');
   render();
   floatText(t, `${m === 'weak' ? '<small>WEAK</small>' : m === 'resist' ? '<small>RESIST</small>' : soak ? `<small>🛡️ ${soak} BLOCKED</small>` : ''}${dmg}${r.crit ? '!' : ''}`, (t.team === 'p' ? 'hurt ' : '') + (r.crit ? 'crit' : ''));
   shake(r.crit ? 2 : 1); if (dmg > 0) bump(t, 'hurt');
-  if (dmg > 0) await playDamaged(t, s.el || 'slash'); else { fx(t, 'ward'); await sleep(250); }
-  if (t.hp <= 0) { t.hp = 0; t.barrier = 0; log(`${t.name} has fallen!`, 'log-status'); sinkDead(t); render(); return; }
+  const anim = dmg > 0 ? playDamaged(t, s.el || 'slash') : (fx(t, 'ward'), sleep(200));       // the victim's reaction plays while the rest is worked out
+  if (t.hp <= 0) { const f = fall(t); await Promise.all([anim, f]); return; }
   if (s.el) {
     if (t.state === 'armoured') {                       // layer 1: protected from status effects, only break damage
       t.breakBar -= brk;
@@ -1409,7 +1636,7 @@ async function hit(u, t, s) {
       if (t.breakBar <= 0) {
         t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2);
         log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
-        fx(t, 'shatter', 700); await sleep(450);
+        armourBreak(t, false);
       }
     } else {                                            // broken or super broken: status effects land
       applyStatus(t, s.el);
@@ -1419,12 +1646,12 @@ async function hit(u, t, s) {
         if (t.break2 <= 0) {
           t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3);
           log(`<strong style="color:#ff1744">${t.name} is SUPER BROKEN!</strong>`);
-          fx(t, 'shatter', 700); await sleep(450);
+          armourBreak(t, true);
         }
       }
     }
   }
-  render();
+  render(); await anim;
 }
 
 async function useItem(u, id, t) {          // using an item takes the hero's turn
@@ -1435,7 +1662,7 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
     log(`${u.name} uses a ${it.name} on ${t.name}: heals ${t.hp - before} HP. (${quest.items[id]} left)`, 'log-heal');
     render(); floatText(t, '+' + (t.hp - before), 'heal');
   }
-  render(); await sleep(400);
+  render(); await sleep(300);
 }
 
 async function perform(u, i, target) {
@@ -1443,16 +1670,17 @@ async function perform(u, i, target) {
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
   const back = s.t === 'dmg' && target ? await advance(u, target, s) : null;
   if (s.el) aura(u, s.el);
-  await playAnim(u, 'skill' + (i + 1));
-  if (s.t === 'dmg' && s.el && target && rangeOf(s) === 'ranged') await projectile(u, target, s.el);
+  const clip = playAnim(u, 'skill' + (i + 1));                      // the attacker's clip keeps playing while the target is already reacting
+  if (s.t === 'dmg') await (s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
+  else await clip;
   if (s.t === 'buff') { u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
-    await hit(u, target, s);
+    await Promise.all([clip, hit(u, target, s)]);
     if (s.chaos && isAlive(u) && enemies.some(isAlive)) {          // the storm lashes out at someone else: a random other unit, friend or foe
       const pool = [...party, ...enemies].filter(x => isAlive(x) && x !== u && x !== target);
-      if (pool.length) { const v = pool[Math.floor(Math.random() * pool.length)]; log(`🌀 The storm runs wild! ${u.name} lashes out at ${v.name}.`, 'log-status'); await playAnim(u, 'skill1'); await hit(u, v, u.skills[0]); }
+      if (pool.length) { const v = pool[Math.floor(Math.random() * pool.length)]; log(`🌀 The storm runs wild! ${u.name} lashes out at ${v.name}.`, 'log-status'); await Promise.all([playAnim(u, 'skill1'), sleep(ANIM.impact).then(() => hit(u, v, u.skills[0]))]); }
     }
-    if (back) await back();
+    if (back) back();
     return;
   }
   const targets = s.t === 'barrier' ? (target && isAlive(target) ? [target] : []) : wardTargets(u);
@@ -1489,7 +1717,7 @@ function resolveIntent(u) {
     : it.target && isAlive(it.target) && it.target !== u && !(s.t === 'barrier' && it.target.barrier));
   return ok ? { i: it.i, target: it.target } : enemyChoose(u);
 }
-const stunned = u => !!(u.status && u.status.stun);
+const stunned = u => !!(u.statuses && u.statuses.some(x => x.stun));
 function intentText(u) {
   const it = u.intent; if (!it) return '';
   if (stunned(u)) return '💤 stunned, skips its turn';
@@ -1550,24 +1778,24 @@ async function takeTurn(u) {
   const hadWrath = !!u.wrath; u.wrathNow = hadWrath;     // set on an earlier turn: this turn it pays off, then wears off
   u.cd = u.cd.map(c => Math.max(0, c - 1));
   // Status effects resolve at the start of the unit's turn
-  if (u.status) {
-    const st = u.status;
-    if (st.dot) {
-      u.hp -= st.dot;
-      log(`${u.name} takes ${st.dot} damage from ${st.type}!`, 'log-status');
-      render(); floatText(u, st.dot, 'dot');
-      await playDamaged(u, STATUS_FX[st.type] || 'slash'); await sleep(250);
-      if (--st.dur <= 0) u.status = null;
-      if (u.hp <= 0) { u.hp = 0; log(`${u.name} has fallen!`, 'log-status'); sinkDead(u); render(); return; }
-    } else if (st.stun) {
-      u.status = null;
-      log(`${u.name} is ${st.type} and misses their turn!`, 'log-status');
-      u.wrath = false; u.wrathNow = false;
-      await playDamaged(u, STATUS_FX[st.type] || 'slash'); await sleep(250);
-      u.stunMiss = (u.stunMiss || 0) + 1;
-      if (u.team === 'e') await reinforce(u);
-      render(); return;
-    }
+  // damage-over-time ailments tick one after another, then a stun (one clip is enough for ice or shock) costs the turn
+  for (const st of u.statuses.filter(x => x.dot)) {
+    u.hp = Math.max(0, u.hp - st.dot);
+    log(`${u.name} takes ${st.dot} damage from ${st.type}!`, 'log-status');
+    render(); floatText(u, st.dot, 'dot');
+    await playDamaged(u, STATUS_FX[st.type] || 'slash');
+    if (--st.dur <= 0) u.statuses = u.statuses.filter(x => x !== st);
+    if (u.hp <= 0) { await fall(u); return; }
+  }
+  const stun = u.statuses.find(x => x.stun);
+  if (stun) {
+    log(`${u.name} is ${stun.type} and misses their turn!`, 'log-status');
+    u.wrath = false; u.wrathNow = false;
+    await playDamaged(u, STATUS_FX[stun.type] || 'slash');
+    u.statuses = u.statuses.filter(x => !x.stun); if (stun.type === 'frozen') fx(u, 'shatter', 700);
+    u.stunMiss = (u.stunMiss || 0) + 1;
+    if (u.team === 'e') await reinforce(u);
+    render(); return;
   }
   u.stunMiss = 0;                              // it acts this turn, so the stun streak is over
   render();
@@ -1576,12 +1804,12 @@ async function takeTurn(u) {
     cur = u; sel = null; selItem = null; invOpen = false;
     $('turn-indicator').innerText = `${u.name}'s turn`;
     const input = new Promise(r => waiting = r);   // must exist before render() so buttons enable
-    render(); showPortrait(u);
-    act = await input; hidePortrait();
+    render();
+    act = await input;
     cur = null; sel = null; selItem = null; invOpen = false; render();
   } else {
     $('turn-indicator').innerText = `${u.name} is acting...`;
-    await sleep(400);
+    await sleep(250);
     act = resolveIntent(u);
     u.intent = null;
   }
@@ -1592,9 +1820,9 @@ async function takeTurn(u) {
       const a = party[i], b = party[j];
       [party[i], party[j]] = [b, a]; [a.rank, b.rank] = [b.rank, a.rank];      // rank = the line-up order the camp restores after a fight
       log(`${u.name} swaps places with ${b.name}.`, 'log-player');
-      render(); await sleep(500);
+      render(); await sleep(350);
     }
-  } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(300); }
+  } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(200); }
   else if (act.item) await useItem(u, act.item, act.target);
   else await perform(u, act.i, act.target);
   if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on a random enemy, then the buff is gone
@@ -1605,11 +1833,11 @@ async function takeTurn(u) {
       log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
       const w = wrathStrike(u), back2 = await advance(u, v, w);
       if (w.el) aura(u, w.el);
-      await playAnim(u, 'skill1'); await hit(u, v, w); await back2();
+      await Promise.all([playAnim(u, 'skill1'), sleep(ANIM.impact).then(() => hit(u, v, w))]); back2();
     }
   }
   u.wrathNow = false;
-  await sleep(300);
+  await sleep(150);
 }
 
 // Quest rules: win a fight = +gold, camp, next fight. Win the boss = all gold goes home.
@@ -1617,7 +1845,7 @@ async function takeTurn(u) {
 function checkEnd() {
   const won = !enemies.some(isAlive), lost = !party.some(isAlive);
   if (!won && !lost) return false;
-  over = true; actor = null; cur = null; waiting = null; hidePortrait();
+  over = true; actor = null; cur = null; waiting = null;
   const node = quest.def.nodes[quest.node], last = quest.node === quest.def.nodes.length - 1;
   const main = $('btn-end-main');
   let saved;
@@ -1843,7 +2071,7 @@ function startQuest(ids, questId) {
 function startNode() {
   const node = quest.def.nodes[quest.node], total = quest.def.nodes.length;
   party = quest.party;                                               // same unit objects: HP/armour carry over
-  party.forEach((u, i) => { u.status = null; u.barrier = 0; u.wrath = false; u.wrathNow = false; u.rank = i; u.cd = u.skills.map(() => 0); });
+  party.forEach((u, i) => { u.statuses = []; u.barrier = 0; u.wrath = false; u.wrathNow = false; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = node.scale || {};            // quest-wide difficulty x this node's own scaling
   enemies = node.enemies.map(id => make(enemyById(id), 'e', { hp: (qs.hp || 1) * (ns.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) }));
   const count = {}, used = {};                                       // label repeats: Drone Sentinel A / B
