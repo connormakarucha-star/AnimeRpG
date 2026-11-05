@@ -646,7 +646,7 @@ const ENEMIES = [
   { id:'e_venom', weak:['fire'], resist:['poison'], name:'Venom Sentinel',   tag:'VENOM',  hp:85,  brk:30, spd:8,  skills:[
     { n:'Fang',        t:'dmg', r:'melee',  d:[9,11], cd:0 },
     { n:'Toxic Spit',  t:'dmg', r:'ranged', d:[10,12], el:'poison', brk:15, cd:2 } ] },
-  { id:'e_boss', weak:['poison'], resist:['shock'],  name:'Sentinel Warden',  short:'Warden', tag:'WARDEN', hp:260, brk:90, spd:7,  skills:[
+  { id:'e_boss', boss:true, weak:['poison'], resist:['shock'],  name:'Sentinel Warden',  short:'Warden', tag:'WARDEN', hp:260, brk:90, spd:7,  skills:[
     { n:'Crushing Blow', t:'dmg', r:'melee',  d:[18,21], cd:0 },
     { n:'Overload',      t:'dmg', r:'ranged', d:[18,21], el:'shock', brk:25, cd:3 } ] },
   // ---- the coast (electric + poison) ----
@@ -667,7 +667,7 @@ const ENEMIES = [
   { id:'e_tide', weak:['poison'], resist:['shock'],  name:'Tide Warder',      tag:'WARDER', hp:90,  brk:35, spd:6,  skills:[
     { n:'Salt Bolt',   t:'dmg', r:'ranged', d:[8,9],  el:'shock',  brk:10, cd:0 },
     { n:'Brine Ward',  t:'barrier', p:28, cd:2 } ] },
-  { id:'e_siren', weak:['bleed'], resist:['shock'], name:'The Siren',        short:'Siren', tag:'SIREN', hp:340, brk:100, spd:10, skills:[
+  { id:'e_siren', boss:true, weak:['bleed'], resist:['shock'], name:'The Siren',        short:'Siren', tag:'SIREN', hp:340, brk:100, spd:10, skills:[
     { n:'Crashing Wave', t:'dmg', r:'melee',  d:[18,21], cd:0 },
     { n:'Venom Song',    t:'dmg', r:'ranged', d:[14,17], el:'poison', brk:25, cd:2 },
     { n:'Storm Aria',    t:'dmg', r:'ranged', d:[16,19], el:'shock',  brk:25, cd:3 },
@@ -686,7 +686,7 @@ const QUESTS = [{
     { name: 'Outer Gate',      enemies: ['e_drone', 'e_frost', 'e_drone'],          gold: 30 },
     { name: 'Sentinel Hall',   enemies: ['e_fire', 'e_frost', 'e_shock', 'e_heal'], gold: 45 },
     { name: 'Inner Sanctum',   enemies: ['e_venom', 'e_shock', 'e_fire', 'e_heal'], gold: 60, scale: { hp: 1.15, atk: 1.1 } },
-    { name: 'Throne Room',     enemies: ['e_drone', 'e_boss', 'e_drone'],           gold: 100, boss: true, scale: { hp: 1.6, atk: 1.25 } }
+    { name: 'Throne Room',     enemies: ['e_drone', 'e_boss', 'e_drone'],           gold: 100, boss: true, scale: { hp: 1.4, atk: 1.2 } }
   ]
 }, {
   id: 'cove', name: "The Siren's Cove",
@@ -699,9 +699,13 @@ const QUESTS = [{
     { name: 'Sunken Wreck',     enemies: ['e_ray', 'e_crab', 'e_eel', 'e_tide'],          gold: 65, scale: { hp: 1.1, atk: 1.1 } },
     { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, scale: { hp: 1.2, atk: 1.15 } },
     { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, scale: { hp: 1.25, atk: 1.12 } },
-    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, boss: true, scale: { hp: 1.45, atk: 1.2 } }
+    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, boss: true, scale: { hp: 1.3, atk: 1.1 } }
   ]
 }];
+// Anti stun-lock (hidden, never shown in the UI): when a BOSS is the last enemy standing and loses `stunMisses` turns in a row to stun,
+// it calls fresh, full-health reinforcements (up to `maxSummons` times per fight). Which ones: the node's `adds: [enemy ids]`,
+// or by default the non-boss enemies the node starts with.
+const BOSS = { stunMisses: 2, maxSummons: 1, addHp: 0.6, addAtk: 0.8 };    // addHp / addAtk scale the reinforcements against the node's normal enemies
 // Camp shop prices: one gold buys this much healing / armour (break bar) repair.
 const SHOP = { hpPerGold: 8, breakPerGold: 3 };
 // Camp rest: at each camp a hero can recover at most this fraction of their MAX HP by paying for rest (potions are separate).
@@ -1524,6 +1528,24 @@ function wrathStrike(u) {                      // Dragon's Wrath: her Skill 1 co
   if (!w) return b;
   return { ...b, n: b.n + ' 🔥', el: w.el, brk: (b.brk || 0) + w.brk, d: [Math.round(b.d[0] * w.mult), Math.round(b.d[1] * w.mult)] };
 }
+function labelDuplicates(list) {                 // Drone Sentinel A / B ...
+  const count = {}, used = {};
+  list.forEach(e => count[e.id] = (count[e.id] || 0) + 1);
+  list.forEach(e => { if (count[e.id] > 1) { const L = 'ABCD'[(used[e.id] = (used[e.id] || 0) + 1) - 1]; e.name += ' ' + L; e.short += ' ' + L; } });
+}
+async function reinforce(boss) {                 // a stunned-out boss on its own calls for help
+  if (!boss.boss || !isAlive(boss) || (boss.stunMiss || 0) < BOSS.stunMisses || (boss.summons || 0) >= BOSS.maxSummons) return;
+  if (enemies.some(e => e !== boss && isAlive(e))) return;
+  const node = quest.def.nodes[quest.node], ids = (node.adds || node.enemies.filter(id => !(enemyById(id) || {}).boss)).slice(0, 3);
+  if (!ids.length) return;
+  boss.summons = (boss.summons || 0) + 1; boss.stunMiss = 0;
+  const qs = quest.def.scale || {}, ns = node.scale || {}, sc = { hp: (qs.hp || 1) * (ns.hp || 1) * BOSS.addHp, atk: (qs.atk || 1) * (ns.atk || 1) * BOSS.addAtk };
+  const fresh = ids.map(id => make(enemyById(id), 'e', sc)); labelDuplicates(fresh);
+  enemies = [boss, ...fresh];                    // the fallen make way; the boss keeps the front
+  log(`<strong style="color:#ff8a65">${boss.name} bellows, and reinforcements storm in!</strong>`, 'log-status');
+  shake(3); render(); fresh.forEach(e => floatText(e, 'REINFORCEMENTS', 'tag'));
+  await sleep(700);
+}
 async function takeTurn(u) {
   const hadWrath = !!u.wrath; u.wrathNow = hadWrath;     // set on an earlier turn: this turn it pays off, then wears off
   u.cd = u.cd.map(c => Math.max(0, c - 1));
@@ -1542,9 +1564,12 @@ async function takeTurn(u) {
       log(`${u.name} is ${st.type} and misses their turn!`, 'log-status');
       u.wrath = false; u.wrathNow = false;
       await playDamaged(u, STATUS_FX[st.type] || 'slash'); await sleep(250);
+      u.stunMiss = (u.stunMiss || 0) + 1;
+      if (u.team === 'e') await reinforce(u);
       render(); return;
     }
   }
+  u.stunMiss = 0;                              // it acts this turn, so the stun streak is over
   render();
   let act;
   if (u.team === 'p') {
