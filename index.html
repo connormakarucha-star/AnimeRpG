@@ -110,6 +110,15 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 @keyframes vBurst{0%{opacity:0;transform:scale(.2)}30%{opacity:1;transform:scale(1.5)}100%{opacity:0;transform:scale(2.3)}}
 .vfx-slash::before,.vfx-slash::after{content:'';position:absolute;left:12%;right:12%;top:42%;height:6px;border-radius:3px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 14px 4px rgba(255,255,255,.85);transform:rotate(-35deg);animation:vSlash .38s ease-out both}
 .vfx-slash::after{top:52%;transform:rotate(-22deg);animation-delay:.1s}
+/* comic impact burst (physical hits, bleed): a jagged white ring that pops and fades in about a quarter second */
+.vfx-impact{position:absolute;left:50%;top:var(--by,44%);width:var(--bs,86%);aspect-ratio:1;transform:translate(-50%,-50%) rotate(var(--br,0deg));pointer-events:none;z-index:7}
+.vfx-impact svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 6px rgba(255,255,255,.9));animation:vImpact .3s ease-out both}
+.vfx-impact.red svg{filter:drop-shadow(0 0 7px #ff2a4a) drop-shadow(0 0 14px rgba(255,20,60,.7))}
+@keyframes vImpact{0%{opacity:0;transform:scale(.3)}22%{opacity:1;transform:scale(1)}60%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.35)}}
+/* slow tail-end effects after an elemental hit: smoke over fire and shock, snowflakes over ice */
+.vfx-tail span{animation-duration:1.7s}
+.vfx-tail.snow span{animation-name:vSnow;animation-duration:2s}
+@keyframes vSnow{0%{opacity:0;transform:translate(0,-60%) rotate(0)}15%{opacity:1}60%{transform:translate(10%,60%) rotate(90deg)}100%{opacity:0;transform:translate(-6%,150%) rotate(180deg)}}
 @keyframes vSlash{0%{clip-path:inset(0 100% 0 0);opacity:1}60%{clip-path:inset(0 0 0 0);opacity:1}100%{clip-path:inset(0 0 0 0);opacity:0}}
 .team-p .figure.lunge{animation:lungeR .35s}.team-e .figure.lunge{animation:lungeL .35s}
 @keyframes lungeR{40%{transform:translateX(34px)}100%{transform:none}}
@@ -1519,9 +1528,9 @@ function mountFigures(host, list, team) {
 }
 /* Every combat clip (skill1-3, damaged) plays ON the unit's own figure in place of its idle, from its current armour folder (else armoured/).
    For a hit or status tick `kind` is the stock effect (fire, ice, ...) drawn on top. */
-async function playOnFigure(u, key, kind) {
+async function playOnFigure(u, key, kind, tier) {
   const el = figs.get(u), folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
-  if (kind) fx(u, kind);
+  if (kind) fx(u, kind, 800, tier);
   let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/${key}`);
   if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/${key}`);
   if (!a || !el || !el.isConnected) { await sleep(a ? 0 : ANIM.fallback || 0); return; }
@@ -1536,10 +1545,35 @@ async function playOnFigure(u, key, kind) {
   });
   m.remove(); if (!el.querySelector('.dmg')) el.classList.remove('playing');
 }
-const playDamaged = (u, kind) => playOnFigure(u, 'damaged', kind);
+const playDamaged = (u, kind, tier) => playOnFigure(u, 'damaged', kind, tier);
 /* ---- stock visual effects (small vector drawings, no emoji): drawn on top of the unit's figure, so one 'damaged' picture per character is all the art needed ---- */
 const rnd = (a, b) => a + Math.random() * (b - a);
+const burstSVG = () => {                       // a hollow comic burst: jagged spikes or a puffy cloud around an empty centre
+  const P = (r, a) => [50 + r * Math.cos(a), 50 + r * Math.sin(a)], f = n => n.toFixed(1), TAU = Math.PI * 2;
+  let outer = '';
+  if (Math.random() < .6) {
+    const n = 12 + Math.floor(Math.random() * 6), off = Math.random() * TAU; let d = '';
+    for (let i = 0; i < n; i++) {
+      const a = off + i * TAU / n + rnd(-.12, .12), w = rnd(.07, .13), tip = Math.random() < .25 ? rnd(30, 36) : rnd(40, 50), R = rnd(25, 29);
+      d += `${i ? 'L' : 'M'}${P(R, a - w).map(f)}L${P(tip, a).map(f)}L${P(R, a + w).map(f)}`;
+    }
+    outer = d + 'Z';
+  } else {
+    const n = 8 + Math.floor(Math.random() * 3), off = Math.random() * TAU; let d = '';
+    for (let i = 0; i < n; i++) {
+      const a0 = off + i * TAU / n, a1 = off + (i + 1) * TAU / n, am = (a0 + a1) / 2, R = rnd(26, 30);
+      d += `${i ? 'L' : 'M'}${P(R, a0).map(f)}Q${P(R + rnd(10, 17), am).map(f)} ${P(R, a1).map(f)}`;
+    }
+    for (let k = 0; k < 4; k++) { const a = off + Math.random() * TAU; d += `M${P(30, a - .1).map(f)}L${P(rnd(42, 50), a).map(f)}L${P(30, a + .1).map(f)}Z`; }
+    outer = d + 'Z';
+  }
+  const m = 12, hr = rnd(14, 19); let hole = '';
+  for (let i = 0; i < m; i++) hole += `${i ? 'L' : 'M'}${P(hr + rnd(-2.2, 2.2), -i * TAU / m).map(f)}`;      // wound the other way so the centre is cut out (nonzero fill keeps overlapping spikes solid)
+  return `<svg viewBox="0 0 100 100"><path d="${outer}${hole}Z" fill="#fff"/></svg>`;
+};
 const SVGD = {
+  smoke: () => `<svg viewBox="0 0 40 30"><g fill="#c9ccd6" fill-opacity=".7"><circle cx="13" cy="18" r="9"/><circle cx="25" cy="16" r="10"/><circle cx="19" cy="9" r="8"/></g></svg>`,
+  snow: () => `<svg viewBox="0 0 20 20"><g stroke="#fff" stroke-width="1.8" stroke-linecap="round" style="filter:drop-shadow(0 0 2px #8fe3ff)"><path d="M10 1v18M2.2 5.5l15.6 9M17.8 5.5l-15.6 9"/><path d="M7.5 2.5L10 5l2.5-2.5M7.5 17.5L10 15l2.5 2.5" stroke-width="1.2" fill="none"/></g></svg>`,
   flame: () => `<svg viewBox="0 0 24 34"><path d="M12 1c1 7 9 10 9 19a9 9 0 0 1-18 0c0-4 2-7 4-9 0 3 1 5 3 6 0-6-1-11 2-16z" fill="url(#gFlame)"/><path d="M12 17c1 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-4 2-5 0 2 1 3 2 3 0-3-1-5 1-7z" fill="url(#gFlameCore)"/></svg>`,
   shard: () => `<svg viewBox="0 0 16 40"><polygon points="8,0 15,14 11,40 5,40 1,14" fill="url(#gIce)" stroke="#eaffff" stroke-width=".9"/><polyline points="8,3 8,34" stroke="rgba(255,255,255,.75)" stroke-width="1"/><polyline points="8,14 15,14 11,40" fill="rgba(80,170,255,.25)" stroke="none"/></svg>`,
   spark: () => `<svg viewBox="0 0 20 20"><path d="M10 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#fff" style="filter:drop-shadow(0 0 3px #7fd8ff)"/></svg>`,
@@ -1560,6 +1594,8 @@ const VFX = {
   poison:  { n: 7, cls: 'bub',   mk: () => SVGD.bubble(), w: 1.3, h: 1.3, glow: '#9be21b' },
   bleed:   { n: 6, cls: 'fall',  mk: () => SVGD.drop(),   w: 1.0, h: 1.5, glow: '#ff3b52' },
   slash:   { n: 0, cls: 'slash' },
+  smoke:   { n: 6, cls: 'rise', mk: () => SVGD.smoke(), w: 2.6, h: 2, glow: '#aaa' },
+  snow:    { n: 12, cls: 'fall', mk: () => SVGD.snow(), w: .8, h: .8, glow: '#8fe3ff' },
   shatter: { n: 7, cls: 'burst', mk: () => SVGD.piece(),  w: 1.5, h: 1.5, glow: '#8fe3ff' },
   ward:    { n: 2, cls: 'burst', mk: () => SVGD.ring(),   w: 4.5, h: 4.5, glow: '#8fe3ff' }
 };
@@ -1604,7 +1640,27 @@ function particle(kind, i, k = 1) {
   if (v.cls === 'burst' || kind === 'ice') sp.style.setProperty('--r', Math.round(rnd(-40, 40)) + 'deg');
   return sp;
 }
-function fx(u, kind, ms = 800) {
+function burst(u, red) {                       // physical impact: quick comic burst, in time with the hit
+  const el = figs.get(u); if (!el) return;
+  el.classList.add('tint-slash'); setTimeout(() => el.classList.remove('tint-slash'), 160);
+  const b = document.createElement('div'); b.className = 'vfx-impact' + (red ? ' red' : '');
+  b.style.setProperty('--by', Math.round(rnd(34, 54)) + '%'); b.style.setProperty('--br', Math.round(rnd(-25, 25)) + 'deg'); b.style.setProperty('--bs', Math.round(rnd(74, 96)) + '%');
+  b.innerHTML = burstSVG(); el.appendChild(b); setTimeout(() => b.remove(), 400);
+}
+function tail(u, kind) {                         // the slow second half of an elemental hit, after the strike has landed
+  const el = figs.get(u), v = VFX[kind]; if (!el || !v) return;
+  const box = document.createElement('div'); box.className = 'vfx vfx-' + v.cls + ' vfx-tail' + (kind === 'snow' ? ' snow' : '');
+  for (let i = 0; i < v.n; i++) {
+    const sp = particle(kind, i, rnd(.8, 1.2)); sp.style.left = (10 + Math.random() * 70) + '%';
+    sp.style.top = (kind === 'snow' ? Math.random() * 25 : 20 + Math.random() * 40) + '%'; sp.style.animationDelay = (i * (kind === 'snow' ? 80 : 110)) + 'ms'; box.appendChild(sp);
+  }
+  el.appendChild(box); setTimeout(() => box.remove(), 3000);
+}
+const TAIL = { fire: 'smoke', shock: 'smoke', ice: 'snow' };
+function fx(u, kind, ms = 800, tier = false) {
+  if (kind === 'slash') return burst(u);
+  if (tier && kind === 'bleed') { burst(u, true); setTimeout(() => fx(u, 'bleed'), 220); return; }       // a cut: impact first, then the bleeding
+  if (tier && TAIL[kind]) setTimeout(() => tail(u, TAIL[kind]), 520);
   const el = figs.get(u), v = VFX[kind]; if (!el || !v) return;
   el.classList.add('tint-' + kind); setTimeout(() => el.classList.remove('tint-' + kind), ms);
   const box = document.createElement('div'); box.className = 'vfx vfx-' + v.cls;
@@ -1998,7 +2054,7 @@ async function hit(u, t, s) {
   render();
   floatText(t, `${m === 'weak' ? '<small>WEAK</small>' : m === 'resist' ? '<small>RESIST</small>' : soak ? `<small>🛡️ ${soak} BLOCKED</small>` : ''}${dmg}${r.crit ? '!' : ''}`, (t.team === 'p' ? 'hurt ' : '') + (r.crit ? 'crit' : ''));
   shake(r.crit ? 2 : 1); if (dmg > 0) bump(t, 'hurt');
-  const anim = dmg > 0 ? playDamaged(t, s.el || 'slash') : (fx(t, 'ward'), sleep(200));       // the victim's reaction plays while the rest is worked out
+  const anim = dmg > 0 ? playDamaged(t, s.el || 'slash', true) : (fx(t, 'ward'), sleep(200));       // the victim's reaction plays while the rest is worked out
   if (t.hp <= 0) {
     if (tryRevive(t)) { render(); await anim; return; }
     const f = fall(t); await Promise.all([anim, f]); return;
