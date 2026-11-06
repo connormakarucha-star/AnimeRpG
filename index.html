@@ -72,9 +72,8 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .vfx.vfx-shards span svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 3px rgba(160,120,255,.7))}
 @keyframes vShard{0%{opacity:1;transform:translate(0,0) rotate(0) scale(.5)}12%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(1)}}
 .shard-flash{position:absolute;left:50%;top:46%;width:70%;aspect-ratio:1;margin:-35% 0 0 -35%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.55),rgba(150,110,230,.35) 40%,transparent 70%);opacity:0;animation:vBurst .3s ease-out}
-.figure.fallen,.figure.vanish{transition:transform .5s cubic-bezier(.3,0,.5,1),opacity .4s,filter .5s}
-.team-p .figure.fallen{transform-origin:50% 100%;transform:translate(12%,-17%) rotate(88deg) scale(.9);z-index:0;filter:grayscale(.6) brightness(.85)}
-.team-e .figure.fallen{transform-origin:50% 100%;transform:translate(-12%,-17%) rotate(-88deg) scale(.9);z-index:0;filter:grayscale(.6) brightness(.85)}
+.figure.fallen,.figure.vanish{transition:opacity .3s,filter .3s}
+.figure.fallen{filter:grayscale(.5) brightness(.85)}
 .figure.vanish{opacity:0}
 #battle-scene .figure.fallen{z-index:0}
 .combatant-card.gone{visibility:hidden}
@@ -387,7 +386,8 @@ button small{font-weight:normal;color:#c0c0d8}
   #battle-scene #party-cards{flex-direction:row-reverse}          /* slot 0 (front) sits at the centre, the back of the line at the outer edge */
   #battle-scene .combatant-card{display:flex;flex-direction:column;flex:0 0 calc(25% - .4vw);max-width:290px;min-width:0;background:none;border:0;border-radius:0;padding:0;font-size:clamp(10px,.5vw + 5px,15px);box-shadow:none}
   #battle-scene .combatant-card .bubble{min-height:3.7em;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:0 .2em .3em;text-shadow:0 1px 3px #000}
-  #battle-scene .figure{width:100%;height:var(--figH)}
+  #battle-scene .figure{width:150%;align-self:center;height:var(--figH);pointer-events:none;transform-origin:50% 100%;scale:var(--z,1);translate:calc((var(--z,1) - 1) * 14% * var(--side,0));transition:filter .12s,scale .7s cubic-bezier(.3,.1,.2,1),translate .7s cubic-bezier(.3,.1,.2,1)}
+  #battle-scene .team-p .figure{--side:-1}#battle-scene .team-e .figure{--side:1}   /* wider than its card so tall portraits are not squeezed; the camera (--z) zooms in as fighters fall */
   #battle-scene .figure .ph{width:56%;height:62%;margin-bottom:0;font-size:.9em;border-radius:8px}
   #battle-scene .combatant-card .floor{display:block;height:10px;margin:2px 6%;border-bottom:2px solid rgba(255,255,255,.14);border-left:2px solid rgba(255,255,255,.14);border-right:2px solid rgba(255,255,255,.14);border-radius:0 0 4px 4px;transition:all .2s}
   #battle-scene .combatant-card.active-turn .floor{border-color:#e8b04a;box-shadow:0 3px 8px rgba(232,176,74,.55)}
@@ -981,14 +981,16 @@ const QUESTS = [{
 // or by default the non-boss enemies the node starts with.
 const BOSS = { stunMisses: 2, maxSummons: 1, addHp: 0.6, addAtk: 0.8 };    // addHp / addAtk scale the reinforcements against the node's normal enemies
 // Camp shop prices: one gold buys this much healing / armour (break bar) repair.
-const SHOP = { hpPerGold: 8, breakPerGold: 3 };
+const SHOP = { breakPerGold: 3 };       // only used to price event repairs now; camp uses Field Rations and Repair Kits
 // Camp rest: at each camp a hero can recover at most this fraction of their MAX HP by paying for rest (potions are separate).
-const CAMP = { healCap: 0.5 };
 // Items: bought at the hub Shop, carried on a quest, used from the Items button in battle (uses the hero's turn).
 // To add an item: add an entry here (and handle its `type` in useItem). Counts are stored per id in the save.
 const ITEMS = {
-  potion: { id: 'potion', name: 'Healing Potion', icon: '🧪', price: 20, type: 'heal', heal: 40, desc: 'Restores 40 HP to one hero' }
+  potion: { id: 'potion', name: 'Healing Potion', icon: '🧪', price: 20, type: 'heal', heal: 40, desc: 'Battle: restores 40 HP to one hero' },
+  ration: { id: 'ration', name: 'Field Rations', icon: '🍙', price: 25, type: 'food', pct: 0.50, use: 'camp', desc: 'Camp: the whole party eats and heals 50% of max HP' },
+  kit:    { id: 'kit',    name: 'Repair Kit',    icon: '🔧', price: 30, type: 'repair', pct: 0.50, use: 'camp', desc: 'Camp: mends one hero\'s armour by 50% of its max (SUPER BROKEN armour is beyond repair)' }
 };
+const battleItems = () => Object.values(ITEMS).filter(it => it.use !== 'camp');   // what the Items button offers in a fight; camp items are used from the camp screen
 /* ============ RELICS ============ */
 // Gear: each hero can wear RELIC.slots relics. They are bought in the hub Shop (3 random ones, restocked after every run) or dropped by a boss
 // (quest.relicDrop = chance), and worn from the hub's Gear screen. Each relic is owned once; gear is locked while a quest is in progress.
@@ -1170,7 +1172,7 @@ function sanitizeTraits(s) {                            // only known traits on 
   });
   s.traits = out; return s;
 }
-const itemCount = () => quest && quest.items ? Object.values(quest.items).reduce((a, b) => a + b, 0) : 0;
+const itemCount = () => quest && quest.items ? battleItems().reduce((a, it) => a + (quest.items[it.id] || 0), 0) : 0;
 const enemyById = id => ENEMIES.find(e => e.id === id);
 
 /* ============ SPA DATA ============ */
@@ -1485,7 +1487,7 @@ function importSave() {
 // Sprites only fill the lower part of their figure box (art tops out around 75% of the box height), so effects aim at the BODY, not the box centre.
 const BODY_TOP = 0.25;
 const bodyAt = k => BODY_TOP + (1 - BODY_TOP) * k;          // k = 0 is the top of the sprite, 1 its feet
-const ANIM = { base: 'assets', hold: 1500, fallback: 400, impact: 160, hitHold: 500, skillHold: 700, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
+const ANIM = { base: 'assets', hold: 1500, fallback: 400, impact: 100, hitHold: 380, skillHold: 520, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
 const stage = $('cutin'), animCache = {}, skips = new Set();
 stage.onclick = $('spa-cutin').onclick = () => [...skips].forEach(f => f());   // tap any cut-in to skip it
 
@@ -1675,18 +1677,19 @@ function armourBreak(u, big) {                          // dark armour shards ex
   const f = document.createElement('i'); f.className = 'shard-flash'; box.appendChild(f);
   el.appendChild(box); setTimeout(() => box.remove(), 800);
 }
-/* A unit at 0 HP: skull flash, then its 'damaged' picture (broken / super broken folder) tips over sideways.
-   Heroes stay on the field lying at the back (they revive at camp); enemies fade out and leave the fight. */
+/* A unit at 0 HP (hero or enemy alike): skull flash, its 'damaged' picture for a beat, then it fades from the screen.
+   Fallen heroes are only hidden: they get back up at camp. The line closes up after the fade, not during it. */
 async function fall(t) {
   t.hp = 0; t.barrier = 0; t.statuses = []; t.stealth = 0;
   log(`${t.name} has fallen!`, 'log-status');
   if (t.team === 'p') { t.downs = (t.downs || 0) + 1; if (quest) bump2(rec().falls, t.name, 1); }                // a hero who falls may pick up a flaw when the quest ends
   if (t.mod && (ELITE.mods[t.mod] || {}).rally) unrally();
-  skullFx(t); sinkDead(t); render();
-  await sleep(420);
-  t.fell = true; render();                               // swaps to the fallen picture; CSS tips it over
-  if (t.team === 'e') { await sleep(520); t.vanish = true; render(); await sleep(380); t.gone = true; render(); }
-  else await sleep(260);
+  skullFx(t); render();
+  await sleep(300);
+  t.fell = true; render();                               // the damaged picture holds for a beat
+  await sleep(220);
+  t.vanish = true; render(); await sleep(300);           // then it fades away
+  t.gone = true; sinkDead(t); render();                  // only now do the survivors close the gap (the fallen is invisible at the back of the line)
 }
 const STATUS_FX = { burn: 'fire', bleed: 'bleed', poison: 'poison', frozen: 'ice', shocked: 'shock' };
 function particle(kind, i, k = 1) {
@@ -1725,7 +1728,7 @@ function fx(u, kind, ms = 800, tier = false) {
   }
   el.appendChild(box); setTimeout(() => box.remove(), ms + 500);
 }
-const AURA_MS = 380;
+const AURA_MS = 260;
 const auraFits = (u, s) => !!s.el && !(rangeOf(s) === 'melee' && (s.el === 'bleed' || s.el === 'poison'));      // weapon-like bleed / poison strikes stay plain
 function aura(u, kind, ms = AURA_MS) {               // quick charge-up flare on the caster, played BEFORE the strike; resolves when it is over
   const el = figs.get(u), v = VFX[kind]; if (!el || !v || !v.mk) return Promise.resolve();
@@ -1771,18 +1774,18 @@ async function projectile(u, t, kind) {            // ranged elemental skills: a
       for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * jit; pts += `${(x1 + dx * k + nx * j).toFixed(1)},${(y1 + dy * k + ny * j).toFixed(1)} `; } return pts; };
     const m = bolt(10, 64), side = bolt(7, 90), svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bolt'); svg.setAttribute('viewBox', `0 0 ${hb.width} ${hb.height}`);
     svg.innerHTML = `<polyline points="${m}" stroke="#ffe94d" stroke-width="13" opacity=".35"/><polyline points="${m}" stroke="#fff" stroke-width="3.6" style="filter:drop-shadow(0 0 6px #ffee58)"/><polyline points="${side}" stroke="#fff6a8" stroke-width="1.6" opacity=".8"/>`;
-    host.appendChild(svg); await sleep(340); setTimeout(() => svg.remove(), 120); return;
+    host.appendChild(svg); await sleep(230); setTimeout(() => svg.remove(), 120); return;
   }
   const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI + 90;                 // flames / shards point where they're going
   const p = document.createElement('div'); p.className = 'proj'; p.innerHTML = v.mk(0); p.style.left = x1 + 'px'; p.style.top = y1 + 'px'; p.style.setProperty('--glow', v.glow);
   if (kind === 'poison' || kind === 'bleed') p.style.transform = 'translate(-50%,-50%)';
   host.appendChild(p);
   const rot = kind === 'poison' ? 0 : ang;
-  const an = p.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scale(.7)` }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) rotate(${rot}deg) scale(1.3)` }], { duration: 320, easing: 'ease-in', fill: 'forwards' });
-  await Promise.race([an.finished.catch(() => {}), sleep(480)]); p.remove();
+  const an = p.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scale(.7)` }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) rotate(${rot}deg) scale(1.3)` }], { duration: 240, easing: 'ease-in', fill: 'forwards' });
+  await Promise.race([an.finished.catch(() => {}), sleep(380)]); p.remove();
 }
 /* ---- attackers move: melee charges across the stage to the target, ranged steps back away from it (PC layout only) ---- */
-const MOVE = { on: true, inMs: 200, outMs: 220, rangedStep: 0.35 };
+const MOVE = { on: true, inMs: 150, outMs: 170, rangedStep: 0.35 };
 const wide = () => window.matchMedia && window.matchMedia('(min-width:900px)').matches;
 async function advance(u, t, s) {                 // returns an async function that walks the figure home again
   const el = figs.get(u), tf = figs.get(t);
@@ -2033,6 +2036,7 @@ function skillDesc0(s) {
 
 function render() {
   renderPanel();
+  queueMicrotask(applyCamera);
   $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
   $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
   mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e');
@@ -2056,9 +2060,32 @@ function render() {
   $('btn-items').disabled = !waiting || n <= 0;
   $('btn-items').classList.toggle('sel', !!waiting && (invOpen || !!selItem));
   const inv = $('inv'); inv.style.display = waiting && invOpen ? 'flex' : 'none';
-  if (waiting && invOpen) inv.innerHTML = Object.values(ITEMS).map(it => { const c = quest.items[it.id] || 0;
+  if (waiting && invOpen) inv.innerHTML = battleItems().map(it => { const c = quest.items[it.id] || 0;
     return `<button onclick="chooseItem('${it.id}')" ${c <= 0 ? 'disabled' : ''}>${it.icon} ${it.name} ×${c}<br><small>${it.desc}</small></button>`; }).join('');
 }
+
+/* Camera: on PC the 4v4 starts pulled back and zooms in as fighters fall (every figure scales about its feet, so all effects, which are positioned
+   in figure-box %, stay correct). 1v1 is the closest. The zoom is capped so nobody's head leaves the screen. */
+const CAM = { max: 0.55, topMargin: 64 };
+let camZ = 1;
+function applyCamera() {
+  const bf = document.querySelector('#battle-scene .battlefield'); if (!bf) return;
+  let z = 1;
+  if (wide() && party.length && enemies.length) {
+    const alive = party.filter(isAlive).length + enemies.filter(isAlive).length;
+    if (alive > 0) {
+      z = 1 + CAM.max * Math.max(0, Math.min(1, (8 - alive) / 6));
+      [...party, ...enemies].filter(u => isAlive(u) && !u.gone).forEach(u => {
+        const el = figs.get(u); if (!el || !el.isConnected) return;
+        const r = el.getBoundingClientRect(), h = el.offsetHeight;
+        if (h > 40 && r.bottom > 0) z = Math.min(z, Math.max(1, (r.bottom - CAM.topMargin) / h));      // r.bottom does not move when scaling about the feet
+      });
+    }
+  }
+  z = Math.round(z * 100) / 100;
+  if (z !== camZ) { camZ = z; bf.style.setProperty('--z', z); }
+}
+window.addEventListener('resize', () => applyCamera());
 
 /* ============ PLAYER INPUT ============ */
 function finish(action) { const r = waiting; waiting = null; if (r) r(action); }
@@ -2199,7 +2226,7 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
     log(`${u.name} uses a ${it.name} on ${t.name}: heals ${t.hp - before} HP. (${quest.items[id]} left)`, 'log-heal');
     render(); floatText(t, '+' + (t.hp - before), 'heal');
   }
-  render(); await sleep(300);
+  render(); await sleep(200);
 }
 
 async function perform(u, i, target) {
@@ -2211,16 +2238,16 @@ async function perform(u, i, target) {
   let begun; const started = new Promise(r => begun = r);
   const clip = playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
   const back = s.t === 'dmg' && target ? await advance(u, target, s) : null;
-  await Promise.race([started, sleep(700)]);                                      // wait until the skill picture is really showing
+  await Promise.race([started, sleep(500)]);                                      // wait until the skill picture is really showing
   if (s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
   if (s.t === 'dmg') await (s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
     log(`🌫️ ${u.name} throws a ${s.n}! She slips back and vanishes into the smoke.`, 'log-player'); floatText(u, '🌫️ STEALTH', 'tag');
-    tail(u, 'smoke'); await sleep(260);
+    tail(u, 'smoke'); await sleep(200);
     moveUnit(u, 'back'); u.stealth = s.dur; u.stealthFresh = true;
     enemies.forEach(e => { if (isAlive(e) && e.intent && e.intent.target === u && e.skills[e.intent.i].t === 'dmg' && Math.random() > STEALTH.weight) e.intent.target = weightedHero(); });      // anyone who was aiming at her picks again
-    render(); await sleep(150); return;
+    render(); await sleep(100); return;
   }
   if (s.t === 'buff') { u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
@@ -2488,7 +2515,7 @@ async function takeTurn(u) {
     cur = null; sel = null; selItem = null; invOpen = false; render();
   } else {
     $('turn-indicator').innerText = `${u.name} is acting...`;
-    await sleep(250);
+    await sleep(140);
     act = resolveIntent(u);
     u.intent = null;
   }
@@ -2499,9 +2526,9 @@ async function takeTurn(u) {
       const a = party[i], b = party[j];
       [party[i], party[j]] = [b, a]; [a.rank, b.rank] = [b.rank, a.rank];      // rank = the line-up order the camp restores after a fight
       say(`${u.name} swaps places with ${b.name}`); log(`${u.name} swaps places with ${b.name}.`, 'log-player');
-      render(); await sleep(350);
+      render(); await sleep(250);
     }
-  } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(200); }
+  } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(140); }
   else if (act.item) { setSpot([u, act.target]); say(`${u.name} uses ${ITEMS[act.item].name} on ${act.target.name}`); await useItem(u, act.item, act.target); }
   else await perform(u, act.i, act.target);
   if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on a random enemy, then the buff is gone
@@ -2514,14 +2541,14 @@ async function takeTurn(u) {
       let begun2; const started2 = new Promise(r => begun2 = r);
       const clip2 = playAnim(u, 'skill1', undefined, undefined, begun2);
       const back2 = await advance(u, v, w);
-      await Promise.race([started2, sleep(700)]);
+      await Promise.race([started2, sleep(500)]);
       if (auraFits(u, w)) await aura(u, w.el);
       await sleep(ANIM.impact);
       await Promise.all([clip2, hit(u, v, w)]); back2();
     }
   }
   u.wrathNow = false;
-  await sleep(150);
+  await sleep(70);
   if (u.stealth > 0) { if (u.stealthFresh) u.stealthFresh = false; else { u.stealth--; if (!u.stealth) { log(`${u.name} steps out of the shadows.`, 'log-round'); render(); } } }
   setSpot([]); say('');
 }
@@ -2732,7 +2759,7 @@ function pickQuest(id) { pickedQuest = id; renderQuests(); }
 function renderQuests() {
   $('quest-party').innerHTML = '<b>Party</b> (front → back)<br>' +
     picked.map((id, i) => `${i + 1}. ${heroById(id).name.split(' ')[0]}`).join(' &nbsp; ') +
-    '<br>' + (Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 ? 's' : ''} will come along` : '').filter(Boolean).join(' · ') || 'No supplies in the bag. The Shop sells healing potions.');
+    '<br>' + (Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 ? 's' : ''} will come along` : '').filter(Boolean).join(' · ') || 'No supplies in the bag. The Shop sells potions, rations and repair kits.');
   $('quest-list').innerHTML = QUESTS.map(q => {
     const on = q.id === pickedQuest;
     return `<div class="pick quest-pick${on ? ' on' : ''}" onclick="pickQuest('${q.id}')">
@@ -2823,7 +2850,7 @@ function startQuest(ids, questId) {
 function startNode() {
   const node = curNode(), total = quest.def.nodes.length;
   party = quest.party;                                               // same unit objects: HP/armour carry over
-  party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.rank = i; u.cd = u.skills.map(() => 0); });
+  party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = (quest.bonus ? quest.def.nodes[quest.node] : node).scale || {};            // quest-wide difficulty x this node's own scaling
   const ids = quest.bonus ? quest.bonus.ids : (quest.plan && quest.plan.nodes[quest.node] || node.enemies), mods = quest.bonus ? quest.bonus.mods : (RAND.on && quest.plan && quest.plan.mods && quest.plan.mods[quest.node]);
   enemies = buildEnemies(ids, mods, { hp: (qs.hp || 1) * (ns.hp || 1) * (quest.bonus && quest.bonus.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) });
@@ -2838,8 +2865,6 @@ function startNode() {
   render(); return battle();
 }
 
-const healRoom = u => Math.max(0, Math.min(u.maxHp - u.hp, Math.floor(u.maxHp * CAMP.healCap) - (u.campHeal || 0)));   // HP resting can still restore at this camp
-const healCost = u => Math.ceil(healRoom(u) / SHOP.hpPerGold);
 const repairCost = u => u.state === 'super' ? 0   // super broken armour can't be repaired at all
   : Math.ceil(((u.maxBreak - u.breakBar) + (u.maxBreak2 - u.break2)) / SHOP.breakPerGold);
 const armourTag = u => u.state === 'armoured' ? '' : `<br><span class="${u.state === 'super' ? 'super' : 'broken'}-tag">${u.state === 'super' ? 'SUPER BROKEN' : 'Armour broken'}</span>`;
@@ -2847,7 +2872,8 @@ const armourWord = u => ({ armoured: 'intact', broken: '<span class="broken-tag"
 const armourBars = u => u.state === 'armoured' ? `${u.breakBar}/${u.maxBreak}` : `${u.breakBar}/${u.maxBreak} · ${u.break2}/${u.maxBreak2}`;
 
 function reviveAtCamp() {
-  quest.party.sort((a, b) => (a.rank || 0) - (b.rank || 0));        // heroes who fell (and sank to the back) return to their place in the line
+  quest.party.sort((a, b) => (a.rank || 0) - (b.rank || 0));        // heroes who fell (and were hidden at the back) return to their place in the line
+  quest.party.forEach(u => { u.fell = false; u.vanish = false; u.gone = false; });
   const down = quest.party.filter(u => u.hp <= 0);                   // no permadeath: downed heroes get up with 1 HP
   down.forEach(u => { u.hp = 1; });
   return down.length ? `${down.map(u => u.short).join(', ')} got back on their feet with 1 HP.` : '';
@@ -2859,7 +2885,7 @@ function showCamp() {
 }
 function renderCamp() {
   const q = quest, next = q.def.nodes[q.node], n = q.party.length;
-  $('camp-sub').textContent = `${q.def.name} · Cleared ${q.node} of ${q.def.nodes.length} battles · Rest restores up to ${Math.round(CAMP.healCap * 100)}% of max HP per camp`;
+  $('camp-sub').textContent = `${q.def.name} · Cleared ${q.node} of ${q.def.nodes.length} battles · Eat rations to heal, use repair kits on armour`;
   $('camp-gold').textContent = `Gold: ${q.gold}`;
   $('camp-msg').textContent = campMsg;
   $('campfire').innerHTML = '<div class="fire">🔥</div>' + q.party.map((u, i) => {      // heroes evenly spaced around the fire
@@ -2867,24 +2893,33 @@ function renderCamp() {
     return `<div class="camper" style="left:${50 + R * Math.cos(a)}%;top:${50 + R * Math.sin(a)}%">
       <div class="mini-sprite">${u.tag}</div><strong>${u.short}</strong><br>HP ${u.hp}/${u.maxHp}${armourTag(u)}</div>`;
   }).join('');
-  $('camp-shop').innerHTML = q.party.map((u, i) => {
-    const hc = healCost(u), room = healRoom(u), rc = repairCost(u), sup = u.state === 'super';
+  const ra = ITEMS.ration, rk = ITEMS.kit, nR = q.items.ration || 0, nK = q.items.kit || 0, hurt = q.party.some(u => u.hp < u.maxHp);
+  $('camp-shop').innerHTML = `<div class="shop-row"><div class="mini-sprite" style="font-size:1.6rem">${ra.icon}</div><div class="who"><strong>${ra.name}</strong> ×${nR}<br>${ra.desc}</div>
+      <div class="btns"><button onclick="useFood()" ${nR <= 0 || !hurt ? 'disabled' : ''}>${!hurt ? 'Everyone is fed' : nR <= 0 ? 'None left' : 'Eat'}</button></div></div>` + q.party.map((u, i) => {
+    const sup = u.state === 'super', full = u.state === 'armoured' && u.breakBar >= u.maxBreak && u.break2 >= u.maxBreak2;
     return `<div class="shop-row"><div class="who"><strong>${u.name}</strong><br>HP ${u.hp}/${u.maxHp} · Armour ${armourWord(u)} (${armourBars(u)})</div>
-      <div class="btns"><button onclick="buyHeal(${i})" ${hc <= 0 || q.gold < hc ? 'disabled' : ''}>${room > 0 ? `Rest +${room} HP · ${hc}g` : u.hp >= u.maxHp ? 'HP full' : 'Rested'}</button>
-      <button onclick="buyRepair(${i})" ${sup || rc <= 0 || q.gold < rc ? 'disabled' : ''}>${sup ? 'Too damaged' : rc > 0 ? `Repair · ${rc}g` : 'Armour full'}</button></div></div>`;
+      <div class="btns"><button onclick="useKit(${i})" ${sup || full || nK <= 0 ? 'disabled' : ''}>${rk.icon} ${sup ? 'Too damaged' : full ? 'Armour full' : nK <= 0 ? 'No kits' : `Repair Kit ×${nK}`}</button></div></div>`;
   }).join('');
   $('btn-next').innerHTML = eventPending() ? '❓ Investigate<small>Something lies ahead…</small>' : `${next.boss ? '💀 Face the Boss' : '⚔️ Next Fight'}<small>${next.name}</small>`;
 }
-function buyHeal(i) {
-  const u = quest.party[i], c = healCost(u), amt = healRoom(u);
-  if (c <= 0 || amt <= 0 || quest.gold < c) return;
-  quest.gold -= c; u.hp += amt; u.campHeal = (u.campHeal || 0) + amt; campMsg = `${u.short} rested: +${amt} HP for ${c} gold.`;
+function useFood() {
+  const q = quest, it = ITEMS.ration;
+  if ((q.items.ration || 0) <= 0 || !q.party.some(u => u.hp < u.maxHp)) return;
+  q.items.ration--; let total = 0;
+  q.party.forEach(u => { const b = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(u.maxHp * it.pct))); total += u.hp - b; });
+  campMsg = `The party eats together: +${Math.round(it.pct * 100)}% max HP each (${total} HP in all).`;
   saveQuest(); renderCamp();
 }
-function buyRepair(i) {
-  const u = quest.party[i], c = repairCost(u);
-  if (c <= 0 || quest.gold < c) return;
-  quest.gold -= c; u.breakBar = u.maxBreak; u.break2 = u.maxBreak2; u.state = 'armoured'; campMsg = `${u.short}'s armour repaired for ${c} gold.`;
+function useKit(i) {
+  const q = quest, u = q.party[i], it = ITEMS.kit;
+  if (!u || (q.items.kit || 0) <= 0 || u.state === 'super') return;
+  if (u.state === 'armoured' && u.breakBar >= u.maxBreak && u.break2 >= u.maxBreak2) return;
+  q.items.kit--;
+  let add = Math.max(1, Math.round(u.maxBreak * it.pct)); const was = u.state;
+  const a1 = Math.min(u.maxBreak - u.breakBar, add); u.breakBar += a1; add -= a1;           // the outer layer first (this is what brings broken armour back), leftovers mend the inner layer
+  if (add > 0) u.break2 = Math.min(u.maxBreak2, u.break2 + add);
+  if (u.state === 'broken' && u.breakBar > 0) u.state = 'armoured';
+  campMsg = `${u.short}'s armour is mended${was === 'broken' && u.state === 'armoured' ? ' and no longer broken' : ''} (${u.breakBar}/${u.maxBreak}).`;
   saveQuest(); renderCamp();
 }
 function nextFight() { campMsg = ''; if (eventPending()) return openEvent(); return startNode(); }
