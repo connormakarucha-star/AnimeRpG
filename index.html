@@ -307,7 +307,7 @@ body.in-battle #snd-btn{display:none}
 
 
 /* ===== portraits, scene fade, guide ===== */
-:root{--pz:2.4;--px:0;--py:21}
+:root{--pz:2.4;--px:0;--py:0}
 .port-box{position:relative;overflow:hidden}
 .port-box .pimg{position:absolute;left:50%;top:0;width:calc(var(--pz) * 100%);max-width:none;height:auto;transform:translate(calc(-50% + var(--px) * 1%),calc(var(--py) * -1%));pointer-events:none;user-select:none}
 .port-box.has-port{border-style:solid}
@@ -1364,7 +1364,7 @@ function toggleFx(k) { FX[k] = !FX[k]; try { localStorage.setItem('animeRpgFx', 
 // Every small round/square picture of a unit in the UI (party select, camp, turn order, recap, training...) is cut from its armoured idle sprite.
 // The crop: the sprite is enlarged to PORTRAIT.zoom x the frame's width, then shifted up by PORTRAIT.up % of the sprite's height (bigger = lower on the body) and sideways by PORTRAIT.x %.
 // If your heads sit higher or lower than the stand-ins: raise/lower `up` first, then `zoom`. byId lets one unit have its own crop, e.g. byId: { e_oni: { zoom: 2, up: 14 } }.
-const PORTRAIT = { zoom: 2.4, up: 21, x: 0, byId: {} };
+const PORTRAIT = { zoom: 2.4, up: 0, x: 0, byId: {} };
 const unitArtCache = {};
 function applyPortraitVars() { const r = document.documentElement.style; r.setProperty('--pz', PORTRAIT.zoom); r.setProperty('--py', PORTRAIT.up); r.setProperty('--px', PORTRAIT.x); }
 function fillPortraits(root = document) {
