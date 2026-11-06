@@ -281,7 +281,36 @@ body.in-battle #snd-btn{display:none}
 .notice-box{background:#1a1a24;border:2px solid #ff758c;border-radius:12px;padding:20px;max-width:380px;width:100%;box-sizing:border-box;text-align:center;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 30px rgba(255,117,140,.35)}
 .notice-title{font-size:1.2rem;font-weight:bold;color:#ffd54f}
 .notice-box .mini-sprite{width:96px;height:96px;margin:0 auto;font-size:.8rem}
-#spa-bg{display:none;position:fixed;inset:0;z-index:-1;background:#0e0e14 center/cover no-repeat}
+#tm-stage{position:fixed;inset:0;z-index:90;background:#0e0e14;display:flex;flex-direction:column}
+#tm-head{position:absolute;top:0;left:0;right:0;z-index:5;padding:10px 12px 26px;text-align:center;background:linear-gradient(rgba(0,0,0,.78),transparent);pointer-events:none;text-shadow:0 1px 4px #000,0 0 10px #000}
+#tm-halves{flex:1;display:flex;min-height:0;margin-bottom:56px}
+.tm-half{position:relative;flex:1;overflow:hidden;cursor:pointer;border:0;background:#17141f;transition:flex .35s,filter .35s}
+.tm-half .art,#tm-art .art{position:absolute;inset:0;background:center/cover no-repeat;transition:scale .5s}
+.tm-half video,#tm-art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tm-half:hover .art,.tm-half:hover video{scale:1.05}
+.tm-half:hover{flex:1.18}
+.tm-half+.tm-half{border-left:2px solid rgba(255,255,255,.18)}
+.tm-half::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(0,0,0,.85));pointer-events:none}
+.tm-half .lab{position:absolute;left:0;right:0;bottom:24px;z-index:2;text-align:center;padding:0 12px;text-shadow:0 2px 6px #000,0 0 12px #000;pointer-events:none}
+.tm-half .lab b{display:block;font-size:1.5rem;color:#ffd54f}.tm-half .lab span{font-size:.85rem;color:#f2f2f8;display:block}.tm-half .lab small{display:block;font-size:.7rem;color:#c0c0d8;margin-top:4px}
+.tm-half.off{cursor:not-allowed;filter:grayscale(1) brightness(.45)}.tm-half.off:hover{flex:1}.tm-half.off:hover .art,.tm-half.off:hover video{scale:1}
+#btn-train-back{position:absolute;z-index:6;left:50%;bottom:12px;translate:-50% 0;min-width:180px}
+#tm-full{position:absolute;inset:0;z-index:20;display:none;background:#000}
+#tm-full.show{display:block}
+#tm-art{position:absolute;inset:0;transition:filter .9s,scale 1.2s;scale:1}
+#tm-full.blur #tm-art{filter:blur(18px) brightness(.45);scale:1.08}
+#tm-result{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center;text-shadow:0 2px 8px #000}
+#tm-full.blur #tm-result{display:flex;animation:tmIn .7s ease-out}
+@keyframes tmIn{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
+.tm-gain{font-size:.8rem;letter-spacing:.3em;color:#ffd54f}.tm-name{font-size:2rem;font-weight:bold;color:#fff}.tm-desc{font-size:1.05rem;color:#f2f2f8;max-width:520px}
+.tm-btns{display:flex;flex-direction:column;gap:6px;width:min(300px,100%);margin-top:14px}
+@media (max-width:700px) and (orientation:portrait){#tm-halves{flex-direction:column}.tm-half+.tm-half{border-left:0;border-top:2px solid rgba(255,255,255,.18)}.tm-half .lab{bottom:12px}.tm-half .lab b{font-size:1.2rem}#btn-train-back{bottom:10px}.tm-half:hover{flex:1}}
+@media (prefers-reduced-motion:reduce){#tm-art,.tm-half,.tm-half .art{transition:none}}
+#spa-bg{display:none;position:fixed;inset:0;z-index:-1;background:#0e0e14 center/cover no-repeat;transform-origin:50% 85%;animation:spaBreathe 5.2s ease-in-out infinite}
+@keyframes spaBreathe{0%,100%{scale:1.03;translate:0 0}50%{scale:1.065;translate:0 -.9%}}
+#spa-bg.flinch{animation:spaBreathe 5.2s ease-in-out infinite,spaFlinch .45s ease-out}
+@keyframes spaFlinch{0%{filter:brightness(2.2) saturate(1.8) hue-rotate(-20deg);rotate:0deg}15%{rotate:-.8deg}35%{rotate:.7deg;filter:brightness(1.4) saturate(1.4)}60%{rotate:-.3deg}100%{filter:none;rotate:0deg}}
+@media (prefers-reduced-motion:reduce){#spa-bg,#spa-bg.flinch{animation:none;scale:1.03}}
 #spa .hub-hall{background:transparent;border-color:transparent;box-shadow:none}
 #spa .hub-title,#spa .hub-sub,#spa-msg{text-shadow:0 1px 4px #000,0 0 8px #000}
 #spa .slots{background:rgba(18,18,26,.82)}
@@ -797,18 +826,13 @@ body.in-battle #guide-btn{display:none}
 </div>
 
 <div id="train-method" class="scene">
-  <div class="hub-wrap">
-    <div class="hub-hall">
-      <div class="hub-title" id="train-title">Training</div>
-      <div class="hub-sub" id="train-sub"></div>
-      <div class="pick-list" id="train-methods"></div>
-      <div class="panel-result" id="train-result">
-        <div id="train-result-text"></div>
-        <button class="primary" onclick="showScene('train-select')">Train Another Hero</button>
-        <button onclick="showScene('hub')">Back to Town</button>
-      </div>
-      <button id="btn-train-back" style="width:100%" onclick="showScene('train-select')">Back</button>
-    </div>
+  <div id="tm-stage">
+    <div id="tm-head"><div class="hub-title" id="train-title">Training</div><div class="hub-sub" id="train-sub"></div></div>
+    <div id="tm-halves"></div>
+    <button id="btn-train-back" onclick="showScene('train-select')">Back</button>
+    <div id="tm-full"><div id="tm-art"></div>
+      <div id="tm-result"><div class="tm-gain">NEW PERK</div><div class="tm-name" id="tm-name"></div><div class="tm-desc" id="tm-desc"></div>
+        <div class="tm-btns"><button class="primary" onclick="showScene('train-select')">Train Another Hero</button><button onclick="showScene('hub')">Back to Town</button></div></div></div>
   </div>
 </div>
 
@@ -1515,6 +1539,11 @@ const SFX = {
   heal() { const t = actx.currentTime; [523, 659, 784, 1047].forEach((f, i) => AU.tone('sine', f, f, t + i * 0.07, 0.4, 0.13, 0.01)); },
   ward() { const t = actx.currentTime; [440, 660, 880].forEach(f => AU.tone('sine', f, f * 1.01, t, 0.5, 0.1, 0.03)); AU.noise(t, 0.3, 0.05, 'highpass', 3000, 5000, 1, 0.05); },
   poof() { const t = actx.currentTime; AU.noise(t, 0.35, 0.22, 'lowpass', 1500, 250, 0.7, 0.01); },
+  nerve() { const t = actx.currentTime;                    // harsh: a distorted electric scream plus a hard slam
+    AU.thump(t, 0.9); AU.zap(t, 0.4, 0.34);
+    AU.noise(t, 0.3, 0.38, 'highpass', 1500, 4500, 0.7, 0.005);
+    [0, 11, 23].forEach(d => AU.tone('sawtooth', 1250 + d * 7, 240 + d, t, 0.4, 0.13, 0.004));   // clashing detuned saws falling
+    AU.tone('square', 2300, 1700, t, 0.22, 0.1, 0.002); AU.crackle(t, 12, 0.45, 0.16); },
   repair() { const t = actx.currentTime; [0, 0.09, 0.18].forEach(o => { AU.tone('square', 1500, 1200, t + o, 0.05, 0.07); AU.noise(t + o, 0.05, 0.1, 'highpass', 3000, 3000, 1); }); }
 };
 function sfx(name, ...args) { if (sndMuted) return; try { if (ac()) SFX[name](...args); } catch (e) {} }
@@ -3654,17 +3683,28 @@ function pickTrainHero(id) {
   if (!heroById(id) || game.gold < TRAIN.cost || traitCount(id, 'good') >= TRAITS.maxGood) return;
   trainHero = id; showScene('train-method');
 }
+async function trainArt(h, kind) {                // the hero's own picture, else Iris' so there is always something
+  const a = await findAsset(`${ANIM.base}/${h.id}/train/${kind}`);
+  return a || findAsset(`${ANIM.base}/iris/train/${kind}`);
+}
+const artHTML = (a, loop) => !a ? '' : (a.ext === 'mp4' || a.ext === 'webm') ? `<video src="${a.url}" muted playsinline ${loop ? 'loop autoplay' : ''}></video>` : `<div class="art" style="background-image:url('${a.url}')"></div>`;
+let trainToken = 0;
 function renderTrainMethods() {
   const h = heroById(trainHero); if (!h) { showScene('train-select'); return; }
+  const tok = ++trainToken;
   $('train-title').textContent = `${h.name}: Training`;
-  $('train-sub').innerHTML = `Choose how ${h.name.split(' ')[0]} trains (${TRAIN.cost} gold). <span class="hub-gold">Gold: ${game.gold}</span>`;
-  $('train-result').style.display = 'none'; $('btn-train-back').style.display = ''; $('train-methods').style.display = '';
-  $('train-methods').innerHTML = Object.entries(TRAIN.methods).map(([k, m]) => {
-    const ok = hasKind(h, k);
-    return `<div class="pick method${ok ? '' : ' off'}" ${ok ? `onclick="doTrain('${k}')"` : ''}><div class="mini-sprite">${m.icon}</div>
-      <div><strong>${m.name}</strong><br>Earns ${m.desc}
-      <div class="sk">${ok ? 'Fits: ' + h.skills.filter(s => s.t === 'dmg' && (k === 'physical' ? !s.el : !!s.el || !!(h.elems && h.elems.length))).map(s => s.n).join(', ') : `${h.name.split(' ')[0]} has no ${m.word} skills to train`}</div></div></div>`;
+  $('train-sub').innerHTML = `Choose a method (${TRAIN.cost} gold each). <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('tm-full').className = ''; $('tm-art').innerHTML = ''; $('btn-train-back').style.display = '';
+  const first = h.name.split(' ')[0];
+  $('tm-halves').innerHTML = Object.entries(TRAIN.methods).map(([k, m]) => {
+    const ok = hasKind(h, k), fits = h.skills.filter(s => s.t === 'dmg' && (k === 'physical' ? !s.el : !!s.el || !!(h.elems && h.elems.length))).map(s => s.n).join(', ');
+    return `<div class="tm-half${ok ? '' : ' off'}" data-k="${k}" ${ok ? `onclick="doTrain('${k}')"` : ''}><div class="art-host"></div>
+      <div class="lab"><b>${m.icon} ${m.name}</b><span>Earns ${m.desc}</span><small>${ok ? 'Fits: ' + fits : `${first} has no ${m.word} skills to train`}</small></div></div>`;
   }).join('');
+  Object.keys(TRAIN.methods).forEach(k => trainArt(h, k).then(a => {
+    const host = document.querySelector(`.tm-half[data-k="${k}"] .art-host`);
+    if (tok === trainToken && host) host.outerHTML = artHTML(a, true);
+  }));
 }
 async function doTrain(kind) {
   const h = heroById(trainHero);
@@ -3672,12 +3712,19 @@ async function doTrain(kind) {
   const t = rollTrait('good', h.id, TRAIN.methods[kind].pool); if (!t) return;
   trainBusy = true;
   game.gold -= TRAIN.cost; (game.traits[h.id] = game.traits[h.id] || []).push(t.id); writeSave();      // paid and recorded right away
-  $('train-methods').style.display = 'none'; $('btn-train-back').style.display = 'none';
-  await playAnim(h, kind, 'train', $('spa-cutin'));                           // plays only if assets/<hero>/train/<kind> exists
+  const a = await trainArt(h, kind), full = $('tm-full'), still = () => trainHero === h.id && $('train-method').classList.contains('show');
+  $('btn-train-back').style.display = 'none';
+  $('tm-art').innerHTML = artHTML(a, false) || '<div class="art" style="background:radial-gradient(#3a2d52,#0e0e14)"></div>';
+  full.className = 'show'; sfx('repair');
+  const v = $('tm-art').querySelector('video');
+  if (v) await new Promise(r => { const end = () => { skips.delete(end); r(); }; skips.add(end); v.onended = end; v.onerror = end; v.play().catch(end); setTimeout(end, 15000); });
+  else await new Promise(r => { const end = () => { skips.delete(end); r(); }; skips.add(end); full.onclick = end; setTimeout(end, 1400); });     // a picture holds briefly (tap to move on)
+  full.onclick = null;
   trainBusy = false;
-  if (trainHero !== h.id || !$('train-method').classList.contains('show')) return;
-  $('train-result-text').innerHTML = `${h.name.split(' ')[0]} trained hard and earned ${t.icon} <b>${t.name}</b>: ${t.desc}!`;
-  $('train-result').style.display = 'flex';
+  if (!still()) return;
+  $('tm-name').textContent = `${t.icon} ${t.name}`;
+  $('tm-desc').textContent = `${h.name.split(' ')[0]} trained hard: ${t.desc}`;
+  full.classList.add('blur'); sfx('heal');
 }
 
 /* ============ SPA ============ */
@@ -3726,9 +3773,10 @@ function startSpa(id, target) {
   $('btn-spa-quit').style.display = '';
   showScene('spa');
   renderSpa();
-  // optional backdrop art, only if the file exists
-  findAsset(`${ANIM.base}/${hero.id}/spa/back`).then(a => {
-    if (spaGame === g && a && ['png', 'jpg', 'webp'].includes(a.ext)) $('spa-bg').style.backgroundImage = `url("${a.url}")`;
+  // backdrop art: the hero's own back picture, else Iris' one so there is always a backdrop (breathes via CSS)
+  const okBack = a => a && ['png', 'jpg', 'webp'].includes(a.ext);
+  findAsset(`${ANIM.base}/${hero.id}/spa/back`).then(a => okBack(a) ? a : findAsset(`${ANIM.base}/iris/spa/back`)).then(a => {
+    if (spaGame === g && okBack(a)) $('spa-bg').style.backgroundImage = `url("${a.url}")`;
   });
 }
 
@@ -3772,6 +3820,8 @@ function spaTap(i) {
   if (c.nerve) {
     c.revealed = true; c.hit = true; g.strikes++;
     const board = $('spa-board'); board.classList.remove('zap'); void board.offsetWidth; board.classList.add('zap');
+    const bg = $('spa-bg'); bg.classList.remove('flinch'); void bg.offsetWidth; bg.classList.add('flinch');
+    sfx('nerve');
     if (g.strikes >= SPA.maxStrikes) {
       g.over = true;
       g.cells.forEach(x => { if (x && x.nerve) x.revealed = true; });
