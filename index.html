@@ -808,9 +808,9 @@ const HEROES = [
   // locked:true = not owned at the start. A quest with unlocks:'<hero id>' adds her to the roster the first time its boss falls.
   { id:'siren', weak:['shock'], resist:['poison'],  name:'Siren', tag:'SIREN', hp:75, brk:28, spd:9, locked:true,
     unlockMsg:'The Siren has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
-    { n:'Toxic Note',   t:'dmg', r:'ranged', d:[11,13], el:'poison', brk:10, cd:0 },
-    { n:'Venom Song',   t:'dmg', r:'ranged', d:[15,18], el:'poison', brk:22, cd:2 },
-    { n:'Deadly Dirge', t:'dmg', r:'ranged', d:[24,28], el:'poison', brk:36, cd:4 } ] },
+    { n:'Razor Claws',   t:'dmg', r:'melee',  d:[11,13], el:'bleed',  brk:10, cd:0 },
+    { n:'Toxic Breath',  t:'dmg', r:'ranged', d:[15,18], el:'poison', brk:22, cd:2 },
+    { n:'Voltaic Bloom', t:'dmg', r:'ranged', d:[24,28], el:'shock',  brk:36, cd:4 } ] },
   // Irae: the first bleeder. Smoke Bomb = stealth for `dur` of her turns (and a step back); while stealthed her attacks bleed and Backstab hits much harder.
   // move:'front' = after the strike the unit steps to the front of her line (the line-up goes back to normal after the fight). stealthMul / stealthCrit only apply while stealthed.
   { id:'irae', weak:['fire'], resist:['bleed'], evasive:1.5, name:'Irae', tag:'IRAE', hp:85, brk:28, spd:12, locked:true, elems:['bleed'],
