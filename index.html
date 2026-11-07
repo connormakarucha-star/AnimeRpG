@@ -1852,7 +1852,7 @@ function importSave() {
 }
 
 /* ============ ANIMATION HOOK ============ */
-// Combat clips: assets/<unit.id>/<armoured|broken|superbroken>/<key>.(mp4|webm|webp|png|jpg) plays ON the unit's own sprite, in place of its idle
+// Combat clips: assets/<unit.id>/<armoured|broken>/<key>.(mp4|webm|webp|png|jpg) plays ON the unit's own sprite (a super-broken unit uses the broken/ art), in place of its idle
 // (melee attackers have run to the target first). Videos play to the end; images hold ~0.7s. Missing file = short pause (falls back to armoured/).
 // Keys: skill1 skill2 skill3 damaged (damaged covers every hit and status tick; the fire/ice/... effect is drawn over it). Idle: idle.
 // Spa and training still use full-screen cut-ins (assets/<hero>/spa/*, assets/<hero>/train/*).
@@ -1883,7 +1883,7 @@ async function findAsset(path) {            // checked once per file, then remem
 /* Skill films. If a skill's file is a video (assets/<id>/<armour state>/skillN.mp4 or .webm) it is NOT played on the figure: it plays by itself, centred and nearly full screen,
    nobody moves, and only when it has finished do the hit, the damaged picture and the effects on the target happen. Works the same for enemies. Tap to skip. Pictures and gifs keep playing on the figure. */
 async function skillFilm(u, key) {
-  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
+  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
   let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/${key}`);
   if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/${key}`);
   return a && (a.ext === 'mp4' || a.ext === 'webm') ? a : null;
@@ -1922,25 +1922,25 @@ function playClip(a, host = stage) {            // host = the overlay element to
 
 async function playAnim(unit, key, state, host, onStart) {      // spa / training pass a host overlay (full-screen cut-in); combat clips play on the figure itself
   if (!host && !state && figs.get(unit)) return playOnFigure(unit, key, undefined, undefined, onStart);
-  state = state || ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[unit.state];
+  state = state || ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[unit.state];
   let a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
   if (!a && key === 'damaged' && state !== 'armoured') a = await findAsset(`${ANIM.base}/${unit.id}/armoured/damaged`);   // one 'damaged' picture is enough
   if (a) await playClip(a, host || stage); else await sleep(ANIM.fallback);
 }
 
 /* ---- idle sprites + stage background (all optional art) ----
-   assets/<unit id>/<armoured|broken|superbroken>/idle.(png|webp|gif|mp4|webm)   standing pose, per armour state (falls back to armoured/)
+   assets/<unit id>/<armoured|broken>/idle.(png|webp|gif|mp4|webm)   standing pose, per armour state (falls back to armoured/)
    assets/ui/battle_<quest id>_<fight number>.*, assets/ui/battle_<quest id>.*, assets/ui/battle_bg.*   stage background (first one found)
-   assets/<unit id>/<armoured|broken|superbroken>/damaged.*    ONE picture/clip for every hit AND every status tick; plays in place of the idle with the stock effect (fire, ice, shock...) drawn on top
+   assets/<unit id>/<armoured|broken>/damaged.*    ONE picture/clip for every hit AND every status tick; plays in place of the idle with the stock effect (fire, ice, shock...) drawn on top
    No file = a labelled placeholder box. Set SPR.flipParty / SPR.flipEnemy to true if your drawings face the other way
    (heroes should face right, enemies left). */
 const SPR = { flipParty: false, flipEnemy: false };
 const figs = new WeakMap();      // one persistent figure element per unit, so animated sprites keep playing between renders
 let spriteRenderQueued = false;
 function spriteFor(u) {
-  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state], down = !!u.fell && u.hp <= 0;
+  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state], down = !!u.fell && u.hp <= 0;
   const stand = [...new Set([folder, 'armoured'])].map(st => `${ANIM.base}/${u.id}/${st}/idle`);
-  const paths = down ? [...[...new Set([u.state === 'super' ? 'superbroken' : 'broken', folder, 'armoured'])].map(st => `${ANIM.base}/${u.id}/${st}/damaged`), ...stand] : stand;
+  const paths = down ? [...[...new Set(['broken', folder, 'armoured'])].map(st => `${ANIM.base}/${u.id}/${st}/damaged`), ...stand] : stand;
   for (const p of paths) {
     if (!(p in animCache)) {
       findAsset(p).then(() => { if (!spriteRenderQueued) { spriteRenderQueued = true; setTimeout(() => { spriteRenderQueued = false; render(); }, 30); } });
@@ -1978,7 +1978,7 @@ function mountFigures(host, list, team) {
 /* Every combat clip (skill1-3, damaged) plays ON the unit's own figure in place of its idle, from its current armour folder (else armoured/).
    For a hit or status tick `kind` is the stock effect (fire, ice, ...) drawn on top. */
 async function playOnFigure(u, key, kind, tier, onStart) {      // onStart fires the moment the clip is actually on screen (or at once if there is no art)
-  const el = figs.get(u), folder = ({ armoured: 'armoured', broken: 'broken', super: 'superbroken' })[u.state];
+  const el = figs.get(u), folder = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
   if (kind) fx(u, kind, 800, tier);
   let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/${key}`);
   if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/${key}`);
