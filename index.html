@@ -249,6 +249,19 @@ button small{font-weight:normal;color:#c0c0d8}
 .break2-fill.dim{opacity:.35}
 .super-tag{color:#ff1744;font-weight:bold}
 .quest-pick{padding-right:36px}
+/* developer mode */
+#dev-bar{display:none;position:fixed;right:6px;top:6px;z-index:120;background:#2a1020ee;border:1px solid #ff5c8a;border-radius:8px;padding:5px 8px;font-size:.68rem;gap:6px;flex-wrap:wrap;align-items:center;max-width:calc(100vw - 12px);box-sizing:border-box}
+body.dev:not(.in-battle) #dev-bar{display:flex}
+#dev-bar button{padding:3px 8px;font-size:.68rem;min-height:0}
+#btn-quick{display:none}
+body.dev #btn-quick{display:inline-block}
+#dev-foe-slots,#dev-enemy-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
+#dev-foe-slots .pick,#dev-enemy-pick .pick{min-width:0}
+#dev-foe-slots select{width:100%;max-width:100%}
+@media (max-width:600px){#dev-bar .lbl{display:none}#dev-battle .hub-hall{padding-top:40px}}
+#dev-foe-slots .pick{cursor:default}
+#dev-foe-slots select,#dev-bg{background:#12121a;color:#ddd;border:1px solid #3a3a52;border-radius:4px;font-size:.7rem;padding:2px}
+@media (min-width:900px){#dev-foe-slots{grid-template-columns:repeat(4,minmax(0,1fr))}#dev-enemy-pick{grid-template-columns:repeat(3,minmax(0,1fr))}}
 #spa-board{position:relative;width:100%;max-width:400px;margin:8px auto;display:grid;gap:3px;border-radius:8px}
 #fx{position:absolute;inset:0;pointer-events:none;z-index:12;overflow:hidden;border-radius:8px}
 .float{position:absolute;transform:translate(-50%,-50%);font-weight:900;font-size:1.3rem;color:#fff;text-shadow:0 2px 3px #000,0 0 6px #000;animation:floatup 1s ease-out forwards;white-space:nowrap;text-align:center;line-height:1}
@@ -693,6 +706,7 @@ body.in-battle #guide-btn{display:none}
     <button id="btn-continue" onclick="doContinue()">Continue</button>
     <button id="btn-new" onclick="doNew()">New Game</button>
     <button onclick="openPanel('data')">Export / Import Save</button>
+    <button onclick="startDev()" style="opacity:.8">🛠 Developer Mode</button>
   </div>
   <div class="info" id="title-info"></div>
   <div class="panel" id="panel-confirm">
@@ -740,6 +754,7 @@ body.in-battle #guide-btn{display:none}
       <div class="row">
         <button onclick="showScene('hub')">Back</button>
         <button class="primary" id="btn-begin" onclick="toQuestSelect()">Choose Quest ▶</button>
+        <button id="btn-quick" onclick="toQuickBattle()">⚡ Quick Battle ▶ (dev)</button>
       </div>
     </div>
   </div>
@@ -839,6 +854,23 @@ body.in-battle #guide-btn{display:none}
   </div>
 </div>
 
+<div id="dev-battle" class="scene">
+  <div class="hub-wrap">
+    <div class="hub-hall">
+      <div class="hub-title">⚡ Quick Battle <small>(developer mode)</small></div>
+      <div class="hub-sub">Your party comes from the last screen. Tap enemies below to fill up to 4 slots (slot 1 is the front line). Tap ✕ to remove one.</div>
+      <div class="slots" id="dev-party"></div>
+      <div id="dev-foe-slots"></div>
+      <div class="row">Backdrop: <select id="dev-bg"></select></div>
+      <div class="pick-list" id="dev-enemy-pick"></div>
+      <div class="row">
+        <button onclick="showScene('party-select')">Back</button>
+        <button class="primary" id="btn-dev-fight" onclick="startQuickBattle()">Fight!</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="dev-bar"><b>🛠<span class="lbl"> DEV MODE · nothing is saved</span></b><button onclick="openParty()" title="Quick Battle">⚡<span class="lbl"> Quick Battle</span></button><button onclick="devFlaws()" title="Refill flaws">🔁<span class="lbl"> Refill flaws</span></button><button onclick="location.reload()" title="Exit">⏏<span class="lbl"> Exit</span></button></div>
 <div id="quest-select" class="scene">
   <div class="hub-wrap">
     <div class="hub-hall">
@@ -959,6 +991,8 @@ const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', sho
 //        storm:true on a damage skill = a big bolt from the sky strikes the target, then 1-3 small bolts (her skill 1 damage): odd ones hit a random enemy, even ones a random friend (the caster included),
 //        counter:0.2 on a damage skill = when an enemy attacks the owner, that chance she answers at once with this skill (never against friendly fire). dr:{mult,dur} = the owner also takes that much less damage for dur of her turns.
 //        t:'charm' = no damage; a broken target is charmed: its next attack hits a random ally instead (cleansable like any ailment).
+//        chip:true on a physical damage skill = it still damages armour (brk) though it has no element; statuses only land from elemental hits.
+//        aoe:0.6 on a damage skill = the chosen target takes full damage and every other living foe takes that fraction. move:'front'|'back' = the owner steps to that row after the strike.
 //        r='melee'|'ranged' (damage skills, default melee), el=element, brk=break damage, cd=cooldown in turns.
 // Barriers soak damage AND armour-break damage, and vanish at the end of the turn of the unit that carries them.
 // Optional unit traits (see POS): frontMod / backMod = extra damage taken (+) or avoided (-) while standing in that row,
@@ -974,13 +1008,13 @@ const HEROES = [
     { n:'Aegis',        t:'barrierAll', p:16, cd:3, self:true, cleanse:1 } ] },   // the whole team including her; cleanses 1 random ailment from each
   { id:'vesper', weak:['ice'], resist:['shock'], evasive:2, name:'Vesper', tag:'VESPER', hp:70, brk:22, spd:12, locked:true,
     unlockMsg:'Vesper has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[        // fast glass cannon: stuns once armour is broken
-    { n:'Spark Step',      t:'dmg', r:'melee',  d:[10,12], el:'shock', brk:8,  cd:0 },
+    { n:'Spark Step',      t:'dmg', r:'melee',  d:[10,12], el:'shock', brk:8,  cd:0, move:'back' },        // hit and run: after the strike she dashes to the back row
     { n:'Chain Lightning', t:'dmg', r:'ranged', d:[14,17], el:'shock', brk:24, cd:2 },
-    { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[25,29], el:'shock', brk:38, cd:4 } ] },
+    { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[23,27], el:'shock', brk:38, cd:4, aoe:0.6 } ] },        // the target takes it all, every other foe takes 60%
   { id:'iris', weak:['poison'], resist:['fire'], frontMod:-0.1, name:'Iris', tag:'IRIS', hp:105, brk:45, spd:9, skills:[      // martial artist, front liner
-    { n:'Iron Fist',       t:'dmg', r:'melee', d:[12,14], cd:0 },
-    { n:'Blazing Kick',    t:'dmg', r:'melee', d:[16,19], el:'fire', brk:22, cd:2 },
-    { n:"Dragon's Wrath",  t:'buff', buff:'wrath', fire:{ mult:1.75, el:'fire', brk:12 }, cd:4 } ] },    // next turn: every Iron Fist burns (+75% damage, fire, +12 break) and she gets a free one on a random enemy, then it wears off
+    { n:'Iron Fist',       t:'dmg', r:'melee', d:[12,14], brk:12, chip:true, cd:0 },          // physical, but the blows chip armour
+    { n:'Blazing Kick',    t:'dmg', r:'melee', d:[13,15], el:'fire', brk:22, cd:2 },
+    { n:"Dragon's Wrath",  t:'buff', buff:'wrath', fire:{ mult:1.75, el:'fire', brk:12 }, cd:4 } ] },    // next turn: Iron Fist AND Blazing Kick burn (+75% damage, fire, +12 break) and she gets a free Iron Fist on a random enemy, then it wears off
   { id:'aneesah', weak:['ice'], resist:['shock'], backMod:-0.15, name:'Aneesah', tag:'ANEESAH', hp:65, brk:20, spd:11, skills:[   // chaotic storm mage, back liner
     { n:'Static Spark',    t:'dmg', r:'ranged', d:[6,8], el:'shock', brk:6, cd:0 },
     { n:'Lightning Bolt',  t:'dmg', r:'ranged', d:[17,20], el:'shock', brk:22, cd:2 },
@@ -1500,7 +1534,7 @@ function renderGuide() {
       + g(`🌫️ <b>Stealth</b> (Irae's Smoke Bomb): for a few of her turns her attacks gain bleed (+${STEALTH.brk} break) and enemies are far less likely to target her. ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, and any damage ends it.`, 'good')
       + g(`💘 <b>Charm</b> (Siren): only a broken unit can be charmed. Its next attack hits a random friend. Cleanse removes it.`, 'bad')
       + g(`🔰 <b>Defiant stance</b> (Seria's Defiant Slam): 25% less damage taken for 3 turns. Her Shield Bash has a 20% chance to counterattack whenever an enemy attacks her.`, 'good')
-      + g(`🐉 <b>Dragon's Wrath</b> (Iris): next turn she strikes again with a burning attack, then it fades.`, 'good')
+      + g(`🐉 <b>Dragon's Wrath</b> (Iris): next turn Iron Fist and Blazing Kick both burn (+75% damage) and she strikes again, then it fades.`, 'good')
       + g(`<b>Immunity</b> (some relics, Unyielding elites): ignores the listed statuses.`, 'good')
       + `<h4>Elite enemies ★</h4>` + Object.values(ELITE.mods).map(m => g(`${m.icon} <b>${m.name}</b>: ${m.desc}`)).join('');
   } else {
@@ -1755,6 +1789,7 @@ const migrations = {
   // Example for later: 11: s => { s.newField = 0; s.version = 12; return s; },
   // When a new hero is added to HEROES, add a migration that pushes their id into s.roster (or unlock them in-game).
 };
+let devMode = false;      // developer mode: no save file, everything unlocked (see DEVELOPER MODE)
 let game = null;          // the active save
 let storageOk = true;     // false if the browser blocks storage (e.g. private mode)
 let importArmed = false;  // import asks for a second press when it would replace an existing save
@@ -1797,6 +1832,7 @@ function readSave() {
 }
 function writeSave() {
   if (!game) return false;
+  if (devMode) return true;                    // developer mode never touches the real save
   try { game.updated = Date.now(); localStorage.setItem(SAVE.key, JSON.stringify(game)); return true; }
   catch (e) { storageOk = false; return false; }
 }
@@ -2355,7 +2391,7 @@ function chips(u) {              // one small tile per skill: icons, damage / ba
   return '<div class="chips">' + u.skills.map((s, i) => {
     const cd = u.cd[i] || 0, on = u === cur && sel === i; s = effSkill(u, i);
     let ic, val;
-    if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.storm ? '🌩️' : '') + (s.taunt ? '🎯' : '') + (s.counter ? '↩️' : '') + (s.dr ? '🔰' : '') + (s.bite ? '🦇' : ''); val = rangeText(s); }
+    if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.storm ? '🌩️' : '') + (s.taunt ? '🎯' : '') + (s.counter ? '↩️' : '') + (s.dr ? '🔰' : '') + (s.chip ? '💥' : '') + (s.aoe ? '🌐' : '') + (s.bite ? '🦇' : ''); val = rangeText(s); }
     else if (s.t === 'buff') { ic = '🐉'; val = 'buff'; }
     else if (s.t === 'smoke') { ic = '🌫️'; val = 'stealth'; }
     else if (s.t === 'charm') { ic = '💘🏹'; val = 'charm'; }
@@ -2490,6 +2526,9 @@ function skillDesc(s, u) {
   if (s.stealthed) more.push('🌫️ stealth bonus active');
   else if (s.stealthMul || s.stealthCrit) more.push(`stealth: ${s.stealthMul ? '×' + s.stealthMul + ' dmg' : ''}${s.stealthMul && s.stealthCrit ? ', ' : ''}${s.stealthCrit ? '+' + s.stealthCrit + '% crit' : ''}`);
   if (s.move === 'front') more.push('→ moves to the front');
+  if (s.move === 'back') more.push('→ dashes to the back row');
+  if (s.chip) more.push(`💥 chips armour (${s.brk})`);
+  if (s.aoe) more.push(`🌐 other foes take ${Math.round(s.aoe * 100)}%`);
   if (s.counter) more.push(`↩️ ${Math.round(s.counter * 100)}% counter when attacked`);
   if (s.dr) more.push(`🔰 −${Math.round(s.dr.mult * 100)}% damage taken, ${s.dr.dur} turns`);
   return x + (more.length ? ' · ' + more.join(' · ') : '');
@@ -2501,7 +2540,7 @@ function skillDesc0(s) {
   if (s.t === 'tonic') return `💉 heal ${s.heal} HP, returns as ☠️ poison (ignores armour)`;
   if (s.t === 'brew') return `⚗️ whole party +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} turns, then poisoned`;
   if (s.t === 'immortal') return `🦇 immortal for ${s.dur} turns · once per battle, fires by itself on a killing blow`;
-  if (s.t === 'buff') return '🐉 next turn: burning Iron Fists + a free strike';
+  if (s.t === 'buff') return '🐉 next turn: burning Iron Fist & Blazing Kick + a free strike';
   if (s.t === 'charm') return '💘 no damage · a broken foe\'s next attack hits its own friend';
   if (s.storm) return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]} 🌩️ +1-3 strikes`;
   return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]}`;
@@ -2577,13 +2616,16 @@ function chooseItem(id) {
 
 function skillWhat(u, s) {
   let x = skillWhat0(u, s);
+  if (s.chip) x += ` · 💥 physical, but still damages armour (break ${s.brk}); statuses only come from elemental hits`;
+  if (s.aoe) x += ` · 🌐 the target takes full damage, every other foe takes ${Math.round(s.aoe * 100)}%`;
+  if (s.move === 'back') x += ' · 💨 afterwards she dashes to the back row';
   if (s.counter) x += ` · ↩️ ${Math.round(s.counter * 100)}% chance to counterattack with it whenever an enemy attacks her`;
   if (s.dr) x += ` · 🔰 she also takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} of her turns`;
   return x;
 }
 function skillWhat0(u, s) {          // one-line description of a skill: damage, range, element, break, crit (used by the inspect pop-up and the Dorm)
   return s.t === 'dmg' ? `${rangeText(s)} dmg · ${RICON[rangeOf(s)]} ${rangeOf(s)} · ${s.el ? ICON[s.el] + ' ' + ELEM_NAME[s.el] + ' · break ' + (s.brk || 0) : 'physical'} · crit ${critChance(s, null)}%${s.storm ? ` · 🌩️ then 1-3 small strikes with ${u.skills[0].n}: odd ones hit a random enemy, even ones a random friend` : ''}${s.taunt ? ' · 🎯 taunts: its next attack must target her, even through armour' : ''}${s.bite ? ` · 🦇 against a bleeding target: +${Math.round(s.bite.dmg * 100)}% damage and she heals ${Math.round(s.bite.heal * 100)}% of it` : ''}`
-               : s.t === 'buff' ? `🐉 Buff: on her next turn ${u.skills[0].n} burns (+75% damage, fire) and she also strikes a random enemy with it, then it wears off`
+               : s.t === 'buff' ? `🐉 Buff: on her next turn ${u.skills[0].n} and ${u.skills[1].n} burn (+75% damage, fire) and she also strikes a random enemy with ${u.skills[0].n}, then it wears off`
                : s.t === 'charm' ? `💘 Deals no damage. If the target's armour is broken it is charmed: its next attack hits a random friend of its own. Cleanse removes it. Armoured targets can't be charmed`
                : s.t === 'smoke' ? `🌫️ Steps back to the rear and turns stealthy for ${s.dur} of her turns: her attacks gain bleed (+${STEALTH.brk} break), and enemies are far less likely to target her. While hidden ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, but any damage she takes ends it`
                : s.t === 'tonic' ? `💉 Heals one ally for ${s.heal} HP, but the same amount comes back as ☠️ poison over the next turns (anything still owed when the fight is won is dealt then, never below 1 HP). It ignores armour and works on armoured allies. Borrowed health: a fresh tonic adds to any poison already there`
@@ -2682,7 +2724,7 @@ async function hit(u, t, s) {
     log(`💨 ${t.name} is hidden in the shadows: ${u.name}'s ${s.n} misses!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
   }
   const r = rollDamage(s, t, u), m = matchup(s, t);
-  const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = s.el ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
+  const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = (s.el || s.chip) ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
   const dmg = r.amount - soak, bled = !!(s.bite && (t.statuses || []).some(x => x.type === 'bleed'));
   t.barrier = b - soak;                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
   t.hp = lethalGuard(t, t.hp - dmg);                           // never below 0, even for a frame (and immortal units stop at 1)
@@ -2711,7 +2753,7 @@ async function hit(u, t, s) {
     t.taunt = u; redirectIntents(t.intent && t.intent.target, u, t);
     log(`🎯 ${t.name} is taunted: its next attack must target ${u.name}!`, 'log-status'); floatText(t, '🎯 TAUNTED', 'tag');
   }
-  if (s.el) {
+  if (s.el || s.chip) {
     if (t.state === 'armoured') {                       // layer 1: protected from status effects, only break damage
       t.breakBar -= brk;
       log(brk ? `${t.name}'s armour takes ${brk} break damage.` : `${t.name}'s barrier shields the armour.`, 'log-status');
@@ -2721,7 +2763,7 @@ async function hit(u, t, s) {
         armourBreak(t, false);
       }
     } else {                                            // broken or super broken: status effects land
-      applyStatus(t, s.el, u);
+      if (s.el) applyStatus(t, s.el, u);
       if (t.state === 'broken') {                       // layer 2 takes break damage too
         t.break2 -= brk;
         log(brk ? `${t.name}'s damaged armour takes ${brk} break damage.` : `${t.name}'s barrier shields the damaged armour.`, 'log-status');
@@ -2766,7 +2808,7 @@ async function perform(u, i, target) {
   if (s.t === 'barrier' || s.t === 'barrierAll' || s.t === 'guard') sfx('ward');
   if (s.t === 'tonic') sfx('heal'); if (s.t === 'brew') sfx('charge', 'poison'); if (s.t === 'immortal') sfx('charge', 'fire');
   if (film) { if (target && (s.t === 'dmg' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]); }
-  else if (s.t === 'dmg') await (s.storm && target ? skyBolt(target, true) : s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
+  else if (s.t === 'dmg') await (s.storm && target ? skyBolt(target, true) : s.aoe && target && s.el ? Promise.all((u.team === 'p' ? enemies : party).filter(isAlive).map(e => projectile(u, e, s.el))) : s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
     log(`🌫️ ${u.name} throws a ${s.n}! She slips back and vanishes into the smoke.`, 'log-player'); floatText(u, '🌫️ STEALTH', 'tag');
@@ -2778,6 +2820,11 @@ async function perform(u, i, target) {
   if (s.t === 'buff') { sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
     await Promise.all([clip, hit(u, target, s)]);
+    if (s.aoe && isAlive(u)) {                                      // Thunderstorm: everyone else on the other side is caught in it too
+      const others = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && e !== target);
+      if (others.length) log(`🌩️ ${s.n} sweeps over ${others.map(e => e.name).join(', ')}!`, 'log-status');
+      for (const e of others) if (isAlive(e)) await hit(u, e, scaleDmg(s, s.aoe));
+    }
     if (s.dr && isAlive(u)) {                                       // Defiant Slam: her own stance, for dr.dur of her turns
       u.dr = { mult: s.dr.mult, turns: s.dr.dur, fresh: true };
       log(`🔰 ${u.name} braces: she takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} turns.`, 'log-heal'); floatText(u, `🔰 −${Math.round(s.dr.mult * 100)}%`, 'ward'); render();
@@ -2792,7 +2839,10 @@ async function perform(u, i, target) {
         await skyBolt(v, false); await hit(u, v, spark);
       }
     }
-    if (s.move === 'front' && u.team === 'p' && isAlive(u)) {          // Backstab: she ends up at the front of the line
+    if (s.move === 'back' && u.team === 'p' && isAlive(u)) {            // Spark Step: strike, then dash out of the front
+      if (back) await back();
+      if (moveUnit(u, 'back')) { log(`💨 ${u.name} dashes back out of reach.`, 'log-player'); render(); await sleep(200); }
+    } else if (s.move === 'front' && u.team === 'p' && isAlive(u)) {          // Backstab: she ends up at the front of the line
       if (back) await back();
       if (moveUnit(u, 'front')) { log(`🗡️ ${u.name} darts to the front of the line.`, 'log-player'); render(); await sleep(200); }
     } else if (back) back();
@@ -2905,7 +2955,7 @@ function incomingRange(h) {       // total damage range of every telegraphed att
 }
 
 function effSkill(u, i) {
-  const s = (u.wrathNow && i === 0 && u.skills[0].t === 'dmg') ? wrathStrike(u) : u.skills[i];
+  const s = (u.wrathNow && i <= 1 && u.skills[i].t === 'dmg') ? wrathStrike(u, i) : u.skills[i];
   let x = u.stealth > 0 && s.t === 'dmg' ? stealthSkill(u, s) : s;
   if (u.brew && isPhys(x)) x = scaleDmg(x, 1 + BREW.mult + (u.statuses.some(q => q.type === 'poison') ? BREW.poisonBonus : 0));       // Untested Potions
   return x;
@@ -2929,8 +2979,8 @@ function moveUnit(u, where) {
   return party.indexOf(u) !== i;
 }
 
-function wrathStrike(u) {                      // Dragon's Wrath: her Skill 1 comes back as a fire attack with bonus damage
-  const w = (u.skills.find(x => x.buff === 'wrath') || {}).fire, b = u.skills[0];
+function wrathStrike(u, i = 0) {                // Dragon's Wrath: her Skill 1 and Skill 2 come back as fire attacks with bonus damage
+  const w = (u.skills.find(x => x.buff === 'wrath') || {}).fire, b = u.skills[i];
   if (!w) return b;
   return { ...b, n: b.n + ' 🔥', el: w.el, brk: (b.brk || 0) + w.brk, d: [Math.round(b.d[0] * w.mult), Math.round(b.d[1] * w.mult)] };
 }
@@ -3143,7 +3193,7 @@ async function takeTurn(u) {
     if (isAlive(u) && foes.length) {
       const v = foes[Math.floor(Math.random() * foes.length)];
       log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
-      const w = wrathStrike(u); setSpot([u, v]);
+      const w = wrathStrike(u, 0); setSpot([u, v]);
       const film2 = await skillFilm(u, 'skill1');
       if (film2) { setSpot([]); await playFilm(film2); setSpot([u, v]); }
       let begun2; const started2 = new Promise(r => begun2 = r);
@@ -3173,6 +3223,12 @@ function checkEnd() {
   const node = curNode(), last = !quest.bonus && quest.node === quest.def.nodes.length - 1;
   const main = $('btn-end-main');
   let saved;
+  if (quest.dev) {                                       // developer quick battle: nothing is kept, back to the picker
+    $('turn-indicator').innerText = won ? 'Victory! (quick battle)' : 'Defeat (quick battle)';
+    log(`<strong>${won ? 'Victory!' : 'Your party was defeated.'}</strong> Quick battle over: nothing is kept.`, 'log-round');
+    main.textContent = '⚡ Back to Quick Battle'; main.onclick = () => { quest = null; showScene('dev-battle'); };
+    $('end-buttons').style.display = 'flex'; render(); return true;
+  }
   if (lost) {
     const kept = Math.floor(quest.gold / 2);
     game.gold += kept; game.stats.lost++; game.quest = null; game.shop = { stock: rollStock(game.relics) };
@@ -3250,10 +3306,11 @@ const elIcons = h => [...new Set([...h.skills.map(s => s.el), ...(h.elems || [])
 
 function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
   const rv = document.getElementById('tm-full'); if (rv) rv.className = '';
-  ['hub', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event'].forEach(id => $(id).classList.toggle('show', id === name));
+  ['hub', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle'].forEach(id => $(id).classList.toggle('show', id === name));
   if (name === 'hub') renderHub();
   if (name === 'party-select') renderParty();
   if (name === 'quest-select') renderQuests();
+  if (name === 'dev-battle') renderDev();
   $('spa-bg').style.display = name === 'spa' ? 'block' : 'none';
   if (name === 'spa-select') { spaGame = null; renderSpaSelect(); }
   if (name === 'camp') renderCamp();
@@ -3532,9 +3589,63 @@ function restoreQuest(s) {
              ? { kind: String(s.bonus.kind || ''), name: String(s.bonus.name || 'Event Fight').slice(0, 40), ids: s.bonus.ids.slice(), mods: s.bonus.mods.slice(), gold: Math.max(0, Math.floor(Number(s.bonus.gold) || 0)), hp: clamp(s.bonus.hp || 1, 0.5, 2), relic: clamp(s.bonus.relic || 0, 0, 1) } : null };
 }
 
+/* ============ DEVELOPER MODE ============ */
+// Title screen > Developer Mode: no save file is read or written, every hero is owned, every relic is owned, gold is unlimited, and each hero starts with 3 flaws so the Spa always has work.
+// In Party Select a Quick Battle button lets you pick any enemies (slot 1 = front line, optional elite modifier) and a backdrop, then fights them with the party you picked.
+const devFoes = [];                // [{ id, mod }]
+function devFlaws() {              // every hero gets 3 fresh flaws (their perks stay)
+  HEROES.forEach(h => {
+    const l = game.traits[h.id] = (game.traits[h.id] || []).filter(id => TRAIT[id] && TRAIT[id].kind !== 'bad');
+    for (let k = 0; k < 3; k++) { const t = rollTrait('bad', h.id); if (t) l.push(t.id); }
+  });
+  hubNote = 'Everyone has 3 fresh flaws again.';
+  if ($('hub').classList.contains('show')) renderHub();
+}
+function startDev() {
+  devMode = true; document.body.classList.add('dev');
+  game = newSave();
+  game.roster = HEROES.map(h => h.id);
+  game.relics = Object.keys(RELICS); game.shop = { stock: [] };
+  Object.keys(ITEMS).forEach(id => { game.items[id] = 99; });
+  Object.defineProperty(game, 'gold', { get: () => 9999999, set: () => {}, enumerable: true, configurable: true });
+  devFlaws(); hubNote = 'Developer mode: everything is unlocked and nothing is saved.';
+  startGame();
+}
+function toQuickBattle() { if (!picked.length) return; showScene('dev-battle'); }
+function devAddFoe(id) { if (devFoes.length < 4) devFoes.push({ id, mod: null }); renderDev(); }
+function devDrop(i) { devFoes.splice(i, 1); renderDev(); }
+function devMod(i, m) { if (devFoes[i]) devFoes[i].mod = m || null; }
+function renderDev() {
+  $('dev-party').innerHTML = '<b>Party</b> (front → back)<br>' + (picked.map((id, i) => `${i + 1}. ${heroById(id).name.split(' ')[0]}`).join(' &nbsp; ') || 'nobody picked');
+  $('dev-foe-slots').innerHTML = [0, 1, 2, 3].map(i => {
+    const f = devFoes[i], d = f && enemyById(f.id);
+    if (!d) return `<div class="pick dim">Slot ${i + 1}${i === 0 ? ' (front)' : ''}: empty</div>`;
+    return `<div class="pick"><div class="mini-sprite port-box" data-port="${d.id}">${d.tag}</div><div style="flex:1"><strong>${d.name}</strong>${d.boss ? ' ★' : ''}<br>
+      <select onchange="devMod(${i}, this.value)"><option value="">no modifier</option>${ELITE_KEYS.map(k => `<option value="${k}"${f.mod === k ? ' selected' : ''}>${ELITE.mods[k].icon} ${ELITE.mods[k].name}</option>`).join('')}</select></div>
+      <button onclick="devDrop(${i})">✕</button></div>`;
+  }).join('');
+  $('dev-enemy-pick').innerHTML = ENEMIES.map(e => `<div class="pick" onclick="devAddFoe('${e.id}')"><div class="mini-sprite port-box" data-port="${e.id}">${e.tag}</div>
+    <div><strong>${e.name}</strong>${e.boss ? ' ★ BOSS' : ''}<div class="sk">HP ${e.hp} · armour ${e.brk} · ${e.skills.map(s => s.n).join(', ')}</div></div></div>`).join('');
+  const bg = $('dev-bg'), keep = bg.value;
+  if (!bg.options.length) bg.innerHTML = QUESTS.flatMap(q => q.nodes.map((n, i) => `<option value="${q.id}|${i + 1}">${q.name}: fight ${i + 1}${n.boss ? ' (boss)' : ''}</option>`)).join('');
+  if (keep) bg.value = keep;
+  $('btn-dev-fight').disabled = !devFoes.length || !picked.length;
+}
+function startQuickBattle() {
+  if (!devFoes.length || !picked.length) return;
+  const [qid, n] = ($('dev-bg').value || '').split('|'), q = QUESTS.find(x => x.id === qid) || QUESTS[0], ni = Math.max(0, Math.min(q.nodes.length - 1, (+n || 1) - 1));
+  const nodes = q.nodes.map((nd, i) => i === ni ? { ...nd, name: 'Quick Battle', enemies: devFoes.map(f => f.id), gold: 0 } : { ...nd });
+  quest = { def: { ...q, nodes, name: 'Quick Battle', relicDrop: 0, unlocks: null }, node: ni, gold: 0, dev: true, devMods: devFoes.map(f => f.mod), plan: null, items: {},
+            party: picked.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }) };
+  Object.keys(ITEMS).forEach(id => { quest.items[id] = 99; });
+  game.lastParty = [...picked];
+  startNode();
+}
+
 function startQuest(ids, questId) {
   quest = { def: QUESTS.find(q => q.id === questId) || QUESTS[0], node: 0, gold: 0, party: ids.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }), items: {} };
   quest.plan = rollPlan(quest.def);
+  if (devMode) Object.defineProperty(quest, 'gold', { get: () => 999999, set: () => {}, enumerable: true, configurable: true });     // unlimited camp shopping
   Object.keys(ITEMS).forEach(id => { quest.items[id] = game.items[id] || 0; game.items[id] = 0; });     // the bag goes with the party
   saveQuest();
   return startNode();
@@ -3544,13 +3655,13 @@ function startNode() {
   party = quest.party;                                               // same unit objects: HP/armour carry over
   party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.dr = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = (quest.bonus ? quest.def.nodes[quest.node] : node).scale || {};            // quest-wide difficulty x this node's own scaling
-  const ids = quest.bonus ? quest.bonus.ids : (quest.plan && quest.plan.nodes[quest.node] || node.enemies), mods = quest.bonus ? quest.bonus.mods : (RAND.on && quest.plan && quest.plan.mods && quest.plan.mods[quest.node]);
+  const ids = quest.bonus ? quest.bonus.ids : (quest.plan && quest.plan.nodes[quest.node] || node.enemies), mods = quest.bonus ? quest.bonus.mods : (quest.devMods || (RAND.on && quest.plan && quest.plan.mods && quest.plan.mods[quest.node]));
   enemies = buildEnemies(ids, mods, { hp: (qs.hp || 1) * (ns.hp || 1) * (quest.bonus && quest.bonus.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) });
   order = []; actor = null; cur = null; sel = null; waiting = null; over = false;
   $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = '';
   $('end-buttons').style.display = 'none';
   $('turn-indicator').innerText = 'Preparing...';
-  $('battle-sub').textContent = quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''} · Quest gold: ${quest.gold}`;
+  $('battle-sub').textContent = quest.dev ? 'Quick Battle (developer mode)' : quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''} · Quest gold: ${quest.gold}`;
   $('enemy-head').textContent = node.name.toUpperCase();
   showScene('battle-scene');
   renderFx(); renderSnd(); loadStageBg();
