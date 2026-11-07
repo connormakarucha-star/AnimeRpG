@@ -947,20 +947,27 @@ const CRIT = { base: 5, weak: 20, resist: -5, bonus: 5, min: 0, max: 100 };
 const POS = { front: 2, bonus: 0.20, min: 0.5, max: 1.4 };
 // Stealth (Irae): her attacks gain this bleed (if they have no element of their own) and enemies are much less likely to target her.
 const STEALTH = { brk: 18, weight: 0.3 };   // weight: how likely enemies are to pick a stealthed hero compared with normal (1 = no protection)
+// Irae: while stealthed, attacks from the other team miss this often. Any damage she takes ends stealth.
+const EVADE = { stealth: 0.5 };
+const drOf = t => t && t.dr && t.dr.turns > 0 ? t.dr.mult : 0;                        // Defiant Slam: fraction of damage a unit currently avoids
+const hasCharm = t => !!(t && t.statuses && t.statuses.some(x => x.type === 'charmed'));
+const charmable = t => !!t && t.hp > 0 && t.state !== 'armoured' && !hasCharm(t);     // only a BROKEN (or super broken) unit can be charmed
 const RICON = { melee: '⚔️', ranged: '🏹' };
 const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', shock: '⚡' };
 
 // Skill: n=name, t='dmg' | 'barrier' (one ally or the caster; lasts to the end of the round; barriers never stack, the biggest one counts) | 'barrierAll' (every other ally, or every ally with self:true) | 'guard' (one other ally: attacks aimed at them hit the caster until her next turn, who gains a p barrier) | taunt:true on a damage skill (the target's next attack must hit the caster) | cleanse:n on a barrier skill (removes n random ailments from each target) | 'buff' (self; buff:'wrath'), d=[min,max] damage, p=barrier size,
-//        chaos:true on a damage skill = right after it lands, the caster also hits a random OTHER unit (friend or foe) with her skill 1,
+//        storm:true on a damage skill = a big bolt from the sky strikes the target, then 1-3 small bolts (her skill 1 damage): odd ones hit a random enemy, even ones a random friend (the caster included),
+//        counter:0.2 on a damage skill = when an enemy attacks the owner, that chance she answers at once with this skill (never against friendly fire). dr:{mult,dur} = the owner also takes that much less damage for dur of her turns.
+//        t:'charm' = no damage; a broken target is charmed: its next attack hits a random ally instead (cleansable like any ailment).
 //        r='melee'|'ranged' (damage skills, default melee), el=element, brk=break damage, cd=cooldown in turns.
 // Barriers soak damage AND armour-break damage, and vanish at the end of the turn of the unit that carries them.
 // Optional unit traits (see POS): frontMod / backMod = extra damage taken (+) or avoided (-) while standing in that row,
 // evasive = multiplies the damage penalty an attacker suffers from a bad position (a melee hit on the back row is -20%, x2 = -40%).
 const HEROES = [
   { id:'seria', weak:['poison'], resist:['shock'], frontMod:-0.15, name:'Seria', tag:'SERIA',  hp:120, brk:60, spd:6, skills:[
-    { n:'Shield Bash',  t:'dmg', r:'melee',  d:[11,13], cd:0 },
+    { n:'Shield Bash',  t:'dmg', r:'melee',  d:[11,13], cd:0, counter:0.2 },             // 20% to answer at once whenever an enemy attacks her
     { n:'Shield Wall',  t:'guard',  p:22, cd:3 },                                   // body-block: she takes every attack aimed at an ally until her next turn, behind her own barrier
-    { n:'Defiant Slam', t:'dmg', r:'melee',  d:[12,15], taunt:true, cd:3 } ] },        // taunts the target (even through armour): its next attack must hit her
+    { n:'Defiant Slam', t:'dmg', r:'melee',  d:[12,15], taunt:true, cd:3, dr:{ mult:.25, dur:3 } } ] },        // taunts the target (even through armour): its next attack must hit her. She also takes 25% less damage for 3 turns
   { id:'aria', weak:['fire'], resist:['ice'], backMod:-0.1, name:'Aria', tag:'ARIA',  hp:70,  brk:25, spd:13, skills:[       // the support: fast, so her barriers are up before the enemy acts
     { n:'Frost Shard',  t:'dmg', r:'ranged', d:[11,13], el:'ice', brk:12, cd:0 },
     { n:'Ward',         t:'barrier',    p:30, cd:0, cleanse:1 },                   // also cleanses 1 random ailment from the target
@@ -977,13 +984,13 @@ const HEROES = [
   { id:'aneesah', weak:['ice'], resist:['shock'], backMod:-0.15, name:'Aneesah', tag:'ANEESAH', hp:65, brk:20, spd:11, skills:[   // chaotic storm mage, back liner
     { n:'Static Spark',    t:'dmg', r:'ranged', d:[6,8], el:'shock', brk:6, cd:0 },
     { n:'Lightning Bolt',  t:'dmg', r:'ranged', d:[17,20], el:'shock', brk:22, cd:2 },
-    { n:'Tempest Unbound', t:'dmg', r:'ranged', d:[32,38], el:'shock', brk:40, cd:4, chaos:true } ] },
+    { n:'Tempest Unbound', t:'dmg', r:'ranged', d:[32,38], el:'shock', brk:40, cd:4, storm:true } ] },
   // locked:true = not owned at the start. A quest with unlocks:'<hero id>' adds her to the roster the first time its boss falls.
   { id:'siren', weak:['shock'], resist:['poison'],  name:'Siren', tag:'SIREN', hp:75, brk:28, spd:9, locked:true,
     unlockMsg:'The Siren has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
-    { n:'Razor Claws',   t:'dmg', r:'melee',  d:[11,13], el:'bleed',  brk:10, cd:0 },
-    { n:'Toxic Breath',  t:'dmg', r:'ranged', d:[15,18], el:'poison', brk:22, cd:2 },
-    { n:'Voltaic Bloom', t:'dmg', r:'ranged', d:[24,28], el:'shock',  brk:36, cd:4 } ] },
+    { n:'Stormsong',       t:'dmg',   r:'ranged', d:[12,14], el:'shock',  brk:14, cd:0 },
+    { n:'Briny Venom',     t:'dmg',   r:'ranged', d:[15,18], el:'poison', brk:22, cd:2 },
+    { n:'Enthralling Song', t:'charm', r:'ranged', cd:4 } ] },                       // no damage: a broken foe is charmed and its next attack hits one of its own friends
   // Irae: the first bleeder. Smoke Bomb = stealth for `dur` of her turns (and a step back); while stealthed her attacks bleed and Backstab hits much harder.
   // move:'front' = after the strike the unit steps to the front of her line (the line-up goes back to normal after the fight). stealthMul / stealthCrit only apply while stealthed.
   { id:'irae', weak:['fire'], resist:['bleed'], evasive:1.5, name:'Irae', tag:'IRAE', hp:85, brk:28, spd:12, locked:true, elems:['bleed'],
@@ -1050,7 +1057,7 @@ const ENEMIES = [
     { n:'Crashing Wave', t:'dmg', r:'melee',  d:[18,21], cd:0 },
     { n:'Venom Song',    t:'dmg', r:'ranged', d:[14,17], el:'poison', brk:25, cd:2 },
     { n:'Storm Aria',    t:'dmg', r:'ranged', d:[16,19], el:'shock',  brk:25, cd:3 },
-    { n:'Tidal Ward',    t:'barrier', p:30, cd:4 } ] },
+    { n:"Siren's Call",  t:'charm', r:'ranged', cd:4 } ] },                  // sparingly: only ever aimed at a broken hero, at most every 5th turn
   // ---- the necromancer's crypt (poison, ice and undead) ----
   { id:'e_rat', role:'front', weak:['fire'], resist:['poison'], evasive:1.5, name:'Plague Rat',     tag:'RAT',    hp:55,  brk:20, spd:10, skills:[
     { n:'Gnaw',        t:'dmg', r:'melee',  d:[7,9],  el:'poison', brk:8, cd:0 },
@@ -1490,7 +1497,9 @@ function renderGuide() {
       + g(`<b>Armour broken / SUPER BROKEN</b>: statuses can now land on you.`, 'bad')
       + `<h4>Buffs</h4>`
       + g(`🛡️ <b>Barrier</b>: soaks HP and break damage until the end of the round.`, 'good')
-      + g(`🌫️ <b>Stealth</b> (Irae's Smoke Bomb): for a few of her turns her attacks gain bleed (+${STEALTH.brk} break) and enemies are far less likely to target her.`, 'good')
+      + g(`🌫️ <b>Stealth</b> (Irae's Smoke Bomb): for a few of her turns her attacks gain bleed (+${STEALTH.brk} break) and enemies are far less likely to target her. ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, and any damage ends it.`, 'good')
+      + g(`💘 <b>Charm</b> (Siren): only a broken unit can be charmed. Its next attack hits a random friend. Cleanse removes it.`, 'bad')
+      + g(`🔰 <b>Defiant stance</b> (Seria's Defiant Slam): 25% less damage taken for 3 turns. Her Shield Bash has a 20% chance to counterattack whenever an enemy attacks her.`, 'good')
       + g(`🐉 <b>Dragon's Wrath</b> (Iris): next turn she strikes again with a burning attack, then it fades.`, 'good')
       + g(`<b>Immunity</b> (some relics, Unyielding elites): ignores the listed statuses.`, 'good')
       + `<h4>Elite enemies ★</h4>` + Object.values(ELITE.mods).map(m => g(`${m.icon} <b>${m.name}</b>: ${m.desc}`)).join('');
@@ -1563,6 +1572,7 @@ const SFX = {
   defeat() { const t = actx.currentTime; AU.tone('sine', 260, 55, t, 0.6, 0.35, 0.02); AU.noise(t, 0.4, 0.12, 'lowpass', 900, 200, 1, 0.02); },
   heal() { const t = actx.currentTime; [523, 659, 784, 1047].forEach((f, i) => AU.tone('sine', f, f, t + i * 0.07, 0.4, 0.13, 0.01)); },
   ward() { const t = actx.currentTime; [440, 660, 880].forEach(f => AU.tone('sine', f, f * 1.01, t, 0.5, 0.1, 0.03)); AU.noise(t, 0.3, 0.05, 'highpass', 3000, 5000, 1, 0.05); },
+  charm() { const t = actx.currentTime; [660, 784, 988, 1319].forEach((f, i) => AU.tone('sine', f, f * 1.02, t + i * 0.11, 0.55, 0.1, 0.02)); AU.tone('triangle', 330, 392, t, 0.7, 0.07, 0.05); },
   poof() { const t = actx.currentTime; AU.noise(t, 0.35, 0.22, 'lowpass', 1500, 250, 0.7, 0.01); },
   nerve() { const t = actx.currentTime;                    // harsh: a distorted electric scream plus a hard slam
     AU.thump(t, 0.9); AU.zap(t, 0.4, 0.34);
@@ -1646,7 +1656,7 @@ function posMod(s, t) {
 }
 const scaleBy = (v, k) => v > 0 ? Math.max(1, Math.round(v * k)) : 0;
 const biteMod = (s, t) => s && s.bite && t && (t.statuses || []).some(x => x.type === 'bleed') ? s.bite.dmg : 0;      // Crimson Bite: extra damage against a bleeding target
-function adjRange(s, t) { const [a, b] = dmgRange(s), k = 1 + posMod(s, t) + biteMod(s, t); return [scaleBy(a, k), scaleBy(b, k)]; }
+function adjRange(s, t) { const [a, b] = dmgRange(s), k = (1 + posMod(s, t) + biteMod(s, t)) * (1 - drOf(t)); return [scaleBy(a, k), scaleBy(b, k)]; }
 function rollDamage(s, t, u) {
   const [lo, hi] = dmgRange(s), chance = critChance(s, t), mod = posMod(s, t);
   let amount = scaleBy(lo + Math.floor(rand() * (hi - lo + 1)), 1 + mod + biteMod(s, t));
@@ -1657,6 +1667,7 @@ function rollDamage(s, t, u) {
     if (A.brokenBonus && t && t.state && t.state !== 'armoured') amount = scaleBy(amount, 1 + A.brokenBonus);
     if (A.lowHpBonus && u.hp < u.maxHp / 2) amount = scaleBy(amount, 1 + A.lowHpBonus);
   }
+  if (drOf(t) > 0) amount = scaleBy(amount, 1 - drOf(t));                   // Defiant Slam's stance
   return { amount, crit, chance, mod };
 }
 const pmTag = m => m > 0.001 ? `<span class="pm up">▲+${Math.round(m * 100)}%</span>` : m < -0.001 ? `<span class="pm down">▼−${Math.round(-m * 100)}%</span>` : '';
@@ -2073,7 +2084,7 @@ function armourBreak(u, big) {                          // dark armour shards ex
 /* A unit at 0 HP (hero or enemy alike): skull flash, its 'damaged' picture for a beat, then it fades from the screen.
    Fallen heroes are only hidden: they get back up at camp. The line closes up after the fade, not during it. */
 async function fall(t) {
-  t.hp = 0; t.barrier = 0; t.holdBarrier = false; t.brew = null; t.immortal = 0; t.statuses = []; t.stealth = 0;
+  t.hp = 0; t.barrier = 0; t.holdBarrier = false; t.brew = null; t.dr = null; t.immortal = 0; t.statuses = []; t.stealth = 0;
   log(`${t.name} has fallen!`, 'log-status');
   if (t.team === 'p') { t.downs = (t.downs || 0) + 1; }                // a hero who falls may pick up a flaw when the quest ends
   if (t.mod && (ELITE.mods[t.mod] || {}).rally) unrally();
@@ -2158,6 +2169,17 @@ function syncAmbient(u) {
     box.appendChild(g);
   });
   el.appendChild(box);
+}
+async function skyBolt(t, big) {                    // a bolt falls from the sky onto the target: one big blue one, or a smaller strike
+  const b = figs.get(t), host = $('fx'); if (!b || !host || !b.isConnected) return;
+  const hb = host.getBoundingClientRect(), rb = b.getBoundingClientRect(); if (!hb.width || !rb.width) return;
+  sfx('whoosh', 'shock');
+  const x2 = rb.left - hb.left + rb.width / 2, y2 = rb.top - hb.top + rb.height * bodyAt(.4), x1 = x2 + (Math.random() - .5) * 60, y1 = -10, n = big ? 12 : 8, jit = big ? 46 : 30;
+  let pts = ''; for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * jit; pts += `${(x1 + (x2 - x1) * k + j).toFixed(1)},${(y1 + (y2 - y1) * k).toFixed(1)} `; }
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bolt'); svg.setAttribute('viewBox', `0 0 ${hb.width} ${hb.height}`);
+  svg.innerHTML = big ? `<polyline points="${pts}" stroke="#2f7dff" stroke-width="30" opacity=".35"/><polyline points="${pts}" stroke="#7cc4ff" stroke-width="12" opacity=".8" style="filter:drop-shadow(0 0 10px #4aa3ff)"/><polyline points="${pts}" stroke="#fff" stroke-width="5"/><circle cx="${x2}" cy="${y2}" r="46" fill="#7cc4ff" opacity=".45"/>`
+    : `<polyline points="${pts}" stroke="#4aa3ff" stroke-width="10" opacity=".4"/><polyline points="${pts}" stroke="#e6f4ff" stroke-width="3" style="filter:drop-shadow(0 0 5px #7cc4ff)"/><circle cx="${x2}" cy="${y2}" r="22" fill="#7cc4ff" opacity=".4"/>`;
+  host.appendChild(svg); await sleep(big ? 280 : 200); setTimeout(() => svg.remove(), 160);
 }
 async function projectile(u, t, kind) {            // ranged elemental skills: a bolt / fireball / shard flies from the caster to the target
   const a = figs.get(u), b = figs.get(t), host = $('fx'), v = VFX[kind]; if (!a || !b || !host || !v || !v.mk || !a.isConnected || !b.isConnected) return;
@@ -2333,9 +2355,10 @@ function chips(u) {              // one small tile per skill: icons, damage / ba
   return '<div class="chips">' + u.skills.map((s, i) => {
     const cd = u.cd[i] || 0, on = u === cur && sel === i; s = effSkill(u, i);
     let ic, val;
-    if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.chaos ? '🌀' : '') + (s.taunt ? '🎯' : '') + (s.bite ? '🦇' : ''); val = rangeText(s); }
+    if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.storm ? '🌩️' : '') + (s.taunt ? '🎯' : '') + (s.counter ? '↩️' : '') + (s.dr ? '🔰' : '') + (s.bite ? '🦇' : ''); val = rangeText(s); }
     else if (s.t === 'buff') { ic = '🐉'; val = 'buff'; }
     else if (s.t === 'smoke') { ic = '🌫️'; val = 'stealth'; }
+    else if (s.t === 'charm') { ic = '💘🏹'; val = 'charm'; }
     else if (s.t === 'guard') { ic = '🛡️🤝'; val = '+' + s.p; }
     else if (s.t === 'tonic') { ic = '💉☠️'; val = '+' + s.heal + ' hp'; }
     else if (s.t === 'brew') { ic = '⚗️'; val = 'party'; }
@@ -2364,7 +2387,7 @@ function renderPanel() {          // PC: detailed stats of whoever is acting, in
     <div class="ap-stats"><span>❤️ ${Math.max(0, u.hp)}/${u.maxHp}</span>${u.barrier ? `<span>🛡️ ${u.barrier}</span>` : ''}<span>Armour ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2}</span></div>
     ${(u.weak && u.weak.length) || (u.resist && u.resist.length) ? `<div class="ap-line">⚠️ ${elemIcons(u.weak || [])} &nbsp; 🛡️ ${elemIcons(u.resist || [])}</div>` : ''}
     ${u.traits && u.traits.length ? `<div class="ap-line">${traitChips(u.traits)}</div>` : ''}
-    ${u.stealth > 0 ? `<div class="ap-line">🌫️ Stealth: ${u.stealth} turn${u.stealth > 1 ? 's' : ''} left</div>` : ''}
+    ${u.stealth > 0 ? `<div class="ap-line">🌫️ Stealth: ${u.stealth} turn${u.stealth > 1 ? 's' : ''} left · ${Math.round(EVADE.stealth * 100)}% evasion</div>` : ''}${u.dr && u.dr.turns > 0 ? `<div class="ap-line">🔰 Takes ${Math.round(u.dr.mult * 100)}% less damage · ${u.dr.turns} turn${u.dr.turns > 1 ? 's' : ''} left</div>` : ''}
     ${u.relics && u.relics.length ? `<div class="ap-line">${u.relics.map(id => RELICS[id].icon + ' ' + RELICS[id].name).join(' · ')}</div>` : ''}
     <div class="ap-skills">${sk}</div>`;
 }
@@ -2378,7 +2401,7 @@ function card(u, team, i) {
   if (u.mod) c.push('elite', 'elite-' + u.mod);
   if (spot.length) c.push(spot.includes(u) ? 'spot' : 'bg');
   const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
-  if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'barrier' && team === 'p') || (sk.t === 'guard' && team === 'p' && u !== cur) || (sk.t === 'tonic' && team === 'p' && u.hp < u.maxHp))) c.push('targetable');
+  if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'charm' && team === 'e' && charmable(u)) || (sk.t === 'barrier' && team === 'p') || (sk.t === 'guard' && team === 'p' && u !== cur) || (sk.t === 'tonic' && team === 'p' && u.hp < u.maxHp))) c.push('targetable');
   if (waiting && selItem && team === 'p' && alive && u.hp < u.maxHp) c.push('targetable');   // bag item: wounded living heroes
   const st = (u.statuses || []).map(x => ` <span class="ail ail-${x.type}">[${x.type.toUpperCase()}${x.dot ? ' ' + x.dur : ''}]</span>`).join('');
   let extra = '';
@@ -2404,7 +2427,7 @@ function card(u, team, i) {
     <div class="floor"></div>
     <div class="stats-info">
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
-      <div class="tags">${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her">🌫️ ${u.stealth}</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
+      <div class="tags">${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
       <div class="bar-container"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div></div>
       <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of the round">🛡️ ${u.barrier}</span>` : ''}</div>
       <div class="arm">Break: ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2}</div>
@@ -2460,13 +2483,15 @@ function protectTarget(e, target) {
 function redirectIntents(from, to, only) {
   enemies.forEach(e => { if (isAlive(e) && e.intent && !e.intent.skip && e.skills[e.intent.i].t === 'dmg' && e.intent.target === from && (!only || e === only)) e.intent.target = to; });
 }
-const usable = (u, i) => u.cd[i] === 0 && !(u.skills[i].once && u.once && u.once[i]) && !(u.skills[i].t === 'tonic' && !(u.team === 'p' ? party : enemies).some(a => isAlive(a) && a.hp < a.maxHp)) && !((u.skills[i].t === 'barrierAll' || u.skills[i].t === 'guard') && !wardTargets(u, u.skills[i]).length);   // a single ward can always go on the caster herself
+const usable = (u, i) => u.cd[i] === 0 && !(u.skills[i].t === 'charm' && !(u.team === 'p' ? enemies : party).some(charmable)) && !(u.skills[i].once && u.once && u.once[i]) && !(u.skills[i].t === 'tonic' && !(u.team === 'p' ? party : enemies).some(a => isAlive(a) && a.hp < a.maxHp)) && !((u.skills[i].t === 'barrierAll' || u.skills[i].t === 'guard') && !wardTargets(u, u.skills[i]).length);   // a single ward can always go on the caster herself
 function skillDesc(s, u) {
-  if (s.t === 'smoke') return `🌫️ step back + stealth for ${s.dur} turns: attacks bleed, enemies rarely target her`;
+  if (s.t === 'smoke') return `🌫️ step back + stealth for ${s.dur} turns: attacks bleed, ${Math.round(EVADE.stealth * 100)}% evasion, ends when hit`;
   const x = skillDesc0(s), more = [];
   if (s.stealthed) more.push('🌫️ stealth bonus active');
   else if (s.stealthMul || s.stealthCrit) more.push(`stealth: ${s.stealthMul ? '×' + s.stealthMul + ' dmg' : ''}${s.stealthMul && s.stealthCrit ? ', ' : ''}${s.stealthCrit ? '+' + s.stealthCrit + '% crit' : ''}`);
   if (s.move === 'front') more.push('→ moves to the front');
+  if (s.counter) more.push(`↩️ ${Math.round(s.counter * 100)}% counter when attacked`);
+  if (s.dr) more.push(`🔰 −${Math.round(s.dr.mult * 100)}% damage taken, ${s.dr.dur} turns`);
   return x + (more.length ? ' · ' + more.join(' · ') : '');
 }
 function skillDesc0(s) {
@@ -2477,7 +2502,8 @@ function skillDesc0(s) {
   if (s.t === 'brew') return `⚗️ whole party +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} turns, then poisoned`;
   if (s.t === 'immortal') return `🦇 immortal for ${s.dur} turns · once per battle, fires by itself on a killing blow`;
   if (s.t === 'buff') return '🐉 next turn: burning Iron Fists + a free strike';
-  if (s.chaos) return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]} 🌀 chaos`;
+  if (s.t === 'charm') return '💘 no damage · a broken foe\'s next attack hits its own friend';
+  if (s.storm) return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]} 🌩️ +1-3 strikes`;
   return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]}`;
 }
 
@@ -2549,10 +2575,17 @@ function chooseItem(id) {
   render();
 }
 
-function skillWhat(u, s) {          // one-line description of a skill: damage, range, element, break, crit (used by the inspect pop-up and the Dorm)
-  return s.t === 'dmg' ? `${rangeText(s)} dmg · ${RICON[rangeOf(s)]} ${rangeOf(s)} · ${s.el ? ICON[s.el] + ' ' + ELEM_NAME[s.el] + ' · break ' + (s.brk || 0) : 'physical'} · crit ${critChance(s, null)}%${s.chaos ? ` · 🌀 then ${u.skills[0].n} hits a random other unit, friend or foe` : ''}${s.taunt ? ' · 🎯 taunts: its next attack must target her, even through armour' : ''}${s.bite ? ` · 🦇 against a bleeding target: +${Math.round(s.bite.dmg * 100)}% damage and she heals ${Math.round(s.bite.heal * 100)}% of it` : ''}`
+function skillWhat(u, s) {
+  let x = skillWhat0(u, s);
+  if (s.counter) x += ` · ↩️ ${Math.round(s.counter * 100)}% chance to counterattack with it whenever an enemy attacks her`;
+  if (s.dr) x += ` · 🔰 she also takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} of her turns`;
+  return x;
+}
+function skillWhat0(u, s) {          // one-line description of a skill: damage, range, element, break, crit (used by the inspect pop-up and the Dorm)
+  return s.t === 'dmg' ? `${rangeText(s)} dmg · ${RICON[rangeOf(s)]} ${rangeOf(s)} · ${s.el ? ICON[s.el] + ' ' + ELEM_NAME[s.el] + ' · break ' + (s.brk || 0) : 'physical'} · crit ${critChance(s, null)}%${s.storm ? ` · 🌩️ then 1-3 small strikes with ${u.skills[0].n}: odd ones hit a random enemy, even ones a random friend` : ''}${s.taunt ? ' · 🎯 taunts: its next attack must target her, even through armour' : ''}${s.bite ? ` · 🦇 against a bleeding target: +${Math.round(s.bite.dmg * 100)}% damage and she heals ${Math.round(s.bite.heal * 100)}% of it` : ''}`
                : s.t === 'buff' ? `🐉 Buff: on her next turn ${u.skills[0].n} burns (+75% damage, fire) and she also strikes a random enemy with it, then it wears off`
-               : s.t === 'smoke' ? `🌫️ Steps back to the rear and turns stealthy for ${s.dur} of her turns: her attacks gain bleed (+${STEALTH.brk} break), and enemies are far less likely to target her`
+               : s.t === 'charm' ? `💘 Deals no damage. If the target's armour is broken it is charmed: its next attack hits a random friend of its own. Cleanse removes it. Armoured targets can't be charmed`
+               : s.t === 'smoke' ? `🌫️ Steps back to the rear and turns stealthy for ${s.dur} of her turns: her attacks gain bleed (+${STEALTH.brk} break), and enemies are far less likely to target her. While hidden ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, but any damage she takes ends it`
                : s.t === 'tonic' ? `💉 Heals one ally for ${s.heal} HP, but the same amount comes back as ☠️ poison over the next turns (anything still owed when the fight is won is dealt then, never below 1 HP). It ignores armour and works on armoured allies. Borrowed health: a fresh tonic adds to any poison already there`
                : s.t === 'brew' ? `⚗️ Everyone in the party (herself too) deals +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} of their turns, +${Math.round((BREW.mult + BREW.poisonBonus) * 100)}% while poisoned. When it wears off they take ${BREW.poison} poison (ignores armour). Elemental skills are not boosted (her scalpel counts as physical)`
                : s.t === 'immortal' ? `🦇 Immortal: HP cannot fall below 1 for ${s.dur} turns. No cooldown, but only once per battle. If a blow would kill her first, it triggers by itself and leaves her on 1 HP`
@@ -2591,7 +2624,7 @@ function chooseSkill(i) {
   if (sel === i) { sel = null; render(); return; }          // click again to cancel
   if (['barrierAll', 'buff', 'smoke', 'brew', 'immortal'].includes(cur.skills[i].t)) { finish({ i }); return; }
   sel = i; render();
-  $('turn-indicator').innerText = `${cur.name}: pick a ${cur.skills[i].t === 'dmg' ? 'target' : cur.skills[i].t === 'guard' ? 'ally to protect' : cur.skills[i].t === 'tonic' ? 'wounded ally to treat' : 'friendly target'} for ${cur.skills[i].n}`;
+  $('turn-indicator').innerText = `${cur.name}: pick a ${cur.skills[i].t === 'dmg' ? 'target' : cur.skills[i].t === 'guard' ? 'ally to protect' : cur.skills[i].t === 'charm' ? 'broken enemy to charm' : cur.skills[i].t === 'tonic' ? 'wounded ally to treat' : 'friendly target'} for ${cur.skills[i].n}`;
 }
 
 function pick(team, idx) {
@@ -2602,9 +2635,9 @@ function pick(team, idx) {
   }
   if (!waiting || sel === null) return;
   const t = cur.skills[sel].t;
-  if (!((t === 'dmg' && team === 'e') || (t === 'barrier' && team === 'p') || (t === 'guard' && team === 'p') || (t === 'tonic' && team === 'p'))) return;
+  if (!((t === 'dmg' && team === 'e') || (t === 'charm' && team === 'e') || (t === 'barrier' && team === 'p') || (t === 'guard' && team === 'p') || (t === 'tonic' && team === 'p'))) return;
   const target = (team === 'e' ? enemies : party)[idx];
-  if (!target || !isAlive(target) || (t === 'guard' && target === cur) || (t === 'tonic' && target.hp >= target.maxHp)) return;
+  if (!target || !isAlive(target) || (t === 'guard' && target === cur) || (t === 'charm' && !charmable(target)) || (t === 'tonic' && target.hp >= target.maxHp)) return;
   finish({ i: sel, target });
 }
 
@@ -2621,18 +2654,39 @@ function applyStatus(t, el, src) {
   log(`${t.name} is afflicted with <strong>${e.status.toUpperCase()}</strong>!`, 'log-status');
 }
 
+function applyCharm(t, src) {            // Siren: the target's next attack will hit one of its own friends instead
+  if (hasCharm(t)) { log(`${t.name} is already charmed.`, 'log-status'); return; }
+  t.statuses.push({ type: 'charmed', dot: 0, stun: false, dur: 1 });
+  log(`💘 ${t.name} is <strong>CHARMED</strong>: its next attack will hit a friend!`, 'log-status'); floatText(t, '💘 CHARMED', 'tag');
+}
+
 function sinkDead(t) {          // a fallen unit drops to the back of its line and the living step forward
   const l = t.team === 'p' ? party : enemies, i = l.indexOf(t);
   if (i < 0) return;
   l.splice(i, 1); l.push(t);
 }
 
+let countering = false;
+async function counterAttack(t, u) {             // Seria's Shield Bash answers the attacker at once (it never triggers again from the answer itself)
+  countering = true;
+  try {
+    const s = effSkill(t, 0);
+    log(`↩️ ${t.name} counterattacks ${u.name}!`, 'log-player'); floatText(t, '↩️ COUNTER', 'tag'); setSpot([t, u]);
+    const back = await advance(t, u, s); sfx('swing');
+    const clip = playAnim(t, 'skill1'); await sleep(ANIM.impact);
+    await Promise.all([clip, hit(t, u, s)]); await back();
+  } finally { countering = false; }
+}
 async function hit(u, t, s) {
+  if (s.t === 'dmg' && t.stealth > 0 && t.team !== u.team && Math.random() < EVADE.stealth) {      // Irae in stealth: the attack finds nothing
+    log(`💨 ${t.name} is hidden in the shadows: ${u.name}'s ${s.n} misses!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
+  }
   const r = rollDamage(s, t, u), m = matchup(s, t);
   const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = s.el ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
   const dmg = r.amount - soak, bled = !!(s.bite && (t.statuses || []).some(x => x.type === 'bleed'));
   t.barrier = b - soak;                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
   t.hp = lethalGuard(t, t.hp - dmg);                           // never below 0, even for a frame (and immortal units stop at 1)
+  if (dmg > 0 && t.stealth > 0) { t.stealth = 0; t.stealthFresh = false; log(`🌫️ ${t.name} is hit and loses her stealth!`, 'log-status'); }
   if (t.hp <= 0 && !canRevive(t)) { t.statuses = []; t.stealth = 0; }             // a unit going down carries no ailments (or stealth) into the death animation
   if (bled && dmg > 0 && isAlive(u)) {                         // Crimson Bite: she drinks from a bleeding target
     const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(dmg * s.bite.heal)));
@@ -2680,6 +2734,7 @@ async function hit(u, t, s) {
     }
   }
   render(); await anim;
+  if (!countering && s.t === 'dmg' && t.team !== u.team && isAlive(t) && isAlive(u) && t.skills && t.skills[0].counter && !stunned(t) && Math.random() < t.skills[0].counter) await counterAttack(t, u);
 }
 
 async function useItem(u, id, t) {          // using an item takes the hero's turn
@@ -2696,7 +2751,7 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
 async function perform(u, i, target) {
   const s = effSkill(u, i);
   say(target && s.t !== 'barrierAll' && s.t !== 'buff' ? `${u.name} uses ${s.n} on ${target.name}` : `${u.name} uses ${s.n}`);
-  if (target && (s.t === 'dmg' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]);
+  if (target && (s.t === 'dmg' || s.t === 'charm' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]);
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
   // The order of a hit: 1) her skill picture replaces the idle  2) a short charge-up effect for elemental attacks  3) the attack connects (bolt flies / blow lands)  4) the target's damaged picture and hit effects (in hit()).
   // A video in the skill slot is a film: it plays alone, full screen, nobody moves, and the hit only happens once it ends (see skillFilm).
@@ -2711,7 +2766,7 @@ async function perform(u, i, target) {
   if (s.t === 'barrier' || s.t === 'barrierAll' || s.t === 'guard') sfx('ward');
   if (s.t === 'tonic') sfx('heal'); if (s.t === 'brew') sfx('charge', 'poison'); if (s.t === 'immortal') sfx('charge', 'fire');
   if (film) { if (target && (s.t === 'dmg' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]); }
-  else if (s.t === 'dmg') await (s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
+  else if (s.t === 'dmg') await (s.storm && target ? skyBolt(target, true) : s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
     log(`🌫️ ${u.name} throws a ${s.n}! She slips back and vanishes into the smoke.`, 'log-player'); floatText(u, '🌫️ STEALTH', 'tag');
@@ -2723,15 +2778,31 @@ async function perform(u, i, target) {
   if (s.t === 'buff') { sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
     await Promise.all([clip, hit(u, target, s)]);
-    if (s.chaos && isAlive(u) && enemies.some(isAlive)) {          // the storm lashes out at someone else: a random other unit, friend or foe
-      const pool = [...party, ...enemies].filter(x => isAlive(x) && x !== u && x !== target);
-      if (pool.length) { const v = pool[Math.floor(Math.random() * pool.length)]; log(`🌀 The storm runs wild! ${u.name} lashes out at ${v.name}.`, 'log-status'); await Promise.all([playAnim(u, 'skill1'), sleep(ANIM.impact).then(() => hit(u, v, u.skills[0]))]); }
+    if (s.dr && isAlive(u)) {                                       // Defiant Slam: her own stance, for dr.dur of her turns
+      u.dr = { mult: s.dr.mult, turns: s.dr.dur, fresh: true };
+      log(`🔰 ${u.name} braces: she takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} turns.`, 'log-heal'); floatText(u, `🔰 −${Math.round(s.dr.mult * 100)}%`, 'ward'); render();
+    }
+    if (s.storm) {                                                  // the storm answers: 1-3 small bolts. Odd = a random foe, even = a random friend (the caster too)
+      const n = 1 + Math.floor(Math.random() * 3), foes = u.team === 'p' ? enemies : party, friends = u.team === 'p' ? party : enemies, spark = u.skills[0];
+      log(`🌩️ The storm answers with ${n} more strike${n > 1 ? 's' : ''}!`, 'log-status');
+      for (let k = 1; k <= n; k++) {
+        if (!foes.some(isAlive) || !friends.some(isAlive)) break;
+        const pool = (k % 2 ? foes : friends).filter(isAlive), v = pool[Math.floor(Math.random() * pool.length)];
+        log(`⚡ Strike ${k}: ${k % 2 ? 'at' : 'on'} ${v === u ? 'herself' : v.name}!`, 'log-status');
+        await skyBolt(v, false); await hit(u, v, spark);
+      }
     }
     if (s.move === 'front' && u.team === 'p' && isAlive(u)) {          // Backstab: she ends up at the front of the line
       if (back) await back();
       if (moveUnit(u, 'front')) { log(`🗡️ ${u.name} darts to the front of the line.`, 'log-player'); render(); await sleep(200); }
     } else if (back) back();
     return;
+  }
+  if (s.t === 'charm') {                                       // Siren's song: no damage, a broken target turns on its friends
+    sfx('charm'); await sleep(ANIM.impact);
+    if (!target || !isAlive(target)) { log(`${u.name}'s song finds no one.`, 'log-round'); return; }
+    if (!charmable(target)) { log(`${target.name} shrugs off the song.`, 'log-status'); floatText(target, 'RESISTS', 'tag'); render(); return; }
+    log(`🎶 ${u.name} sings ${s.n} to ${target.name}.`, 'log-player'); applyCharm(target, u); render(); return;
   }
   if (s.t === 'tonic') {                                       // Jean's Tonic: heal now, and the same amount returns as poison that ignores armour
     if (!target || !isAlive(target) || target.team !== u.team) { log(`${u.name} has no one to treat.`, 'log-round'); return; }
@@ -2781,6 +2852,10 @@ function enemyChoose(u, ahead = false) {      // ahead = planning for its coming
     const mates = wardTargets(u).filter(e => !e.barrier).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
     if (mates.length) return { i: wardI, target: u.skills[wardI].t === 'barrier' ? mates[0] : null };
   }
+  const charmI = ready.find(i => u.skills[i].t === 'charm');
+  if (charmI !== undefined && Math.random() < 0.7) {               // sparingly: only at a broken hero who isn't charmed yet
+    const c = party.filter(charmable); if (c.length) return { i: charmI, target: c[Math.floor(Math.random() * c.length)] };
+  }
   const atk = ready.filter(i => u.skills[i].t === 'dmg');
   if (!atk.length) return { skip: true };         // nothing usable this turn
   return { i: atk[Math.floor(Math.random() * atk.length)], target: weightedHero() };
@@ -2791,7 +2866,7 @@ function enemyChoose(u, ahead = false) {      // ahead = planning for its coming
 function resolveIntent(u) {
   const it = u.intent, s = it && !it.skip ? u.skills[it.i] : null;
   const ok = s && u.cd[it.i] === 0 && (s.t === 'barrierAll' ? wardTargets(u).length > 0
-    : it.target && isAlive(it.target) && it.target !== u && !(s.t === 'barrier' && it.target.barrier));
+    : it.target && isAlive(it.target) && it.target !== u && !(s.t === 'barrier' && it.target.barrier) && (s.t !== 'charm' || charmable(it.target)));
   return ok ? { i: it.i, target: it.target } : enemyChoose(u);
 }
 const stunned = u => !!(u.statuses && u.statuses.some(x => x.stun));
@@ -2802,15 +2877,17 @@ function intentText(u) {
   const s = u.skills[it.i];
   if (s.t === 'barrierAll') return `▶ ${s.n} +${s.p}🛡️ → all allies`;
   if (s.t === 'barrier') return `▶ ${s.n} +${s.p}🛡️ → ${it.target.short}`;
+  if (s.t === 'charm') return `▶ ${s.n} 💘 → ${it.target.short}`;
+  if (hasCharm(u)) return `▶ ${s.n} → 💘 hits its own friend`;
   const [a, b] = adjRange(s, it.target);
   return `▶ ${s.n} ${a === b ? a : a + '–' + b}${s.el ? ICON[s.el] : ''}${RICON[rangeOf(s)]}${pmTag(posMod(s, it.target))} → ${it.target.short}`;
 }
-const incoming = h => enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && e.intent.target === h && e.skills[e.intent.i].t === 'dmg').length;
+const incoming = h => enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && !hasCharm(e) && e.intent.target === h && e.skills[e.intent.i].t === 'dmg').length;
 // Telegraphed damage a barrier cast on h by `caster` could still absorb: attacks by enemies who haven't acted yet this round (a barrier fades when the round ends).
 function windowRange(h, caster) {
   let lo = 0, hi = 0; const ic = order.indexOf(caster);
   enemies.forEach(e => {
-    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || e.intent.target !== h) return;
+    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || hasCharm(e) || e.intent.target !== h) return;
     const s = e.skills[e.intent.i]; if (s.t !== 'dmg') return;
     const ie = order.indexOf(e);
     if (ie > ic) { const [a, b] = adjRange(s, h); lo += a; hi += b; }
@@ -2820,7 +2897,7 @@ function windowRange(h, caster) {
 function incomingRange(h) {       // total damage range of every telegraphed attack aimed at this hero, with position bonuses/penalties applied
   let lo = 0, hi = 0;
   enemies.forEach(e => {
-    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || e.intent.target !== h) return;
+    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || hasCharm(e) || e.intent.target !== h) return;
     const s = e.skills[e.intent.i]; if (s.t !== 'dmg') return;
     const [a, b] = adjRange(s, h); lo += a; hi += b;
   });
@@ -2981,6 +3058,7 @@ async function reinforce(boss) {                 // a stunned-out boss on its ow
 }
 // Turn-based buffs count the unit's own turns, including turns lost to a stun (otherwise a stun-locked immortal unit would never die and the fight never ends).
 function tickBuffs(u) {
+  if (u.dr) { if (u.dr.fresh) u.dr.fresh = false; else if (--u.dr.turns <= 0) { u.dr = null; log(`${u.name}'s defensive stance fades.`, 'log-round'); render(); } }
   if (u.immortal > 0) { if (u.immortalFresh) u.immortalFresh = false; else if (--u.immortal <= 0) { log(`${u.name}'s immortality fades.`, 'log-round'); render(); } }
   if (u.brew && isAlive(u)) {                  // Untested Potions: counts the hero's own turns; when it wears off the aftertaste is poison (ignores armour)
     if (u.brew.fresh) u.brew.fresh = false;
@@ -3039,6 +3117,14 @@ async function takeTurn(u) {
       act = { ...act, target: np }; u.taunt = null;
     }
   }
+  { const ch = u.statuses.find(x => x.type === 'charmed');       // charmed: the next ATTACK goes at a random friend (never itself)
+    if (ch && !act.shift && !act.skip && !act.item && u.skills[act.i] && u.skills[act.i].t === 'dmg') {
+      const mates = (u.team === 'p' ? party : enemies).filter(a => a !== u && isAlive(a));
+      if (mates.length) {
+        const v = mates[Math.floor(Math.random() * mates.length)]; u.statuses = u.statuses.filter(x => x !== ch); u.taunt = null;
+        log(`💘 ${u.name} is charmed and turns on ${v.name}!`, 'log-status'); floatText(u, '💘 CHARMED', 'tag'); act = { ...act, target: v };
+      }
+    } }
   if (act.shift) {
     const i = party.indexOf(u), j = i === 0 ? 1 : i - 1;
     if (j >= party.length || !isAlive(party[j])) { log(`${u.name} has nobody to swap with.`, 'log-round'); }
@@ -3456,7 +3542,7 @@ function startQuest(ids, questId) {
 function startNode() {
   const node = curNode(), total = quest.def.nodes.length;
   party = quest.party;                                               // same unit objects: HP/armour carry over
-  party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.rank = i; u.cd = u.skills.map(() => 0); });
+  party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.dr = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = (quest.bonus ? quest.def.nodes[quest.node] : node).scale || {};            // quest-wide difficulty x this node's own scaling
   const ids = quest.bonus ? quest.bonus.ids : (quest.plan && quest.plan.nodes[quest.node] || node.enemies), mods = quest.bonus ? quest.bonus.mods : (RAND.on && quest.plan && quest.plan.mods && quest.plan.mods[quest.node]);
   enemies = buildEnemies(ids, mods, { hp: (qs.hp || 1) * (ns.hp || 1) * (quest.bonus && quest.bonus.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) });
