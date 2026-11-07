@@ -1907,7 +1907,7 @@ function importSave() {
 // Sprites only fill the lower part of their figure box (art tops out around 75% of the box height), so effects aim at the BODY, not the box centre.
 const BODY_TOP = 0.25;
 const bodyAt = k => BODY_TOP + (1 - BODY_TOP) * k;          // k = 0 is the top of the sprite, 1 its feet
-const ANIM = { base: 'assets', hold: 1500, fallback: 400, impact: 100, hitHold: 380, skillHold: 520, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
+const ANIM = { base: 'assets', hold: 1500, fallback: 400, impact: 100, hitHold: 380, skillHold: 520, revealClip: 2500, exts: ['mp4', 'webm', 'webp', 'png', 'jpg'] };
 const stage = $('cutin'), animCache = {}, skips = new Set();
 stage.onclick = $('spa-cutin').onclick = $('film').onclick = () => [...skips].forEach(f => f());   // tap any cut-in to skip it
 
@@ -4071,7 +4071,7 @@ async function revealPerk(o) {
   full.className = 'show'; sfx('repair');
   const v = tm.querySelector('video');
   const wait = (ms, byTap) => new Promise(r => { const end = () => { skips.delete(end); full.onclick = null; r(); }; skips.add(end); if (byTap) full.onclick = end; setTimeout(end, ms); if (v) { v.onended = end; v.onerror = end; v.play().catch(end); } });
-  await (v ? wait(15000, false) : wait(1400, true));
+  await (v ? wait(ANIM.revealClip, false) : wait(1400, true));      // a video is cut off after revealClip ms, so a long looping clip still reveals the perk quickly
   if (o.alive && !o.alive()) { full.className = ''; return; }
   $('tm-gain').textContent = o.gain; $('tm-name').textContent = o.name; $('tm-desc').textContent = o.desc;
   $('tm-btns').innerHTML = o.buttons.map(([c, l, f]) => `<button class="${c}" onclick="${f}">${l}</button>`).join('');
