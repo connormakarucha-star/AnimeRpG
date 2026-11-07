@@ -989,6 +989,7 @@ const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', sho
 
 // Skill: n=name, t='dmg' | 'barrier' (one ally or the caster; lasts to the end of the round; barriers never stack, the biggest one counts) | 'barrierAll' (every other ally, or every ally with self:true) | 'guard' (one other ally: attacks aimed at them hit the caster until her next turn, who gains a p barrier) | taunt:true on a damage skill (the target's next attack must hit the caster) | cleanse:n on a barrier skill (removes n random ailments from each target) | 'buff' (self; buff:'wrath'), d=[min,max] damage, p=barrier size,
 //        storm:true on a damage skill = a big bolt from the sky strikes the target, then 1-3 small bolts (her skill 1 damage): odd ones hit a random enemy, even ones a random friend (the caster included),
+//        bonusOnBleed:true on a damage skill = if the target was already bleeding when hit, the owner gets one extra action right away (a bonus turn never earns another).
 //        counter:0.2 on a damage skill = when an enemy attacks the owner, that chance she answers at once with this skill (never against friendly fire). dr:{mult,dur} = the owner also takes that much less damage for dur of her turns.
 //        t:'charm' = no damage; a broken target is charmed: its next attack hits a random ally instead (cleansable like any ailment).
 //        chip:true on a physical damage skill = it still damages armour (brk) though it has no element; statuses only land from elemental hits.
@@ -1044,7 +1045,7 @@ const HEROES = [
   // it fires by itself on lethal damage (the unit drops to 1 HP instead). Immortal = HP cannot fall below 1.
   { id:'tyr', weak:['fire'], resist:['bleed'], name:'Tyr', tag:'TYR', hp:100, brk:45, spd:11, locked:true, elems:['bleed'],
     unlockMsg:'Tyr, the vampire, has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
-    { n:'Rending Claws', t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:12, cd:0 },
+    { n:'Rending Claws', t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:12, cd:0, bonusOnBleed:true },      // hits a target that is already bleeding: she gets a bonus turn
     { n:'Crimson Bite',  t:'dmg', r:'melee', d:[13,16], el:'bleed', brk:14, cd:2, bite:{ dmg:0.5, heal:0.8 } },
     { n:'Undying Night', t:'immortal', dur:3, cd:0, once:true } ] }
 ];
@@ -2401,7 +2402,7 @@ function chips(u) {              // one small tile per skill: icons, damage / ba
   return '<div class="chips">' + u.skills.map((s, i) => {
     const cd = u.cd[i] || 0, on = u === cur && sel === i; s = effSkill(u, i);
     let ic, val;
-    if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.storm ? '🌩️' : '') + (s.taunt ? '🎯' : '') + (s.counter ? '↩️' : '') + (s.dr ? '🔰' : '') + (s.chip ? '💥' : '') + (s.aoe ? '🌐' : '') + (s.bite ? '🦇' : ''); val = rangeText(s); }
+    if (s.t === 'dmg') { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)] + (s.storm ? '🌩️' : '') + (s.taunt ? '🎯' : '') + (s.counter ? '↩️' : '') + (s.dr ? '🔰' : '') + (s.chip ? '💥' : '') + (s.bonusOnBleed ? '⚡' : '') + (s.aoe ? '🌐' : '') + (s.bite ? '🦇' : ''); val = rangeText(s); }
     else if (s.t === 'buff') { ic = '🐉'; val = 'buff'; }
     else if (s.t === 'smoke') { ic = '🌫️'; val = 'stealth'; }
     else if (s.t === 'charm') { ic = '💘🏹'; val = 'charm'; }
@@ -2495,13 +2496,23 @@ function addPoison(t, total, dur = 6) {
   return total;
 }
 // Immortality (Tyr): HP can't fall below 1. Her Undying Night also fires by itself, once per battle, when a blow would kill her.
+const triggerQ = [];                         // skills that fired by themselves (Tyr's Undying Night on a killing blow): their art plays once the blow has finished
+async function flushTriggers() {
+  while (triggerQ.length) {
+    const { u, i } = triggerQ.shift(), keep = [...spot];
+    if (!isAlive(u)) continue;
+    const key = 'skill' + (i + 1), film = await skillFilm(u, key);
+    if (film) { setSpot([]); await playFilm(film); } else { setSpot([u]); sfx('charge', 'fire'); await playAnim(u, key); }
+    setSpot(keep);
+  }
+}
 function lethalGuard(t, hp) {
   if (hp > 0) return hp;
   if (t.immortal > 0) return 1;
   const i = t.team === 'p' ? t.skills.findIndex((k, idx) => k.t === 'immortal' && !(t.once && t.once[idx])) : -1;
   if (i >= 0) {
     t.once = t.once || {}; t.once[i] = true; t.immortal = t.skills[i].dur; t.immortalFresh = false;
-    log(`🦇 ${t.name} would have fallen, but ${t.skills[i].n} answers: she clings to 1 HP and cannot die for ${t.immortal} turns!`, 'log-heal'); floatText(t, '🦇 IMMORTAL', 'tag'); fx(t, 'ward'); sfx('ward');
+    log(`🦇 ${t.name} would have fallen, but ${t.skills[i].n} answers: she clings to 1 HP and cannot die for ${t.immortal} turns!`, 'log-heal'); floatText(t, '🦇 IMMORTAL', 'tag'); fx(t, 'ward'); sfx('ward'); triggerQ.push({ u: t, i });
     return 1;
   }
   return 0;
@@ -2540,6 +2551,7 @@ function skillDesc(s, u) {
   if (s.chip) more.push(`💥 chips armour (${s.brk})`);
   if (s.aoe) more.push(`🌐 other foes take ${Math.round(s.aoe * 100)}%`);
   if (s.counter) more.push(`↩️ ${Math.round(s.counter * 100)}% counter when attacked`);
+  if (s.bonusOnBleed) more.push('⚡ bonus turn if the target was already bleeding');
   if (s.dr) more.push(`🔰 −${Math.round(s.dr.mult * 100)}% damage taken, ${s.dr.dur} turns`);
   return x + (more.length ? ' · ' + more.join(' · ') : '');
 }
@@ -2626,6 +2638,7 @@ function chooseItem(id) {
 
 function skillWhat(u, s) {
   let x = skillWhat0(u, s);
+  if (s.bonusOnBleed) x += ' · ⚡ if the target was ALREADY bleeding, she gets a bonus turn right away (once per turn), so she can follow up with a Crimson Bite';
   if (s.chip) x += ` · 💥 physical, but still damages armour (break ${s.brk}); statuses only come from elemental hits`;
   if (s.aoe) x += ` · 🌐 the target takes full damage, every other foe takes ${Math.round(s.aoe * 100)}%`;
   if (s.move === 'back') x += ' · 💨 afterwards she dashes to the back row';
@@ -2786,6 +2799,7 @@ async function hit(u, t, s) {
     }
   }
   render(); await anim;
+  await flushTriggers();
   if (!countering && s.t === 'dmg' && t.team !== u.team && isAlive(t) && isAlive(u) && t.skills && t.skills[0].counter && !stunned(t) && Math.random() < t.skills[0].counter) await counterAttack(t, u);
 }
 
@@ -2829,7 +2843,9 @@ async function perform(u, i, target) {
   }
   if (s.t === 'buff') { sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
+    const wasBleeding = !!(target && target.statuses && target.statuses.some(x => x.type === 'bleed'));
     await Promise.all([clip, hit(u, target, s)]);
+    if (s.bonusOnBleed && wasBleeding && isAlive(u) && u.team === 'p') u.extraTurn = true;
     if (s.aoe && isAlive(u)) {                                      // Thunderstorm: everyone else on the other side is caught in it too
       const others = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && e !== target);
       if (others.length) log(`🌩️ ${s.n} sweeps over ${others.map(e => e.name).join(', ')}!`, 'log-status');
@@ -3125,14 +3141,14 @@ function tickBuffs(u) {
     else if (--u.brew.turns <= 0) { u.brew = null; log(`⚗️ ${u.name}'s potion wears off, and the aftertaste bites.`, 'log-status'); addPoison(u, BREW.poison); floatText(u, '☠️ POISONED', 'tag'); render(); }
   }
 }
-async function takeTurn(u) {
-  if (u.holdBarrier) { u.holdBarrier = false; u.barrier = 0; }                  // Shield Wall's barrier ends with the guard
-  party.forEach(x => { if (x.guardedBy === u) x.guardedBy = null; });     // Shield Wall ends when its caster's next turn begins
-  const hadWrath = !!u.wrath; u.wrathNow = hadWrath;     // set on an earlier turn: this turn it pays off, then wears off
-  u.cd = u.cd.map(c => Math.max(0, c - 1));
+async function takeTurn(u, bonus = false) {      // bonus: an extra action inside the same turn (no cooldown / ailment / buff ticks)
+  if (!bonus && u.holdBarrier) { u.holdBarrier = false; u.barrier = 0; }                  // Shield Wall's barrier ends with the guard
+  if (!bonus) party.forEach(x => { if (x.guardedBy === u) x.guardedBy = null; });     // Shield Wall ends when its caster's next turn begins
+  const hadWrath = !bonus && !!u.wrath; u.wrathNow = hadWrath;     // set on an earlier turn: this turn it pays off, then wears off
+  if (!bonus) u.cd = u.cd.map(c => Math.max(0, c - 1));
   // Status effects resolve at the start of the unit's turn
   // damage-over-time ailments tick one after another, then a stun (one clip is enough for ice or shock) costs the turn
-  for (const st of u.statuses.filter(x => x.dot)) {
+  for (const st of bonus ? [] : u.statuses.filter(x => x.dot)) {
     const tick = st.left !== undefined ? Math.min(st.dot, st.left) : st.dot;
     u.hp = lethalGuard(u, u.hp - tick);
     if (st.left !== undefined) st.left -= tick;
@@ -3141,10 +3157,11 @@ async function takeTurn(u) {
     render(); floatText(u, tick, 'dot');
     sfx('hit', STATUS_FX[st.type] || 'phys', false, false, true);
     await playDamaged(u, STATUS_FX[st.type] || 'slash');
+    await flushTriggers();
     if (--st.dur <= 0 || (st.left !== undefined && st.left <= 0)) u.statuses = u.statuses.filter(x => x !== st);
     if (u.hp <= 0) { if (tryRevive(u)) render(); else { await fall(u); return; } }
   }
-  const stun = u.statuses.find(x => x.stun);
+  const stun = bonus ? null : u.statuses.find(x => x.stun);
   if (stun) {
     log(`${u.name} is ${stun.type} and misses their turn!`, 'log-status');
     u.wrath = false; u.wrathNow = false;
@@ -3161,7 +3178,7 @@ async function takeTurn(u) {
   let act;
   if (u.team === 'p') {
     cur = u; sel = null; selItem = null; invOpen = false;
-    $('turn-indicator').innerText = `${u.name}'s turn`;
+    $('turn-indicator').innerText = bonus ? `${u.name}'s bonus turn` : `${u.name}'s turn`;
     const input = new Promise(r => waiting = r);   // must exist before render() so buttons enable
     render();
     act = await input;
@@ -3218,6 +3235,12 @@ async function takeTurn(u) {
     }
   }
   u.wrathNow = false;
+  if (!bonus && u.extraTurn) {                 // Tyr's Rending Claws on a bleeding target: one more action before the turn ends
+    u.extraTurn = false;
+    if (u.team === 'p' && isAlive(u) && enemies.some(isAlive)) { log(`⚡ ${u.name} gets a bonus turn!`, 'log-player'); floatText(u, '⚡ BONUS TURN', 'tag'); await sleep(250); await takeTurn(u, true); }
+  }
+  u.extraTurn = false;
+  if (bonus) { setSpot([]); say(''); return; }
   await sleep(70);
   tickBuffs(u);
   if (u.stealth > 0) { if (u.stealthFresh) u.stealthFresh = false; else { u.stealth--; if (!u.stealth) { log(`${u.name} steps out of the shadows.`, 'log-round'); render(); } } }
