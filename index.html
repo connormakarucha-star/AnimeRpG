@@ -1370,8 +1370,8 @@ const enemyById = id => ENEMIES.find(e => e.id === id);
 // mask: '#' = tappable tile, '.' = empty. Now a plain rectangle (10 x 8) sitting in the middle of the screen, over
 // the hero's picture. Any size or shape works as long as every row has the same width.
 // Optional art, all per hero and only used if the file exists (like battle animations):
-//   assets/<hero id>/spa/back.png|jpg|webp   full-screen backdrop: the hero lying face down (covers the screen)
-//   assets/<hero id>/spa/hit.*               plays when a nerve is hit (1st and 2nd hit)
+//   assets/ui/spa_back.png|jpg|webp         ONE shared full-screen backdrop for every hero (covers the screen)
+//   assets/ui/spa_hit.*                     ONE shared clip/picture when a nerve is hit (1st and 2nd hit)
 //   assets/<hero id>/spa/fail.*              plays when the third nerve is hit
 //   assets/<hero id>/spa/success.*           plays when the back is cleared
 const SPA = {
@@ -1384,7 +1384,7 @@ const SPA = {
 /* ============ TRAINING DATA ============ */
 // Train a hero for gold to earn a permanent PERK (a trait). 'physical' (Weapon Drills) draws from the stat perks, 'elemental' (Elemental Focus) from the elemental perks that suit
 // the hero's own elements. Needs a skill of that kind, and a hero holds at most TRAITS.maxGood perks. Optional art per hero:
-//   assets/<hero id>/train/physical.*   and   assets/<hero id>/train/elemental.*   (played when training starts)
+//   assets/ui/train_physical.*  and  assets/ui/train_elemental.*   shared by every hero (played when training starts)
 const TRAIN = {
   cost: 120,
   methods: {
@@ -1855,7 +1855,7 @@ function importSave() {
 // Combat clips: assets/<unit.id>/<armoured|broken>/<key>.(mp4|webm|webp|png|jpg) plays ON the unit's own sprite (a super-broken unit uses the broken/ art), in place of its idle
 // (melee attackers have run to the target first). Videos play to the end; images hold ~0.7s. Missing file = short pause (falls back to armoured/).
 // Keys: skill1 skill2 skill3 damaged (damaged covers every hit and status tick; the fire/ice/... effect is drawn over it). Idle: idle.
-// Spa and training still use full-screen cut-ins (assets/<hero>/spa/*, assets/<hero>/train/*).
+// Spa and training still use full-screen cut-ins (shared assets/ui/spa_back, spa_hit, train_physical, train_elemental; per hero: spa/success and spa/fail).
 // IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
 // Sprites only fill the lower part of their figure box (art tops out around 75% of the box height), so effects aim at the BODY, not the box centre.
 const BODY_TOP = 0.25;
@@ -3833,9 +3833,8 @@ function pickTrainHero(id) {
   if (!heroById(id) || game.gold < TRAIN.cost || traitCount(id, 'good') >= TRAITS.maxGood) return;
   trainHero = id; showScene('train-method');
 }
-async function trainArt(h, kind) {                // the hero's own picture, else Iris' so there is always something
-  const a = await findAsset(`${ANIM.base}/${h.id}/train/${kind}`);
-  return a || findAsset(`${ANIM.base}/iris/train/${kind}`);
+async function trainArt(h, kind) {                // one shared picture per training kind for every hero
+  return findAsset(`${ANIM.base}/ui/train_${kind}`);
 }
 const artHTML = (a, loop) => !a ? '' : (a.ext === 'mp4' || a.ext === 'webm') ? `<video src="${a.url}" muted playsinline ${loop ? 'loop autoplay' : ''}></video>` : `<div class="art" style="background-image:url('${a.url}')"></div>`;
 let trainToken = 0;
@@ -3928,9 +3927,9 @@ function startSpa(id, target) {
   $('btn-spa-quit').style.display = '';
   showScene('spa');
   renderSpa();
-  // backdrop art: the hero's own back picture, else Iris' one so there is always a backdrop (breathes via CSS)
+  // backdrop art: the one shared spa_back picture (breathes via CSS)
   const okBack = a => a && ['png', 'jpg', 'webp'].includes(a.ext);
-  findAsset(`${ANIM.base}/${hero.id}/spa/back`).then(a => okBack(a) ? a : findAsset(`${ANIM.base}/iris/spa/back`)).then(a => {
+  findAsset(`${ANIM.base}/ui/spa_back`).then(a => {
     if (spaGame === g && okBack(a)) $('spa-bg').style.backgroundImage = `url("${a.url}")`;
   });
 }
@@ -3983,7 +3982,7 @@ function spaTap(i) {
       renderSpa(); spaEnd(g, false); return;
     }
     $('spa-msg').textContent = `Ouch! A nerve. ${SPA.maxStrikes - g.strikes} hit${SPA.maxStrikes - g.strikes > 1 ? 's' : ''} left.`;
-    findAsset(`${ANIM.base}/${g.hero.id}/spa/hit`).then(a => { if (a && spaGame === g && !g.over) playClip(a, $('spa-cutin')); });   // optional nerve-hit clip
+    findAsset(`${ANIM.base}/ui/spa_hit`).then(a => { if (a && spaGame === g && !g.over) playClip(a, $('spa-cutin')); });   // optional nerve-hit clip
   } else {
     spaReveal(g, i);
     $('spa-msg').textContent = '';
