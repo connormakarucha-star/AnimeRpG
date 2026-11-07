@@ -1921,8 +1921,18 @@ function probe(url, ext) {
   });
 }
 
+// assets/manifest.json (written by tools/make_manifest.py) lists every art file that really exists: { files: { 'seria/armoured/idle': 'png', ... } }. With it the game asks only for files that are there
+// (no 404 guessing, which can get a GitHub Pages site rate-limited). Without it, or when the page is opened with ?probe in the address, the game falls back to trying every format in turn.
+let manifest = null;
+const manifestReady = (async () => {
+  if (/[?&]probe\b/.test(location.search)) return;
+  try { const r = await fetch(`${ANIM.base}/manifest.json`, { cache: 'no-cache' }); if (!r.ok) return; const j = await r.json(); if (j && j.files && typeof j.files === 'object') manifest = j.files; } catch (e) {}
+})();
 async function findAsset(path) {            // checked once per file, then remembered
   if (path in animCache) return animCache[path];
+  await manifestReady;
+  if (path in animCache) return animCache[path];
+  if (manifest && path.startsWith(ANIM.base + '/')) { const ext = manifest[path.slice(ANIM.base.length + 1)]; return animCache[path] = ext && ANIM.exts.includes(ext) ? { url: `${path}.${ext}`, ext } : null; }
   for (const ext of ANIM.exts) if (await probe(`${path}.${ext}`, ext)) return animCache[path] = { url: `${path}.${ext}`, ext };
   return animCache[path] = null;
 }
