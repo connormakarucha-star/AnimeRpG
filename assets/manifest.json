@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-07 19:23",
+  "generated": "2026-11-07 23:09",
   "files": {
     "aneesah/armoured/damaged": "png",
     "aneesah/armoured/idle": "png",
@@ -50,6 +50,11 @@
     "irae/broken/skill3": "mp4",
     "irae/spa/fail": "png",
     "irae/spa/success": "png",
+    "iris/armoured - Skin/damaged": "png",
+    "iris/armoured - Skin/idle": "png",
+    "iris/armoured - Skin/skill1": "png",
+    "iris/armoured - Skin/skill2": "png",
+    "iris/armoured - Skin/skill3": "mp4",
     "iris/armoured/damaged": "png",
     "iris/armoured/idle": "png",
     "iris/armoured/skill1": "png",
