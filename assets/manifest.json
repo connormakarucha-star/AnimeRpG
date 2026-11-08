@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-07 23:09",
+  "generated": "2026-11-07 23:30",
   "files": {
     "aneesah/armoured/damaged": "png",
     "aneesah/armoured/idle": "png",
@@ -123,12 +123,12 @@
     "vesper/armoured/idle": "png",
     "vesper/armoured/skill1": "png",
     "vesper/armoured/skill2": "png",
-    "vesper/armoured/skill3": "png",
+    "vesper/armoured/skill3": "mp4",
     "vesper/broken/damaged": "png",
     "vesper/broken/idle": "png",
     "vesper/broken/skill1": "png",
     "vesper/broken/skill2": "png",
-    "vesper/broken/skill3": "png",
+    "vesper/broken/skill3": "mp4",
     "vesper/spa/fail": "png",
     "vesper/spa/success": "png"
   }
