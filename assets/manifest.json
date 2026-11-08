@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-08 09:25",
+  "generated": "2026-11-08 09:31",
   "files": {
     "aneesah/armoured - Skin/damaged": "png",
     "aneesah/armoured - Skin/idle": "png",
@@ -61,7 +61,7 @@
     "iris/armoured - Skin/skill2": "png",
     "iris/armoured - Skin/skill3": "mp4",
     "iris/armoured/damaged": "png",
-    "iris/armoured/idle": "webp",
+    "iris/armoured/idle": "png",
     "iris/armoured/skill1": "png",
     "iris/armoured/skill2": "png",
     "iris/armoured/skill3": "mp4",
