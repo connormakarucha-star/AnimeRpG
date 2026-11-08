@@ -25,6 +25,7 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .figure .ph{width:100%;height:100%;box-sizing:border-box;background:rgba(37,37,54,.8);border:1px dashed #4a4a6a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#8a8aab;text-align:center}
 .team-e .figure .ph{border-color:#ff8a80}
 .figure .spr{animation:breathe var(--bt,4.2s) ease-in-out var(--bd,0s) infinite;transform-origin:50% 100%;position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none;user-select:none}
+.figure .spr.live{animation:none}   /* an animated idle (video / animated webp) already moves: no extra breathing */
 .figure.has-art .ph{display:none}
 .figure.flip .spr,.figure.flip .ph{transform:scaleX(-1)}
 .combatant-card.active-turn{border-color:#e8b04a;box-shadow:0 0 10px rgba(232,176,74,.35)}
@@ -77,7 +78,7 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .figure.vanish{opacity:0}
 #battle-scene .figure.fallen{z-index:0}
 .combatant-card.gone{visibility:hidden}
-.figure .dmg{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;pointer-events:none}
+.figure .dmg{position:absolute;left:50%;bottom:0;width:calc(100% * 2.6);height:100%;translate:-50% 0;object-fit:contain;object-position:center bottom;pointer-events:none}   /* skill / damaged pictures may be much wider than the idle (lunges, kicks): same height, centred on the idle, free to stick out sideways. Keep 2.6 in step with DMG_W in the script */
 .figure.flip .dmg{transform:scaleX(-1)}
 .figure.playing .spr,.figure.playing .ph{visibility:hidden}
 /* casting flare: an elemental glow + particles around the caster (purely cosmetic), and projectiles / bolts for ranged elemental skills */
@@ -137,7 +138,21 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .sk2{flex:1;min-width:0;background:#171a23;border:1px solid #333a4a;border-radius:4px;text-align:center;padding:2px 1px;line-height:1.15;white-space:nowrap;overflow:hidden}
 .sk2 .ic{display:block;font-size:1.05em}.sk2 b{font-size:.92em}
 .sk2 i{display:block;font-style:normal;color:#ff8a65;font-size:.8em}
-.sk2.cd{opacity:.5}.sk2.sel{border-color:#ff758c;background:#3a2330}
+.sk2{position:relative}.sk2.cd .lbl{opacity:.35}.sk2.sel{border-color:#ff758c;background:#3a2330}
+/* cooldown: a big number over the greyed-out skill (chips on the cards and the three skill buttons) */
+.cdov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.5em;line-height:1;color:#fff;text-shadow:0 0 4px #000,0 1px 3px #000,0 0 8px rgba(255,138,101,.7);pointer-events:none}
+.sk2 .cdov{font-size:1.6em}
+.action-grid button{position:relative}
+.action-grid button.oncd:disabled{opacity:1;background:#262636;border-color:#3a3a50}.action-grid button.oncd .lbl{opacity:.22}
+.action-grid button .cdov{font-size:2.4em}
+/* bars: barrier chunk, predicted damage */
+.bar-container{position:relative}
+.bar-shield{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#c7a6ff 0 3px,#8e63e0 3px 6px);border-left:1px solid #f1e6ff;box-shadow:0 0 5px rgba(179,136,255,.9);z-index:2}
+.bar-shield.ghost{opacity:.55;border-left-style:dashed}
+.hp-dmg{position:absolute;top:0;bottom:0;background:#ffd54f;z-index:1;box-shadow:0 0 4px rgba(255,213,79,.8)}
+.hp-dmg.hi{background:repeating-linear-gradient(135deg,rgba(255,213,79,.55) 0 3px,rgba(255,213,79,.15) 3px 6px);box-shadow:none}
+.bar-container.lethal .hp-dmg{background:#ff5252;box-shadow:0 0 4px rgba(255,82,82,.9)}
+.bar-container.lethal .hp-dmg.hi{background:repeating-linear-gradient(135deg,rgba(255,82,82,.6) 0 3px,rgba(255,82,82,.18) 3px 6px);box-shadow:none}
 .bar-container{width:100%;background:#2a2a3c;height:5px;border-radius:3px;margin:2px 0;overflow:hidden}
 .hp-fill{background:#4caf50;height:100%;transition:width .3s}
 .break-fill{background:#00bcd4;height:100%;transition:width .3s}
@@ -969,7 +984,8 @@ const ELEM = {
   shock:  { status: 'shocked', stun: true }
 };
 // Untested Potions (Jean): for `dur` of their own turns, a hero's physical damage is +mult (+poisonBonus more while poisoned); when it wears off they take `poison` poison damage (ignores armour).
-const BREW = { dur: 2, mult: 0.25, poisonBonus: 0.25, poison: 18 };
+const TONIC = { repay: 0.4 };                // Jean: only this share of what a Tonic heals comes back as poison (the rest is real healing)
+const BREW = { dur: 2, mult: 0.3, poisonBonus: 0.25, poison: 10 };
 const isPhys = s => !!s && s.t === 'dmg' && (!s.el || !!s.phys);
 const ELEM_NAME = { fire: 'Fire', ice: 'Ice', shock: 'Shock', poison: 'Poison', bleed: 'Bleed' };
 // Damage and crits. Every damage skill has d:[min,max] (a flat roll in that range). Each unit lists weak:[elements] and
@@ -1013,45 +1029,45 @@ const HEROES = [
     { n:'Aegis',        t:'barrierAll', p:16, cd:3, self:true, cleanse:1 } ] },   // the whole team including her; cleanses 1 random ailment from each
   { id:'vesper', weak:['ice'], resist:['shock'], evasive:2, name:'Vesper', tag:'VESPER', hp:70, brk:22, spd:12, locked:true,
     unlockMsg:'Vesper has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[        // fast glass cannon: stuns once armour is broken
-    { n:'Spark Step',      t:'dmg', r:'melee',  d:[10,12], el:'shock', brk:8,  cd:0, move:'back' },        // hit and run: after the strike she dashes to the back row
-    { n:'Chain Lightning', t:'dmg', r:'ranged', d:[14,17], el:'shock', brk:24, cd:2 },
-    { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[23,27], el:'shock', brk:38, cd:4, aoe:0.6 } ] },        // the target takes it all, every other foe takes 60%
+    { n:'Spark Step',      t:'dmg', r:'melee',  d:[9,11],  el:'shock', brk:8,  cd:0, move:'back', stunOnBreak:true },        // hit and run: after the strike she dashes to the back row
+    { n:'Chain Lightning', t:'dmg', r:'ranged', d:[13,16], el:'shock', brk:24, cd:2, stunOnBreak:true },
+    { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[23,27], el:'shock', brk:30, cd:4, aoe:0.5, aoeBrk:0.3 } ] },        // the target takes it all; every other foe takes 50% damage and only 30% of the break
   { id:'iris', weak:['poison'], resist:['fire'], frontMod:-0.1, name:'Iris', tag:'IRIS', hp:105, brk:45, spd:9, skills:[      // martial artist, front liner
     { n:'Iron Fist',       t:'dmg', r:'melee', d:[12,14], brk:12, chip:true, cd:0 },          // physical, but the blows chip armour
     { n:'Blazing Kick',    t:'dmg', r:'melee', d:[13,15], el:'fire', brk:22, cd:2 },
-    { n:"Dragon's Wrath",  t:'buff', buff:'wrath', fire:{ mult:1.75, el:'fire', brk:12 }, cd:4 } ] },    // next turn: Iron Fist AND Blazing Kick burn (+75% damage, fire, +12 break) and she gets a free Iron Fist on a random enemy, then it wears off
+    { n:"Dragon's Wrath",  t:'buff', buff:'wrath', fire:{ mult:1.75, el:'fire', brk:12 }, cd:3 } ] },    // next turn: Iron Fist AND Blazing Kick burn (+75% damage, fire, +12 break) and she gets a free Iron Fist on a random enemy, then it wears off
   { id:'aneesah', weak:['ice'], resist:['shock'], backMod:-0.15, name:'Aneesah', tag:'ANEESAH', hp:65, brk:20, spd:11, skills:[   // chaotic storm mage, back liner
     { n:'Static Spark',    t:'dmg', r:'ranged', d:[6,8], el:'shock', brk:6, cd:0 },
     { n:'Lightning Bolt',  t:'dmg', r:'ranged', d:[17,20], el:'shock', brk:22, cd:2 },
     { n:'Tempest Unbound', t:'dmg', r:'ranged', d:[32,38], el:'shock', brk:40, cd:4, storm:true } ] },
   // locked:true = not owned at the start. A quest with unlocks:'<hero id>' adds her to the roster the first time its boss falls.
-  { id:'siren', weak:['shock'], resist:['poison'],  name:'Siren', tag:'SIREN', hp:75, brk:28, spd:9, locked:true,
+  { id:'siren', weak:['shock'], resist:['poison'],  name:'Siren', tag:'SIREN', hp:85, brk:28, spd:9, locked:true,
     unlockMsg:'The Siren has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
-    { n:'Stormsong',       t:'dmg',   r:'ranged', d:[12,14], el:'shock',  brk:14, cd:0 },
-    { n:'Briny Venom',     t:'dmg',   r:'ranged', d:[15,18], el:'poison', brk:22, cd:2 },
-    { n:'Enthralling Song', t:'charm', r:'ranged', cd:4 } ] },                       // no damage: a broken foe is charmed and its next attack hits one of its own friends
+    { n:'Stormsong',       t:'dmg',   r:'ranged', d:[18,20], el:'shock',  brk:18, cd:0 },
+    { n:'Briny Venom',     t:'dmg',   r:'ranged', d:[22,25], el:'poison', brk:26, cd:2 },
+    { n:'Enthralling Song', t:'charm', r:'ranged', cd:3 } ] },                       // no damage: a broken foe is charmed and its next attack hits one of its own friends
   // Irae: the first bleeder. Smoke Bomb = stealth for `dur` of her turns (and a step back); while stealthed her attacks bleed and Backstab hits much harder.
   // move:'front' = after the strike the unit steps to the front of her line (the line-up goes back to normal after the fight). stealthMul / stealthCrit only apply while stealthed.
-  { id:'irae', weak:['fire'], resist:['bleed'], evasive:1.5, name:'Irae', tag:'IRAE', hp:85, brk:28, spd:12, locked:true, elems:['bleed'],
+  { id:'irae', weak:['fire'], resist:['bleed'], evasive:1.5, name:'Irae', tag:'IRAE', hp:100, brk:40, frontMod:-0.1, spd:12, locked:true, elems:['bleed'],
     unlockMsg:'Irae has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
-    { n:'Knife Throw', t:'dmg', r:'ranged', d:[8,10], cd:0 },
-    { n:'Backstab',    t:'dmg', r:'melee',  d:[18,21], cd:1, move:'front', stealthMul:1.7, stealthCrit:40 },
-    { n:'Smoke Bomb',  t:'smoke', dur:3, cd:3 } ] },
+    { n:'Knife Throw', t:'dmg', r:'ranged', d:[8,10], brk:6, chip:true, cd:0 },
+    { n:'Backstab',    t:'dmg', r:'melee',  d:[17,20], brk:14, chip:true, cd:1, move:'front', stealthMul:1.7, stealthCrit:40, resetOnKO:true },   // a kill or an armour break resets its cooldown
+    { n:'Smoke Bomb',  t:'smoke', dur:3, cd:3, free:true } ] },       // a free action: she throws it and still acts this turn
   // Jean, the plague doctor: the only true healer, at a cost. Tonic heals, but the same amount comes back as POISON (ignores armour): borrowed health.
   // Untested Potions: +physical damage for the whole party for 2 turns (more if the hero is poisoned); when it wears off the hero is poisoned. See BREW.
   // phys:true = the hit counts as physical for the potion buff even though it carries an element. Joins through a very rare road event (see EVENTS, 'doctor').
   { id:'jean', weak:['shock'], resist:['poison'], backMod:-0.1, name:'Jean', tag:'JEAN', hp:70, brk:25, spd:10, locked:true, elems:['poison'],
     unlockMsg:'Jean the plague doctor has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground. Her tonics heal, but nothing is free...', skills:[
     { n:'Scalpel Slice',   t:'dmg', r:'melee', d:[10,12], el:'bleed', brk:10, cd:0, phys:true },
-    { n:'Tonic',           t:'tonic', heal:30, cd:1 },
+    { n:'Tonic',           t:'tonic', heal:45, cd:0, cleanse:1 },
     { n:'Untested Potions',t:'brew', cd:4 } ] },
   // Tyr, the vampire (reward for the Crypt). Crimson Bite: bonus damage and a heal if the target is already bleeding. Undying Night: once per battle, immortal for `dur` turns;
   // it fires by itself on lethal damage (the unit drops to 1 HP instead). Immortal = HP cannot fall below 1.
-  { id:'tyr', weak:['fire'], resist:['bleed'], name:'Tyr', tag:'TYR', hp:100, brk:45, spd:11, locked:true, elems:['bleed'],
+  { id:'tyr', weak:['fire'], resist:['bleed'], frontMod:-0.15, name:'Tyr', tag:'TYR', hp:130, brk:60, spd:11, locked:true, elems:['bleed'],
     unlockMsg:'Tyr, the vampire, has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
-    { n:'Rending Claws', t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:12, cd:0, bonusOnBleed:true },      // hits a target that is already bleeding: she gets a bonus turn
-    { n:'Crimson Bite',  t:'dmg', r:'melee', d:[13,16], el:'bleed', brk:14, cd:2, bite:{ dmg:0.5, heal:0.8 } },
-    { n:'Undying Night', t:'immortal', dur:3, cd:0, once:true } ] }
+    { n:'Rending Claws', t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:12, cd:0, bonusOnBleed:true, drain:0.5 },      // hits a target that is already bleeding: she gets a bonus turn
+    { n:'Crimson Bite',  t:'dmg', r:'melee', d:[13,16], el:'bleed', brk:14, cd:2, taunt:true, dr:{ mult:.25, dur:2 }, bite:{ dmg:0.5, heal:1.0 } },
+    { n:'Undying Night', t:'immortal', dur:3, heal:0.3, cd:0, once:true } ] }
 ];
 const ENEMIES = [
   { id:'e_fire', role:'ranged', weak:['ice'], resist:['fire'],  name:'Fire Sentinel',    tag:'FIRE',   hp:90,  brk:35, spd:7,  skills:[
@@ -1158,57 +1174,65 @@ const QUESTS = [{
   relicDrop: 0.35,             // chance the boss drops a relic
   desc: 'Fight through the Sentinel Ruins and defeat the Warden on its throne.',
   pool: ['e_drone', 'e_frost', 'e_venom', 'e_fire', 'e_shock', 'e_heal'],
+  camps: 1,                    // how many camps the run has (placed at random after the first couple of fights, never after the boss)
   unlocks: 'vesper',           // first boss win adds this hero to the roster
   scale: { hp: 1.36, atk: 1.36 },     // quest-wide difficulty (tuned with the balance simulator; see notes in the chat)
   nodes: [
     { name: 'Outer Gate',      enemies: ['e_drone', 'e_frost', 'e_drone'],          gold: 30 },
     { name: 'Sentinel Hall',   enemies: ['e_fire', 'e_frost', 'e_shock', 'e_heal'], gold: 45 },
-    { name: 'Inner Sanctum',   enemies: ['e_venom', 'e_shock', 'e_fire', 'e_heal'], gold: 60, scale: { hp: 1.15, atk: 1.1 } },
-    { name: 'Throne Room',     enemies: ['e_drone', 'e_boss', 'e_drone'],           gold: 100, boss: true, scale: { hp: 1.4, atk: 1.2 } }
+    { name: 'Guard Corridor',  enemies: ['e_shock', 'e_drone', 'e_venom', 'e_frost'], gold: 50, bg: 2, scale: { hp: 1.05, atk: 1.05 } },     // bg = which numbered stage picture it uses (battle_<quest>_<bg>)
+    { name: 'Inner Sanctum',   enemies: ['e_venom', 'e_shock', 'e_fire', 'e_heal'], gold: 60, bg: 3, scale: { hp: 1.15, atk: 1.1 } },
+    { name: 'Throne Room',     enemies: ['e_drone', 'e_boss', 'e_drone'],           gold: 100, bg: 4, boss: true, scale: { hp: 1.4, atk: 1.2 } }
   ]
 }, {
   id: 'yokai', name: 'The Night Parade',
   relicDrop: 0.4,
   desc: 'A moonlit mountain road where the yokai march. A gentler trail: kappa, tengu and fox-fire, ending in the hall of the Oni Lord.',
   pool: ['e_kappa', 'e_oni', 'e_tengu', 'e_kitsune', 'e_lantern', 'e_karakasa'],
+  camps: 1,
   unlocks: 'irae',             // first boss win adds this hero to the roster
   scale: { hp: 1.55, atk: 1.55 },
   nodes: [
     { name: 'Moonlit Torii Path',    enemies: ['e_kappa', 'e_karakasa', 'e_kappa'],               gold: 30 },
     { name: 'Whispering Bamboo',     enemies: ['e_tengu', 'e_kitsune', 'e_karakasa'],             gold: 40 },
     { name: 'Abandoned Shrine',      enemies: ['e_oni', 'e_kitsune', 'e_lantern', 'e_tengu'],     gold: 55 },
-    { name: 'Lantern Bridge',        enemies: ['e_karakasa', 'e_tengu', 'e_kitsune', 'e_lantern'], gold: 70, scale: { hp: 1.05, atk: 1.05 } },
-    { name: "The Oni Lord's Hall",   enemies: ['e_kappa', 'e_shuten', 'e_kitsune'],               gold: 110, boss: true, scale: { hp: 1.1, atk: 1.05 } }
+    { name: 'Fox-Fire Hollow',       enemies: ['e_tengu', 'e_oni', 'e_karakasa', 'e_kitsune'],   gold: 60, bg: 3, scale: { hp: 1.0, atk: 1.0 } },
+    { name: 'Lantern Bridge',        enemies: ['e_karakasa', 'e_tengu', 'e_kitsune', 'e_lantern'], gold: 70, bg: 4, scale: { hp: 1.05, atk: 1.05 } },
+    { name: "The Oni Lord's Hall",   enemies: ['e_kappa', 'e_shuten', 'e_kitsune'],               gold: 110, bg: 5, boss: true, scale: { hp: 1.1, atk: 1.05 } }
   ]
 }, {
   id: 'cove', name: "The Siren's Cove",
   relicDrop: 0.45,
   desc: 'Storm-lashed shores crawling with shock and venom. Something sings from the deep.',
   pool: ['e_crab', 'e_eel', 'e_ray', 'e_jelly', 'e_urchin', 'e_tide'],
+  camps: 1,
   unlocks: 'siren',            // first boss win adds this hero to the roster
   scale: { hp: 1.29, atk: 1.46 },
   nodes: [
     { name: 'Tidal Shallows',   enemies: ['e_jelly', 'e_crab', 'e_jelly'],                gold: 40 },
     { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly'],                gold: 50 },
-    { name: 'Sunken Wreck',     enemies: ['e_ray', 'e_crab', 'e_eel', 'e_tide'],          gold: 65, scale: { hp: 1.1, atk: 1.1 } },
-    { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, scale: { hp: 1.2, atk: 1.15 } },
-    { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, scale: { hp: 1.25, atk: 1.12 } },
-    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+    { name: 'Barnacle Caves',   enemies: ['e_crab', 'e_eel', 'e_ray', 'e_urchin'],        gold: 55, bg: 2, scale: { hp: 1.05, atk: 1.05 } },
+    { name: 'Sunken Wreck',     enemies: ['e_ray', 'e_crab', 'e_eel', 'e_tide'],          gold: 65, bg: 3, scale: { hp: 1.1, atk: 1.1 } },
+    { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, bg: 4, scale: { hp: 1.2, atk: 1.15 } },
+    { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, bg: 5, scale: { hp: 1.25, atk: 1.12 } },
+    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, bg: 6, boss: true, scale: { hp: 1.3, atk: 1.1 } }
   ]
 }, {
   id: 'crypt', name: "The Necromancer's Crypt",
   relicDrop: 0.45,
   desc: 'Plague-ridden catacombs where the dead refuse to lie still. Fire burns them best; something ancient watches from the deep vault.',
+  camps: 1,
   unlocks: 'tyr',             // first boss win adds this hero to the roster
   pool: ['e_rat', 'e_ghoul', 'e_bloat', 'e_skel', 'e_wraith', 'e_warder'],
   scale: { hp: 1.08, atk: 1.31 },
   nodes: [
     { name: 'Bone-Strewn Road', enemies: ['e_rat', 'e_skel', 'e_rat'],                     gold: 40 },
     { name: 'Charnel Cellar',   enemies: ['e_ghoul', 'e_wraith', 'e_rat'],                 gold: 50 },
-    { name: 'Plague Pits',      enemies: ['e_skel', 'e_bloat', 'e_ghoul', 'e_warder'],     gold: 65, scale: { hp: 1.0, atk: 1.0 } },
-    { name: 'Whispering Ossuary', enemies: ['e_wraith', 'e_ghoul', 'e_skel', 'e_warder'],  gold: 80, scale: { hp: 1.0, atk: 1.1 } },
-    { name: 'The Bone Gallery', enemies: ['e_bloat', 'e_wraith', 'e_skel', 'e_warder'],    gold: 100, scale: { hp: 1.0, atk: 1.1 } },
-    { name: "The Necromancer's Vault", enemies: ['e_skel', 'e_necro', 'e_ghoul'],          gold: 150, boss: true, scale: { hp: 1.0, atk: 1.1 } }
+    { name: 'Gravediggers\' Rest', enemies: ['e_rat', 'e_ghoul', 'e_bloat', 'e_skel'],       gold: 55, bg: 2, scale: { hp: 1.0, atk: 1.0 } },
+    { name: 'Plague Pits',      enemies: ['e_skel', 'e_bloat', 'e_ghoul', 'e_warder'],     gold: 65, bg: 3, scale: { hp: 1.0, atk: 1.0 } },
+    { name: 'Whispering Ossuary', enemies: ['e_wraith', 'e_ghoul', 'e_skel', 'e_warder'],  gold: 80, bg: 4, scale: { hp: 1.0, atk: 1.1 } },
+    { name: 'The Bone Gallery', enemies: ['e_bloat', 'e_wraith', 'e_skel', 'e_warder'],    gold: 100, bg: 5, scale: { hp: 1.0, atk: 1.1 } },
+    { name: "The Necromancer's Vault", enemies: ['e_skel', 'e_necro', 'e_ghoul'],          gold: 150, bg: 6, boss: true, scale: { hp: 1.0, atk: 1.1 } }
   ]
 }];
 // Anti stun-lock (hidden, never shown in the UI): when a BOSS is the last enemy standing and loses `stunMisses` turns in a row to stun,
@@ -1519,9 +1543,9 @@ function renderGuide() {
     <h4>Guard, taunt and cleanse</h4>
     ${g(`🤝 <b>Guard</b> (Seria's Shield Wall): until the guard's next turn, every attack aimed at the chosen ally hits the guard instead (enemies still show their real target), and she raises a barrier that also lasts until her next turn. 🎯 <b>Taunt</b> (Defiant Slam): works even through armour. The target's next attack must be aimed at the taunter. ✨ <b>Cleanse</b> (Aria's Ward and Aegis): removes random ailments (burn, bleed, poison, frozen, shocked) from the target.`, 'good')}
     <h4>Poison, potions and immortality</h4>
-    ${g(`💉 <b>Tonic</b> (Jean): heals, but the same amount returns as ☠️ <b>poison that ignores armour</b>. ⚗️ <b>Untested Potions</b>: the party deals more physical damage for ${BREW.dur} turns (more while poisoned), then everyone is poisoned. 🦇 <b>Immortal</b> (Tyr): HP cannot fall below 1. Her Undying Night fires by itself, once per battle, when a blow would kill her.`)}
+    ${g(`💉 <b>Tonic</b> (Jean): heals, but ${Math.round(TONIC.repay * 100)}% of it returns as ☠️ <b>poison that ignores armour</b> (a net heal). ⚗️ <b>Untested Potions</b>: the party deals more physical damage for ${BREW.dur} turns (more while poisoned), then everyone is poisoned. 🦇 <b>Immortal</b> (Tyr): HP cannot fall below 1. Her Undying Night fires by itself, once per battle, when a blow would kill her.`)}
     <h4>Defeat and recovery</h4>
-    ${g(`Heroes who fall are not lost: they get back up at the next camp with 1 HP. If your whole party falls the quest ends and you keep only half the gold you carried. At camp, eat <b>Field Rations</b> to heal the party and use <b>Repair Kits</b> on a hero's armour. Buy both in the town Shop.`)}`;
+    ${g(`Heroes who fall are not lost: they get back up with 1 HP before the next fight. Each run has only a few camps, placed at random after the first couple of fights, so ration your supplies. If your whole party falls the quest ends and you keep only half the gold you carried. At camp, eat <b>Field Rations</b> to heal the party and use <b>Repair Kits</b> on a hero's armour. Buy both in the town Shop.`)}`;
   else if (guideTab === 'elements') h = `<h4>Elements</h4>`
     + Object.entries(ELEM).map(([el, e]) => g(`<b>${ICON[el]} ${ELEM_NAME[el]}</b> inflicts <b>${e.status.toUpperCase()}</b>: ` + (e.dot ? `${e.dot} damage at the start of the victim's turn, for ${e.dur} turns.` : `the victim <b>skips its next turn</b>.`))).join('')
     + `<h4>How statuses land</h4>${g(`Status effects only stick to a fighter whose armour is <b>already broken</b>. Elemental skills also deal <b>break damage</b> (shown as "break N") to armour. Plain physical skills do no break damage and apply no status. A fighter can carry several different statuses at once; hitting it with the same element again renews that one instead of stacking.`)}
@@ -1529,7 +1553,7 @@ function renderGuide() {
   else if (guideTab === 'armour') h = `<h4>Armour has two layers</h4>
     ${g(`<b>Armoured</b>: the outer layer is intact. The fighter is protected from every status. Elemental hits wear the outer layer down with their break damage.`)}
     ${g(`<b>Broken</b>: the outer layer is gone. Statuses now land, and further break damage wears down the second layer.`)}
-    ${g(`<b>SUPER BROKEN</b>: both layers are gone. It behaves like broken in battle, but <b>a hero's super broken armour cannot be repaired at camp</b> until a fight resets it.`)}
+    ${g(`<b>SUPER BROKEN</b> (heroes only; enemies just have the one layer): both layers are gone. It behaves like broken in battle, but <b>a hero's super broken armour cannot be repaired at camp</b> until a fight resets it.`)}
     <h4>Repairs</h4>${g(`A <b>Repair Kit</b> restores ${Math.round(ITEMS.kit.pct * 100)}% of a hero's outer layer at camp. A broken hero is armoured again once the outer layer has points back. Some events and rests also repair armour.`)}`;
   else if (guideTab === 'status') {
     h = `<h4>Debuffs</h4>` + Object.entries(ELEM).map(([el, e]) => g(`${ICON[el]} <b>${e.status.toUpperCase()}</b>: ` + (e.dot ? `${e.dot} damage per turn for ${e.dur} turns.` : `skips the next turn.`), 'bad')).join('')
@@ -1738,7 +1762,7 @@ const scaleSkills = (skills, k) => k === 1 ? skills : skills.map(s => s.t === 'd
 const ENEMY_ARMOUR_MIN = 0.5;
 function make(d, team, sc = { hp: 1, atk: 1 }) {
   const mhp = Math.round(d.hp * (sc.hp || 1)), brk = team === 'e' ? Math.max(d.brk, Math.ceil(mhp * ENEMY_ARMOUR_MIN)) : d.brk;
-  const brk2 = team === 'e' ? Math.max(1, Math.round(brk * BREAK2_RATIO)) : break2Max(d);
+  const brk2 = team === 'e' ? 0 : break2Max(d);           // enemies have ONE armour layer: broken is broken (they can't repair, so a second layer would change nothing)
   return { ...d, brk, hp: mhp, skills: scaleSkills(d.skills, sc.atk || 1), short: d.short || d.name.split(' ')[0],
            team, maxHp: mhp, breakBar: brk, maxBreak: brk, break2: brk2, maxBreak2: brk2, state: 'armoured',
            statuses: [], barrier: 0, cd: d.skills.map(() => 0),
@@ -1871,7 +1895,7 @@ function startGame() {
   $('title').classList.add('hide');
   if (game.quest) {                          // resume a quest in progress at its last checkpoint
     quest = restoreQuest(game.quest);
-    if (quest) { if (quest.bonus || quest.node === 0) startNode(); else showCamp(); return; }
+    if (quest) { if (quest.bonus || quest.node === 0) startNode(); else if (campHere()) showCamp(); else { reviveAtCamp(); nextFight(); } return; }
     game.quest = null; writeSave();          // unreadable quest data: drop it and go home
   }
   showScene('hub');
@@ -1954,6 +1978,14 @@ function stateFolder(u) {                         // the art folder for a unit's
 }
 const artChain = u => [...new Set([stateFolder(u), u.team === 'p' && skinOf(u.id) ? `armoured - ${skinOf(u.id)}` : null, 'armoured'].filter(Boolean))];     // where to look, best first
 async function firstAsset(u, key) { for (const f of artChain(u)) { const a = await findAsset(`${ANIM.base}/${u.id}/${f}/${key}`); if (a) return a; } return null; }
+async function isLive(a) {        // true for a moving idle: any video, or a webp that holds animation frames (the 'ANIM' chunk near the top of the file)
+  if (!a) return false; if ('live' in a) return a.live;
+  if (a.ext === 'mp4' || a.ext === 'webm') return a.live = true;
+  if (a.ext !== 'webp') return a.live = false;
+  try { const b = new Uint8Array(await (await fetch(a.url, { headers: { Range: 'bytes=0-95' } })).arrayBuffer()); a.live = String.fromCharCode(...b.slice(0, 96)).includes('ANIM'); } catch (e) { a.live = false; }
+  return a.live;
+}
+function markLive(m, a) { isLive(a).then(l => { if (l) m.classList.add('live'); }); }
 async function baseIdle(id) { const sk = skinOf(id); return (sk && await findAsset(`${ANIM.base}/${id}/armoured - ${sk}/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`); }
 async function findAsset(path) {            // checked once per file, then remembered
   if (path in animCache) return animCache[path];
@@ -2042,7 +2074,7 @@ function figureEl(u, team) {
       const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
       m.className = 'spr'; m.src = a.url; m.draggable = false;
       if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; }
-      el.prepend(m);
+      markLive(m, a); el.prepend(m);
     }
     el.classList.toggle('has-art', !!a);
   }
@@ -2274,16 +2306,56 @@ async function projectile(u, t, kind) {            // ranged elemental skills: a
 /* ---- attackers move: melee charges across the stage to the target, ranged steps back away from it (PC layout only) ---- */
 const MOVE = { on: true, inMs: 150, outMs: 170, rangedStep: 0.35 };
 const wide = () => window.matchMedia && window.matchMedia('(min-width:900px)').matches;
-async function advance(u, t, s) {                 // returns an async function that walks the figure home again
+const DMG_W = 2.6;      // how much wider than the idle box a skill picture may be (matches the .dmg css)
+const cbCache = {};
+function contentBox(url) {          // where the visible (non-transparent) part of a picture sits, as fractions of its width; cached. null when it cannot be read (video, blocked canvas)
+  if (url in cbCache) return cbCache[url];
+  return cbCache[url] = new Promise(res => {
+    const im = new Image(); im.onerror = () => res(null);
+    im.onload = () => {
+      const nw = im.naturalWidth, nh = im.naturalHeight; let l = 0, r = 1;
+      try {
+        const k = Math.min(1, 240 / nw), w = Math.max(1, Math.round(nw * k)), h = Math.max(1, Math.round(nh * k)), c = document.createElement('canvas'); c.width = w; c.height = h;
+        const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0, w, h); const d = x.getImageData(0, 0, w, h).data; let mn = w, mx = -1;
+        for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) if (d[(yy * w + xx) * 4 + 3] > 24) { if (xx < mn) mn = xx; if (xx > mx) mx = xx; }
+        if (mx >= 0) { l = mn / w; r = (mx + 1) / w; }
+      } catch (e) { }
+      res({ nw, nh, l, r });
+    };
+    im.src = url;
+  });
+}
+async function visSpan(unit, el, rect, key) {      // visible left / right edge (px from the figure's centre) of the picture shown for `key`, or of the idle when key is null
+  let url = '', boxW = rect.width;
+  if (key) { const a = await firstAsset(unit, key); if (a && a.ext !== 'mp4' && a.ext !== 'webm') { url = a.url; boxW = rect.width * DMG_W; } }
+  if (!url) { const m = el.querySelector('.spr'); if (m && m.tagName === 'IMG') { url = m.src; boxW = rect.width; } }
+  if (!url) return null;
+  const cb = await contentBox(url); if (!cb) return null;
+  const sc = Math.min(boxW / cb.nw, rect.height / cb.nh), rw = cb.nw * sc; let l = (cb.l - 0.5) * rw, r = (cb.r - 0.5) * rw;
+  if (el.classList.contains('flip')) [l, r] = [-r, -l];
+  return { l, r };
+}
+const MOVE_GAP = 0;     // px left between the two drawings when the blow lands (0 = edges just touch)
+const SPOT_Z = 1.1;                // the .spot zoom on the two fighters' cards (see css); it animates, so measure where things will END UP
+function settledBox(el) {          // where a figure will stand once the spotlight zoom has finished: { c: centre x, w, h, z } in screen px (z = total scale a transform on the figure is drawn at)
+  const card = el.closest('.combatant-card') || el, cs = getComputedStyle(card), zc = parseFloat(cs.scale) || 1, zf = card.classList.contains('spot') ? SPOT_Z : 1, k = zf / zc;
+  const r = el.getBoundingClientRect(), cr = card.getBoundingClientRect(), cc = cr.left + cr.width / 2;
+  return { c: cc + (r.left + r.width / 2 - cc) * k, w: r.width * k, h: r.height * k, z: zf * (parseFloat(getComputedStyle(el).scale) || 1) };
+}
+async function advance(u, t, s, key) {                 // returns an async function that walks the figure home again; `key` = the skill picture about to play (skill1-3), so its reach is what touches the target
   const el = figs.get(u), tf = figs.get(t);
   if (!MOVE.on || !el || !tf || !wide() || !el.animate || !el.isConnected) { bump(u, 'lunge'); return async () => {}; }
-  const a = el.getBoundingClientRect(), b = tf.getBoundingClientRect(), bf = document.querySelector('#battle-scene .battlefield').getBoundingClientRect();
-  if (!a.width || !b.width) { bump(u, 'lunge'); return async () => {}; }
-  const ac = a.left + a.width / 2, bc = b.left + b.width / 2, dir = Math.sign(bc - ac) || (u.team === 'p' ? 1 : -1);
-  let dx;
-  if (rangeOf(s) === 'melee') { dx = bc - ac - dir * Math.min(a.width, b.width) * 0.55; if (Math.sign(dx) !== dir) dx = 0; }
-  else dx = -dir * Math.min(a.width * MOVE.rangedStep, 110);
+  const A = settledBox(el), B = settledBox(tf), bf = document.querySelector('#battle-scene .battlefield').getBoundingClientRect();
+  if (!A.w || !B.w) { bump(u, 'lunge'); return async () => {}; }
+  const a = { width: A.w, height: A.h, left: A.c - A.w / 2, right: A.c + A.w / 2 }, b = { width: B.w, height: B.h }, ac = A.c, bc = B.c, dir = Math.sign(bc - ac) || (u.team === 'p' ? 1 : -1);
+  let dx;                                            // dx = how far it moves on screen
+  if (rangeOf(s) === 'melee') {
+    const [me, them] = await Promise.all([visSpan(u, el, a, key).then(v => v || visSpan(u, el, a, null)), visSpan(t, tf, b, null)]);
+    if (me && them) { dx = dir > 0 ? (bc + them.l) - (ac + me.r) - MOVE_GAP : (bc + them.r) - (ac + me.l) + MOVE_GAP; if (dx * dir < -a.width * 0.8) dx = -dir * a.width * 0.8; }     // front of my drawing meets the front of theirs (steps back if the picture already reaches past the target)
+    else { dx = bc - ac - dir * Math.min(a.width, b.width) * 0.55; if (Math.sign(dx) !== dir) dx = 0; }
+  } else dx = -dir * Math.min(a.width * MOVE.rangedStep, 110);
   dx = Math.max(bf.left + 6 - a.left, Math.min(bf.right - 6 - a.right, dx));          // stay on the stage
+  dx /= A.z;                                          // the figure is scaled by the camera, and a transform inside a scale is scaled too
   el.style.zIndex = 40;
   const go = el.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], { duration: MOVE.inMs, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
   await Promise.race([go.finished.catch(() => {}), sleep(MOVE.inMs + 150)]);
@@ -2406,7 +2478,8 @@ async function loadStageBg() {
   const b = document.querySelector('#battle-scene .battlefield'); if (!b || !quest) return;
   const id = quest.def.id, node = quest.node, last = node === quest.def.nodes.length - 1;
   let a = null;
-  for (const p of [`battle_${id}_${node + 1}`, `battle_${id}`, 'battle_bg']) { a = await findAsset(`${ANIM.base}/ui/${p}`); if (a) break; }
+  const nd = quest.def.nodes[node], bgn = (nd && nd.bg) || node + 1;
+  for (const p of [`battle_${id}_${bgn}`, `battle_${id}`, 'battle_bg']) { a = await findAsset(`${ANIM.base}/ui/${p}`); if (a) break; }
   if (!quest || quest.def.id !== id || quest.node !== node) return;        // the quest moved on while the picture was loading
   const pic = a && a.ext !== 'mp4' && a.ext !== 'webm';
   b.style.backgroundImage = pic ? `url("${a.url}")` : '';
@@ -2434,7 +2507,7 @@ function chips(u) {              // one small tile per skill: icons, damage / ba
     else if (s.t === 'brew') { ic = '⚗️'; val = 'party'; }
     else if (s.t === 'immortal') { ic = '🦇'; val = u.once && u.once[i] ? 'used' : 'once'; }
     else { ic = '🛡️' + (s.cleanse ? '✨' : ''); val = '+' + s.p + (s.t === 'barrierAll' ? (s.self ? ' team' : ' all') : ''); }
-    return `<div class="sk2${cd > 0 ? ' cd' : ''}${on ? ' sel' : ''}" title="${s.n} · cooldown ${s.cd}"><span class="ic">${ic}</span><b>${val}</b>${cd > 0 ? `<i>CD ${cd}</i>` : ''}</div>`;
+    return `<div class="sk2${cd > 0 ? ' cd' : ''}${on ? ' sel' : ''}" title="${s.n} · cooldown ${s.cd}${cd > 0 ? ' (' + cd + ' left)' : ''}"><div class="lbl"><span class="ic">${ic}</span><b>${val}</b></div>${cd > 0 ? `<span class="cdov">${cd}</span>` : ''}</div>`;
   }).join('') + '</div>';
 }
 let spot = [];                       // the attacker and its target: pushed to the foreground while the rest of the stage blurs back (PC)
@@ -2454,12 +2527,52 @@ function renderPanel() {          // PC: detailed stats of whoever is acting, in
     return `<div class="ap-sk${cd > 0 ? ' cd' : ''}${cur === u && sel === i ? ' sel' : ''}"><b>${e.n}</b> <span>${skillDesc(e)}${cd > 0 ? ' · CD ' + cd : ''}</span></div>`; }).join('');
   const st = (u.statuses || []).map(x => `<span class="ail ail-${x.type}">${x.type.toUpperCase()}${x.dot ? ' ' + x.dur : ''}</span>`).join(' ');
   el.innerHTML = `<div class="ap-head"><strong>${u.name}</strong> <span class="dim">${idx < POS.front ? 'Front' : 'Back'} row · SPD ${u.spd}</span> ${u.mod ? `<span class="elite-tag">★ ${ELITE.mods[u.mod].name}</span>` : ''} ${st}</div>
-    <div class="ap-stats"><span>❤️ ${Math.max(0, u.hp)}/${u.maxHp}</span>${u.barrier ? `<span>🛡️ ${u.barrier}</span>` : ''}<span>Armour ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2}</span></div>
+    <div class="ap-stats"><span>❤️ ${Math.max(0, u.hp)}/${u.maxHp}</span>${u.barrier ? `<span>🛡️ ${u.barrier}</span>` : ''}<span>Armour ${Math.max(0, u.breakBar)}/${u.maxBreak}${u.maxBreak2 ? ` · ${Math.max(0, u.break2)}/${u.maxBreak2}` : ''}</span></div>
     ${(u.weak && u.weak.length) || (u.resist && u.resist.length) ? `<div class="ap-line">⚠️ ${elemIcons(u.weak || [])} &nbsp; 🛡️ ${elemIcons(u.resist || [])}</div>` : ''}
     ${u.traits && u.traits.length ? `<div class="ap-line">${traitChips(u.traits)}</div>` : ''}
     ${u.stealth > 0 ? `<div class="ap-line">🌫️ Stealth: ${u.stealth} turn${u.stealth > 1 ? 's' : ''} left · ${Math.round(EVADE.stealth * 100)}% evasion</div>` : ''}${u.dr && u.dr.turns > 0 ? `<div class="ap-line">🔰 Takes ${Math.round(u.dr.mult * 100)}% less damage · ${u.dr.turns} turn${u.dr.turns > 1 ? 's' : ''} left</div>` : ''}
     ${u.relics && u.relics.length ? `<div class="ap-line">${u.relics.map(id => RELICS[id].icon + ' ' + RELICS[id].name).join(' · ')}</div>` : ''}
     <div class="ap-skills">${sk}</div>`;
+}
+/* Bar overlays. A barrier is a striped violet chunk sitting on the end of the HP bar and of whichever armour bar is being hit. The yellow chunk left of it is the damage
+   the telegraphed attacks should do AFTER the barrier has soaked its share (solid = the low roll, hatched = up to the high roll); it turns red if it could kill.
+   Selecting a Ward shows a ghost of the barrier it would add and what it would really stop. */
+function barFx(u, sk) {
+  const hero = u.team === 'p', armoured = u.state === 'armoured';
+  // ONE armour bar: the outer layer (cyan) while armoured, then, for heroes, the damaged layer (orange) once it is broken. Enemies only have the outer layer.
+  const lay = armoured ? { v: u.breakBar, m: u.maxBreak, cls: 'break-fill' } : { v: hero ? u.break2 : 0, m: hero ? u.maxBreak2 : u.maxBreak, cls: 'break2-fill' };
+  const armPct = lay.m ? +Math.max(0, lay.v / lay.m * 100).toFixed(2) : 0;
+  const armTxt = armoured ? `Armour: ${Math.max(0, u.breakBar)}/${u.maxBreak}`
+    : u.state === 'super' ? '<span class="super-tag">SUPER BROKEN</span>'
+    : hero ? `<span class="broken-tag">Broken</span>: ${Math.max(0, u.break2)}/${u.maxBreak2}` : '<span class="broken-tag">BROKEN</span>';
+  const none = { hp: '', arm: '', lethal: false, armPct, armCls: lay.cls, armTxt };
+  if (!isAlive(u)) return none;
+  const ward = sk && sk.t === 'barrier' && hero && sk.p ? sk.p : 0, B = u.barrier || 0, ghost = ward > 0 && !B;
+  // telegraphed attacks on this hero, taken in turn: the barrier soaks each one's damage first, and shields the armour from that hit's break damage (as hit() does)
+  const hits = hero ? enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && !hasCharm(e) && e.intent.target === u && e.skills[e.intent.i].t === 'dmg').map(e => e.skills[e.intent.i]) : [];
+  const run = (high, b0) => { let b = b0, dmg = 0, brk = 0; hits.forEach(s => { const [a, z] = adjRange(s, u), d = high ? z : a, soak = Math.min(b, d), bi = (s.el || s.chip) ? (s.brk || 0) : 0; dmg += d - soak; brk += bi - Math.min(b, bi); b -= soak; }); return [dmg, brk]; };
+  let [dLo, kLo] = run(false, B + ward), [dHi, kHi] = run(true, B + ward);
+  if (ward && hits.length) {                         // a Ward only stops hits that land after the cast (see windowRange)
+    const [a, z] = incomingRange(u), [c2, d] = windowRange(u, cur);
+    dLo = Math.max(0, a - c2 + Math.max(0, c2 - ward) - B); dHi = Math.max(0, z - d + Math.max(0, d - ward) - B);
+  }
+  const pc = x => +Math.max(0, x).toFixed(2);
+  const shield = (fill, max, amt) => { const w = Math.min(fill, amt / max * 100); return w > 0.4 ? `<div class="bar-shield${ghost ? ' ghost' : ''}" style="left:${pc(fill - w)}%;width:${pc(w)}%"></div>` : ''; };
+  // the end of the bar, working leftwards: [barrier chunk][yellow = what still gets through]
+  const chunks = (fill, max, amt, lo, hi) => {
+    let h = ''; const bw = amt > 0 ? Math.min(fill, amt / max * 100) : 0, end = fill - bw;
+    if (amt > 0) h += shield(fill, max, amt);
+    if (hi > 0) {
+      const yHi = Math.min(end, hi / max * 100), yLo = Math.min(end, lo / max * 100);
+      h += `<div class="hp-dmg hi" style="left:${pc(end - yHi)}%;width:${pc(yHi)}%"></div>`;
+      if (yLo > 0) h += `<div class="hp-dmg lo" style="left:${pc(end - yLo)}%;width:${pc(yLo)}%"></div>`;
+    }
+    return h;
+  };
+  const hpP = Math.max(0, u.hp / u.maxHp * 100);
+  return { ...none, lethal: dHi > 0 && dHi >= u.hp,
+    hp: chunks(hpP, u.maxHp, B + ward, dLo, dHi),
+    arm: lay.m && u.state !== 'super' ? chunks(armPct, lay.m, B + ward, kLo, kHi) : '' };
 }
 function card(u, team, i) {
   const c = ['combatant-card', 'team-' + team], alive = isAlive(u), front = i < POS.front;
@@ -2480,16 +2593,8 @@ function card(u, team, i) {
     extra = `<span><span class="dmgprev">${lo === hi ? lo : lo + '–' + hi}</span>${pmTag(pm)}<span class="crit ${m || ''}">Crit ${critChance(sk, u)}%${m === 'weak' ? ' ▲weak' : m === 'resist' ? ' ▼resists' : ''}</span></span>`;
   } else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
   const inc = team === 'p' && alive ? incoming(u) : 0;
-  let incTxt = '';
-  if (inc) {
-    const [a, b] = incomingRange(u);
-    let after = '';
-    if (sk && sk.t === 'barrier') {                     // what this ward would really stop: only hits that land later this round
-      const [c2, d] = windowRange(u, cur);
-      after = ` → ${a - c2 + Math.max(0, c2 - sk.p)}–${b - d + Math.max(0, d - sk.p)} with ${sk.n}`;
-    }
-    incTxt = `<span class="intent">🎯×${inc} ${a}–${b}${after}</span>`;
-  }
+  const incTxt = inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
+  const bfx = barFx(u, sk);
   const mt = (u.weak && u.weak.length ? `<span class="mt" title="Weak to">⚠️${elemIcons(u.weak)}</span>` : '') + (u.resist && u.resist.length ? `<span class="mt" title="Resists">🛡️${elemIcons(u.resist)}</span>` : '');
   return `<div class="${c.join(' ')}" onclick="pick('${team}',${i})">
     <div class="bubble">${extra}${incTxt}</div>
@@ -2498,11 +2603,10 @@ function card(u, team, i) {
     <div class="stats-info">
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
       <div class="tags">${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
-      <div class="bar-container"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div></div>
+      <div class="bar-container${bfx.lethal ? ' lethal' : ''}"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div>${bfx.hp}</div>
       <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of the round">🛡️ ${u.barrier}</span>` : ''}</div>
-      <div class="arm">Break: ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2}</div>
-      <div class="bar-container"><div class="break-fill" style="width:${Math.max(0, u.breakBar / u.maxBreak * 100)}%"></div></div>
-      <div class="bar-container thin"><div class="break2-fill${u.state === 'armoured' ? ' dim' : ''}" style="width:${Math.max(0, u.break2 / u.maxBreak2 * 100)}%"></div></div>
+      <div class="arm">${bfx.armTxt}</div>
+      <div class="bar-container"><div class="${bfx.armCls}" style="width:${bfx.armPct}%"></div>${bfx.arm}</div>
       ${chips(u)}
     </div></div>`;
 }
@@ -2536,7 +2640,7 @@ function lethalGuard(t, hp) {
   if (i >= 0) {
     t.once = t.once || {}; t.once[i] = true; t.immortal = t.skills[i].dur; t.immortalFresh = false;
     log(`🦇 ${t.name} would have fallen, but ${t.skills[i].n} answers: she clings to 1 HP and cannot die for ${t.immortal} turns!`, 'log-heal'); floatText(t, '🦇 IMMORTAL', 'tag'); fx(t, 'ward'); sfx('ward'); triggerQ.push({ u: t, i });
-    return 1;
+    return Math.max(1, Math.round(t.maxHp * (t.skills[i].heal || 0)));      // Undying Night: she also mends this share of her max HP
   }
   return 0;
 }
@@ -2551,7 +2655,10 @@ function settleDebts() {
 function addBarrier(t, p) { const b = t.barrier || 0; t.barrier = Math.max(b, p); return t.barrier - b; }        // barriers never stack: the biggest one stands
 function cleanse(t, n = 1) {                                                   // removes n random ailments (burn, bleed, poison, frozen, shocked)
   const gone = [];
-  for (let k = 0; k < n && t.statuses && t.statuses.length; k++) { const i = Math.floor(Math.random() * t.statuses.length); gone.push(t.statuses.splice(i, 1)[0].type); }
+  for (let k = 0; k < n && t.statuses; k++) {                                   // borrowed health (a Tonic's poison debt) can never be cleansed away
+    const pool = t.statuses.map((x, i) => i).filter(i => !t.statuses[i].debt); if (!pool.length) break;
+    gone.push(t.statuses.splice(pool[Math.floor(Math.random() * pool.length)], 1)[0].type);
+  }
   return gone;
 }
 // Seria's Shield Wall and Defiant Slam: attacks aimed at a guarded ally, or by a taunted enemy, are pulled onto the protector.
@@ -2565,14 +2672,17 @@ function redirectIntents(from, to, only) {
 }
 const usable = (u, i) => u.cd[i] === 0 && !(u.skills[i].t === 'charm' && !(u.team === 'p' ? enemies : party).some(charmable)) && !(u.skills[i].once && u.once && u.once[i]) && !(u.skills[i].t === 'tonic' && !(u.team === 'p' ? party : enemies).some(a => isAlive(a) && a.hp < a.maxHp)) && !((u.skills[i].t === 'barrierAll' || u.skills[i].t === 'guard') && !wardTargets(u, u.skills[i]).length);   // a single ward can always go on the caster herself
 function skillDesc(s, u) {
-  if (s.t === 'smoke') return `🌫️ step back + stealth for ${s.dur} turns: attacks bleed, ${Math.round(EVADE.stealth * 100)}% evasion, ends when hit`;
+  if (s.t === 'smoke') return `🌫️ FREE ACTION: step back + stealth for ${s.dur} turns: attacks bleed, ${Math.round(EVADE.stealth * 100)}% evasion, ends when hit`;
   const x = skillDesc0(s), more = [];
   if (s.stealthed) more.push('🌫️ stealth bonus active');
   else if (s.stealthMul || s.stealthCrit) more.push(`stealth: ${s.stealthMul ? '×' + s.stealthMul + ' dmg' : ''}${s.stealthMul && s.stealthCrit ? ', ' : ''}${s.stealthCrit ? '+' + s.stealthCrit + '% crit' : ''}`);
+  if (s.stunOnBreak) more.push('⚡ breaking armour stuns at once');
+  if (s.drain) more.push(`🩸 heals ${Math.round(s.drain * 100)}% of damage dealt`);
   if (s.move === 'front') more.push('→ moves to the front');
+  if (s.resetOnKO) more.push('🗡️ a kill or armour break resets its cooldown');
   if (s.move === 'back') more.push('→ dashes to the back row');
   if (s.chip) more.push(`💥 chips armour (${s.brk})`);
-  if (s.aoe) more.push(`🌐 other foes take ${Math.round(s.aoe * 100)}%`);
+  if (s.aoe) more.push(`🌐 other foes take ${Math.round(s.aoe * 100)}% (break ${Math.round((s.aoeBrk ?? s.aoe) * 100)}%)`);
   if (s.counter) more.push(`↩️ ${Math.round(s.counter * 100)}% counter when attacked`);
   if (s.bonusOnBleed) more.push('⚡ bonus turn if the target was already bleeding');
   if (s.dr) more.push(`🔰 −${Math.round(s.dr.mult * 100)}% damage taken, ${s.dr.dur} turns`);
@@ -2582,9 +2692,9 @@ function skillDesc0(s) {
   if (s.t === 'barrier') return `+${s.p} 🛡️ barrier (ally or self)${s.cleanse ? ' ✨ cleanse 1' : ''}`;
   if (s.t === 'barrierAll') return `+${s.p} 🛡️ barrier (${s.self ? 'whole team' : 'all others'})${s.cleanse ? ' ✨ cleanse 1 each' : ''}`;
   if (s.t === 'guard') return `🤝 takes hits for an ally · +${s.p} 🛡️ on self`;
-  if (s.t === 'tonic') return `💉 heal ${s.heal} HP, returns as ☠️ poison (ignores armour)`;
+  if (s.t === 'tonic') return `💉 heal ${s.heal} HP, ${Math.round(s.heal * TONIC.repay)} returns as ☠️ poison${s.cleanse ? ' · ✨ cleanse 1' : ''}`;
   if (s.t === 'brew') return `⚗️ whole party +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} turns, then poisoned`;
-  if (s.t === 'immortal') return `🦇 immortal for ${s.dur} turns · once per battle, fires by itself on a killing blow`;
+  if (s.t === 'immortal') return `🦇 immortal for ${s.dur} turns${s.heal ? ' + heals ' + Math.round(s.heal * 100) + '% HP' : ''} · once per battle, fires by itself on a killing blow`;
   if (s.t === 'buff') return '🐉 next turn: burning Iron Fist & Blazing Kick + a free strike';
   if (s.t === 'charm') return '💘 no damage · a broken foe\'s next attack hits its own friend';
   if (s.storm) return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]} 🌩️ +1-3 strikes`;
@@ -2604,11 +2714,12 @@ function render() {
     const b = $('btn' + i);
     if (cur) {
       const s = effSkill(cur, i), cd = cur.cd[i], ok = usable(cur, i);
-      b.innerHTML = `${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${cd > 0 ? 'CD ' + cd : ok ? 'Ready' : 'No ally'}</small>`;
+      b.innerHTML = `<span class="lbl">${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${cd > 0 ? 'CD ' + cd : ok ? 'Ready' : 'No ally'}</small></span>${cd > 0 ? `<span class="cdov">${cd}</span>` : ''}`;
+      b.classList.toggle('oncd', cd > 0);
       b.disabled = !waiting || !ok;
       b.classList.toggle('sel', sel === i);
     } else {
-      b.innerHTML = `${i + 1}. —<br><small>&nbsp;</small>`; b.disabled = true; b.classList.remove('sel');
+      b.innerHTML = `${i + 1}. —<br><small>&nbsp;</small>`; b.disabled = true; b.classList.remove('sel', 'oncd');
     }
   }
   $('btn-shift').disabled = !waiting || party.filter(isAlive).length < 2;
@@ -2663,7 +2774,7 @@ function skillWhat(u, s) {
   let x = skillWhat0(u, s);
   if (s.bonusOnBleed) x += ' · ⚡ if the target was ALREADY bleeding, she gets a bonus turn right away (once per turn), so she can follow up with a Crimson Bite';
   if (s.chip) x += ` · 💥 physical, but still damages armour (break ${s.brk}); statuses only come from elemental hits`;
-  if (s.aoe) x += ` · 🌐 the target takes full damage, every other foe takes ${Math.round(s.aoe * 100)}%`;
+  if (s.aoe) x += ` · 🌐 the target takes full damage, every other foe takes ${Math.round(s.aoe * 100)}% damage and ${Math.round((s.aoeBrk ?? s.aoe) * 100)}% of the break`;
   if (s.move === 'back') x += ' · 💨 afterwards she dashes to the back row';
   if (s.counter) x += ` · ↩️ ${Math.round(s.counter * 100)}% chance to counterattack with it whenever an enemy attacks her`;
   if (s.dr) x += ` · 🔰 she also takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} of her turns`;
@@ -2673,10 +2784,10 @@ function skillWhat0(u, s) {          // one-line description of a skill: damage,
   return s.t === 'dmg' ? `${rangeText(s)} dmg · ${RICON[rangeOf(s)]} ${rangeOf(s)} · ${s.el ? ICON[s.el] + ' ' + ELEM_NAME[s.el] + ' · break ' + (s.brk || 0) : 'physical'} · crit ${critChance(s, null)}%${s.storm ? ` · 🌩️ then 1-3 small strikes with ${u.skills[0].n}: odd ones hit a random enemy, even ones a random friend` : ''}${s.taunt ? ' · 🎯 taunts: its next attack must target her, even through armour' : ''}${s.bite ? ` · 🦇 against a bleeding target: +${Math.round(s.bite.dmg * 100)}% damage and she heals ${Math.round(s.bite.heal * 100)}% of it` : ''}`
                : s.t === 'buff' ? `🐉 Buff: on her next turn ${u.skills[0].n} and ${u.skills[1].n} burn (+75% damage, fire) and she also strikes a random enemy with ${u.skills[0].n}, then it wears off`
                : s.t === 'charm' ? `💘 Deals no damage. If the target's armour is broken it is charmed: its next attack hits a random friend of its own. Cleanse removes it. Armoured targets can't be charmed`
-               : s.t === 'smoke' ? `🌫️ Steps back to the rear and turns stealthy for ${s.dur} of her turns: her attacks gain bleed (+${STEALTH.brk} break), and enemies are far less likely to target her. While hidden ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, but any damage she takes ends it`
-               : s.t === 'tonic' ? `💉 Heals one ally for ${s.heal} HP, but the same amount comes back as ☠️ poison over the next turns (anything still owed when the fight is won is dealt then, never below 1 HP). It ignores armour and works on armoured allies. Borrowed health: a fresh tonic adds to any poison already there`
+               : s.t === 'smoke' ? `🌫️ A free action (she still acts afterwards): steps back to the rear and turns stealthy for ${s.dur} of her turns: her attacks gain bleed (+${STEALTH.brk} break), and enemies are far less likely to target her. While hidden ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, but any damage she takes ends it`
+               : s.t === 'tonic' ? `💉 Heals one ally for ${s.heal} HP, but ${Math.round(TONIC.repay * 100)}% of that (${Math.round(s.heal * TONIC.repay)}) comes back as ☠️ poison over the next turns, so the net gain is ${s.heal - Math.round(s.heal * TONIC.repay)} HP (anything still owed when the fight is won is dealt then, never below 1 HP). It ignores armour and works on armoured allies. It also cleanses 1 random ailment first (never the tonic poison itself). Borrowed health: a fresh tonic adds to any poison already there`
                : s.t === 'brew' ? `⚗️ Everyone in the party (herself too) deals +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} of their turns, +${Math.round((BREW.mult + BREW.poisonBonus) * 100)}% while poisoned. When it wears off they take ${BREW.poison} poison (ignores armour). Elemental skills are not boosted (her scalpel counts as physical)`
-               : s.t === 'immortal' ? `🦇 Immortal: HP cannot fall below 1 for ${s.dur} turns. No cooldown, but only once per battle. If a blow would kill her first, it triggers by itself and leaves her on 1 HP`
+               : s.t === 'immortal' ? `🦇 Immortal: HP cannot fall below 1 for ${s.dur} turns. No cooldown, but only once per battle. If a blow would kill her first, it triggers by itself${s.heal ? ` and she mends ${Math.round(s.heal * 100)}% of her max HP (it also heals when cast by hand)` : ' and leaves her on 1 HP'}`
                : s.t === 'guard' ? `🤝 Body-block: until her next turn, every attack aimed at the chosen ally hits her instead, and she gains a ${s.p} 🛡️ barrier that also lasts until her next turn (barriers never stack)`
                : s.t === 'barrierAll' ? `🛡️ +${s.p} barrier to ${s.self ? 'the whole team, herself included' : 'every other ally'}${s.cleanse ? ', and cleanses ' + s.cleanse + ' random ailment from each' : ''}`
                : `🛡️ +${s.p} barrier to one ally (or herself) until the end of the round${s.cleanse ? ', and cleanses ' + s.cleanse + ' random ailment from them' : ''}`;
@@ -2691,7 +2802,7 @@ function inspect(team, idx) {
   const tr = traitList(u).map(t => `<div>${t}</div>`).join('');
   const pb = Math.round(POS.bonus * 100);
   $('inspect-box').innerHTML = `<h3>${u.name} ${u.icons}</h3>
-    <div>${isAlive(u) ? (idx < POS.front ? 'Front row' : 'Back row') + ' · ' : ''}${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]} · HP ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` · 🛡️ ${u.barrier}` : ''} · Armour ${Math.max(0, u.breakBar)}/${u.maxBreak} · ${Math.max(0, u.break2)}/${u.maxBreak2} · SPD ${u.spd}${u.status ? ' · ' + u.status.type.toUpperCase() : ''}</div>
+    <div>${isAlive(u) ? (idx < POS.front ? 'Front row' : 'Back row') + ' · ' : ''}${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]} · HP ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` · 🛡️ ${u.barrier}` : ''} · Armour ${Math.max(0, u.breakBar)}/${u.maxBreak}${u.maxBreak2 ? ` · ${Math.max(0, u.break2)}/${u.maxBreak2}` : ''} · SPD ${u.spd}${u.status ? ' · ' + u.status.type.toUpperCase() : ''}</div>
     <div style="margin-top:6px">⚠️ <b>Weak to:</b> ${elemList(u.weak)} <span class="dim">(+${CRIT.weak}% crit chance against it)</span></div>
     <div>🛡️ <b>Resists:</b> ${elemList(u.resist)} <span class="dim">(${CRIT.resist}% crit chance against it)</span></div>
     ${u.traits && u.traits.length ? `<div style="margin-top:6px">🏅 <b>Traits:</b> ${traitChips(u.traits)}</div>` : ''}
@@ -2760,7 +2871,7 @@ async function counterAttack(t, u) {             // Seria's Shield Bash answers 
   try {
     const s = effSkill(t, 0);
     log(`↩️ ${t.name} counterattacks ${u.name}!`, 'log-player'); floatText(t, '↩️ COUNTER', 'tag'); setSpot([t, u]);
-    const back = await advance(t, u, s); sfx('swing');
+    const back = await advance(t, u, s, 'skill1'); sfx('swing');
     const clip = playAnim(t, 'skill1'); await sleep(ANIM.impact);
     await Promise.all([clip, hit(t, u, s)]); await back();
   } finally { countering = false; }
@@ -2779,6 +2890,10 @@ async function hit(u, t, s) {
   if (bled && dmg > 0 && isAlive(u)) {                         // Crimson Bite: she drinks from a bleeding target
     const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(dmg * s.bite.heal)));
     if (u.hp > b0) { log(`🦇 ${u.name} drinks deep and heals ${u.hp - b0} HP.`, 'log-heal'); setTimeout(() => floatText(u, '+' + (u.hp - b0), 'heal'), 120); }
+  }
+  if (s.drain && dmg > 0 && isAlive(u)) {                      // Tyr: her claws drink a share of the damage they deal
+    const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(dmg * s.drain)));
+    if (u.hp > b0) setTimeout(() => floatText(u, '+' + (u.hp - b0), 'heal'), 120);
   }
   if (u.rel && u.rel.lifesteal && dmg > 0 && isAlive(u)) {     // Vampiric Fang
     const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(dmg * u.rel.lifesteal)));
@@ -2807,10 +2922,11 @@ async function hit(u, t, s) {
         t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2);
         log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
         armourBreak(t, false);
+        if (s.stunOnBreak && s.el && isAlive(t)) applyStatus(t, s.el, u);       // Vesper: a shock that breaks the armour stuns at once
       }
     } else {                                            // broken or super broken: status effects land
       if (s.el) applyStatus(t, s.el, u);
-      if (t.state === 'broken') {                       // layer 2 takes break damage too
+      if (t.state === 'broken' && t.maxBreak2 > 0) {    // heroes only: layer 2 takes break damage too (enemies stay simply broken)
         t.break2 -= brk;
         log(brk ? `${t.name}'s damaged armour takes ${brk} break damage.` : `${t.name}'s barrier shields the damaged armour.`, 'log-status');
         if (t.break2 <= 0) {
@@ -2848,7 +2964,7 @@ async function perform(u, i, target) {
   if (film) { setSpot([]); await playFilm(film); }
   let begun; const started = new Promise(r => begun = r);
   const clip = film ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
-  const back = !film && s.t === 'dmg' && target ? await advance(u, target, s) : null;
+  const back = !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
   if (!film) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
   if (!film && s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
   if (!film && s.t === 'dmg' && !(s.el && rangeOf(s) === 'ranged')) sfx('swing');
@@ -2862,17 +2978,19 @@ async function perform(u, i, target) {
     tail(u, 'smoke'); sfx('poof'); await sleep(200);
     moveUnit(u, 'back'); u.stealth = s.dur; u.stealthFresh = true;
     enemies.forEach(e => { if (isAlive(e) && e.intent && e.intent.target === u && e.skills[e.intent.i].t === 'dmg' && Math.random() > STEALTH.weight) e.intent.target = weightedHero(); });      // anyone who was aiming at her picks again
+    if (s.free) u.extraTurn = true;
     render(); await sleep(100); return;
   }
   if (s.t === 'buff') { sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
-    const wasBleeding = !!(target && target.statuses && target.statuses.some(x => x.type === 'bleed'));
+    const wasBleeding = !!(target && target.statuses && target.statuses.some(x => x.type === 'bleed')), wasArmoured = !!target && target.state !== 'broken' && target.state !== 'super';
     await Promise.all([clip, hit(u, target, s)]);
+    if (s.resetOnKO && target && isAlive(u) && (!isAlive(target) || (wasArmoured && target.state === 'broken'))) { u.cd[i] = 0; log(`🗡️ ${u.name} is ready to strike again: ${s.n} is ready.`, 'log-player'); floatText(u, '🗡️ RESET', 'tag'); }
     if (s.bonusOnBleed && wasBleeding && isAlive(u) && u.team === 'p') u.extraTurn = true;
     if (s.aoe && isAlive(u)) {                                      // Thunderstorm: everyone else on the other side is caught in it too
       const others = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && e !== target);
       if (others.length) log(`🌩️ ${s.n} sweeps over ${others.map(e => e.name).join(', ')}!`, 'log-status');
-      for (const e of others) if (isAlive(e)) await hit(u, e, scaleDmg(s, s.aoe));
+      for (const e of others) if (isAlive(e)) await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)) });
     }
     if (s.dr && isAlive(u)) {                                       // Defiant Slam: her own stance, for dr.dur of her turns
       u.dr = { mult: s.dr.mult, turns: s.dr.dur, fresh: true };
@@ -2905,9 +3023,10 @@ async function perform(u, i, target) {
   }
   if (s.t === 'tonic') {                                       // Jean's Tonic: heal now, and the same amount returns as poison that ignores armour
     if (!target || !isAlive(target) || target.team !== u.team) { log(`${u.name} has no one to treat.`, 'log-round'); return; }
+    const clean = s.cleanse ? cleanse(target, s.cleanse) : []; if (clean.length) { log(`✨ ${target.name} is cleansed of ${clean.map(x => x.toUpperCase()).join(', ')}.`, 'log-heal'); floatText(target, '✨ CLEANSED', 'ward'); }
     const b0 = target.hp; target.hp = Math.min(target.maxHp, target.hp + s.heal); const got = target.hp - b0;
-    log(`💉 ${u.name} uses ${s.n}: ${target.name} heals ${got} HP${got ? ', but it comes back as poison' : ''}.`, 'log-heal');
-    addPoison(target, got); render(); if (got) { floatText(target, '+' + got, 'heal'); setTimeout(() => floatText(target, '☠️ BORROWED', 'tag'), 250); }
+    log(`💉 ${u.name} uses ${s.n}: ${target.name} heals ${got} HP${got ? `, and ${Math.round(got * TONIC.repay)} comes back as poison` : ''}.`, 'log-heal');
+    addPoison(target, Math.round(got * TONIC.repay)); render(); if (got) { floatText(target, '+' + got, 'heal'); setTimeout(() => floatText(target, '☠️ BORROWED', 'tag'), 250); }
     return;
   }
   if (s.t === 'brew') {                                        // Untested Potions: everyone drinks (herself included)
@@ -2917,6 +3036,7 @@ async function perform(u, i, target) {
   }
   if (s.t === 'immortal') {                                    // Undying Night, cast by hand
     u.once = u.once || {}; u.once[i] = true; u.immortal = s.dur; u.immortalFresh = true;
+    if (s.heal) u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * s.heal));
     log(`🦇 ${u.name} calls on ${s.n}: she cannot fall below 1 HP for ${s.dur} turns!`, 'log-heal'); floatText(u, '🦇 IMMORTAL', 'tag'); render(); return;
   }
   if (s.t === 'guard') {                                       // Shield Wall: every attack aimed at the ally now hits the caster, who raises a barrier
@@ -2978,8 +3098,7 @@ function intentText(u) {
   if (s.t === 'barrier') return `▶ ${s.n} +${s.p}🛡️ → ${it.target.short}`;
   if (s.t === 'charm') return `▶ ${s.n} 💘 → ${it.target.short}`;
   if (hasCharm(u)) return `▶ ${s.n} → 💘 hits its own friend`;
-  const [a, b] = adjRange(s, it.target);
-  return `▶ ${s.n} ${a === b ? a : a + '–' + b}${s.el ? ICON[s.el] : ''}${RICON[rangeOf(s)]}${pmTag(posMod(s, it.target))} → ${it.target.short}`;
+  return `<span title="${s.n}">▶ ${s.el ? ICON[s.el] : ''}${RICON[rangeOf(s)]} → ${it.target.short}</span>`;       // the damage itself is drawn on the target's HP bar
 }
 const incoming = h => enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && !hasCharm(e) && e.intent.target === h && e.skills[e.intent.i].t === 'dmg').length;
 // Telegraphed damage a barrier cast on h by `caster` could still absorb: attacks by enemies who haven't acted yet this round (a barrier fades when the round ends).
@@ -3054,7 +3173,7 @@ function buildEnemies(ids, mods, sc) {
     const d = enemyById(id), m = ELITE.mods[mods && mods[i]];
     if (!m || d.boss) return make(d, 'e', sc);
     const e = make({ ...d, spd: d.spd + (m.spd || 0) }, 'e', { hp: sc.hp * (m.hp || 1), atk: sc.atk * (m.atk || 1) });
-    if (m.brk) { e.brk = e.maxBreak = e.breakBar = Math.round(e.maxBreak * m.brk); e.maxBreak2 = e.break2 = Math.max(1, Math.round(e.maxBreak * BREAK2_RATIO)); }
+    if (m.brk) { e.brk = e.maxBreak = e.breakBar = Math.round(e.maxBreak * m.brk); e.maxBreak2 = e.break2 = 0; }
     e.mod = mods[i]; e.icons += m.icon; if (m.immune) e.rel = { immune: ALL_STATUSES.slice() };
     return e;
   });
@@ -3128,9 +3247,17 @@ function rollPlan(def) {
   });
   if (!plan.adds.length) plan.adds = def.nodes.flatMap(n => n.adds || []).slice(0, 2);
   plan.event = RAND.on && pool.length ? rollEventSlot(def) : null;
+  plan.camps = rollCamps(def);
   return plan;
 }
+function rollCamps(def) {          // camp after clearing fight i (0-based): never after the first fight, never after the boss; def.camps of them, at random
+  const n = def.nodes.length, cand = []; for (let i = 1; i <= n - 2; i++) cand.push(i);
+  const out = []; for (let k = 0; k < (def.camps ?? 1) && cand.length; k++) out.push(cand.splice(Math.floor(RAND.rng() * cand.length), 1)[0]);
+  return out.sort((a, b) => a - b);
+}
+const campHere = () => !quest.plan || !Array.isArray(quest.plan.camps) || quest.plan.camps.includes(quest.node - 1);     // saves from before limited camps: a camp every time
 function validPlan(p, def) {
+  if (p && p.camps != null && !(Array.isArray(p.camps) && p.camps.every(i => Number.isInteger(i) && i >= 0 && i < def.nodes.length - 1))) return false;
   if (p && p.event && !(Number.isInteger(p.event.after) && p.event.after >= 0 && p.event.after < def.nodes.length - 1 && typeof EVENT_BY_ID !== 'undefined' && EVENT_BY_ID[p.event.id])) return false;
   return !!p && (p.mods == null || (Array.isArray(p.mods) && p.mods.length === def.nodes.length && p.mods.every(l => Array.isArray(l) && l.every(m => m == null || ELITE.mods[m])))) && Array.isArray(p.nodes) && p.nodes.length === def.nodes.length && Array.isArray(p.adds) &&
     p.nodes.every((l, i) => Array.isArray(l) && l.length === def.nodes[i].enemies.length && l.every(id => enemyById(id))) && p.adds.every(id => enemyById(id));
@@ -3248,7 +3375,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
       if (film2) { setSpot([]); await playFilm(film2); setSpot([u, v]); }
       let begun2; const started2 = new Promise(r => begun2 = r);
       const clip2 = film2 ? Promise.resolve() : playAnim(u, 'skill1', undefined, undefined, begun2);
-      const back2 = film2 ? (() => {}) : await advance(u, v, w);
+      const back2 = film2 ? (() => {}) : await advance(u, v, w, 'skill1');
       if (!film2) {
         await Promise.race([started2, sleep(500)]);
         if (auraFits(u, w)) await aura(u, w.el);
@@ -3319,14 +3446,14 @@ function checkEnd() {
       quest = null; saved = writeSave();
     } else if (quest.bonus) {                                  // an event fight: back to the same camp, with no new rest allowance
       quest.bonus = null;
-      $('turn-indicator').innerText = 'Victory! Back to camp.';
-      main.textContent = '⛺ Go to Camp'; main.onclick = showCamp;
+      $('turn-indicator').innerText = campHere() ? 'Victory! Back to camp.' : 'Victory!';
+      main.textContent = campHere() ? '⛺ Go to Camp' : '⚔️ Onward'; main.onclick = campHere() ? showCamp : onward;
       saved = saveQuest();
     } else {
       quest.node++;
       quest.party.forEach(u => { u.campHeal = 0; });          // a new camp: the rest allowance starts over
-      $('turn-indicator').innerText = 'Victory! Time to make camp.';
-      main.textContent = '⛺ Go to Camp'; main.onclick = showCamp;
+      $('turn-indicator').innerText = campHere() ? 'Victory! Time to make camp.' : 'Victory! Press on.';
+      main.textContent = campHere() ? '⛺ Go to Camp' : (eventPending() ? '❓ Investigate' : quest.def.nodes[quest.node].boss ? '💀 Face the Boss' : '⚔️ Onward'); main.onclick = campHere() ? showCamp : onward;
       saved = saveQuest();
     }
   }
@@ -3583,7 +3710,7 @@ function renderQuests() {
     const on = q.id === pickedQuest;
     return `<div class="pick quest-pick${on ? ' on' : ''}" onclick="pickQuest('${q.id}')">
       <div><strong>${q.name}</strong><br>${q.desc}
-        <div class="sk">${q.nodes.length} battles, boss at the end · up to ${questGold(q)} gold${q.unlocks && !game.roster.includes(q.unlocks) ? ` · defeat the boss to unlock ${heroById(q.unlocks).name.split(' ')[0]}` : ''}</div></div>
+        <div class="sk">${q.nodes.length} battles, ${q.camps ?? 1} camp${(q.camps ?? 1) === 1 ? '' : 's'} at a random point, boss at the end · up to ${questGold(q)} gold${q.unlocks && !game.roster.includes(q.unlocks) ? ` · defeat the boss to unlock ${heroById(q.unlocks).name.split(' ')[0]}` : ''}</div></div>
       ${on ? '<div class="slot">✓</div>' : ''}</div>`;
   }).join('');
   $('btn-start-quest').disabled = !pickedQuest;
@@ -3640,7 +3767,7 @@ function restoreQuest(s) {
     members.push(u);
   }
   const items = {}; Object.keys(ITEMS).forEach(id => { items[id] = Math.max(0, Math.floor(Number(s.items && s.items[id]) || 0)); });
-  return { def, node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : rollPlan(def), eventDone: !!s.eventDone,
+  return { def, node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : (() => { const pl = rollPlan(def); if (s.node > 0 && !pl.camps.includes(s.node - 1)) pl.camps = [...pl.camps, s.node - 1].sort((x, y) => x - y); return pl; })(), eventDone: !!s.eventDone,
            bonus: s.bonus && Array.isArray(s.bonus.ids) && s.bonus.ids.length && s.bonus.ids.length <= 4 && s.bonus.ids.every(id => enemyById(id)) && Array.isArray(s.bonus.mods) && s.bonus.mods.every(m => m == null || ELITE.mods[m])
              ? { kind: String(s.bonus.kind || ''), name: String(s.bonus.name || 'Event Fight').slice(0, 40), ids: s.bonus.ids.slice(), mods: s.bonus.mods.slice(), gold: Math.max(0, Math.floor(Number(s.bonus.gold) || 0)), hp: clamp(s.bonus.hp || 1, 0.5, 2), relic: clamp(s.bonus.relic || 0, 0, 1) } : null };
 }
@@ -3781,6 +3908,7 @@ function useKit(i) {
   sfx('repair'); campMsg = `${u.short}'s armour is mended${was === 'broken' && u.state === 'armoured' ? ' and no longer broken' : ''} (${u.breakBar}/${u.maxBreak}).`;
   saveQuest(); renderCamp();
 }
+function onward() { reviveAtCamp(); saveQuest(); return nextFight(); }       // no camp here: fallen heroes still get up (1 HP) and the line closes up
 function nextFight() { campMsg = ''; if (eventPending()) return openEvent(); return startNode(); }
 
 /* ============ EVENTS ============ */
@@ -3934,7 +4062,7 @@ function renderEvent() {
   $('event-result').textContent = st.result || '';
   $('event-result').style.display = st.result ? 'block' : 'none';
   $('event-continue').style.display = st.result ? 'block' : 'none';
-  $('event-continue').textContent = quest.bonus ? '⚔️ To battle!' : '⛺ Back to camp';
+  $('event-continue').textContent = quest.bonus ? '⚔️ To battle!' : campHere() ? '⛺ Back to camp' : '⚔️ Onward';
 }
 function chooseEvent(i) {
   const st = evState; if (!st || st.result) return;
@@ -3943,7 +4071,7 @@ function chooseEvent(i) {
   st.result = res.text; quest.eventDone = true; if (res.fight) quest.bonus = res.fight;
   saveQuest(); renderEvent();
 }
-function eventContinue() { evState = null; if (quest.bonus) return startNode(); showCamp(); }
+function eventContinue() { evState = null; if (quest.bonus) return startNode(); if (campHere()) showCamp(); else return onward(); }
 
 
 /* ============ SHOP ============ */
@@ -3993,7 +4121,7 @@ function fillHeroArt(root) {       // puts the armoured idle picture (breathing,
     m.className = 'spr'; m.src = a.url; m.draggable = false;
     if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; }
     el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's');
-    el.prepend(m); el.classList.add('has-art');
+    markLive(m, a); el.prepend(m); el.classList.add('has-art');
   }));
 }
 function setSkin(hid, name) {            // Dorm: which look this hero uses (armoured state only); '' = the normal art
