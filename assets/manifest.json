@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-07 16:01",
+  "generated": "2026-11-07 19:23",
   "files": {
     "aneesah/armoured/damaged": "png",
     "aneesah/armoured/idle": "png",
@@ -42,12 +42,12 @@
     "irae/armoured/idle": "png",
     "irae/armoured/skill1": "png",
     "irae/armoured/skill2": "png",
-    "irae/armoured/skill3": "png",
+    "irae/armoured/skill3": "mp4",
     "irae/broken/damaged": "png",
     "irae/broken/idle": "png",
     "irae/broken/skill1": "png",
     "irae/broken/skill2": "png",
-    "irae/broken/skill3": "png",
+    "irae/broken/skill3": "mp4",
     "irae/spa/fail": "png",
     "irae/spa/success": "png",
     "iris/armoured/damaged": "png",
@@ -124,16 +124,7 @@
     "vesper/broken/skill1": "png",
     "vesper/broken/skill2": "png",
     "vesper/broken/skill3": "png",
-    "vesper/spa/back": "png",
     "vesper/spa/fail": "png",
-    "vesper/spa/hit": "png",
-    "vesper/spa/success": "png",
-    "vesper/superbroken/damaged": "png",
-    "vesper/superbroken/idle": "png",
-    "vesper/superbroken/skill1": "png",
-    "vesper/superbroken/skill2": "png",
-    "vesper/superbroken/skill3": "png",
-    "vesper/train/elemental": "png",
-    "vesper/train/physical": "png"
+    "vesper/spa/success": "png"
   }
 }
