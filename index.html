@@ -249,6 +249,10 @@ button small{font-weight:normal;color:#c0c0d8}
 .break2-fill.dim{opacity:.35}
 .super-tag{color:#ff1744;font-weight:bold}
 .quest-pick{padding-right:36px}
+/* skins */
+.dskins{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
+.skinbtn{padding:5px 12px;font-size:.8rem;border-radius:6px;border:1px solid #3a3a52;background:#16161f;color:#ddd;cursor:pointer}
+.skinbtn.on{border-color:#ffd54f;color:#ffd54f;background:#2a2410}
 /* developer mode */
 #dev-bar{display:none;position:fixed;right:6px;top:6px;z-index:120;background:#2a1020ee;border:1px solid #ff5c8a;border-radius:8px;padding:5px 8px;font-size:.68rem;gap:6px;flex-wrap:wrap;align-items:center;max-width:calc(100vw - 12px);box-sizing:border-box}
 body.dev:not(.in-battle) #dev-bar{display:flex}
@@ -1457,8 +1461,8 @@ function applyPortraitVars() { const r = document.documentElement.style; r.setPr
 function fillPortraits(root = document) {
   root.querySelectorAll('[data-port]').forEach(el => {
     if (el.querySelector('.pimg')) return;
-    const id = el.dataset.port, a = unitArtCache[id];
-    if (a === undefined) { findAsset(`${ANIM.base}/${id}/armoured/idle`).then(x => { unitArtCache[id] = x; fillPortraits(); }); return; }
+    const id = el.dataset.port, key = id + '|' + (skinOf(id) || ''), a = unitArtCache[key];
+    if (a === undefined) { baseIdle(id).then(x => { unitArtCache[key] = x; fillPortraits(); }); return; }
     if (!a) return;
     const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
     m.className = 'pimg'; m.src = a.url; m.draggable = false;
@@ -1803,6 +1807,7 @@ function newSave() {
            roster: HEROES.filter(h => !h.locked).map(h => h.id),   // heroes the player owns (locked ones are earned in quests)
            lastParty: [],                    // last party sent on a quest, preselected next time
            notices: [],                      // hub pop-ups still to show, e.g. { type: 'unlock', id: 'siren' }
+           skins: {},                        // chosen look per hero: hero id -> skin name (art in assets/<id>/armoured - <name>/); none = the normal art
            traits: {},                       // permanent hero traits: hero id -> [trait id, ...] (perks and flaws, repeats stack)
            items: { ...START_ITEMS },        // inventory at home: item id -> count
            relics: [],                       // relic ids owned (each once)
@@ -1824,6 +1829,8 @@ function upgrade(s) {
   if (s.version > SAVE.version) return null;                         // made by a newer version of the game
   while (s.version < SAVE.version) { const m = migrations[s.version]; if (!m) return null; s = m(s); }
   if (!validSave(s)) return null;
+  if (!s.skins || typeof s.skins !== 'object' || Array.isArray(s.skins)) s.skins = {};
+  Object.keys(s.skins).forEach(id => { if (typeof s.skins[id] !== 'string' || !s.skins[id]) delete s.skins[id]; });
   return sanitizeTraits(sanitizeGear(s));
 }
 function hasRawSave() { try { return localStorage.getItem(SAVE.key) !== null; } catch (e) { return false; } }
@@ -1929,6 +1936,25 @@ const manifestReady = (async () => {
   if (/[?&]probe\b/.test(location.search)) return;
   try { const r = await fetch(`${ANIM.base}/manifest.json`, { cache: 'no-cache' }); if (!r.ok) return; const j = await r.json(); if (j && j.files && typeof j.files === 'object') manifest = j.files; } catch (e) {}
 })();
+/* ---- skins ----
+   A skin is an alternative look for a hero's ARMOURED state: assets/<hero id>/armoured - <name>/  (idle, damaged, skill1-3, same file names as armoured/).
+   The Dorm lets you switch; the game then reads that folder instead of armoured/ while the hero is not broken. Anything missing from the skin folder falls back to armoured/.
+   Skins are found from assets/manifest.json automatically; SKIN_HINTS lists them for when there is no manifest (local testing). The broken state is never skinned. */
+const SKIN_HINTS = { iris: ['Skin'] };
+const skinOf = id => (game && game.skins && game.skins[id]) || null;
+function skinsFor(id) {
+  const names = new Set(SKIN_HINTS[id] || []);
+  if (manifest) Object.keys(manifest).forEach(k => { const m = k.match(/^([^/]+)\/armoured - ([^/]+)\//); if (m && m[1] === id) names.add(m[2]); });
+  return [...names];
+}
+function stateFolder(u) {                         // the art folder for a unit's current state
+  const f = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
+  const sk = f === 'armoured' && u.team === 'p' ? skinOf(u.id) : null;
+  return sk ? `armoured - ${sk}` : f;
+}
+const artChain = u => [...new Set([stateFolder(u), u.team === 'p' && skinOf(u.id) ? `armoured - ${skinOf(u.id)}` : null, 'armoured'].filter(Boolean))];     // where to look, best first
+async function firstAsset(u, key) { for (const f of artChain(u)) { const a = await findAsset(`${ANIM.base}/${u.id}/${f}/${key}`); if (a) return a; } return null; }
+async function baseIdle(id) { const sk = skinOf(id); return (sk && await findAsset(`${ANIM.base}/${id}/armoured - ${sk}/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`); }
 async function findAsset(path) {            // checked once per file, then remembered
   if (path in animCache) return animCache[path];
   await manifestReady;
@@ -1941,9 +1967,7 @@ async function findAsset(path) {            // checked once per file, then remem
 /* Skill films. If a skill's file is a video (assets/<id>/<armour state>/skillN.mp4 or .webm) it is NOT played on the figure: it plays by itself, centred and nearly full screen,
    nobody moves, and only when it has finished do the hit, the damaged picture and the effects on the target happen. Works the same for enemies. Tap to skip. Pictures and gifs keep playing on the figure. */
 async function skillFilm(u, key) {
-  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
-  let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/${key}`);
-  if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/${key}`);
+  const a = await firstAsset(u, key);
   return a && (a.ext === 'mp4' || a.ext === 'webm') ? a : null;
 }
 function playFilm(a) {
@@ -1980,7 +2004,7 @@ function playClip(a, host = stage) {            // host = the overlay element to
 
 async function playAnim(unit, key, state, host, onStart) {      // spa / training pass a host overlay (full-screen cut-in); combat clips play on the figure itself
   if (!host && !state && figs.get(unit)) return playOnFigure(unit, key, undefined, undefined, onStart);
-  state = state || ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[unit.state];
+  state = state || stateFolder(unit);
   let a = await findAsset(`${ANIM.base}/${unit.id}/${state}/${key}`);
   if (!a && key === 'damaged' && state !== 'armoured') a = await findAsset(`${ANIM.base}/${unit.id}/armoured/damaged`);   // one 'damaged' picture is enough
   if (a) await playClip(a, host || stage); else await sleep(ANIM.fallback);
@@ -1996,9 +2020,9 @@ const SPR = { flipParty: false, flipEnemy: false };
 const figs = new WeakMap();      // one persistent figure element per unit, so animated sprites keep playing between renders
 let spriteRenderQueued = false;
 function spriteFor(u) {
-  const folder = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state], down = !!u.fell && u.hp <= 0;
-  const stand = [...new Set([folder, 'armoured'])].map(st => `${ANIM.base}/${u.id}/${st}/idle`);
-  const paths = down ? [...[...new Set(['broken', folder, 'armoured'])].map(st => `${ANIM.base}/${u.id}/${st}/damaged`), ...stand] : stand;
+  const folder = stateFolder(u), down = !!u.fell && u.hp <= 0;
+  const stand = artChain(u).map(st => `${ANIM.base}/${u.id}/${st}/idle`);
+  const paths = down ? [...[...new Set(['broken', ...artChain(u)])].map(st => `${ANIM.base}/${u.id}/${st}/damaged`), ...stand] : stand;
   for (const p of paths) {
     if (!(p in animCache)) {
       findAsset(p).then(() => { if (!spriteRenderQueued) { spriteRenderQueued = true; setTimeout(() => { spriteRenderQueued = false; render(); }, 30); } });
@@ -2036,10 +2060,9 @@ function mountFigures(host, list, team) {
 /* Every combat clip (skill1-3, damaged) plays ON the unit's own figure in place of its idle, from its current armour folder (else armoured/).
    For a hit or status tick `kind` is the stock effect (fire, ice, ...) drawn on top. */
 async function playOnFigure(u, key, kind, tier, onStart) {      // onStart fires the moment the clip is actually on screen (or at once if there is no art)
-  const el = figs.get(u), folder = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
+  const el = figs.get(u);
   if (kind) fx(u, kind, 800, tier);
-  let a = await findAsset(`${ANIM.base}/${u.id}/${folder}/${key}`);
-  if (!a && folder !== 'armoured') a = await findAsset(`${ANIM.base}/${u.id}/armoured/${key}`);
+  const a = await firstAsset(u, key);
   if (!a || !el || !el.isConnected) { if (onStart) onStart(); await sleep(a ? 0 : ANIM.fallback || 0); return; }
   const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
   m.className = 'dmg'; m.src = a.url; m.draggable = false;
@@ -3962,7 +3985,7 @@ const gearLocked = () => !!game.quest;
 const wornBy = id => Object.keys(game.equip).find(h => (game.equip[h] || []).includes(id)) || null;
 const slotsOf = hid => { const a = game.equip[hid] || (game.equip[hid] = []); while (a.length < RELIC.slots) a.push(null); return a; };
 const heroArtCache = {};
-async function heroArt(id) { if (!(id in heroArtCache)) heroArtCache[id] = await findAsset(`${ANIM.base}/${id}/armoured/idle`); return heroArtCache[id]; }
+async function heroArt(id) { const k = id + '|' + (skinOf(id) || ''); if (!(k in heroArtCache)) heroArtCache[k] = await baseIdle(id); return heroArtCache[k]; }
 function fillHeroArt(root) {       // puts the armoured idle picture (breathing, like in combat) into every [data-art] box; the labelled stand-in stays if there is none
   root.querySelectorAll('[data-art]').forEach(el => heroArt(el.dataset.art).then(a => {
     if (!a || !el.isConnected || el.querySelector('.spr')) return;
@@ -3972,6 +3995,15 @@ function fillHeroArt(root) {       // puts the armoured idle picture (breathing,
     el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's');
     el.prepend(m); el.classList.add('has-art');
   }));
+}
+function setSkin(hid, name) {            // Dorm: which look this hero uses (armoured state only); '' = the normal art
+  if (!heroById(hid)) return;
+  if (name && !skinsFor(hid).includes(name)) return;
+  game.skins = game.skins || {};
+  if (name) game.skins[hid] = name; else delete game.skins[hid];
+  document.querySelectorAll('[data-port] .pimg').forEach(m => { const h = m.parentElement; m.remove(); if (h) h.classList.remove('has-port'); });
+  writeSave(); fillPortraits(); if ($('battle-scene').classList.contains('show')) render();
+  gearMsg = name ? `${heroById(hid).name} now wears the "${name}" look.` : `${heroById(hid).name} is back to the default look.`; renderGear();
 }
 function openGear() { gearSel = null; gearMsg = ''; dormHero = null; showScene('gear'); }
 function dormOpen(hid) { if (!heroById(hid)) return; dormHero = hid; gearMsg = ''; renderGear(); window.scrollTo(0, 0); }
@@ -4037,6 +4069,7 @@ function renderGear() {
     $('dorm-char').innerHTML = `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
       <div class="dorm-info"><h3>${h.name} ${elIcons(h)}</h3>
         <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
+        ${skinsFor(dormHero).length ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${n || 'Default'}</button>`).join('')}</div>` : ''}
         <div class="dh">RELICS</div><div class="rslots">${rs}</div>
         <div class="dh">SKILLS</div>${sk}
         <div class="dh">PERKS (${traitCount(dormHero, 'good')}/${TRAITS.maxGood})</div><div class="dtr">${group('good')}</div>
