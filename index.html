@@ -78,9 +78,11 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .figure.vanish{opacity:0}
 #battle-scene .figure.fallen{z-index:0}
 .combatant-card.gone{visibility:hidden}
-.figure .dmg{position:absolute;left:50%;bottom:0;width:auto;max-width:none;height:100%;translate:-50% 0;object-fit:contain;pointer-events:none}   /* every picture is drawn at the figure's HEIGHT; the width is whatever the picture's shape gives, centred, free to stick out sideways */
-#battle-scene .figure .spr{left:50%;right:auto;width:auto;max-width:none;height:100%;transform:translateX(-50%)}   /* (centred with transform: the breathe animation owns the translate property) */
-#battle-scene .figure.flip .spr{transform:translateX(-50%) scaleX(-1)}
+.figure .dmg{position:absolute;left:50%;bottom:0;width:auto;max-width:none;height:var(--sprH,85%);translate:-50% 0;object-fit:contain;pointer-events:none}   /* every picture is drawn at the figure's HEIGHT; the width is whatever the picture's shape gives, centred, free to stick out sideways */
+#battle-scene .figure .spr,.dorm-thumb .spr,.dorm-big .spr,.fslot .figure .spr{left:50%;right:auto;width:auto;max-width:none;height:var(--sprH,85%);transform:translateX(-50%)}   /* (centred with transform: the breathe animation owns the translate property) */
+#battle-scene .figure.flip .spr,.dorm-thumb.flip .spr,.dorm-big.flip .spr,.fslot .figure.flip .spr{transform:translateX(-50%) scaleX(-1)}
+.dorm-thumb,.fslot .figure{overflow:hidden}
+/* --sprH: how tall a picture is drawn inside its figure box (feet stay on the bottom). Set from SPR_SCALE in the script. */
 .figure.flip .dmg{transform:scaleX(-1)}
 .figure.playing .spr,.figure.playing .ph{visibility:hidden}
 /* casting flare: an elemental glow + particles around the caster (purely cosmetic), and projectiles / bolts for ranged elemental skills */
@@ -2051,6 +2053,8 @@ async function playAnim(unit, key, state, host, onStart) {      // spa / trainin
    No file = a labelled placeholder box. Set SPR.flipParty / SPR.flipEnemy to true if your drawings face the other way
    (heroes should face right, enemies left). */
 const SPR = { flipParty: false, flipEnemy: false };
+const SPR_SCALE = 0.85;      // every picture is drawn at this fraction of its figure box's height (1 = fill the box); same for idle, damaged and skills, in combat and in the dorm
+document.documentElement.style.setProperty('--sprH', (SPR_SCALE * 100) + '%');
 const figs = new WeakMap();      // one persistent figure element per unit, so animated sprites keep playing between renders
 let spriteRenderQueued = false;
 function spriteFor(u) {
@@ -2332,7 +2336,7 @@ async function visSpan(unit, el, rect, key) {      // visible left / right edge 
   if (!url) { const m = el.querySelector('.spr'); if (m && m.tagName === 'IMG') url = m.src; }
   if (!url) return null;
   const cb = await contentBox(url); if (!cb) return null;
-  const rw = cb.nw * rect.height / cb.nh; let l = (cb.l - 0.5) * rw, r = (cb.r - 0.5) * rw;
+  const rw = cb.nw * rect.height * SPR_SCALE / cb.nh; let l = (cb.l - 0.5) * rw, r = (cb.r - 0.5) * rw;
   if (el.classList.contains('flip')) [l, r] = [-r, -l];
   return { l, r };
 }
