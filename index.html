@@ -268,6 +268,25 @@ button small{font-weight:normal;color:#c0c0d8}
 .break2-fill.dim{opacity:.35}
 .super-tag{color:#ff1744;font-weight:bold}
 .quest-pick{padding-right:36px}
+.tierbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:10px 0 4px;padding:8px 10px;border:1px solid #6b3a2a;border-radius:10px;background:linear-gradient(180deg,rgba(255,110,60,.14),rgba(80,30,20,.1))}
+.tierbtn{font-size:.78rem;padding:4px 12px;border-radius:14px;border:1px solid #6b3a2a;background:#1a1216;color:#f0cdbf;cursor:pointer}
+.tierbtn.on{background:#a8442a;border-color:#ff9a6a;color:#fff;box-shadow:0 0 10px rgba(255,140,90,.4)}
+.tiernext{font-size:.68rem;opacity:.6;margin-left:6px}
+.tierinfo{flex-basis:100%;font-size:.72rem;opacity:.85}
+.qgroup{border:1px solid #3a3450;border-radius:10px;padding:8px 10px 10px;margin:12px 0;background:rgba(255,255,255,.02)}
+.qgh{margin:2px 0 6px;font-size:1rem;letter-spacing:.04em}
+.qgh small{font-weight:400;font-size:.7rem;opacity:.7;letter-spacing:0;margin-left:6px}
+.qgroup.lands{border-color:#6a4b3a;background:linear-gradient(180deg,rgba(150,95,60,.12),rgba(60,35,30,.08))}
+.qgroup.lands .qgh{color:#e7b48a}
+.qgroup.coast{border-color:#2f8793;background:linear-gradient(180deg,rgba(47,160,175,.2),rgba(13,52,70,.14));box-shadow:0 0 18px rgba(80,200,220,.12)}
+.qgroup.coast .qgh{color:#8fe3f0}
+.qgroup.coast .pick{background:#0e1d27;border-color:#24505f}
+.qgroup.coast .pick.on{border-color:#7fe3ff;box-shadow:0 0 10px rgba(127,227,255,.35)}
+.qgroup.locked{border-style:dashed;opacity:.85;background:rgba(47,135,147,.06)}
+.qgroup.locked .qgh{color:#8aa5ad}
+.qgb{font-size:.74rem;opacity:.8;margin-bottom:4px}
+.qreq{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.78rem;opacity:.85}
+.qreq .ok{color:#7ee787}
 /* skins */
 .dskins{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
 .skinbtn{padding:5px 12px;font-size:.8rem;border-radius:6px;border:1px solid #3a3a52;background:#16161f;color:#ddd;cursor:pointer}
@@ -521,7 +540,7 @@ body.in-battle #guide-btn{display:none}
   .chip{font-size:.8rem;padding:6px 12px}
   .slots{font-size:.85rem;padding:12px}
   .pick-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-  #quest-list{grid-template-columns:repeat(2,1fr)}
+  #quest-list .pick-list{grid-template-columns:repeat(3,1fr)}
   .pick{font-size:.82rem;padding:12px}
   .pick .sk{font-size:.72rem}
   .pick .mini-sprite{width:64px;height:64px}
@@ -900,7 +919,7 @@ body.in-battle #guide-btn{display:none}
       <div class="hub-title">Choose a Quest</div>
       <div class="hub-sub">Where will your party venture?</div>
       <div class="slots" id="quest-party"></div>
-      <div class="pick-list" id="quest-list"></div>
+      <div id="quest-list"></div>
       <div class="row">
         <button onclick="showScene('party-select')">Back</button>
         <button class="primary" id="btn-start-quest" onclick="beginQuest()">Begin Quest</button>
@@ -1091,7 +1110,7 @@ const ENEMIES = [
   { id:'e_venom', role:'front', weak:['fire'], resist:['poison'], name:'Venom Sentinel',   tag:'VENOM',  hp:85,  brk:30, spd:8,  skills:[
     { n:'Fang',        t:'dmg', r:'melee',  d:[9,11], cd:0 },
     { n:'Toxic Spit',  t:'dmg', r:'ranged', d:[10,12], el:'poison', brk:15, cd:2 } ] },
-  { id:'e_boss', boss:true, weak:['poison'], resist:['shock'],  name:'Sentinel Warden',  short:'Warden', tag:'WARDEN', hp:260, brk:90, spd:7,  skills:[
+  { id:'e_boss', boss:true, weak:['poison'], resist:['shock'],  name:'Sentinel Warden',  short:'Warden', tag:'WARDEN', hp:260, brk:90, spd:7,  phases:[{ at:.5, msg:'Overload Protocol! The Warden\'s core blazes white-hot and it fights with new fury!', atk:1.1, barrier:25, add:[{ n:'Core Meltdown', t:'dmg', r:'ranged', d:[18,21], el:'shock', brk:25, cd:4 }] }], skills:[
     { n:'Crushing Blow', t:'dmg', r:'melee',  d:[18,21], cd:0 },
     { n:'Overload',      t:'dmg', r:'ranged', d:[18,21], el:'shock', brk:25, cd:3 } ] },
   // ---- the coast (electric + poison) ----
@@ -1112,11 +1131,22 @@ const ENEMIES = [
   { id:'e_tide', role:'support', weak:['poison'], resist:['shock'],  name:'Tide Warder',      tag:'WARDER', hp:90,  brk:35, spd:6,  skills:[
     { n:'Salt Bolt',   t:'dmg', r:'ranged', d:[8,9],  el:'shock',  brk:10, cd:0 },
     { n:'Brine Ward',  t:'barrier', p:28, cd:2 } ] },
-  { id:'e_siren', boss:true, weak:['bleed'], resist:['shock'], name:'The Siren',        short:'Siren', tag:'SIREN', hp:340, brk:100, spd:10, skills:[
+  { id:'e_siren', boss:true, weak:['bleed'], resist:['shock'], name:'The Siren',        short:'Siren', tag:'SIREN', hp:340, brk:100, spd:10, phases:[{ at:.5, msg:'The Siren screams, and the sea itself answers!', atk:1.15, barrier:40, add:[{ n:'Tidal Crash', t:'dmg', r:'melee', d:[22,25], brk:30, cd:3 }] }], skills:[
     { n:'Crashing Wave', t:'dmg', r:'melee',  d:[18,21], cd:0 },
     { n:'Venom Song',    t:'dmg', r:'ranged', d:[14,17], el:'poison', brk:25, cd:2 },
     { n:'Storm Aria',    t:'dmg', r:'ranged', d:[16,19], el:'shock',  brk:25, cd:3 },
     { n:"Siren's Call",  t:'charm', r:'ranged', cd:4 } ] },                  // sparingly: only ever aimed at a broken hero, at most every 5th turn
+  // ---- the tidelands bosses (the lighthouse and the beach reuse the cove's sea creatures as their ordinary enemies) ----
+  { id:'e_keeper', boss:true, weak:['ice'], resist:['shock'], name:'The Tempest Keeper', short:'Keeper', tag:'KEEPER', hp:340, brk:100, spd:9, phases:[{ at:.5, msg:'The lamp overcharges! The Keeper crackles with stormlight!', atk:1.15, barrier:30, add:[{ n:'Storm Surge', t:'dmg', r:'ranged', d:[18,21], el:'shock', brk:28, cd:3 }] }], skills:[
+    { n:'Lantern Smash', t:'dmg', r:'melee',  d:[18,21], cd:0 },
+    { n:'Rusted Hook',   t:'dmg', r:'melee',  d:[14,17], el:'bleed', brk:20, cd:2 },
+    { n:'Beacon Beam',   t:'dmg', r:'ranged', d:[16,19], el:'shock', brk:25, cd:3 },
+    { n:'Storm Shroud',  t:'barrier', p:30, cd:4 } ] },
+  { id:'e_crabking', boss:true, weak:['shock'], resist:['bleed','poison'], name:'The Carapace King', short:'Crab King', tag:'CRABKING', hp:340, brk:100, spd:6, phases:[{ at:.5, msg:'The Carapace King molts, and a fresh, harder shell hardens over it!', atk:1.1, cleanse:true, barrier:40, add:[{ n:'Pincer Rush', t:'dmg', r:'melee', d:[21,24], brk:25, cd:3 }] }], skills:[
+    { n:'Crushing Claw', t:'dmg', r:'melee',  d:[19,22], cd:0 },
+    { n:'Foam Barrage',  t:'dmg', r:'ranged', d:[13,16], el:'poison', brk:25, cd:2 },
+    { n:'Undertow',      t:'dmg', r:'ranged', d:[15,18], el:'ice',    brk:25, cd:3 },
+    { n:'Shell Up',      t:'barrier', p:34, cd:4 } ] },
   // ---- the necromancer's crypt (poison, ice and undead) ----
   { id:'e_rat', role:'front', weak:['fire'], resist:['poison'], evasive:1.5, name:'Plague Rat',     tag:'RAT',    hp:55,  brk:20, spd:10, skills:[
     { n:'Gnaw',        t:'dmg', r:'melee',  d:[7,9],  el:'poison', brk:8, cd:0 },
@@ -1136,7 +1166,7 @@ const ENEMIES = [
   { id:'e_bloat', role:'front', weak:['fire'], resist:['poison','bleed'], frontMod:-0.2, name:'Plague Bloat', tag:'BLOAT', hp:140, brk:55, spd:3, skills:[
     { n:'Burst',       t:'dmg', r:'melee',  d:[13,15], el:'poison', brk:15, cd:0 },
     { n:'Miasma',      t:'dmg', r:'ranged', d:[9,11],  el:'poison', brk:18, cd:3 } ] },
-  { id:'e_necro', boss:true, weak:['fire'], resist:['poison','ice'], name:'The Necromancer', short:'Necromancer', tag:'NECRO', hp:340, brk:100, spd:9, skills:[
+  { id:'e_necro', boss:true, weak:['fire'], resist:['poison','ice'], name:'The Necromancer', short:'Necromancer', tag:'NECRO', hp:340, brk:100, spd:9, phases:[{ at:.5, msg:'The Necromancer howls: "Rise!" The dead answer the call.', atk:1.1, barrier:30, summon:1 }], skills:[
     { n:'Bone Spear',  t:'dmg', r:'ranged', d:[17,20], cd:0 },
     { n:'Plague Wave', t:'dmg', r:'ranged', d:[14,17], el:'poison', brk:25, cd:2 },
     { n:'Death Chill', t:'dmg', r:'ranged', d:[16,19], el:'ice',    brk:25, cd:3 },
@@ -1160,7 +1190,7 @@ const ENEMIES = [
   { id:'e_karakasa', role:'front', weak:['fire'], resist:['shock'], evasive:1.5, name:'Karakasa', tag:'KARAKASA', hp:75, brk:28, spd:9, skills:[
     { n:'Umbrella Bash', t:'dmg', r:'melee',  d:[9,11],  cd:0 },
     { n:'Spin Gust',     t:'dmg', r:'ranged', d:[9,11],  el:'ice',   brk:10, cd:3 } ] },
-  { id:'e_shuten', boss:true, weak:['shock'], resist:['fire'], name:'Oni Lord Shuten', short:'Shuten', tag:'SHUTEN', hp:300, brk:95, spd:8, skills:[
+  { id:'e_shuten', boss:true, weak:['shock'], resist:['fire'], name:'Oni Lord Shuten', short:'Shuten', tag:'SHUTEN', hp:300, brk:95, spd:8, phases:[{ at:.5, msg:'Shuten drains the sake cup and flies into a rage!', atk:1.3, cleanse:true, add:[{ n:'Blood Frenzy', t:'dmg', r:'melee', d:[21,24], el:'bleed', brk:20, cd:3 }] }], skills:[
     { n:'Kanabo Crush',  t:'dmg', r:'melee',  d:[17,20], cd:0 },
     { n:'Demon Fire',    t:'dmg', r:'ranged', d:[13,16], el:'fire',  brk:25, cd:2 },
     { n:'Oni Hide',      t:'barrier', p:28, cd:4 } ] }
@@ -1173,6 +1203,7 @@ const ENEMIES = [
 // RANDOM ENCOUNTERS: each quest has a `pool` of enemy ids. When a quest starts, every fight is rolled from that pool (see rollEncounter) and saved with the run.
 // A node's own `enemies` list is the REFERENCE: it sets how many enemies appear and the total power budget, and it is the fixed line-up when RAND.on is false.
 // Each enemy has a `role`: 'front' (tank/brawler), 'ranged' (backline damage) or 'support' (wards). Rolls keep a front line and a back line, with at most one support.
+// QUEST_GROUPS (further down) decides which quests are grouped in the embark menu and what unlocks the second group.
 const QUESTS = [{
   id: 'ruins', name: "The Warden's Throne",       // id is stored in saves, so keep it even if the name changes
   relicDrop: 0.35,             // chance the boss drops a relic
@@ -1205,23 +1236,6 @@ const QUESTS = [{
     { name: "The Oni Lord's Hall",   enemies: ['e_kappa', 'e_shuten', 'e_kitsune'],               gold: 110, bg: 5, boss: true, scale: { hp: 1.1, atk: 1.05 } }
   ]
 }, {
-  id: 'cove', name: "The Siren's Cove",
-  relicDrop: 0.45,
-  desc: 'Storm-lashed shores crawling with shock and venom. Something sings from the deep.',
-  pool: ['e_crab', 'e_eel', 'e_ray', 'e_jelly', 'e_urchin', 'e_tide'],
-  camps: 1,
-  unlocks: 'siren',            // first boss win adds this hero to the roster
-  scale: { hp: 1.29, atk: 1.46 },
-  nodes: [
-    { name: 'Tidal Shallows',   enemies: ['e_jelly', 'e_crab', 'e_jelly'],                gold: 40 },
-    { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly'],                gold: 50 },
-    { name: 'Barnacle Caves',   enemies: ['e_crab', 'e_eel', 'e_ray', 'e_urchin'],        gold: 55, bg: 2, scale: { hp: 1.05, atk: 1.05 } },
-    { name: 'Sunken Wreck',     enemies: ['e_ray', 'e_crab', 'e_eel', 'e_tide'],          gold: 65, bg: 3, scale: { hp: 1.1, atk: 1.1 } },
-    { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, bg: 4, scale: { hp: 1.2, atk: 1.15 } },
-    { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, bg: 5, scale: { hp: 1.25, atk: 1.12 } },
-    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, bg: 6, boss: true, scale: { hp: 1.3, atk: 1.1 } }
-  ]
-}, {
   id: 'crypt', name: "The Necromancer's Crypt",
   relicDrop: 0.45,
   desc: 'Plague-ridden catacombs where the dead refuse to lie still. Fire burns them best; something ancient watches from the deep vault.',
@@ -1237,6 +1251,61 @@ const QUESTS = [{
     { name: 'Whispering Ossuary', enemies: ['e_wraith', 'e_ghoul', 'e_skel', 'e_warder'],  gold: 80, bg: 4, scale: { hp: 1.0, atk: 1.1 } },
     { name: 'The Bone Gallery', enemies: ['e_bloat', 'e_wraith', 'e_skel', 'e_warder'],    gold: 100, bg: 5, scale: { hp: 1.0, atk: 1.1 } },
     { name: "The Necromancer's Vault", enemies: ['e_skel', 'e_necro', 'e_ghoul'],          gold: 150, bg: 6, boss: true, scale: { hp: 1.0, atk: 1.1 } }
+  ]
+}, {
+  id: 'cove', name: "The Siren's Cove",
+  relicDrop: 0.45,
+  desc: 'Storm-lashed shores crawling with shock and venom. Something sings from the deep.',
+  pool: ['e_crab', 'e_eel', 'e_ray', 'e_jelly', 'e_urchin', 'e_tide'],
+  camps: 2,                    // two camps and two random events (the Tidelands are the hard group)
+  events: 2,
+  unlocks: 'siren',            // first boss win adds this hero to the roster
+  scale: { hp: 1.29, atk: 1.46 },
+  nodes: [
+    { name: 'Tidal Shallows',   enemies: ['e_jelly', 'e_crab', 'e_jelly'],                gold: 40 },
+    { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly'],                gold: 50 },
+    { name: 'Barnacle Caves',   enemies: ['e_crab', 'e_eel', 'e_ray', 'e_urchin'],        gold: 55, bg: 2, scale: { hp: 1.05, atk: 1.05 } },
+    { name: 'Sunken Wreck',     enemies: ['e_ray', 'e_crab', 'e_eel', 'e_tide'],          gold: 65, bg: 3, scale: { hp: 1.1, atk: 1.1 } },
+    { name: 'Drowned Harbour',  enemies: ['e_crab', 'e_eel', 'e_jelly', 'e_tide'],        gold: 70, bg: 3, scale: { hp: 1.12, atk: 1.12 } },     // added with the Tidelands: it shares the Wreck's picture (battle_cove_3)
+    { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, bg: 4, scale: { hp: 1.2, atk: 1.15 } },
+    { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, bg: 5, scale: { hp: 1.25, atk: 1.12 } },
+    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, bg: 6, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+  ]
+}, {
+  id: 'lighthouse', name: 'The Stormwatch Lighthouse',
+  relicDrop: 0.45,
+  desc: 'A lighthouse on a lightning-struck sea stack. Eels and rays crowd the causeway; the keeper still tends a lamp that should have gone dark.',
+  pool: ['e_eel', 'e_ray', 'e_urchin', 'e_jelly', 'e_tide'],
+  camps: 2,
+  events: 2,
+  scale: { hp: 1.36, atk: 1.55 },
+  nodes: [
+    { name: 'Rocky Causeway',     enemies: ['e_eel', 'e_urchin', 'e_eel'],                  gold: 45 },
+    { name: "Keeper's Cottage",   enemies: ['e_ray', 'e_jelly', 'e_urchin'],                gold: 55 },
+    { name: 'Salt-Eaten Cellar',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_jelly'],       gold: 60, bg: 3, scale: { hp: 1.05, atk: 1.05 } },
+    { name: 'Spiral Stair',       enemies: ['e_eel', 'e_ray', 'e_urchin', 'e_tide'],        gold: 70, bg: 4, scale: { hp: 1.1, atk: 1.1 } },
+    { name: 'Foghorn Gallery',    enemies: ['e_ray', 'e_eel', 'e_jelly', 'e_tide'],         gold: 80, bg: 5, scale: { hp: 1.15, atk: 1.12 } },
+    { name: 'The Lamp Room',      enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 95, bg: 6, scale: { hp: 1.2, atk: 1.15 } },
+    { name: 'Storm Balcony',      enemies: ['e_eel', 'e_ray', 'e_jelly', 'e_tide'],         gold: 110, bg: 7, scale: { hp: 1.25, atk: 1.15 } },
+    { name: "The Keeper's Lantern", enemies: ['e_ray', 'e_keeper', 'e_eel'],                gold: 160, bg: 8, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+  ]
+}, {
+  id: 'beach', name: 'The Sunbaked Shoals',
+  relicDrop: 0.45,
+  desc: 'A postcard beach with a nasty secret. Crabs, jellyfish and urchins infest the sand, and something huge basks in the surf.',
+  pool: ['e_crab', 'e_jelly', 'e_urchin', 'e_tide', 'e_ray'],
+  camps: 2,
+  events: 2,
+  scale: { hp: 1.22, atk: 1.36 },
+  nodes: [
+    { name: 'Tide Pools',         enemies: ['e_crab', 'e_urchin', 'e_jelly'],               gold: 45 },
+    { name: 'Driftwood Cove',     enemies: ['e_crab', 'e_jelly', 'e_urchin'],               gold: 55 },
+    { name: 'Palm Grove',         enemies: ['e_ray', 'e_crab', 'e_jelly', 'e_urchin'],      gold: 60, bg: 3, scale: { hp: 1.05, atk: 1.05 } },
+    { name: 'Sandbar Crossing',   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 70, bg: 4, scale: { hp: 1.1, atk: 1.1 } },
+    { name: 'Shipwreck Beach',    enemies: ['e_crab', 'e_crab', 'e_urchin', 'e_tide'],      gold: 80, bg: 5, scale: { hp: 1.15, atk: 1.12 } },
+    { name: 'The Boardwalk',      enemies: ['e_ray', 'e_crab', 'e_jelly', 'e_tide'],        gold: 95, bg: 6, scale: { hp: 1.2, atk: 1.15 } },
+    { name: 'Sunset Dunes',       enemies: ['e_crab', 'e_ray', 'e_urchin', 'e_tide'],       gold: 110, bg: 7, scale: { hp: 1.25, atk: 1.15 } },
+    { name: "The Carapace King's Throne", enemies: ['e_crab', 'e_crabking', 'e_jelly'],     gold: 160, bg: 8, boss: true, scale: { hp: 1.3, atk: 1.1 } }
   ]
 }];
 // Anti stun-lock (hidden, never shown in the UI): when a BOSS is the last enemy standing and loses `stunMisses` turns in a row to stun,
@@ -1307,8 +1376,8 @@ function rollStock(owned, n = RELIC.shopSize) {          // n different relics t
   while (out.length < n && pool.length) { const r = pickWeighted(pool, RELIC.weight); out.push(r.id); pool.splice(pool.indexOf(r), 1); }
   return out;
 }
-function rollDrop(def, owned) {                           // a boss may drop a relic: def.relicDrop = chance
-  if (Math.random() >= (def.relicDrop || 0)) return null;
+function rollDrop(def, owned, bonus = 0) {                  // a boss may drop a relic: def.relicDrop = chance (+ the difficulty's bonus)
+  if (Math.random() >= (def.relicDrop || 0) + bonus) return null;
   const pool = relicPool(owned); return pool.length ? pickWeighted(pool, RELIC.dropWeight).id : null;
 }
 
@@ -1548,6 +1617,9 @@ function renderGuide() {
     ${g(`🤝 <b>Guard</b> (Seria's Shield Wall): until the guard's next turn, every attack aimed at the chosen ally hits the guard instead (enemies still show their real target), and she raises a barrier that also lasts until her next turn. 🎯 <b>Taunt</b> (Defiant Slam): works even through armour. The target's next attack must be aimed at the taunter. ✨ <b>Cleanse</b> (Aria's Ward and Aegis): removes random ailments (burn, bleed, poison, frozen, shocked) from the target.`, 'good')}
     <h4>Poison, potions and immortality</h4>
     ${g(`💉 <b>Tonic</b> (Jean): heals, but ${Math.round(TONIC.repay * 100)}% of it returns as ☠️ <b>poison that ignores armour</b> (a net heal). ⚗️ <b>Untested Potions</b>: the party deals more physical damage for ${BREW.dur} turns (more while poisoned), then everyone is poisoned. 🦇 <b>Immortal</b> (Tyr): HP cannot fall below 1. Her Undying Night fires by itself, once per battle, when a blow would kill her.`)}
+    <h4>Bosses and New Game+</h4>
+    ${g(`🔥 <b>Boss phases</b>: bosses change tactics when their HP drops (ⓘ shows the thresholds): they hit harder, learn new skills, throw up barriers, molt or call allies. From New Game+ 2 they also make a last stand at 25% HP.`)}
+    ${g(`🔥 <b>New Game+</b>: once every quest is cleared, the whole game opens again on a harder difficulty (more enemy HP and damage, more elites, more gold and better boss drops). You keep every hero, relic, trait and skin. Pick the difficulty on the quest screen.`)}
     <h4>Defeat and recovery</h4>
     ${g(`Heroes who fall are not lost: they get back up with 1 HP before the next fight. Each run has only a few camps, placed at random after the first couple of fights, so ration your supplies. If your whole party falls the quest ends and you keep only half the gold you carried. At camp, eat <b>Field Rations</b> to heal the party and use <b>Repair Kits</b> on a hero's armour. Buy both in the town Shop.`)}`;
   else if (guideTab === 'elements') h = `<h4>Elements</h4>`
@@ -1768,7 +1840,7 @@ function make(d, team, sc = { hp: 1, atk: 1 }) {
   const mhp = Math.round(d.hp * (sc.hp || 1)), brk = team === 'e' ? Math.max(d.brk, Math.ceil(mhp * ENEMY_ARMOUR_MIN)) : d.brk;
   const brk2 = team === 'e' ? 0 : break2Max(d);           // enemies have ONE armour layer: broken is broken (they can't repair, so a second layer would change nothing)
   return { ...d, brk, hp: mhp, skills: scaleSkills(d.skills, sc.atk || 1), short: d.short || d.name.split(' ')[0],
-           team, maxHp: mhp, breakBar: brk, maxBreak: brk, break2: brk2, maxBreak2: brk2, state: 'armoured',
+           team, maxHp: mhp, atkSc: sc.atk || 1, breakBar: brk, maxBreak: brk, break2: brk2, maxBreak2: brk2, state: 'armoured',
            statuses: [], barrier: 0, cd: d.skills.map(() => 0),
            icons: [...new Set([...d.skills.map(s => s.el), ...(d.elems || [])].filter(Boolean))].map(e => ICON[e]).join('') };
 }
@@ -1842,6 +1914,8 @@ function newSave() {
            equip: {},                        // hero id -> [relic id | null, relic id | null]
            shop: { stock: rollStock([]) },   // relics for sale right now (restocked after every run)
            quest: null,                      // quest in progress (checkpoint taken at embark and each camp), or null
+           tiers: { max: 0, pick: 0, cleared: {} },   // New Game+: highest difficulty open, the one picked at embark, and per quest the highest difficulty beaten
+           cleared: {},                      // quest ids the player has beaten at least once (unlocks the Tidelands and the hero skins)
            stats: { won: 0, lost: 0 } };
 }
 function validSave(s) {
@@ -1858,6 +1932,16 @@ function upgrade(s) {
   while (s.version < SAVE.version) { const m = migrations[s.version]; if (!m) return null; s = m(s); }
   if (!validSave(s)) return null;
   if (!s.skins || typeof s.skins !== 'object' || Array.isArray(s.skins)) s.skins = {};
+  if (!s.cleared || typeof s.cleared !== 'object' || Array.isArray(s.cleared)) {          // saves from before quests were tracked: a quest counts as beaten if its reward hero is already in the roster
+    s.cleared = {}; QUESTS.forEach(q => { if (q.unlocks && s.roster.includes(q.unlocks)) s.cleared[q.id] = true; });
+  }
+  {                                                                                          // New Game+ progress (older saves: a normally-cleared quest counts as beaten on Normal)
+    const t = s.tiers && typeof s.tiers === 'object' && !Array.isArray(s.tiers) ? s.tiers : (s.tiers = { max: 0, pick: 0, cleared: {} });
+    t.max = Math.max(0, Math.min(MAX_TIER, t.max | 0)); t.pick = Math.max(0, Math.min(t.max, t.pick | 0));
+    if (!t.cleared || typeof t.cleared !== 'object' || Array.isArray(t.cleared)) t.cleared = {};
+    Object.keys(t.cleared).forEach(id => { if (!Number.isInteger(t.cleared[id]) || t.cleared[id] < 0 || t.cleared[id] > MAX_TIER) delete t.cleared[id]; });
+    if (s.cleared && typeof s.cleared === 'object') Object.keys(s.cleared).forEach(id => { if (s.cleared[id] && t.cleared[id] === undefined) t.cleared[id] = 0; });
+  }
   Object.keys(s.skins).forEach(id => { if (typeof s.skins[id] !== 'string' || !s.skins[id]) delete s.skins[id]; });
   return sanitizeTraits(sanitizeGear(s));
 }
@@ -1897,6 +1981,7 @@ function openPanel(name) {
 }
 function startGame() {
   $('title').classList.add('hide');
+  if (!devMode && tierUnlock()) writeSave();                  // a save that already cleared everything gets New Game+ straight away
   if (game.quest) {                          // resume a quest in progress at its last checkpoint
     quest = restoreQuest(game.quest);
     if (quest) { if (quest.bonus || quest.node === 0) startNode(); else if (campHere()) showCamp(); else { reviveAtCamp(); nextFight(); } return; }
@@ -1969,8 +2054,38 @@ const manifestReady = (async () => {
    The Dorm lets you switch; the game then reads that folder instead of armoured/ while the hero is not broken. Anything missing from the skin folder falls back to armoured/.
    Skins are found from assets/manifest.json automatically; SKIN_HINTS lists them for when there is no manifest (local testing). The broken state is never skinned. */
 const SKIN_HINTS = { iris: ['Skin'] };
-const skinOf = id => (game && game.skins && game.skins[id]) || null;
+/* ---- quest groups: how the embark menu is laid out, and what opens the second group ---- */
+const QUEST_GROUPS = [
+  { id: 'lands', icon: '⚔️', name: 'The Old Lands', blurb: 'Sentinels, yokai and the restless dead', ids: ['ruins', 'yokai', 'crypt'] },
+  { id: 'coast', icon: '🌊', name: 'The Tidelands', blurb: 'Storm, lighthouse and sunbaked shore', ids: ['cove', 'lighthouse', 'beach'], requires: ['ruins', 'yokai', 'crypt'] }
+];
+/* ---- NEW GAME+: the whole game again, harder, with every unlock kept ----
+   Once every quest has been cleared on the current top difficulty, the next one opens. A tier multiplies the enemies' HP and damage (on top of each quest's own scale),
+   the gold earned, how often elites appear and the bosses' relic drop chance. lastStand: bosses also get a second phase at 25% HP.
+   To add a tier, add a line here (everything else follows). Tune the numbers freely: they are the whole difficulty knob. */
+const TIERS = [
+  { name: 'Normal', short: '' },
+  { name: 'New Game+ 1', short: 'NG+1', hp: 1.2,  atk: 1.15, gold: 1.25, elite: 1.5, relic: 0.05 },
+  { name: 'New Game+ 2', short: 'NG+2', hp: 1.4,  atk: 1.3,  gold: 1.5,  elite: 2,   relic: 0.10, lastStand: true },
+  { name: 'New Game+ 3', short: 'NG+3', hp: 1.65, atk: 1.45, gold: 1.75, elite: 2.5, relic: 0.15, lastStand: true }
+];
+const MAX_TIER = TIERS.length - 1;
+const tierDef = n => TIERS[Math.max(0, Math.min(MAX_TIER, n | 0))] || TIERS[0];
+const tierText = T => !T.hp ? 'The normal game.' : `Enemies +${Math.round((T.hp - 1) * 100)}% HP and +${Math.round((T.atk - 1) * 100)}% damage · +${Math.round((T.gold - 1) * 100)}% gold · more elites · better boss drops${T.lastStand ? ' · bosses make a last stand at 25% HP' : ''}`;
+const tierCleared = id => (game && game.tiers && game.tiers.cleared && Number.isInteger(game.tiers.cleared[id])) ? game.tiers.cleared[id] : -1;      // highest difficulty this quest was beaten on (-1 = never)
+const questCleared = id => !!(game && game.cleared && game.cleared[id]);
+const groupOpen = g => !g.requires || devMode || g.requires.every(questCleared);
+const groupOf = id => QUEST_GROUPS.find(g => g.ids.includes(id));
+const questOpen = id => { const g = groupOf(id); return !g || groupOpen(g); };
+function tierUnlock() {          // every quest beaten on the current top difficulty opens the next one (returns true when it did)
+  const t = game && game.tiers; if (!t || t.max >= MAX_TIER) return false;
+  if (!QUESTS.every(q => tierCleared(q.id) >= t.max)) return false;
+  t.max++; game.notices.push({ type: 'tier', id: t.max }); return true;
+}
+const coastOpen = () => groupOpen(QUEST_GROUPS[1]);          // also what unlocks the hero skins
+const skinOf = id => (game && coastOpen() && game.skins && game.skins[id]) || null;
 function skinsFor(id) {
+  if (!coastOpen()) return [];                          // skins stay hidden until the Tidelands open
   const names = new Set(SKIN_HINTS[id] || []);
   if (manifest) Object.keys(manifest).forEach(k => { const m = k.match(/^([^/]+)\/armoured - ([^/]+)\//); if (m && m[1] === id) names.add(m[2]); });
   return [...names];
@@ -2382,6 +2497,8 @@ const BGT = {
   ruins: { sky: ['#1d1119', '#5a2f2c', '#d98a45'], far: '#3a2229', mid: '#24161c', ground: ['#3a2a2a', '#0f0a0e'], glow: '#ffb15c', fx: 'dust' },
   cove:  { sky: ['#050f18', '#0d3446', '#2f8793'], far: '#0a2a38', mid: '#071a24', ground: ['#0d2a36', '#03090d'], glow: '#7fe3ff', fx: 'rain' },
   crypt: { sky: ['#0a0810', '#1e1830', '#46405e'], far: '#1c1729', mid: '#120d1b', ground: ['#1e1c26', '#07060a'], glow: '#9be21b', fx: 'wisps' },
+  lighthouse: { sky: ['#060a16', '#18274a', '#56739a'], far: '#0b1730', mid: '#070e1e', ground: ['#10203a', '#03060c'], glow: '#ffe7a0', fx: 'rain' },
+  beach: { sky: ['#2b78ad', '#78c4d6', '#f8e6b4'], far: '#3d98ab', mid: '#d6bd86', ground: ['#ead49c', '#a28850'], glow: '#fff2bd', fx: 'dust' },
   yokai: { sky: ['#0b0a18', '#2a1630', '#8a3d4c'], far: '#1c1226', mid: '#120b19', ground: ['#2a1c26', '#08050a'], glow: '#ff7a5c', fx: 'petals' },
   _:     { sky: ['#101018', '#1d2030', '#363b52'], far: '#1a1d2a', mid: '#12141d', ground: ['#222432', '#08080c'], glow: '#9fb4ff', fx: 'dust' }
 };
@@ -2433,6 +2550,27 @@ function bgShapes(id, R, far, mid, node) {
     }
     const ax = r(500, 900); F.push(`<path d="M${ax} 720V330a150 150 0 0 1 300 0V720h-46V340a104 104 0 0 0-208 0V720z" fill="${far}"/>`);   // a ruined arch
     for (let x = -30; x < 1640; x += r(120, 220)) { const w = r(80, 170), h = r(40, 120); M.push(`<polygon points="${x},760 ${x},${760 - h} ${x + w * .4},${760 - h - r(0, 22)} ${x + w},${760 - h + r(0, 18)} ${x + w},760" fill="${mid}"/>`); }
+  } else if (id === 'lighthouse') {
+    for (let x = 40; x < 1640; x += r(300, 480)) {           // lightning-struck sea stacks
+      const w = r(90, 180), h = r(160, 340);
+      F.push(`<path d="M${x} 680 Q${x + w * .1} ${680 - h * .6} ${x + w * .35} ${680 - h} Q${x + w * .6} ${680 - h * .85} ${x + w * .75} ${680 - h * .4} Q${x + w} ${680 - h * .1} ${x + w} 680z" fill="${far}"/>`);
+    }
+    const tx = r(1000, 1250), tb = 700;                       // the lighthouse: tapering tower, gallery, lamp room, cap
+    F.push(`<path d="M${tx - 62} ${tb}L${tx - 34} 250H${tx + 34}L${tx + 62} ${tb}z" fill="${far}"/><rect x="${tx - 50}" y="232" width="100" height="18" fill="${far}"/><rect x="${tx - 30}" y="170" width="60" height="62" fill="${far}"/><path d="M${tx - 40} 170L${tx} 128L${tx + 40} 170z" fill="${far}"/>`);
+    F.push(`<path d="M${tx} 200L-200 90V330z" fill="#ffe7a0" opacity=".10"/><circle cx="${tx}" cy="200" r="22" fill="#fff4c4" opacity=".85"/>`);
+    let d = 'M-20 700'; for (let x = -20; x <= 1640; x += 40) d += ` Q${x + 20} ${700 + r(-18, 18)} ${x + 40} 700`;
+    M.push(`<path d="${d}V900H-20z" fill="${mid}"/>`);
+    for (let x = -30; x < 1640; x += r(240, 400)) { const w = r(120, 240), h = r(50, 130); M.push(`<path d="M${x} 800Q${x + w * .3} ${800 - h} ${x + w * .6} ${800 - h * .7}T${x + w} 800z" fill="${mid}"/>`); }
+  } else if (id === 'beach') {
+    F.push(`<rect x="0" y="560" width="1600" height="160" fill="${far}" opacity=".85"/><rect x="0" y="560" width="1600" height="4" fill="#ffffff" opacity=".45"/>`);      // the sea
+    F.push(`<path d="M${r(150, 500)} 562q60-60 130-8q60-40 110 8z" fill="#2d7f90"/>`);                                                                                       // a far island
+    for (let k = 0; k < 4; k++) {                              // palm trees leaning over the sand
+      const x = r(60, 1540), h = r(220, 380), lean = r(-70, 70), top = [x + lean, 720 - h];
+      F.push(`<path d="M${x} 730Q${x + lean * .2} ${720 - h * .5} ${top[0]} ${top[1]}" fill="none" stroke="#2c5d3a" stroke-width="${r(12, 18)}" stroke-linecap="round"/>`);
+      for (let f = 0; f < 6; f++) { const a = -Math.PI * (f / 5), dx = Math.cos(a) * r(90, 150), dy = -Math.sin(a) * r(20, 70) + r(10, 40); F.push(`<path d="M${top[0]} ${top[1]}q${dx * .5} ${dy - 40} ${dx} ${dy}" fill="none" stroke="#2c5d3a" stroke-width="9" stroke-linecap="round"/>`); }
+    }
+    for (let x = -60; x < 1640; x += r(300, 480)) { const w = r(280, 520), h = r(50, 120); M.push(`<path d="M${x} 790Q${x + w * .35} ${790 - h} ${x + w * .7} ${790 - h * .6}T${x + w} 790z" fill="${mid}"/>`); }    // dunes
+    for (let k = 0; k < 6; k++) { const x = r(40, 1560), y = r(745, 790); M.push(`<ellipse cx="${x}" cy="${y}" rx="${r(14, 26)}" ry="${r(5, 9)}" fill="#c9a96a" opacity=".6"/>`); }                          // shells and pebbles
   } else if (id === 'cove') {
     for (let x = 60; x < 1640; x += r(280, 460)) {           // sea stacks
       const w = r(90, 190), h = r(180, 400);
@@ -2464,6 +2602,7 @@ function buildBg(id, node, last) {
     <radialGradient id="bgL" cx=".5" cy=".62" r=".55"><stop offset="0" stop-color="${T.glow}" stop-opacity="${(.5 * k).toFixed(2)}"/><stop offset="1" stop-color="${T.glow}" stop-opacity="0"/></radialGradient></defs>
     <rect width="1600" height="900" fill="url(#bgS)"/><rect width="1600" height="900" fill="url(#bgL)"/>
     ${id === 'cove' ? '<circle cx="1180" cy="190" r="70" fill="#d8f6ff" opacity=".35"/><circle cx="1180" cy="190" r="140" fill="#9fe7ff" opacity=".1"/>' : ''}
+    ${id === 'beach' ? '<circle cx="1240" cy="170" r="80" fill="#fffbe0" opacity=".85"/><circle cx="1240" cy="170" r="190" fill="#fff2bd" opacity=".16"/>' : ''}
     ${id === 'yokai' && node !== 3 ? '<circle cx="330" cy="200" r="95" fill="#ff9a78" opacity=".5"/><circle cx="330" cy="200" r="190" fill="#ff7a5c" opacity=".1"/>' : ''}
     ${far}${mid}<rect y="720" width="1600" height="180" fill="url(#bgG)"/><rect y="720" width="1600" height="3" fill="${T.glow}" opacity=".22"/></svg><div class="bgv"></div>`;
   const fxl = document.createElement('div'); fxl.className = 'bgfx';
@@ -2811,6 +2950,7 @@ function inspect(team, idx) {
     <div style="margin-top:6px">⚠️ <b>Weak to:</b> ${elemList(u.weak)} <span class="dim">(+${CRIT.weak}% crit chance against it)</span></div>
     <div>🛡️ <b>Resists:</b> ${elemList(u.resist)} <span class="dim">(${CRIT.resist}% crit chance against it)</span></div>
     ${u.traits && u.traits.length ? `<div style="margin-top:6px">🏅 <b>Traits:</b> ${traitChips(u.traits)}</div>` : ''}
+    ${u.boss && phasesOf(u).slice(u.phase || 0).length ? `<div style="margin-top:6px">🔥 <b>Boss phases:</b> it changes tactics below ${phasesOf(u).slice(u.phase || 0).map(p => Math.round(p.at * 100) + '%').join(' and ')} HP</div>` : ''}
     ${u.mod ? `<div style="margin-top:6px">★ <b>${ELITE.mods[u.mod].name} elite:</b> ${ELITE.mods[u.mod].desc}</div>` : ''}
     ${tr ? `<div style="margin-top:6px">${tr}</div>` : ''}
     ${u.relics && u.relics.length ? `<div style="margin-top:6px">🎒 <b>Relics:</b> ${u.relics.map(id => RELICS[id].icon + ' ' + RELICS[id].name).join(' · ')}</div>` : ''}
@@ -3192,9 +3332,9 @@ function unrally() {             // the Warlord fell: its allies lose the bonus
   let any = false; enemies.forEach(e => { if (e.rallied) { e.skills = e.baseSkills; e.rallied = false; any = true; } });
   if (any) log(`<strong style="color:#ffd54f">The Warlord's banner falls. Its allies lose heart!</strong>`, 'log-status');
 }
-function rollMods(nodeIds, nodeIndex, def) {       // elite modifiers for one fight: [] of null / mod key, at most one elite per fight
+function rollMods(nodeIds, nodeIndex, def, tier = 0) {       // elite modifiers for one fight: [] of null / mod key, at most one elite per fight
   const mods = nodeIds.map(() => null), eligible = def.nodes.filter((n, i) => i > 0 && !n.boss).length;
-  if (nodeIndex === 0 || def.nodes[nodeIndex].boss || !eligible || RAND.rng() >= Math.min(ELITE.maxChance, ELITE.perRun / eligible)) return mods;
+  if (nodeIndex === 0 || def.nodes[nodeIndex].boss || !eligible || RAND.rng() >= Math.min(Math.min(.9, ELITE.maxChance * (tierDef(tier).elite || 1)), ELITE.perRun * (tierDef(tier).elite || 1) / eligible)) return mods;
   const slots = nodeIds.map((id, i) => i).filter(i => !enemyById(nodeIds[i]).boss);
   mods[choose(slots, RAND.rng)] = choose(ELITE_KEYS, RAND.rng);
   return mods;
@@ -3234,7 +3374,7 @@ function rollEncounter(pool, size, budget, opts = {}) {
   return best.sort((a, b) => rank[enemyRole(a)] - rank[enemyRole(b)]).map(d => d.id);
 }
 // Roll a whole quest: one line-up per node (boss node: [escort, BOSS, escort]) plus the boss's reinforcements. Saved with the run.
-function rollPlan(def) {
+function rollPlan(def, tier = 0) {
   const nodes = [], pool = def.pool || [], plan = { nodes, adds: [], mods: [] };
   let prev = '';
   def.nodes.forEach(node => {
@@ -3247,11 +3387,12 @@ function rollPlan(def) {
       plan.adds = rollEncounter(pool, 2, budget, {});
     } else {
       const e = rollEncounter(pool, ref.length, budget, { avoid: prev });
-      prev = e.slice().sort().join(); nodes.push(e); plan.mods.push(rollMods(e, def.nodes.indexOf(node), def));
+      prev = e.slice().sort().join(); nodes.push(e); plan.mods.push(rollMods(e, def.nodes.indexOf(node), def, tier));
     }
   });
   if (!plan.adds.length) plan.adds = def.nodes.flatMap(n => n.adds || []).slice(0, 2);
-  plan.event = RAND.on && pool.length ? rollEventSlot(def) : null;
+  plan.events = RAND.on && pool.length ? rollEventSlots(def) : [];          // def.events random events (default 1), each at a different point of the quest
+  plan.event = plan.events[0] || null;                                        // (kept for the first one; older saves only have this)
   plan.camps = rollCamps(def);
   return plan;
 }
@@ -3263,7 +3404,9 @@ function rollCamps(def) {          // camp after clearing fight i (0-based): nev
 const campHere = () => !quest.plan || !Array.isArray(quest.plan.camps) || quest.plan.camps.includes(quest.node - 1);     // saves from before limited camps: a camp every time
 function validPlan(p, def) {
   if (p && p.camps != null && !(Array.isArray(p.camps) && p.camps.every(i => Number.isInteger(i) && i >= 0 && i < def.nodes.length - 1))) return false;
-  if (p && p.event && !(Number.isInteger(p.event.after) && p.event.after >= 0 && p.event.after < def.nodes.length - 1 && typeof EVENT_BY_ID !== 'undefined' && EVENT_BY_ID[p.event.id])) return false;
+  const okSlot = e => e && Number.isInteger(e.after) && e.after >= 0 && e.after < def.nodes.length - 1 && typeof EVENT_BY_ID !== 'undefined' && EVENT_BY_ID[e.id];
+  if (p && p.event && !okSlot(p.event)) return false;
+  if (p && p.events != null && !(Array.isArray(p.events) && p.events.every(okSlot))) return false;
   return !!p && (p.mods == null || (Array.isArray(p.mods) && p.mods.length === def.nodes.length && p.mods.every(l => Array.isArray(l) && l.every(m => m == null || ELITE.mods[m])))) && Array.isArray(p.nodes) && p.nodes.length === def.nodes.length && Array.isArray(p.adds) &&
     p.nodes.every((l, i) => Array.isArray(l) && l.length === def.nodes[i].enemies.length && l.every(id => enemyById(id))) && p.adds.every(id => enemyById(id));
 }
@@ -3280,12 +3423,43 @@ async function reinforce(boss) {                 // a stunned-out boss on its ow
   const node = curNode(), ids = (node.adds || (RAND.on && quest.plan && quest.plan.adds.length ? quest.plan.adds : node.enemies.filter(id => !(enemyById(id) || {}).boss))).slice(0, 3);
   if (!ids.length) return;
   boss.summons = (boss.summons || 0) + 1; boss.stunMiss = 0;
-  const qs = quest.def.scale || {}, ns = node.scale || {}, sc = { hp: (qs.hp || 1) * (ns.hp || 1) * BOSS.addHp, atk: (qs.atk || 1) * (ns.atk || 1) * BOSS.addAtk };
+  const qs = quest.def.scale || {}, ns = node.scale || {}, sc = { hp: (qs.hp || 1) * (ns.hp || 1) * (tierDef(quest.tier).hp || 1) * BOSS.addHp, atk: (qs.atk || 1) * (ns.atk || 1) * (tierDef(quest.tier).atk || 1) * BOSS.addAtk };
   const fresh = ids.map(id => make(enemyById(id), 'e', sc)); labelDuplicates(fresh);
   enemies = [boss, ...fresh];                    // the fallen make way; the boss keeps the front
   log(`<strong style="color:#ff8a65">${boss.name} bellows, and reinforcements storm in!</strong>`, 'log-status');
   shake(3); render(); fresh.forEach(e => floatText(e, 'REINFORCEMENTS', 'tag'));
   await sleep(700);
+}
+/* ---- BOSS PHASES: a boss changes tactics when its HP falls below a threshold (data: `phases` on the boss, see ENEMIES) ----
+   A phase can raise damage (atk), add new skills (add), raise a barrier, heal, cleanse, speed it up, or call allies (summon). From NG+2 every boss also gets a last stand at 25% HP. */
+const LAST_STAND = { at: .25, atk: 1.15, barrier: 25 };
+const phasesOf = b => { const l = (b.phases || []).map(p => ({ ...p })); if (b.boss && tierDef(quest && quest.tier).lastStand) l.push({ ...LAST_STAND }); return l.sort((x, y) => y.at - x.at); };
+async function summonAdds(b, n) {                  // fresh allies join at the back (never more than 4 enemies at once)
+  const alive = enemies.filter(isAlive), k = Math.min(n, 4 - alive.length); if (k <= 0) return;
+  const node = curNode(), ids = (node.adds || (RAND.on && quest.plan && quest.plan.adds.length ? quest.plan.adds : node.enemies.filter(id => !(enemyById(id) || {}).boss))).slice(0, k); if (!ids.length) return;
+  const qs = quest.def.scale || {}, ns = node.scale || {}, T = tierDef(quest.tier), sc = { hp: (qs.hp || 1) * (ns.hp || 1) * (T.hp || 1) * BOSS.addHp, atk: (qs.atk || 1) * (ns.atk || 1) * (T.atk || 1) * BOSS.addAtk };
+  const fresh = ids.map(id => make(enemyById(id), 'e', sc)); labelDuplicates([...alive, ...fresh]);
+  enemies = [...alive, ...fresh]; render(); fresh.forEach(e => floatText(e, 'REINFORCEMENTS', 'tag')); await sleep(500);
+}
+async function bossPhase(b, ph) {
+  log(`<strong style="color:#ff8a65">🔥 ${ph.msg || `${b.name} makes a last stand!`}</strong>`, 'log-status');
+  if (ph.cleanse) b.statuses = [];
+  if (ph.heal) b.hp = Math.min(b.maxHp, b.hp + Math.round(b.maxHp * ph.heal));
+  if (ph.atk) { b.phaseMult = (b.phaseMult || 1) * ph.atk; b.skills = scaleSkills(b.skills, ph.atk); }
+  if (ph.add) { const add = scaleSkills(ph.add, (b.atkSc || 1) * (b.phaseMult || 1)); b.skills = [...b.skills, ...add]; b.cd = [...b.cd, ...add.map(() => 0)]; b.icons = [...new Set([...b.skills.map(x => x.el), ...(b.elems || [])].filter(Boolean))].map(e => ICON[e]).join('') + (b.icons.match(/🔥/g) || []).join(''); }
+  if (ph.barrier) b.barrier = Math.max(b.barrier || 0, ph.barrier);
+  if (ph.spd) b.spd += ph.spd;
+  b.icons += '🔥';
+  shake(3); render(); floatText(b, `🔥 PHASE ${(b.phase || 0) + 2}`, 'tag'); sfx('hit', 'phys', false, false, true);
+  await sleep(900);
+  if (ph.summon) await summonAdds(b, ph.summon);
+  if (isAlive(b)) b.intent = enemyChoose(b, true);        // its next move is telegraphed again, with the new skills in the mix
+}
+async function checkPhases() {
+  for (const b of enemies.filter(e => e.boss && isAlive(e))) {
+    const L = phasesOf(b);
+    while ((b.phase || 0) < L.length && isAlive(b) && b.hp <= L[b.phase || 0].at * b.maxHp) { const ph = L[b.phase || 0]; await bossPhase(b, ph); b.phase = (b.phase || 0) + 1; }
+  }
 }
 // Turn-based buffs count the unit's own turns, including turns lost to a stun (otherwise a stun-locked immortal unit would never die and the fight never ends).
 function tickBuffs(u) {
@@ -3430,21 +3604,24 @@ function checkEnd() {
     quest = null; saved = writeSave();
   } else {
     const elites = enemies.filter(e => e.mod).length;
-    const gb = Math.min(.5, party.reduce((a, u) => a + ((u.rel && u.rel.gold) || 0), 0)), earned = Math.round(node.gold * (1 + gb)) + elites * ELITE.gold;
+    const gb = Math.min(.5, party.reduce((a, u) => a + ((u.rel && u.rel.gold) || 0), 0)), earned = Math.round(node.gold * (1 + gb) * (tierDef(quest.tier).gold || 1)) + elites * ELITE.gold;
     quest.gold += earned; settleDebts();
     log(`<strong style="color:#4caf50">Victory!</strong> +${earned} gold${gb ? ' (Lucky Coin bonus)' : ''}${elites ? ` (★ elite loot +${elites * ELITE.gold})` : ''}.`, 'log-heal');
     for (let k = 0; k < elites; k++) if (Math.random() < ELITE.relic) { const r = grantRelic('An elite dropped a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} falls from the elite's remains!</strong>`, 'log-heal'); }
     if (quest.bonus && quest.bonus.relic && Math.random() < quest.bonus.relic) { const r = grantRelic(quest.bonus.kind === 'champion' ? 'The champion left you a relic!' : 'You found a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} is among the spoils!</strong>`, 'log-heal'); }
     if (last) {
+      const coastWas = coastOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
+      const qt = quest.tier || 0; game.tiers.cleared[quest.def.id] = Math.max(tierCleared(quest.def.id), qt); tierUnlock();                 // New Game+: remember the difficulty, maybe open the next one
       game.gold += quest.gold; game.stats.won++; game.quest = null;
-      const drop = rollDrop(quest.def, game.relics);                                        // the boss may drop a relic
+      const drop = rollDrop(quest.def, game.relics, tierDef(quest.tier).relic || 0);                                        // the boss may drop a relic
       if (drop) { game.relics.push(drop); game.notices.push({ type: 'relic', id: drop }); }
       game.shop = { stock: rollStock(game.relics) };
       const pn = returnItems(true);
       const un = quest.def.unlocks;
       if (un && heroById(un) && !game.roster.includes(un)) { game.roster.push(un); game.notices.push({ type: 'unlock', id: un }); }   // first clear unlocks the hero
+      if (!coastWas && coastOpen()) game.notices.push({ type: 'region', id: 'coast' });                                                   // the third Old Lands quest opens the Tidelands
       awardTraits(true);                                                                    // then the traits notice (a perk for every hero, a flaw for any who fell)
-      hubNote = `Quest complete! You brought home ${quest.gold} gold.${pn}${drop ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
+      hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold.${pn}${drop ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
       $('turn-indicator').innerText = 'Quest Complete!';
       log(`<strong style="color:#4caf50">The boss falls and the quest is complete! All ${quest.gold} gold goes home with you.</strong>`);
       main.textContent = 'Return to Town'; main.onclick = () => showScene('hub');
@@ -3455,7 +3632,7 @@ function checkEnd() {
       main.textContent = campHere() ? '⛺ Go to Camp' : '⚔️ Onward'; main.onclick = campHere() ? showCamp : onward;
       saved = saveQuest();
     } else {
-      quest.node++;
+      quest.node++; quest.eventDone = false;                  // (each point of the quest has its own event, so the flag starts over)
       quest.party.forEach(u => { u.campHeal = 0; });          // a new camp: the rest allowance starts over
       $('turn-indicator').innerText = campHere() ? 'Victory! Time to make camp.' : 'Victory! Press on.';
       main.textContent = campHere() ? '⛺ Go to Camp' : (eventPending() ? '❓ Investigate' : quest.def.nodes[quest.node].boss ? '💀 Face the Boss' : '⚔️ Onward'); main.onclick = campHere() ? showCamp : onward;
@@ -3480,6 +3657,7 @@ async function battle() {
       actor = u; render();
       await takeTurn(u);
       actor = null;
+      if (!over && party.some(isAlive)) await checkPhases();          // a boss that dropped below a threshold changes tactics before anyone else acts
       if (checkEnd()) return;
     }
     if ([...party, ...enemies].some(x => x.barrier)) { [...party, ...enemies].forEach(x => { x.barrier = x.holdBarrier ? x.barrier : x.rel && x.rel.keepBarrier ? Math.floor(x.barrier * x.rel.keepBarrier) : 0; }); log('🛡️ The round ends: every barrier fades.', 'log-round'); render(); }      // barriers last until the end of the round
@@ -3607,6 +3785,21 @@ function renderHub() {
 }
 function showNotice() {                      // pending pop-ups (saved, so they survive a reload until dismissed)
   const n = game.notices && game.notices[0], box = $('notice');
+  if (n && n.type === 'tier' && n.id >= 1 && n.id <= MAX_TIER) {
+    const T = tierDef(n.id);
+    box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🔥'; $('notice-btn').textContent = 'Bring it on!';
+    $('notice-title').textContent = `🔥 ${T.name} unlocked!`;
+    $('notice-text').textContent = n.id === 1 ? 'Every quest is beaten. The whole game can now be played again on a harder difficulty, keeping all your heroes, relics, traits and skins. Pick the difficulty when you embark.' : `A harder difficulty is open: ${T.name}. Clear every quest on the current one to climb higher.`;
+    $('notice-skills').textContent = tierText(T);
+    return;
+  }
+  if (n && n.type === 'region') {
+    box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🌊'; $('notice-btn').textContent = 'To the coast!';
+    $('notice-title').textContent = '🌊 The Tidelands are open!';
+    $('notice-text').textContent = "With the sentinels, the Night Parade and the Crypt behind you, sailors whisper of a new coast: the Siren's Cove, the Stormwatch Lighthouse and the Sunbaked Shoals. Their quests are longer and harder.";
+    $('notice-skills').textContent = 'Every hero also has a new look to try in the Dorm (Skin).';
+    return;
+  }
   const h = n && n.type === 'unlock' ? heroById(n.id) : null, rl = n && n.type === 'relic' ? RELICS[n.id] : null, tr = n && n.type === 'traits' && Array.isArray(n.items) ? n.items.filter(x => x && TRAIT[x.id] && heroById(x.hero)) : null;
   if (n && !h && !rl && !(tr && tr.length)) { game.notices.shift(); writeSave(); return showNotice(); }      // unknown hero / relic / empty list: drop it
   box.classList.toggle('show', !!(h || rl || tr));
@@ -3703,25 +3896,35 @@ let pickedQuest = null;     // id of the quest chosen on the quest select screen
 const questGold = q => q.nodes.reduce((a, n) => a + n.gold, 0);
 function toQuestSelect() {
   if (!picked.length) return;
-  if (!QUESTS.some(q => q.id === pickedQuest)) pickedQuest = QUESTS[0].id;     // default: the first available quest
+  if (!QUESTS.some(q => q.id === pickedQuest && questOpen(q.id))) pickedQuest = QUESTS.find(q => questOpen(q.id)).id;     // default: the first available quest
   showScene('quest-select');
 }
-function pickQuest(id) { pickedQuest = id; renderQuests(); }
+function pickTier(i) { if (i < 0 || i > game.tiers.max) return; game.tiers.pick = i; writeSave(); renderQuests(); }
+function pickQuest(id) { if (!questOpen(id)) return; pickedQuest = id; renderQuests(); }
 function renderQuests() {
   $('quest-party').innerHTML = '<b>Party</b> (front → back)<br>' +
     picked.map((id, i) => `${i + 1}. ${heroById(id).name.split(' ')[0]}`).join(' &nbsp; ') +
     '<br>' + (Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 ? 's' : ''} will come along` : '').filter(Boolean).join(' · ') || 'No supplies in the bag. The Shop sells potions, rations and repair kits.');
-  $('quest-list').innerHTML = QUESTS.map(q => {
-    const on = q.id === pickedQuest;
+  const T = tierDef(game.tiers.pick), tg = T.gold || 1;
+  const card = q => {
+    const on = q.id === pickedQuest, c = q.camps ?? 1, e = q.events ?? 1;
     return `<div class="pick quest-pick${on ? ' on' : ''}" onclick="pickQuest('${q.id}')">
       <div><strong>${q.name}</strong><br>${q.desc}
-        <div class="sk">${q.nodes.length} battles, ${q.camps ?? 1} camp${(q.camps ?? 1) === 1 ? '' : 's'} at a random point, boss at the end · up to ${questGold(q)} gold${q.unlocks && !game.roster.includes(q.unlocks) ? ` · defeat the boss to unlock ${heroById(q.unlocks).name.split(' ')[0]}` : ''}</div></div>
+        <div class="sk">${q.nodes.length} battles, ${c} camp${c === 1 ? '' : 's'} and ${e} random event${e === 1 ? '' : 's'}, boss at the end · up to ${Math.round(questGold(q) * tg)} gold${q.unlocks && !game.roster.includes(q.unlocks) ? ` · defeat the boss to unlock ${heroById(q.unlocks).name.split(' ')[0]}` : ''}${tierCleared(q.id) >= game.tiers.pick ? ' · ✔ cleared' + (game.tiers.pick ? ' on ' + T.short : '') : ''}</div></div>
       ${on ? '<div class="slot">✓</div>' : ''}</div>`;
+  };
+  const tiers = game.tiers, tbar = tiers.max > 0 ? `<div class="tierbar"><b>🔥 Difficulty</b>${TIERS.slice(0, tiers.max + 1).map((t, i) => `<button class="tierbtn${tiers.pick === i ? ' on' : ''}" onclick="pickTier(${i})">${i ? t.short : 'Normal'}</button>`).join('')}${tiers.max < MAX_TIER ? '<span class="tiernext">next: clear every quest on ' + (tiers.max ? TIERS[tiers.max].short : 'Normal') + '</span>' : ''}<div class="tierinfo">${tierText(T)}</div></div>` : '';
+  $('quest-list').innerHTML = tbar + QUEST_GROUPS.map(g => {
+    if (!groupOpen(g)) {
+      const need = g.requires.map(id => { const q = QUESTS.find(x => x.id === id); return `<span class="${questCleared(id) ? 'ok' : ''}">${questCleared(id) ? '✔' : '○'} ${q.name}</span>`; }).join('');
+      return `<section class="qgroup ${g.id} locked"><h3 class="qgh">🔒 ${g.name}</h3><div class="qgb">A new coast lies beyond. Beat all three quests above to open it:</div><div class="qreq">${need}</div></section>`;
+    }
+    return `<section class="qgroup ${g.id}"><h3 class="qgh">${g.icon} ${g.name} <small>${g.blurb}</small></h3><div class="pick-list">${g.ids.map(id => QUESTS.find(q => q.id === id)).filter(Boolean).map(card).join('')}</div></section>`;
   }).join('');
   $('btn-start-quest').disabled = !pickedQuest;
 }
 function beginQuest() {
-  if (!pickedQuest) return;
+  if (!pickedQuest || !questOpen(pickedQuest)) return;
   if (!picked.length) return;
   game.lastParty = [...picked]; writeSave();
   startQuest([...picked], pickedQuest);
@@ -3736,7 +3939,7 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, Number(v) || 0));
 // The quest is checkpointed into game.quest at embark, after each win, on entering camp and after each purchase.
 // Continue resumes there: node 0 = start of the first fight, otherwise the camp before that node.
 function snapshotQuest() {
-  return { id: quest.def.id, node: quest.node, gold: quest.gold, plan: quest.plan, eventDone: !!quest.eventDone, bonus: quest.bonus || null,
+  return { id: quest.def.id, tier: quest.tier || 0, node: quest.node, gold: quest.gold, plan: quest.plan, eventDone: !!quest.eventDone, bonus: quest.bonus || null,
            items: { ...quest.items },
            party: quest.party.map(u => ({ id: u.id, hp: u.hp, breakBar: u.breakBar, break2: u.break2, state: u.state, downs: u.downs || 0, rank: u.rank, campHeal: u.campHeal || 0, relics: u.relics || [] })) };
 }
@@ -3772,7 +3975,7 @@ function restoreQuest(s) {
     members.push(u);
   }
   const items = {}; Object.keys(ITEMS).forEach(id => { items[id] = Math.max(0, Math.floor(Number(s.items && s.items[id]) || 0)); });
-  return { def, node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : (() => { const pl = rollPlan(def); if (s.node > 0 && !pl.camps.includes(s.node - 1)) pl.camps = [...pl.camps, s.node - 1].sort((x, y) => x - y); return pl; })(), eventDone: !!s.eventDone,
+  return { def, tier: Math.max(0, Math.min(MAX_TIER, s.tier | 0)), node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : (() => { const pl = rollPlan(def, s.tier | 0); if (s.node > 0 && !pl.camps.includes(s.node - 1)) pl.camps = [...pl.camps, s.node - 1].sort((x, y) => x - y); return pl; })(), eventDone: !!s.eventDone,
            bonus: s.bonus && Array.isArray(s.bonus.ids) && s.bonus.ids.length && s.bonus.ids.length <= 4 && s.bonus.ids.every(id => enemyById(id)) && Array.isArray(s.bonus.mods) && s.bonus.mods.every(m => m == null || ELITE.mods[m])
              ? { kind: String(s.bonus.kind || ''), name: String(s.bonus.name || 'Event Fight').slice(0, 40), ids: s.bonus.ids.slice(), mods: s.bonus.mods.slice(), gold: Math.max(0, Math.floor(Number(s.bonus.gold) || 0)), hp: clamp(s.bonus.hp || 1, 0.5, 2), relic: clamp(s.bonus.relic || 0, 0, 1) } : null };
 }
@@ -3792,7 +3995,7 @@ function devFlaws() {              // every hero gets 3 fresh flaws (their perks
 function startDev() {
   devMode = true; document.body.classList.add('dev');
   game = newSave();
-  game.roster = HEROES.map(h => h.id);
+  game.roster = HEROES.map(h => h.id); game.tiers.max = MAX_TIER;
   game.relics = Object.keys(RELICS); game.shop = { stock: [] };
   Object.keys(ITEMS).forEach(id => { game.items[id] = 99; });
   Object.defineProperty(game, 'gold', { get: () => 9999999, set: () => {}, enumerable: true, configurable: true });
@@ -3832,7 +4035,8 @@ function startQuickBattle() {
 
 function startQuest(ids, questId) {
   quest = { def: QUESTS.find(q => q.id === questId) || QUESTS[0], node: 0, gold: 0, party: ids.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }), items: {} };
-  quest.plan = rollPlan(quest.def);
+  quest.tier = devMode ? Math.max(0, Math.min(MAX_TIER, game.tiers.pick | 0)) : Math.max(0, Math.min(game.tiers.max, game.tiers.pick | 0));
+  quest.plan = rollPlan(quest.def, quest.tier);
   if (devMode) Object.defineProperty(quest, 'gold', { get: () => 999999, set: () => {}, enumerable: true, configurable: true });     // unlimited camp shopping
   Object.keys(ITEMS).forEach(id => { quest.items[id] = game.items[id] || 0; game.items[id] = 0; });     // the bag goes with the party
   saveQuest();
@@ -3844,12 +4048,13 @@ function startNode() {
   party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.dr = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = (quest.bonus ? quest.def.nodes[quest.node] : node).scale || {};            // quest-wide difficulty x this node's own scaling
   const ids = quest.bonus ? quest.bonus.ids : (quest.plan && quest.plan.nodes[quest.node] || node.enemies), mods = quest.bonus ? quest.bonus.mods : (quest.devMods || (RAND.on && quest.plan && quest.plan.mods && quest.plan.mods[quest.node]));
-  enemies = buildEnemies(ids, mods, { hp: (qs.hp || 1) * (ns.hp || 1) * (quest.bonus && quest.bonus.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) });
+  const T = tierDef(quest.tier);
+  enemies = buildEnemies(ids, mods, { hp: (qs.hp || 1) * (ns.hp || 1) * (T.hp || 1) * (quest.bonus && quest.bonus.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) * (T.atk || 1) });
   order = []; actor = null; cur = null; sel = null; waiting = null; over = false;
   $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = '';
   $('end-buttons').style.display = 'none';
   $('turn-indicator').innerText = 'Preparing...';
-  $('battle-sub').textContent = quest.dev ? 'Quick Battle (developer mode)' : quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''} · Quest gold: ${quest.gold}`;
+  $('battle-sub').textContent = quest.dev ? 'Quick Battle (developer mode)' : quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''} · Quest gold: ${quest.gold}`;
   $('enemy-head').textContent = node.name.toUpperCase();
   showScene('battle-scene');
   renderFx(); renderSnd(); loadStageBg();
@@ -4040,18 +4245,25 @@ const EVENTS = [
     } }
 ];
 const EVENT_BY_ID = Object.fromEntries(EVENTS.map(e => [e.id, e]));
-function rollEventSlot(def) {                              // where in the quest, and which event (weighted: the odd ones are rarer)
-  const n = def.nodes.length, lo = n >= 5 ? 1 : 0, hi = n - 3;
-  if (hi < lo) return null;
-  const pool = EVENTS.filter(e => !e.only || e.only());
+function rollEventSlots(def) {                             // def.events slots at different points of the quest, never the same event twice
+  const out = [], used = new Set();
+  for (let k = 0; k < (def.events ?? 1); k++) { const e = rollEventSlot(def, used, out.map(x => x.id)); if (!e) break; used.add(e.after); out.push(e); }
+  return out.sort((a, b) => a.after - b.after);
+}
+function rollEventSlot(def, taken = new Set(), usedIds = []) {   // where in the quest, and which event (weighted: the odd ones are rarer)
+  const n = def.nodes.length, lo = n >= 5 ? 1 : 0, hi = n - 3, places = [];
+  for (let i = lo; i <= hi; i++) if (!taken.has(i)) places.push(i);
+  if (!places.length) return null;
+  let pool = EVENTS.filter(e => (!e.only || e.only()) && !usedIds.includes(e.id)); if (!pool.length) pool = EVENTS.filter(e => !e.only || e.only());
   const tot = pool.reduce((a, e) => a + e.weight, 0); let x = RAND.rng() * tot, ev = pool[pool.length - 1];
   for (const e of pool) { x -= e.weight; if (x < 0) { ev = e; break; } }
-  return { after: lo + Math.floor(RAND.rng() * (hi - lo + 1)), id: ev.id, seed: Math.floor(RAND.rng() * 1e9) };
+  return { after: places[Math.floor(RAND.rng() * places.length)], id: ev.id, seed: Math.floor(RAND.rng() * 1e9) };
 }
-const eventPending = () => !!(quest && quest.plan && quest.plan.event && !quest.eventDone && !quest.bonus && quest.node === quest.plan.event.after + 1);
+const evSlot = () => { const p = quest && quest.plan; if (!p) return null; return (p.events || (p.event ? [p.event] : [])).find(e => e.after + 1 === quest.node) || null; };     // the event waiting at this point of the quest, if any
+const eventPending = () => !!(evSlot() && !quest.eventDone && !quest.bonus);
 let evState = null;
 function openEvent() {
-  const slot = quest.plan.event, ev = EVENT_BY_ID[slot.id];
+  const slot = evSlot(), ev = EVENT_BY_ID[slot.id];
   const d = ev.setup ? ev.setup(quest, seeded('ev' + slot.seed)) : null;
   evState = { ev, d, choices: ev.choices(quest, d), result: null };
   showScene('event');
