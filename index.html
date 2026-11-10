@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1100">
 <title>Anime RPG - 4v4 Tactical Combat</title>
 <style>
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#121216;color:#e0e0e6;margin:0;padding:10px;min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column;align-items:center}
@@ -480,6 +480,9 @@ body.cb .float.heal{color:#56b4e9}body.cb .float.hurt{color:#e69f00}
 #weather.lantern{background:radial-gradient(circle at 12% 34%,rgba(255,180,90,.2),transparent 9%),radial-gradient(circle at 38% 62%,rgba(255,170,80,.16),transparent 8%),radial-gradient(circle at 63% 30%,rgba(255,190,100,.18),transparent 9%),radial-gradient(circle at 88% 58%,rgba(255,170,80,.18),transparent 9%);animation:lantern 3.2s ease-in-out infinite alternate;mix-blend-mode:screen}
 @keyframes lantern{from{opacity:.65}to{opacity:1}}
 body.calm #weather{display:none}
+#rotate{display:none;position:fixed;inset:0;z-index:99999;background:#0c0c14;color:#e0e0e6;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:1.6rem;gap:14px}
+#rotate b{font-size:4rem;display:block;animation:rot 2s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}
+@media (orientation:portrait) and (pointer:coarse){#rotate{display:flex}}
 #relic-modal{display:none;position:fixed;inset:0;z-index:180;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
 #relic-modal.show{display:flex}
 #rm-list{display:flex!important;flex-direction:column!important}
@@ -825,6 +828,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 <button id="menu-btn" onclick="openGuide()" title="Menu: options, controls and guide">⚙️</button>
 <div id="film"></div>
 <div id="fade"></div>
+<div id="rotate"><b>📱</b>Turn your phone sideways<small style="font-size:1rem;color:#9a9ab8">The game is played in landscape</small></div>
 <div id="guide" onclick="if (event.target === this) closeGuide()">
   <div class="guide-box">
     <div class="rm-head"><b>⚙️ Menu</b><button onclick="closeGuide()">✕ Close</button></div>
@@ -4276,10 +4280,14 @@ function devFlaws() {              // every hero gets 3 fresh flaws (their perks
   hubNote = 'Everyone has 3 fresh flaws again.';
   if ($('hub').classList.contains('show')) renderHub();
 }
+const rollTraitOk = (hid, id) => { const t = TRAIT[id]; return t && (!t.el || heroElems(hid).includes(t.el)); };
 function startDev() {
   devMode = true; document.body.classList.add('dev');
   game = newSave();
   game.roster = HEROES.map(h => h.id); game.tiers.max = MAX_TIER;
+  game.cleared = {}; QUESTS.forEach(q => { game.cleared[q.id] = true; game.tiers.cleared[q.id] = MAX_TIER; });      // every quest beaten on every difficulty: the Tidelands, the Beach, skins and New Game+ are all open
+  const t2 = Object.keys(TRAIT).filter(id => TRAIT[id].kind === 'good' && isT2(id));       // a few Tier II perks each, so Beach Volleyball's trait swap can be tried straight away
+  HEROES.forEach(h => { const ok = t2.filter(id => { try { return !!rollTraitOk(h.id, id); } catch (e) { return true; } }); game.traits[h.id] = (game.traits[h.id] || []).concat(ok.sort(() => Math.random() - .5).slice(0, 3)); });
   game.relics = Object.keys(RELICS); game.shop = { stock: [] };
   Object.keys(ITEMS).forEach(id => { game.items[id] = 99; });
   Object.defineProperty(game, 'gold', { get: () => 9999999, set: () => {}, enumerable: true, configurable: true });
