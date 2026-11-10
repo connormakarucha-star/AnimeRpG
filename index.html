@@ -483,6 +483,65 @@ body.calm #weather{display:none}
 #rotate{display:none;position:fixed;inset:0;z-index:99999;background:#0c0c14;color:#e0e0e6;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:1.6rem;gap:14px}
 #rotate b{font-size:4rem;display:block;animation:rot 2s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}
 @media (orientation:portrait) and (pointer:coarse){#rotate{display:flex}}
+#blizz{position:fixed;inset:0;pointer-events:none;z-index:7;display:none;-webkit-mask-image:linear-gradient(#000 0,#000 66%,transparent 76%);mask-image:linear-gradient(#000 0,#000 66%,transparent 76%)}
+#blizz.on{display:block}
+#blizz .dark{position:absolute;inset:0;background:#050a18;opacity:var(--dark,.45);transition:opacity 1.2s}
+#blizz .glow{position:absolute;inset:0;background:radial-gradient(ellipse 38% 55% at 28% 58%,var(--tc,rgba(255,200,90,.55)),transparent 70%);opacity:var(--tg,0);animation:torchpulse 1.3s ease-in-out infinite alternate;mix-blend-mode:screen;transition:opacity 1s}
+@keyframes torchpulse{from{transform:scale(.97);filter:brightness(.88)}to{transform:scale(1.04);filter:brightness(1.12)}}
+#blizz canvas{position:absolute;inset:0;width:100%;height:100%}
+#torch-hud{display:none;position:fixed;left:12px;top:44px;z-index:71;background:rgba(10,14,28,.8);border:1px solid #3a4a6a;border-radius:10px;padding:4px 10px;font-size:.78rem;align-items:center;gap:8px}
+#torch-hud.on{display:flex}
+#torch-hud .bar{width:90px;height:8px;border-radius:5px;background:#1a2236;overflow:hidden}#torch-hud .bar i{display:block;height:100%;width:var(--w,0%);background:var(--tc2,#ffd54f);transition:width .8s,background .8s}
+.chilled .figure .spr,.chilled .figure .ph{filter:sepia(calc(var(--chill,0)*.55)) hue-rotate(calc(var(--chill,0)*150deg)) saturate(calc(1 + var(--chill,0)*.6)) brightness(calc(1 - var(--chill,0)*.12)) drop-shadow(0 0 calc(var(--chill,0)*8px) rgba(120,190,255,.9));transition:filter 1.2s}
+body.calm #blizz canvas{display:none}
+.breath{position:absolute;bottom:calc(var(--sprH,85%) * .78);left:calc(50% + var(--dx,1) * 24%);width:30%;aspect-ratio:1.3;margin-left:-15%;pointer-events:none;z-index:4;opacity:0;
+  background:radial-gradient(ellipse at 30% 60%,rgba(240,248,255,.85),rgba(240,248,255,0) 62%),radial-gradient(ellipse at 62% 40%,rgba(240,248,255,.7),rgba(240,248,255,0) 58%);filter:blur(2.5px);
+  animation:puff var(--bt,4.2s) ease-out var(--bd,0s) infinite;transform-origin:20% 60%}
+.figure.flip .breath{--dx:-1}
+.team-e .figure .breath{--dx:-1}
+.team-e .figure.flip .breath{--dx:1}
+.figure.playing .breath,.figure.fallen .breath{display:none}
+body.calm .breath{display:none}
+@keyframes puff{0%,46%{opacity:0;transform:translate(0,0) scale(.25)}54%{opacity:.8}100%{opacity:0;transform:translate(calc(var(--dx,1) * 55%),-45%) scale(1.7)}}
+
+#dive{position:fixed;inset:0;padding:0;margin:0;background:#04162c;z-index:60;overflow:hidden;touch-action:none;user-select:none}
+#dive.show{display:block}
+#dv-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+#dv-hud{position:absolute;left:0;right:0;top:0;padding:8px 12px;pointer-events:none;display:flex;gap:12px;align-items:flex-start;z-index:3}
+.dv-bars{width:min(300px,40vw)}
+.dv-hp{position:relative;height:16px;background:rgba(0,0,0,.55);border:1px solid #2b6a96;border-radius:8px;overflow:hidden}
+.dv-hp i{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(#ff7a8a,#d8344f)}
+.dv-hp span{position:absolute;inset:0;text-align:center;font-size:.66rem;line-height:16px;color:#fff;text-shadow:0 1px 2px #000}
+.dv-xp{height:6px;margin-top:4px;background:rgba(0,0,0,.5);border-radius:4px;overflow:hidden}.dv-xp i{display:block;height:100%;width:0;background:#7fd8ff}
+.dv-stats{display:flex;gap:14px;font-size:.85rem;color:#d6f1ff;text-shadow:0 1px 3px #000;font-weight:700;margin-top:1px}
+#dv-pause{pointer-events:auto;margin-left:auto;padding:4px 12px;font-size:1rem;margin-right:56px}
+#dv-joy{display:none;position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:2px solid rgba(190,230,255,.45);background:rgba(120,190,255,.12);pointer-events:none;z-index:4}
+#dv-joy i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(190,230,255,.5)}
+#dv-intro{display:none;position:absolute;inset:0;z-index:6;background:#04162c;cursor:pointer}
+#dv-intro.on{display:block}
+#dv-intro small{position:absolute;bottom:10px;width:100%;text-align:center;color:#8fb6d2;opacity:.7}
+.dvi-surface{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,#dff1fb 0,#a9d3ea 45%,#5f93b8 70%,#1b3552 100%);transition:opacity .6s}
+.dvi-surface::before{content:"";position:absolute;inset:0;background:linear-gradient(#0c1a33 0,#2d4a72 38%,transparent 39%)}
+.dvi-hole{position:absolute;left:50%;top:66%;width:240px;height:70px;margin-left:-120px;border-radius:50%;background:radial-gradient(ellipse,#041a33 55%,#0d3a5e 70%,#cfe9f7 72%);box-shadow:0 0 0 6px rgba(255,255,255,.35)}
+.dvi-hero{position:absolute;left:calc(50% - 215px);top:20%;height:55%;width:140px;transition:transform .55s ease-in,opacity .4s .3s}
+.dvi-hero img,.dvi-sink img{height:100%;width:auto;display:block}
+.dvi-hero.jump{transform:translate(215px,38%) scale(.35)}.dvi-hero.jump{opacity:0}
+.dvi-under{position:absolute;inset:0;background:linear-gradient(#0e5b93,#062a4d 60%,#031428);opacity:0;transition:opacity .6s;overflow:hidden}
+.dvi-under.on{opacity:1}
+.dvi-sink{position:absolute;left:50%;top:6%;height:46%;margin-left:-60px;width:120px;animation:dvsink 1.5s ease-in forwards;opacity:0}
+.dvi-under.on .dvi-sink{opacity:1}
+.dvi-under::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(220,245,255,.55) 2px,transparent 3px) 0 0/46px 70px,radial-gradient(circle,rgba(220,245,255,.35) 3px,transparent 4px) 20px 30px/70px 90px;animation:dvbub 1.4s linear infinite}
+@keyframes dvsink{0%{transform:translateY(-30%) rotate(-12deg)}100%{transform:translateY(120%) rotate(10deg)}}
+@keyframes dvbub{to{background-position:0 -140px,20px -150px}}
+#dv-choose,#dv-pausebox,#dv-end{display:none;position:absolute;inset:0;z-index:7;background:rgba(2,12,26,.78);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#dv-choose.on,#dv-pausebox.on,#dv-end.on{display:flex}
+.dvc-title{font-size:1.3rem;font-weight:800;color:#d6f1ff}
+.dvc-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.dvc-row button{width:190px;padding:14px 12px;text-align:center;background:#12304c;border:2px solid #3b86b8;border-radius:12px;color:#e8f6ff}
+.dvc-row button b{display:block;font-size:1.05rem}.dvc-row button small{display:block;color:#a9d3ea;margin-top:4px}.dvc-row button .ic{font-size:2rem;display:block}
+.dvp{display:flex;flex-direction:column;gap:10px;background:#0b2238;border:2px solid #3b86b8;border-radius:12px;padding:18px 26px;font-size:1.1rem;text-align:center}
+.dve{background:#0b2238;border:2px solid #3b86b8;border-radius:14px;padding:20px 28px;text-align:center;max-width:440px}
+.dve h3{margin:0 0 8px;color:#d6f1ff}.dve .big{font-size:1.5rem;color:#7fd8ff;font-weight:800}.dve .row{margin-top:12px;display:flex;gap:10px;justify-content:center}
 #relic-modal{display:none;position:fixed;inset:0;z-index:180;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
 #relic-modal.show{display:flex}
 #rm-list{display:flex!important;flex-direction:column!important}
@@ -894,6 +953,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
         <button class="hub-btn bld b-dorm" style="--x:54%;--y:21%;--w:25%;--h:39%" onclick="openGear()"><span class="lbl">🛏️ Dorm<small>Heroes, relics and traits</small></span></button>
         <button class="hub-btn bld b-train" style="--x:4%;--y:70%;--w:31%;--h:28%" onclick="openTrain()"><span class="lbl">🎯 Training Ground<small>Earn permanent perks</small></span></button>
         <button class="hub-btn bld embark b-road" style="--x:79%;--y:36%;--w:21%;--h:26%" onclick="openParty()"><span class="lbl">⚔️ The Road<small>Embark: choose a party, then a quest</small></span></button>
+        <button class="hub-btn bld b-lake" id="btn-lake" style="--x:44%;--y:79%;--w:22%;--h:15%;display:none" onclick="openLake()"><span class="lbl">🧊 The Frozen Lake<small>Polar dip · Frost crystals</small></span></button>
         <button class="hub-btn bld b-beach" id="btn-beach" style="--x:79%;--y:65%;--w:21%;--h:20%;display:none" onclick="openBeach()"><span class="lbl">🏖️ Go to the Beach<small>Gloomy shore · Volleyball</small></span></button>
         <div id="hub-msg"></div>
         <button id="hub-back" onclick="location.reload()">Back to Title</button>
@@ -916,6 +976,27 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   </div></div>
 </div>
 
+<div id="lake" class="scene">
+  <div class="hub-wrap"><div class="hub-hall">
+    <div class="hub-title">🧊 The Frozen Lake</div>
+    <div class="hub-sub" id="lake-intro"></div>
+    <div class="pick-list" id="lake-list"></div>
+    <div class="row"><button onclick="showScene('hub')">Back to Town</button></div>
+  </div></div>
+</div>
+<div id="dive" class="scene">
+  <canvas id="dv-cv"></canvas>
+  <div id="dv-hud">
+    <div class="dv-bars"><div class="dv-hp"><i id="dv-hpf"></i><span id="dv-hpt"></span></div><div class="dv-xp"><i id="dv-xpf"></i></div></div>
+    <div class="dv-stats"><span id="dv-time">0:00</span><span id="dv-kills">0 kills</span><span id="dv-cry">❄️ 0</span><span id="dv-lvl">Lv 1</span></div>
+    <button id="dv-pause" onclick="divePause(true)">⏸</button>
+  </div>
+  <div id="dv-joy"><i></i></div>
+  <div id="dv-intro"><div class="dvi-surface" id="dvi-surface"><div class="dvi-hole"></div><div class="dvi-hero" id="dvi-hero"></div></div><div class="dvi-under" id="dvi-under"><div class="dvi-sink" id="dvi-sink"></div></div><small>tap to skip</small></div>
+  <div id="dv-choose"><div class="dvc-title">Level up! Choose one</div><div class="dvc-row" id="dvc-row"></div></div>
+  <div id="dv-pausebox"><div class="dvp"><b>Paused</b><button class="primary" onclick="divePause(false)">Resume</button><button onclick="diveEnd('surface')">Surface (keep your crystals)</button></div></div>
+  <div id="dv-end"></div>
+</div>
 <div id="beach-pick" class="scene">
   <div class="hub-wrap"><div class="hub-hall">
     <div class="hub-title">🏐 Beach Volleyball</div>
@@ -1035,6 +1116,8 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   <div class="rm-box"><div class="rm-head"><b id="sum-title">Quest report</b><button onclick="closeSummary()">✕ Close</button></div><div id="sum-body"></div></div>
 </div>
 <div id="weather"></div>
+<div id="blizz"><div class="dark"></div><canvas id="blizz-snow"></canvas><div class="glow"></div></div>
+<div id="torch-hud"><span>🔥 Torch</span><div class="bar"><i></i></div></div>
 <div id="relic-modal" onclick="if (event.target === this) closeRelics()">
   <div class="rm-box">
     <div class="rm-head"><b id="rm-title">Relics</b><button onclick="closeRelics()">✕ Close</button></div>
@@ -1071,6 +1154,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
       <div class="slots" id="dev-party"></div>
       <div id="dev-foe-slots"></div>
       <div class="row">Backdrop: <select id="dev-bg"></select></div>
+      <div class="row">❄️ Blizzard: <select id="dev-blizz"><option value="0">Clear weather</option><option value="1">Blizzard</option></select> Party starts chilled: <select id="dev-chill"><option value="0">0%</option><option value="50">50%</option><option value="100">100%</option></select> Torch: <select id="dev-torch"><option value="0">Unlit</option><option value="1">Lit</option></select></div>
       <div class="pick-list" id="dev-enemy-pick"></div>
       <div class="row">
         <button onclick="showScene('party-select')">Back</button>
@@ -1259,7 +1343,13 @@ const HEROES = [
     unlockMsg:'Tyr, the vampire, has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
     { n:'Rending Claws', t:'dmg', r:'melee', d:[11,13], el:'bleed', brk:12, cd:0, bonusOnBleed:true, drain:0.5 },      // hits a target that is already bleeding: she gets a bonus turn
     { n:'Crimson Bite',  t:'dmg', r:'melee', d:[13,16], el:'bleed', brk:14, cd:2, taunt:true, dr:{ mult:.25, dur:2 }, bite:{ dmg:0.5, heal:1.0 } },
-    { n:'Undying Night', t:'immortal', dur:3, heal:0.3, cd:0, once:true } ] }
+    { n:'Undying Night', t:'immortal', dur:3, heal:0.3, cd:0, once:true } ] },
+  // Frigid: the frost sorceress from the Ice Queen's castle. Immune to numbness from the cold (numbImmune), and her ice magic hits whole groups. aoe = every other foe takes that share of the damage.
+  { id:'frigid', weak:['fire'], resist:['ice'], backMod:-0.1, name:'Frigid', tag:'FRIGID', hp:80, brk:26, spd:10, locked:true, elems:['ice'], numbImmune:true,
+    unlockMsg:'Frigid, the frost sorceress, has joined your guild! The cold cannot numb her. You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
+    { n:'Rime Bolt',      t:'dmg', r:'ranged', d:[16,18], el:'ice', brk:16, cd:0 },
+    { n:'Blizzard Nova',  t:'dmg', r:'ranged', d:[14,16], el:'ice', brk:18, cd:2, aoe:0.6, aoeBrk:0.6 },
+    { n:'Absolute Zero',  t:'dmg', r:'ranged', d:[24,28], el:'ice', brk:28, cd:4, aoe:0.75, aoeBrk:0.75 } ] }
 ];
 const ENEMIES = [
   { id:'e_fire', role:'ranged', weak:['ice'], resist:['fire'],  name:'Fire Sentinel',    tag:'FIRE',   hp:90,  brk:35, spd:7,  skills:[
@@ -1362,7 +1452,47 @@ const ENEMIES = [
   { id:'e_shuten', boss:true, weak:['shock'], resist:['fire'], name:'Oni Lord Shuten', short:'Shuten', tag:'SHUTEN', hp:300, brk:95, spd:8, phases:[{ at:.5, msg:'Shuten drains the sake cup and flies into a rage!', atk:1.3, cleanse:true, add:[{ n:'Blood Frenzy', t:'dmg', r:'melee', d:[21,24], el:'bleed', brk:20, cd:3 }] }], skills:[
     { n:'Kanabo Crush',  t:'dmg', r:'melee',  d:[17,20], cd:0 },
     { n:'Demon Fire',    t:'dmg', r:'ranged', d:[13,16], el:'fire',  brk:25, cd:2 },
-    { n:'Oni Hide',      t:'barrier', p:28, cd:4 } ] }
+    { n:'Oni Hide',      t:'barrier', p:28, cd:4 } ] },
+  // ---- ACT 3: the frostbound peaks (frost, horror and the restless undead; weak to fire almost across the board) ----
+  { id:'e_husk', role:'front', weak:['fire'], resist:['ice','poison'], frontMod:-0.1, name:'Frostbitten Husk', tag:'HUSK', hp:130, brk:50, spd:5, skills:[
+    { n:'Frozen Claw',  t:'dmg', r:'melee',  d:[14,16], cd:0 },
+    { n:'Icy Grasp',    t:'dmg', r:'melee',  d:[15,17], el:'ice', brk:18, cd:3 } ] },
+  { id:'e_hound', role:'front', weak:['fire'], resist:['ice'], evasive:1.5, name:'Rimebound Hound', tag:'HOUND', hp:90, brk:30, spd:12, skills:[
+    { n:'Rending Bite', t:'dmg', r:'melee',  d:[11,13], el:'bleed', brk:10, cd:0 },
+    { n:'Frost Fang',   t:'dmg', r:'melee',  d:[14,16], el:'ice',   brk:16, cd:2 } ] },
+  { id:'e_wight', role:'ranged', weak:['fire'], resist:['ice','bleed'], name:'Glacial Wight', tag:'WIGHT', hp:85, brk:30, spd:9, skills:[
+    { n:'Frost Bolt',   t:'dmg', r:'ranged', d:[13,15], el:'ice', brk:14, cd:0 },
+    { n:'Soul Chill',   t:'dmg', r:'ranged', d:[16,18], el:'ice', brk:22, cd:3 } ] },
+  { id:'e_chorus', role:'support', weak:['fire'], resist:['ice'], name:'Frozen Chorister', tag:'CHOIR', hp:95, brk:36, spd:6, skills:[
+    { n:'Dirge',        t:'dmg', r:'ranged', d:[9,11], el:'ice', brk:10, cd:0 },
+    { n:'Rime Ward',    t:'barrier', p:32, cd:2 } ] },
+  { id:'e_revenant', role:'front', weak:['fire'], resist:['ice','bleed'], frontMod:-0.2, name:'Winter Revenant', tag:'REVENANT', hp:160, brk:64, spd:4, skills:[
+    { n:'Rusted Greataxe', t:'dmg', r:'melee', d:[16,18], cd:0 },
+    { n:'Cleave',          t:'dmg', r:'melee', d:[18,20], el:'bleed', brk:22, cd:3 } ] },
+  { id:'e_shade', role:'ranged', weak:['fire'], resist:['ice','poison'], evasive:2, name:'Snow Shade', tag:'SHADE', hp:70, brk:24, spd:12, skills:[
+    { n:'Frostbite Touch', t:'dmg', r:'ranged', d:[13,15], el:'ice',    brk:14, cd:0 },
+    { n:'Dread Whisper',   t:'dmg', r:'ranged', d:[15,17], el:'poison', brk:18, cd:2 } ] },
+  { id:'e_stitched', role:'front', weak:['fire'], resist:['poison','bleed'], frontMod:-0.15, name:'Stitched Horror', tag:'HORROR', hp:140, brk:56, spd:4, skills:[
+    { n:'Bludgeon',     t:'dmg', r:'melee',  d:[15,17], cd:0 },
+    { n:'Rotting Slam', t:'dmg', r:'melee',  d:[17,19], el:'poison', brk:20, cd:3 } ] },
+  // ---- the act 3 bosses ----
+  { id:'e_warlord', boss:true, weak:['fire'], resist:['ice','bleed'], name:'The Frozen Warlord', short:'Warlord', tag:'WARLORD', hp:380, brk:110, spd:7, phases:[{ at:.5, msg:'The Warlord\'s dead eyes blaze blue. "Rise, my legion!"', atk:1.15, barrier:40, summon:1 }], skills:[
+    { n:'Frozen Cleave',  t:'dmg', r:'melee',  d:[21,24], cd:0 },
+    { n:'Hoarfrost Slam', t:'dmg', r:'melee',  d:[19,22], el:'ice', brk:28, cd:2 },
+    { n:'Death Cry',      t:'dmg', r:'ranged', d:[17,20], el:'bleed', brk:24, cd:3 },
+    { n:'Shield of Ice',  t:'barrier', p:36, cd:4 } ] },
+  { id:'e_matron', boss:true, weak:['fire'], resist:['ice','poison'], name:'The Hollow Matron', short:'Matron', tag:'MATRON', hp:400, brk:115, spd:9, phases:[{ at:.5, msg:'The Matron\'s lullaby curdles into a scream, and the valley goes dark.', atk:1.15, barrier:44, add:[{ n:'Nightmare Wail', t:'dmg', r:'ranged', d:[22,25], el:'poison', brk:30, cd:3 }] }], skills:[
+    { n:'Grasping Hands', t:'dmg', r:'melee',  d:[20,23], el:'bleed', brk:24, cd:0 },
+    { n:'Frozen Lullaby', t:'dmg', r:'ranged', d:[18,21], el:'ice',   brk:28, cd:2 },
+    { n:'Dread Veil',     t:'barrier', p:36, cd:4 },
+    { n:'Sleepwalker\'s Call', t:'charm', r:'ranged', cd:4 } ] },
+  { id:'e_icequeen', boss:true, weak:['fire'], resist:['ice','shock'], name:'The Ice Queen', short:'Ice Queen', tag:'ICEQUEEN', hp:460, brk:125, spd:10, phases:[
+      { at:.66, msg:'The Ice Queen\'s crown flares. "Kneel."', atk:1.1, barrier:44, add:[{ n:'Whiteout', t:'dmg', r:'ranged', d:[17,20], el:'ice', brk:24, cd:3, aoe:0.5, aoeBrk:0.5 }] },
+      { at:.33, msg:'The throne room shatters into a roaring blizzard!', atk:1.15, barrier:50, summon:1 }], skills:[
+    { n:'Frost Lance',    t:'dmg', r:'ranged', d:[22,25], el:'ice', brk:28, cd:0 },
+    { n:'Scepter Strike', t:'dmg', r:'melee',  d:[21,24], brk:24, cd:1 },
+    { n:'Glacial Prison', t:'dmg', r:'ranged', d:[19,22], el:'ice', brk:30, cd:3 },
+    { n:'Crown of Frost', t:'barrier', p:42, cd:4 } ] }
 ];
 
 /* ============ QUEST DATA ============ */
@@ -1476,6 +1606,67 @@ const QUESTS = [{
     { name: 'Sunset Dunes',       enemies: ['e_crab', 'e_ray', 'e_urchin', 'e_tide'],       gold: 110, bg: 7, scale: { hp: 1.25, atk: 1.15 } },
     { name: "The Carapace King's Throne", enemies: ['e_crab', 'e_crabking', 'e_jelly'],     gold: 160, bg: 8, boss: true, scale: { hp: 1.3, atk: 1.1 } }
   ]
+}, {
+  id: 'pass', name: 'The Shattered Pass',
+  relicDrop: 0.5,
+  desc: 'A mountain road choked with snow and the frozen dead of an old army. Hounds hunt the switchbacks; the Warlord still holds the summit.',
+  pool: ['e_husk', 'e_hound', 'e_wight', 'e_revenant', 'e_chorus'],
+  camps: 2, events: 2,
+  blizzard: { chance: 0.4, max: 2 },       // each fight after the first (never a boss fight) may be a blizzard, at most `max` per quest
+  scale: { hp: 1.42, atk: 1.62 },
+  nodes: [
+    { name: 'Frostbitten Trail', enemies: ['e_hound', 'e_wight', 'e_chorus'], gold: 56 },
+    { name: 'Bleached Switchbacks', enemies: ['e_hound', 'e_wight', 'e_chorus'], gold: 63 },
+    { name: 'Avalanche Scar', enemies: ['e_hound', 'e_revenant', 'e_wight', 'e_chorus'], gold: 70, bg: 3, scale: { hp: 1.07, atk: 1.04 } },
+    { name: 'Wolf-Den Hollow', enemies: ['e_revenant', 'e_hound', 'e_wight', 'e_chorus'], gold: 77, bg: 4, scale: { hp: 1.11, atk: 1.06 } },
+    { name: 'Frozen Watchtower', enemies: ['e_husk', 'e_hound', 'e_revenant', 'e_wight'], gold: 84, bg: 5, scale: { hp: 1.14, atk: 1.09 } },
+    { name: 'Howling Ridge', enemies: ['e_revenant', 'e_husk', 'e_hound', 'e_chorus'], gold: 91, bg: 6, scale: { hp: 1.18, atk: 1.11 } },
+    { name: 'Buried Barracks', enemies: ['e_revenant', 'e_husk', 'e_wight', 'e_chorus'], gold: 98, bg: 7, scale: { hp: 1.21, atk: 1.13 } },
+    { name: 'Summit Gate', enemies: ['e_husk', 'e_hound', 'e_wight', 'e_chorus'], gold: 105, bg: 8, scale: { hp: 1.25, atk: 1.15 } },
+    { name: "The Warlord's Keep", enemies: ['e_revenant', 'e_warlord', 'e_wight'], gold: 200, bg: 9, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+  ]
+}, {
+  id: 'valley', name: 'The Frozen Valley',
+  relicDrop: 0.5,
+  desc: 'A village locked in ice, where something is still singing lullabies. The things in the snow are wrong in ways you will not want to describe.',
+  pool: ['e_shade', 'e_stitched', 'e_husk', 'e_chorus', 'e_wight'],
+  camps: 3, events: 2,
+  blizzard: { chance: 0.4, max: 3 },
+  scale: { hp: 1.5, atk: 1.72 },
+  nodes: [
+    { name: 'Whiteout Meadow', enemies: ['e_stitched', 'e_husk', 'e_shade'], gold: 60 },
+    { name: 'Frozen River', enemies: ['e_husk', 'e_shade', 'e_wight'], gold: 67 },
+    { name: 'Pale Orchard', enemies: ['e_husk', 'e_stitched', 'e_wight', 'e_chorus'], gold: 74, bg: 3, scale: { hp: 1.06, atk: 1.04 } },
+    { name: 'Hollow Village', enemies: ['e_husk', 'e_stitched', 'e_shade', 'e_wight'], gold: 81, bg: 4, scale: { hp: 1.09, atk: 1.06 } },
+    { name: 'Weeping Chapel', enemies: ['e_stitched', 'e_wight', 'e_shade', 'e_chorus'], gold: 88, bg: 5, scale: { hp: 1.12, atk: 1.07 } },
+    { name: 'Ice-Locked Mill', enemies: ['e_stitched', 'e_shade', 'e_wight', 'e_chorus'], gold: 95, bg: 6, scale: { hp: 1.16, atk: 1.09 } },
+    { name: 'The Lullaby Barn', enemies: ['e_stitched', 'e_husk', 'e_shade', 'e_wight'], gold: 102, bg: 7, scale: { hp: 1.19, atk: 1.11 } },
+    { name: 'Bone-Frost Cemetery', enemies: ['e_husk', 'e_stitched', 'e_shade', 'e_chorus'], gold: 109, bg: 8, scale: { hp: 1.22, atk: 1.13 } },
+    { name: "Matron's Garden", enemies: ['e_husk', 'e_wight', 'e_shade', 'e_chorus'], gold: 116, bg: 9, scale: { hp: 1.25, atk: 1.15 } },
+    { name: 'The Hollow Cradle', enemies: ['e_stitched', 'e_matron', 'e_shade'], gold: 220, bg: 10, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+  ]
+}, {
+  id: 'castle', name: "The Ice Queen's Castle",
+  relicDrop: 0.55,
+  desc: 'A palace of black ice above the clouds. The Queen receives no guests, and the court that serves her has been dead for centuries.',
+  pool: ['e_revenant', 'e_wight', 'e_shade', 'e_stitched', 'e_chorus', 'e_hound'],
+  camps: 3, events: 3,
+  unlocks: 'frigid',            // first boss win adds this hero to the roster
+  blizzard: { chance: 0.45, max: 3 },
+  scale: { hp: 1.58, atk: 1.82 },
+  nodes: [
+    { name: 'The Drawbridge', enemies: ['e_hound', 'e_stitched', 'e_chorus'], gold: 64 },
+    { name: 'Frozen Moat', enemies: ['e_stitched', 'e_shade', 'e_chorus'], gold: 71 },
+    { name: 'Crystal Courtyard', enemies: ['e_hound', 'e_stitched', 'e_wight', 'e_chorus'], gold: 78, bg: 3, scale: { hp: 1.06, atk: 1.03 } },
+    { name: 'Hall of Statues', enemies: ['e_stitched', 'e_revenant', 'e_wight', 'e_chorus'], gold: 85, bg: 4, scale: { hp: 1.08, atk: 1.05 } },
+    { name: 'Frozen Armoury', enemies: ['e_stitched', 'e_hound', 'e_revenant', 'e_shade'], gold: 92, bg: 5, scale: { hp: 1.11, atk: 1.07 } },
+    { name: 'The Weeping Gallery', enemies: ['e_hound', 'e_revenant', 'e_wight', 'e_shade'], gold: 99, bg: 6, scale: { hp: 1.14, atk: 1.08 } },
+    { name: 'Ice Library', enemies: ['e_hound', 'e_stitched', 'e_shade', 'e_chorus'], gold: 106, bg: 7, scale: { hp: 1.17, atk: 1.1 } },
+    { name: 'Cold Kitchens', enemies: ['e_stitched', 'e_revenant', 'e_wight', 'e_chorus'], gold: 113, bg: 8, scale: { hp: 1.19, atk: 1.12 } },
+    { name: 'The Throne Stair', enemies: ['e_hound', 'e_revenant', 'e_shade', 'e_wight'], gold: 120, bg: 9, scale: { hp: 1.22, atk: 1.13 } },
+    { name: 'Mirror Hall', enemies: ['e_stitched', 'e_shade', 'e_wight', 'e_chorus'], gold: 127, bg: 10, scale: { hp: 1.25, atk: 1.15 } },
+    { name: "The Ice Queen's Throne", enemies: ['e_revenant', 'e_icequeen', 'e_wight'], gold: 250, bg: 11, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+  ]
 }];
 // Anti stun-lock (hidden, never shown in the UI): when a BOSS is the last enemy standing and loses `stunMisses` turns in a row to stun,
 // it calls fresh, full-health reinforcements (up to `maxSummons` times per fight). Which ones: the node's `adds: [enemy ids]`,
@@ -1486,12 +1677,14 @@ const SHOP = { breakPerGold: 3 };       // only used to price event repairs now;
 // Camp rest: at each camp a hero can recover at most this fraction of their MAX HP by paying for rest (potions are separate).
 // Items: bought at the hub Shop, carried on a quest, used from the Items button in battle (uses the hero's turn).
 // To add an item: add an entry here (and handle its `type` in useItem). Counts are stored per id in the save.
+let blizz = { on: false, torch: 0 };      // the fight's blizzard state (see BLIZZARDS)
 const ITEMS = {
   potion: { id: 'potion', name: 'Healing Potion', icon: '🧪', price: 20, type: 'heal', heal: 40, desc: 'Battle: restores 40 HP to one hero' },
   ration: { id: 'ration', name: 'Field Rations', icon: '🍙', price: 25, type: 'food', pct: 0.50, use: 'camp', desc: 'Camp: the whole party eats and heals 50% of max HP' },
+  torch:  { id: 'torch',  name: 'Torch', icon: '🔥', price: 8, type: 'torch', desc: 'Blizzard fights: light a torch that keeps the party warm while it burns (it burns down at an uneven rate). Uses the hero\'s turn.', hidden: () => !blizzardsKnown() },
   kit:    { id: 'kit',    name: 'Repair Kit',    icon: '🔧', price: 30, type: 'repair', pct: 0.50, use: 'camp', desc: 'Camp: mends one hero\'s armour by 50% of its max (SUPER BROKEN armour is beyond repair)' }
 };
-const battleItems = () => Object.values(ITEMS).filter(it => it.use !== 'camp');   // what the Items button offers in a fight; camp items are used from the camp screen
+const battleItems = () => Object.values(ITEMS).filter(it => it.use !== 'camp' && !(it.type === 'torch' && !(blizz && blizz.on) && !(quest && quest.items && quest.items.torch)));   // what the Items button offers in a fight; camp items are used from the camp screen
 /* ============ RELICS ============ */
 // Gear: each hero can wear RELIC.slots relics. They are bought in the hub Shop (3 random ones, restocked after every run) or dropped by a boss
 // (quest.relicDrop = chance), and worn from the town's Dorm. Each relic is owned once; gear is locked while a quest is in progress.
@@ -1560,10 +1753,41 @@ Object.values(RELICS).slice().forEach(r => {
   ['tide_compass', '🧭', 'Tide Compass', 'rare', '+3 speed and skill cooldowns are 1 turn shorter', { spd: 3, cd: -1 }],
   ['salt_amulet', '🧂', 'Salt Amulet', 'rare', 'Potions this hero drinks heal 100% more, and +20 max HP', { potion: 1, hp: 20 }]
 ].forEach(([id, icon, name, rarity, desc, fx]) => { RELICS[id] = { id, icon, name, rarity, desc, fx, act2: true, price: RELIC.price[rarity] }; });
+/* ---- ACT 3 relics: Frostbound Peaks drops are the TIER 3 versions (about 2x the Tier I numbers, built from the Tier I relic: id + '3', "Name III"), plus a few relics that exist only
+   in the mountains (act3: true). Never sold in the Shop. */
+const T3R = {
+  antidote:       ['Immune to poison and bleed, and +25 max HP', { immune: ['poison', 'bleed'], hp: 25 }],
+  lingering_ward: ["Keeps nine tenths of this hero's barrier into the next round", { keepBarrier: .9 }],
+  hourglass:      ['Skill cooldowns are 1 turn shorter, and +20% damage', { cd: -1, dmg: .2 }],
+  plague_vial:    ['Burn, poison and bleed this hero inflicts hit 120% harder and last 3 turns longer', { dotMul: 1.2, dotTurns: 3 }],
+  ward_stone:     ['Immune to frozen and shocked, and +8% max HP', { immune: ['frozen', 'shocked'], hpPct: .08 }],
+  glass_ring:     ['+50% damage, −10% max HP', { dmg: .5, hpPct: -.1 }],
+  giants_heart:   ['+100 max HP, no speed penalty', { hp: 100 }],
+  vampiric_fang:  ['Heals for 35% of the damage dealt', { lifesteal: .35 }],
+  phoenix:        ['Once per fight, returns with 60% HP instead of falling', { revive: .6 }]
+};
+const k20 = n => Math.round(n * 2);
+Object.values(RELICS).filter(r => !r.tier2 && !r.act2).forEach(r => {
+  const sc = v => Math.abs(v) < 1 ? Math.sign(v) * k20(Math.abs(v) * 100) / 100 : Math.sign(v) * k20(Math.abs(v));
+  const fx = {}; for (const [k, v] of Object.entries(r.fx)) fx[k] = Array.isArray(v) ? v : (v && typeof v === 'object') ? Object.fromEntries(Object.entries(v).map(([a, b]) => [a, typeof b === 'number' ? k20(b) : b])) : sc(v);
+  const o = T3R[r.id];
+  RELICS[r.id + '3'] = { ...r, id: r.id + '3', name: r.name + ' III', tier3: true, desc: o ? o[0] : r.desc.replace(/(?<!Skill )\b\d+(?! turn)/g, n => k20(+n)), fx: o ? o[1] : fx, price: r.price * 2 };
+});
+[ // mountain-only relics (id, icon, name, rarity, description, fx)
+  ['frostbound_crown', '👑', 'Frostbound Crown', 'epic', '+35% damage on elemental skills and +15% crit chance', { elemDmg: .35, crit: 15 }],
+  ['glacier_heart', '🧊', 'Heart of the Glacier', 'epic', '+100 max HP, takes 15% less damage in the front row, and immune to frozen and shocked', { hp: 100, frontMod: -.15, immune: ['frozen', 'shocked'] }],
+  ['everember_lantern', '🏮', 'Everember Lantern', 'epic', 'Never chilled by blizzards (no numbness), and +25 max HP', { noNumb: true, hp: 25 }],
+  ['wight_phylactery', '⚱️', "Wight's Phylactery", 'epic', 'Once per fight, returns with 40% HP instead of falling, and heals for 15% of the damage dealt', { revive: .4, lifesteal: .15 }],
+  ['hoarfrost_fang', '🦷', 'Hoarfrost Fang', 'rare', '+40% ice damage and +10 break damage on elemental skills', { elDmg: { ice: .4 }, elemBrk: 10 }],
+  ['deathwatch_bell', '🔔', 'Deathwatch Bell', 'rare', '+60% damage against broken enemies and +10% crit chance', { brokenBonus: .6, crit: 10 }],
+  ['torchbearers_glove', '🧤', "Torchbearer's Glove", 'rare', 'Torches burn 40% slower for the whole party while this hero is in it, and +2 speed', { torchSlow: .4, spd: 2 }]
+].forEach(([id, icon, name, rarity, desc, fx]) => { RELICS[id] = { id, icon, name, rarity, desc, fx, act3: true, price: RELIC.price[rarity] * 2 }; });
+const relicHigh = r => r.tier2 || r.act2 || r.tier3 || r.act3;
 // act 0 = the Shop (tier 1 only) · act 2 = Tidelands drops (tier 2 + coast relics; falls back to tier 1 once you own them all)
 const relicPool = (owned, act = 0) => {
-  const all = Object.values(RELICS).filter(r => !owned.includes(r.id)), a2 = all.filter(r => r.tier2 || r.act2);
-  return act === 2 ? (a2.length ? a2 : all.filter(r => !(r.tier2 || r.act2))) : all.filter(r => !(r.tier2 || r.act2));
+  const all = Object.values(RELICS).filter(r => !owned.includes(r.id)), a2 = all.filter(r => r.tier2 || r.act2), a3 = all.filter(r => r.tier3 || r.act3), low = all.filter(r => !relicHigh(r));
+  if (act >= 3) return a3.length ? a3 : a2.length ? a2 : low;                    // Act 3 drops Tier III; once you own them all, Tier II, then Tier I
+  return act === 2 ? (a2.length ? a2 : low) : low;
 };
 function pickWeighted(list, weights) {
   const tot = list.reduce((a, r) => a + weights[r.rarity], 0); let x = Math.random() * tot;
@@ -1627,8 +1851,18 @@ Object.values(TRAIT).filter(t => t.kind === 'good').forEach(t => {
   const fx = {}; for (const [k, v] of Object.entries(t.fx)) fx[k] = typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([e, x]) => [e, sc(x)])) : sc(v);
   TRAIT[t.id + '2'] = { ...t, id: t.id + '2', name: t.name + ' II', base: t.id, pool: 'tier2', desc: t.desc.replace(/\d+/g, n => t2n(+n)), fx };
 });
-const isT2 = id => !!(TRAIT[id] && TRAIT[id].base);
-const questAct = id => { const g = QUEST_GROUPS.find(x => x.ids.includes(id)); return g && g.id === 'coast' ? 2 : 1; };
+/* ---- ACT 3 (the Frostbound Peaks): TIER 3 traits. Same idea one step up: a Tier II perk is UPGRADED to its Tier III version (about 2.5x the Tier I numbers); a hero with no Tier II perk
+   gains a new Tier II perk instead. Built automatically from the Tier I list (id + '3', "Name III"), never rolls from Training. Tier III perks can be traded at Beach Volleyball for any Tier II perk. */
+const T3S = 2.5, t3n = n => Math.round(n * T3S);
+Object.values(TRAIT).filter(t => t.kind === 'good' && !t.base).forEach(t => {
+  const sc = v => Math.abs(v) < 1 ? Math.sign(v) * t3n(Math.abs(v) * 100) / 100 : Math.sign(v) * t3n(Math.abs(v));
+  const fx = {}; for (const [k, v] of Object.entries(t.fx)) fx[k] = typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([e, x]) => [e, sc(x)])) : sc(v);
+  TRAIT[t.id + '3'] = { ...t, id: t.id + '3', name: t.name + ' III', base: t.id, tier: 3, pool: 'tier3', desc: t.desc.replace(/\d+/g, n => t3n(+n)), fx };
+  TRAIT[t.id + '2'].tier = 2;
+});
+const isT2 = id => !!(TRAIT[id] && TRAIT[id].tier === 2);
+const isT3 = id => !!(TRAIT[id] && TRAIT[id].tier === 3);
+const questAct = id => { const g = QUEST_GROUPS.find(x => x.ids.includes(id)); return g && g.id === 'frost' ? 3 : g && g.id === 'coast' ? 2 : 1; };
 const heroElems = hid => { const h = HEROES.find(x => x.id === hid); return h ? [...new Set([...h.skills.map(k => k.el), ...(h.elems || [])].filter(Boolean))] : []; };
 const traitCount = (hid, kind) => ((game && game.traits && game.traits[hid]) || []).filter(id => TRAIT[id] && TRAIT[id].kind === kind).length;
 function rollTrait(kind, hid, pool) {                      // a random trait of that kind this hero can use; ones they already have are a little less likely
@@ -1650,7 +1884,15 @@ function awardTraits(won) {                                // at quest end: a pe
   quest.party.forEach(u => {
     const list = game.traits[u.id] = game.traits[u.id] || [];
     for (let k = 0; won && k < TRAITS.perWin; k++) {
-      if (questAct(quest.def.id) === 2) {                                                // Tidelands: improve a perk they already have
+      const act = questAct(quest.def.id);
+      if (act === 3) {                                                                    // Frostbound Peaks: Tier II -> Tier III, or (with no Tier II perk) a brand new Tier II perk
+        const up = [...new Set(list.filter(id => isT2(id) && TRAIT[TRAIT[id].base + '3']))];
+        if (up.length) { const from = up[Math.floor(Math.random() * up.length)]; const to = TRAIT[from].base + '3'; list.splice(list.indexOf(from), 1, to); out.push({ hero: u.id, id: to, from }); continue; }
+        if (traitCount(u.id, 'good') >= TRAITS.maxGood) continue;
+        const t = rollTrait('good', u.id, 'stat'); if (t && TRAIT[t.id + '2']) { list.push(t.id + '2'); out.push({ hero: u.id, id: t.id + '2' }); }
+        continue;
+      }
+      if (act === 2) {                                                                    // Tidelands: improve a perk they already have
         const up = [...new Set(list.filter(id => TRAIT[id] && TRAIT[id].kind === 'good' && !TRAIT[id].base && TRAIT[id + '2']))];
         if (up.length) { const from = up[Math.floor(Math.random() * up.length)]; list.splice(list.indexOf(from), 1, from + '2'); out.push({ hero: u.id, id: from + '2', from }); continue; }
       }
@@ -1677,6 +1919,7 @@ function applyRelics(u, ids, traitIds) {            // bakes relics AND the hero
   if (A.hp || A.hpPct) { u.maxHp = Math.max(1, u.maxHp + (A.hp || 0) + Math.round(u.maxHp * (A.hpPct || 0))); u.hp = u.maxHp; }
   if (A.brk) { const kb = Math.max(0.4, 1 + A.brk); u.maxBreak = Math.max(1, Math.round(u.maxBreak * kb)); u.breakBar = u.maxBreak; u.maxBreak2 = Math.max(1, Math.round(u.maxBreak2 * kb)); u.break2 = u.maxBreak2; }
   if (A.spd) u.spd = Math.max(1, u.spd + A.spd);
+  if (A.noNumb) u.numbImmune = true;
   if (A.frontMod) u.frontMod = (u.frontMod || 0) + A.frontMod;
   if (A.backMod) u.backMod = (u.backMod || 0) + A.backMod;
   u.skills = u.skills.map((sk, i) => {
@@ -1905,6 +2148,7 @@ function renderGuide() {
       + `<h4>Buffs</h4>`
       + g(`🛡️ <b>Barrier</b>: soaks HP and break damage until the end of the round.`, 'good')
       + g(`🌫️ <b>Stealth</b> (Irae's Smoke Bomb): for a few of her turns her attacks gain bleed (+${STEALTH.brk} break) and enemies are far less likely to target her. ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, and any damage ends it.`, 'good')
+      + g(`❄️ <b>Numb</b> (blizzards): in a blizzard with no torch lit, heroes slowly chill (blue tint). A chilled hero can still act, but their attacks can miss, down to a 50% hit chance when fully numb. Broken armour and ice hits chill faster. Light a <b>Torch</b> from the Items button to warm everyone up.`, 'bad')
       + g(`💘 <b>Charm</b> (Siren): only a broken unit can be charmed. Its next attack hits a random friend. Cleanse removes it.`, 'bad')
       + g(`🔰 <b>Defiant stance</b> (Seria's Defiant Slam): 25% less damage taken for 3 turns. Her Shield Bash has a 20% chance to counterattack whenever an enemy attacks her.`, 'good')
       + g(`🐉 <b>Dragon's Wrath</b> (Iris): next turn Iron Fist and Blazing Kick both burn (+75% damage) and she strikes again, then it fades.`, 'good')
@@ -2301,8 +2545,9 @@ function probe(url, ext) {
   return new Promise(res => {
     const vid = ext === 'mp4' || ext === 'webm';
     const el = document.createElement(vid ? 'video' : 'img');
-    if (vid) { el.preload = 'metadata'; el.onloadedmetadata = () => res(true); } else el.onload = () => res(true);
-    el.onerror = () => res(false);
+    const done = ok => { if (vid) { try { el.removeAttribute('src'); el.load(); } catch (e) {} } res(ok); };       // release the probe's media player (browsers allow only so many at once)
+    if (vid) { el.preload = 'metadata'; el.onloadedmetadata = () => done(true); } else el.onload = () => res(true);
+    el.onerror = () => done(false);
     el.src = url;
   });
 }
@@ -2322,7 +2567,8 @@ const SKIN_HINTS = { iris: ['Skin'] };
 /* ---- quest groups: how the embark menu is laid out, and what opens the second group ---- */
 const QUEST_GROUPS = [
   { id: 'lands', icon: '⚔️', name: 'The Old Lands', blurb: 'Sentinels, yokai and the restless dead', ids: ['ruins', 'yokai', 'crypt'] },
-  { id: 'coast', icon: '🌊', name: 'The Tidelands', blurb: 'Storm, lighthouse and sunbaked shore', ids: ['cove', 'lighthouse', 'beach'], requires: ['ruins', 'yokai', 'crypt'] }
+  { id: 'coast', icon: '🌊', name: 'The Tidelands', blurb: 'Storm, lighthouse and sunbaked shore', ids: ['cove', 'lighthouse', 'beach'], requires: ['ruins', 'yokai', 'crypt'] },
+  { id: 'frost', icon: '❄️', name: 'The Frostbound Peaks', blurb: 'Blizzards, torches and a very cold queen', ids: ['pass', 'valley', 'castle'], requires: ['cove', 'lighthouse', 'beach'] }
 ];
 /* ---- NEW GAME+: the whole game again, harder, with every unlock kept ----
    Once every quest has been cleared on the current top difficulty, the next one opens. A tier multiplies the enemies' HP and damage (on top of each quest's own scale),
@@ -2347,13 +2593,14 @@ function tierUnlock() {          // every quest beaten on the current top diffic
   if (!QUESTS.every(q => tierCleared(q.id) >= t.max)) return false;
   t.max++; game.notices.push({ type: 'tier', id: t.max }); return true;
 }
+const frostOpen = () => groupOpen(QUEST_GROUPS[2]);          // clearing all three Tidelands quests opens Act 3 and the winter gear skins
 const coastOpen = () => groupOpen(QUEST_GROUPS[1]);          // also what unlocks the hero skins
-const skinOf = id => (game && coastOpen() && game.skins && game.skins[id]) || null;
+const skinOf = id => { const sk = game && coastOpen() && game.skins && game.skins[id]; return sk && !(sk === 'winter gear' && !frostOpen()) ? sk : null; };
 function skinsFor(id) {
   if (!coastOpen()) return [];                          // skins stay hidden until the Tidelands open
   const names = new Set(SKIN_HINTS[id] || []);
   if (manifest) Object.keys(manifest).forEach(k => { const m = k.match(/^([^/]+)\/armoured - ([^/]+)\//); if (m && m[1] === id) names.add(m[2]); });
-  return [...names];
+  return [...names].filter(n => n !== 'winter gear' || frostOpen());          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
 }
 function stateFolder(u) {                         // the art folder for a unit's current state
   const f = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
@@ -2990,6 +3237,7 @@ function card(u, team, i) {
   if (!alive) c.push('dead');
   if (u.gone) c.push('gone');
   if (u.stealth > 0 && alive) c.push('stealth');
+  if (blizz.on && alive && team === 'p' && u.chill >= 1) c.push('chilled');
   if (u.mod) c.push('elite', 'elite-' + u.mod);
   if (spot.length) c.push(spot.includes(u) ? 'spot' : 'bg');
   const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
@@ -3011,7 +3259,7 @@ function card(u, team, i) {
     <div class="floor"></div>
     <div class="stats-info">
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
-      <div class="tags">${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
+      <div class="tags">${u.chill >= 1 && blizz.on && isAlive(u) ? `<span class="stealth-tag" style="background:#1f3a5c;color:#bfe3ff" title="Cold slows you: your attacks can miss">❄️ hit ${Math.round(numbHit(u) * 100)}%</span>` : ''}${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
       <div class="bar-container${bfx.lethal ? ' lethal' : ''}"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div>${bfx.hp}</div>
       <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of the round">🛡️ ${u.barrier}</span>` : ''}</div>
       <div class="arm">${bfx.armTxt}</div>
@@ -3138,7 +3386,7 @@ function render() {
   $('btn-items').classList.toggle('sel', !!waiting && (invOpen || !!selItem));
   const inv = $('inv'); inv.style.display = waiting && invOpen ? 'flex' : 'none';
   if (waiting && invOpen) inv.innerHTML = battleItems().map(it => { const c = quest.items[it.id] || 0;
-    return `<button onclick="chooseItem('${it.id}')" ${c <= 0 ? 'disabled' : ''}>${it.icon} ${it.name} ×${c}<br><small>${it.desc}</small></button>`; }).join('');
+    const off = c <= 0 || (it.type === 'torch' && !torchCanLight()); return `<button onclick="chooseItem('${it.id}')" ${off ? 'disabled' : ''}>${it.icon} ${it.name} ×${c}<br><small>${it.type === 'torch' && !(blizz && blizz.on) ? 'Only useful in a blizzard' : it.type === 'torch' && blizz.torch > 0.4 ? 'Your torch is still burning well' : it.desc}</small></button>`; }).join('');
 }
 
 /* Camera: on PC the 4v4 starts pulled back and zooms in as fighters fall (every figure scales about its feet, so all effects, which are positioned
@@ -3174,6 +3422,7 @@ function toggleInv() {
 }
 function chooseItem(id) {
   if (!waiting || (quest.items[id] || 0) <= 0) return;
+  if (ITEMS[id].type === 'torch') { if (!torchCanLight()) return; selItem = null; invOpen = false; finish({ item: id, target: cur }); return; }     // no target: the hero just lights it
   selItem = id; invOpen = false; sel = null;
   $('turn-indicator').innerText = `${cur.name}: pick a wounded hero to use ${ITEMS[id].name} on`;
   render();
@@ -3290,10 +3539,13 @@ async function hit(u, t, s) {
   if (s.t === 'dmg' && t.stealth > 0 && t.team !== u.team && Math.random() < EVADE.stealth) {      // Irae in stealth: the attack finds nothing
     log(`💨 ${t.name} is hidden in the shadows: ${u.name}'s ${s.n} misses!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
   }
+  if (s.t === 'dmg' && u.team === 'p' && numbHit(u) < 1 && Math.random() >= numbHit(u)) {                 // numb from the cold: the attack can miss
+    log(`❄️ ${u.name} is numb with cold: ${s.n} misses ${t.name}!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
+  }
   const r = rollDamage(s, t, u), m = matchup(s, t);
   const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = (s.el || s.chip) ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
   const dmg = r.amount - soak, bled = !!(s.bite && (t.statuses || []).some(x => x.type === 'bleed'));
-  qStat(u, t, dmg, r.crit);
+  qStat(u, t, dmg, r.crit); if (s.el === 'ice' && t.team === 'p') addChill(t, BLIZ.frostHit);
   t.barrier = b - soak;                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
   t.hp = lethalGuard(t, t.hp - dmg);                           // never below 0, even for a frame (and immortal units stop at 1)
   if (dmg > 0 && t.stealth > 0) { t.stealth = 0; t.stealthFresh = false; log(`🌫️ ${t.name} is hit and loses her stealth!`, 'log-status'); }
@@ -3369,6 +3621,7 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
     log(`${u.name} uses a ${it.name} on ${t.name}: heals ${t.hp - before} HP. (${quest.items[id]} left)`, 'log-heal');
     sfx('heal'); render(); floatText(t, '+' + (t.hp - before), 'heal'); speak(t, 'thanks');
   }
+  else if (it.type === 'torch') lightTorch(u);
   render(); await sleep(200);
 }
 
@@ -3817,6 +4070,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
       render(); await sleep(250);
     }
   } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(140); }
+  else if (act.item && ITEMS[act.item].type === 'torch') { say(`${u.name} lights a torch`); await useItem(u, act.item, u); }
   else if (act.item) { setSpot([u, act.target]); say(`${u.name} uses ${ITEMS[act.item].name} on ${act.target.name}`); await useItem(u, act.item, act.target); }
   else await perform(u, act.i, act.target);
   if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on a random enemy, then the buff is gone
@@ -3857,7 +4111,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
 function checkEnd() {
   const won = !enemies.some(isAlive), lost = !party.some(isAlive);
   if (!won && !lost) return false;
-  setSpot([]); over = true; actor = null; cur = null; waiting = null;
+  setSpot([]); over = true; actor = null; cur = null; waiting = null; blizzStop();
   const node = curNode(), last = !quest.bonus && quest.node === quest.def.nodes.length - 1;
   const main = $('btn-end-main');
   let saved;
@@ -3887,7 +4141,7 @@ function checkEnd() {
     for (let k = 0; k < elites; k++) if (Math.random() < ELITE.relic) { const r = grantRelic('An elite dropped a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} falls from the elite's remains!</strong>`, 'log-heal'); }
     if (quest.bonus && quest.bonus.relic && Math.random() < quest.bonus.relic) { const r = grantRelic(quest.bonus.kind === 'champion' ? 'The champion left you a relic!' : 'You found a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} is among the spoils!</strong>`, 'log-heal'); }
     if (last) {
-      const coastWas = coastOpen(), beachWas = beachOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
+      const coastWas = coastOpen(), beachWas = beachOpen(), frostWas = frostOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
       const qt = quest.tier || 0; game.tiers.cleared[quest.def.id] = Math.max(tierCleared(quest.def.id), qt); tierUnlock();                 // New Game+: remember the difficulty, maybe open the next one
       game.gold += quest.gold; game.stats.won++; game.quest = null;
       const drop = rollDrop(quest.def, game.relics, tierDef(quest.tier).relic || 0);                                        // the boss may drop a relic
@@ -3896,6 +4150,7 @@ function checkEnd() {
       const pn = returnItems(true);
       const un = quest.def.unlocks;
       if (un && heroById(un) && !game.roster.includes(un)) { game.roster.push(un); game.notices.push({ type: 'unlock', id: un }); }   // first clear unlocks the hero
+      if (!frostWas && frostOpen()) game.notices.push({ type: 'region', id: 'frost' });
       if (!coastWas && coastOpen()) game.notices.push({ type: 'region', id: 'coast' });                                                   // the third Old Lands quest opens the Tidelands
       if (!beachWas && beachOpen()) game.notices.push({ type: 'beach' });                                                                 // clearing the Sunbaked Shoals opens the beach in town
       awardTraits(true);                                                                    // then the traits notice (a perk for every hero, a flaw for any who fell)
@@ -3926,7 +4181,7 @@ function checkEnd() {
 async function battle() {
   log(`${curNode().name}: ${party.length} hero${party.length > 1 ? 'es' : ''} face ${enemies.length} enem${enemies.length > 1 ? 'ies' : 'y'}.`);
   for (let round = 1; ; round++) {
-    roundNo = round; log(`— Round ${round} —`, 'log-round');
+    roundNo = round; log(`— Round ${round} —`, 'log-round'); blizzTick(round);
     order = [...party, ...enemies].filter(isAlive).sort((a, b) => b.spd - a.spd || Math.random() - 0.5);
     enemies.forEach(e => { const m = ELITE.mods[e.mod]; if (m && m.barrier && isAlive(e) && round % 2 === 1) e.barrier = Math.max(e.barrier || 0, m.barrier); });     // Warded elites
     enemies.forEach(e => { e.intent = isAlive(e) ? enemyChoose(e, true) : null; });      // telegraph this round's moves
@@ -3951,10 +4206,11 @@ const elIcons = h => [...new Set([...h.skills.map(s => s.el), ...(h.elems || [])
 function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
   if (name !== 'battle-scene' && typeof talkClear === 'function') talkClear();
   const rv = document.getElementById('tm-full'); if (rv) rv.className = '';
-  ['hub', 'beach', 'beach-pick', 'vb', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle'].forEach(id => $(id).classList.toggle('show', id === name));
+  ['hub', 'beach', 'beach-pick', 'vb', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle', 'lake', 'dive'].forEach(id => $(id).classList.toggle('show', id === name));
   if (name === 'hub') renderHub();
   if (name === 'beach') renderBeach();
   if (name === 'beach-pick') renderBeachPick();
+  if (name === 'lake') renderLake();
   if (name === 'party-select') renderParty();
   if (name === 'quest-select') renderQuests();
   if (name === 'dev-battle') renderDev();
@@ -3966,6 +4222,7 @@ function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'c
   if (name === 'gear') renderGear();
   if (name === 'train-select') renderTrainSelect();
   if (name === 'train-method') renderTrainMethods();
+  if (name !== 'battle-scene') blizzStop();
   sceneFade(); try { musicSet(areaFor(name)); weatherSet(name); } catch (e) {}
   document.body.classList.toggle('in-battle', name === 'battle-scene');
   document.body.classList.toggle('in-town', name === 'hub' || name === 'beach');
@@ -4059,7 +4316,7 @@ async function loadTownBg() {
 }
 
 function renderHub() {
-  $('hub-gold').textContent = `Gold: ${game.gold}`; $('btn-beach').style.display = beachOpen() ? '' : 'none';
+  $('hub-gold').textContent = `Gold: ${game.gold}`; $('btn-beach').style.display = beachOpen() ? '' : 'none'; $('btn-lake').style.display = lakeOpen() ? '' : 'none';
   loadTownBg();
   $('hub-msg').textContent = hubNote; hubNote = '';
   showNotice();      // e.g. the result of the last quest
@@ -4077,8 +4334,16 @@ function showNotice() {                      // pending pop-ups (saved, so they 
   if (n && n.type === 'beach') {
     box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🏖️'; $('notice-btn').textContent = 'To the beach!';
     $('notice-title').textContent = '🏖️ A path to the beach!';
-    $('notice-text').textContent = 'With your first Tidelands victory, a gloomy little beach has opened up below the town. Play Beach Volleyball there to trade a hero\'s Tier II perk for any Tier I perk you like.';
+    $('notice-text').textContent = 'With your first Tidelands victory, a gloomy little beach has opened up below the town. Play Beach Volleyball there to trade a hero\'s Tier II perk for any Tier I perk you like (and later, Tier III for Tier II).';
     $('notice-skills').textContent = 'Tidelands quests now UPGRADE a perk a hero already has, and their bosses drop Tier II relics.';
+    return;
+  }
+  if (n && n.type === 'region' && n.id === 'frost') {
+    box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '❄️'; $('notice-btn').textContent = 'To the mountains!';
+    $('notice-title').textContent = '❄️ The Frostbound Peaks are open!';
+    $('notice-text').textContent = 'With the Tidelands behind you, a frozen road climbs into the mountains: the Shattered Pass, the Frozen Valley and the Ice Queen\'s Castle. Blizzards roll in without warning, so pack Torches from the Shop.';
+    $('notice-skins').textContent = '';
+    $('notice-skills').textContent = 'Every hero also has a new Winter Gear look to try in the Dorm (Skin).';
     return;
   }
   if (n && n.type === 'region') {
@@ -4227,7 +4492,7 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, Number(v) || 0));
 // The quest is checkpointed into game.quest at embark, after each win, on entering camp and after each purchase.
 // Continue resumes there: node 0 = start of the first fight, otherwise the camp before that node.
 function snapshotQuest() {
-  return { stats: quest.stats || null, id: quest.def.id, tier: quest.tier || 0, node: quest.node, gold: quest.gold, plan: quest.plan, eventDone: !!quest.eventDone, bonus: quest.bonus || null,
+  return { blizzUsed: quest.blizzUsed || 0, stats: quest.stats || null, id: quest.def.id, tier: quest.tier || 0, node: quest.node, gold: quest.gold, plan: quest.plan, eventDone: !!quest.eventDone, bonus: quest.bonus || null,
            items: { ...quest.items },
            party: quest.party.map(u => ({ id: u.id, hp: u.hp, breakBar: u.breakBar, break2: u.break2, state: u.state, downs: u.downs || 0, rank: u.rank, campHeal: u.campHeal || 0, relics: u.relics || [] })) };
 }
@@ -4263,7 +4528,7 @@ function restoreQuest(s) {
     members.push(u);
   }
   const items = {}; Object.keys(ITEMS).forEach(id => { items[id] = Math.max(0, Math.floor(Number(s.items && s.items[id]) || 0)); });
-  return { stats: validStats(s.stats), def, tier: Math.max(0, Math.min(MAX_TIER, s.tier | 0)), node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : (() => { const pl = rollPlan(def, s.tier | 0); if (s.node > 0 && !pl.camps.includes(s.node - 1)) pl.camps = [...pl.camps, s.node - 1].sort((x, y) => x - y); return pl; })(), eventDone: !!s.eventDone,
+  return { blizzUsed: Math.max(0, Math.min(9, s.blizzUsed | 0)), stats: validStats(s.stats), def, tier: Math.max(0, Math.min(MAX_TIER, s.tier | 0)), node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : (() => { const pl = rollPlan(def, s.tier | 0); if (s.node > 0 && !pl.camps.includes(s.node - 1)) pl.camps = [...pl.camps, s.node - 1].sort((x, y) => x - y); return pl; })(), eventDone: !!s.eventDone,
            bonus: s.bonus && Array.isArray(s.bonus.ids) && s.bonus.ids.length && s.bonus.ids.length <= 4 && s.bonus.ids.every(id => enemyById(id)) && Array.isArray(s.bonus.mods) && s.bonus.mods.every(m => m == null || ELITE.mods[m])
              ? { kind: String(s.bonus.kind || ''), name: String(s.bonus.name || 'Event Fight').slice(0, 40), ids: s.bonus.ids.slice(), mods: s.bonus.mods.slice(), gold: Math.max(0, Math.floor(Number(s.bonus.gold) || 0)), hp: clamp(s.bonus.hp || 1, 0.5, 2), relic: clamp(s.bonus.relic || 0, 0, 1) } : null };
 }
@@ -4321,6 +4586,7 @@ function startQuickBattle() {
   quest = { def: { ...q, nodes, name: 'Quick Battle', relicDrop: 0, unlocks: null }, node: ni, gold: 0, dev: true, devMods: devFoes.map(f => f.mod), plan: null, items: {},
             party: picked.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }) };
   Object.keys(ITEMS).forEach(id => { quest.items[id] = 99; });
+  quest.devBlizz = $('dev-blizz').value === '1'; quest.devChill = +$('dev-chill').value || 0; quest.devTorch = $('dev-torch').value === '1';
   game.lastParty = [...picked];
   startNode();
 }
@@ -4349,8 +4615,9 @@ function startNode() {
   $('turn-indicator').innerText = 'Preparing...';
   $('battle-sub').textContent = quest.dev ? 'Quick Battle (developer mode)' : quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''} · Quest gold: ${quest.gold}`;
   $('enemy-head').textContent = node.name.toUpperCase();
+  blizzStart(node);
   showScene('battle-scene');
-  renderFx(); renderSnd(); loadStageBg();
+  renderFx(); renderSnd(); loadStageBg(); blizzFx();
   render(); lowHpPulse(); return introCard().then(() => { if (quest && $('battle-scene').classList.contains('show')) { charStart(); return battle(); } });
 }
 
@@ -4590,7 +4857,7 @@ let shopMsg = '';
 function openShop() { shopMsg = ''; showScene('shop'); }
 function renderShop() {
   $('shop-sub').innerHTML = `Supplies for the road. Whatever is in your bag goes with the party on the next quest. <span class="hub-gold">Gold: ${game.gold}</span>`;
-  $('shop-list').innerHTML = Object.values(ITEMS).map(it => `<div class="shop-row"><div class="mini-sprite" style="font-size:1.6rem">${it.icon}</div>
+  $('shop-list').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="shop-row"><div class="mini-sprite" style="font-size:1.6rem">${it.icon}</div>
     <div class="who"><strong>${it.name}</strong><br>${it.desc}<br>In your bag: <b>${game.items[it.id] || 0}</b></div>
     <div class="btns"><button onclick="buyItem('${it.id}')" ${game.gold < it.price ? 'disabled' : ''}>Buy · ${it.price}g</button></div></div>`).join('');
   const stock = (game.shop && game.shop.stock) || [];
@@ -4598,7 +4865,7 @@ function renderShop() {
     <div class="who"><strong>${r.name}</strong> <span class="rar rar-${r.rarity}">${r.rarity}</span><br>${r.desc}</div>
     <div class="btns"><button onclick="buyRelic('${id}')" ${game.gold < r.price ? 'disabled' : ''}>Buy · ${r.price}g</button></div></div>`; }).join('')
     : '<div class="dim" style="padding:8px">Sold out. New relics arrive after your next run.</div>';
-  $('shop-supplies').innerHTML = Object.values(ITEMS).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}<small>${it.use === 'camp' ? 'Used at camp' : 'Used in battle'}</small></div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('')
+  $('shop-supplies').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}<small>${it.use === 'camp' ? 'Used at camp' : 'Used in battle'}</small></div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('')
     + '<div class="dim" style="font-size:.68rem">Everything in the bag goes with the party on the next quest.</div>';
   $('btn-relic-bag').textContent = `🎒 Relic Inventory (${game.relics.length})`;
   $('shop-msg').textContent = shopMsg;
@@ -5061,6 +5328,7 @@ const BIOS = {
   siren:   { bio: 'Her voice carries a tide of its own. Charming, unsettling, and rarely entirely joking.', like: 'The sea, an audience, harmony', hate: 'Silence, dry land, being interrupted' },
   irae:    { bio: 'Restless and fierce, she fights like the world owes her a debt she plans to collect.', like: 'A good duel, sharp steel, honest enemies', hate: 'Retreating, rules, slow marches' },
   jean:    { bio: 'A plague doctor who is oddly cheerful about her work. Her cures are... experimental.', like: 'Research, volunteers, a well-stocked satchel', hate: 'Untidy wounds, being called a quack' },
+  frigid:  { bio: 'A sorceress of the frozen court who walked out of it. The cold has never bothered her; people sometimes do.', like: 'Silence, snowfall, a warm drink she pretends not to want', hate: 'Fire, small talk, being called a queen\'s servant' },
   tyr:     { bio: 'A beast of a fighter with a bigger heart. Loud at the fire and louder in the fray.', like: 'Meat, a good brawl, his friends', hate: 'Sitting still, empty bowls' }
 };
 const CAMP_LINES = {         // what each hero says at the fire (one is picked at random)
@@ -5072,6 +5340,7 @@ const CAMP_LINES = {         // what each hero says at the fire (one is picked a
   siren:   ['Shall I sing? It is no trouble at all.', 'The fire hums. Did you notice?', 'I miss the sound of waves.'],
   irae:    ['Next fight, I go first.', 'Resting is just waiting with extra steps.', 'Someone spar with me. Anyone.'],
   jean:    ['Does anyone want to test a new tonic? Anyone?', 'Please do not eat the green ones.', 'Wounds are just data, really.'],
+  frigid:  ['It is not cold. You are all just soft.', 'Snow is just quiet water. I like it.', 'Stand closer to the fire. I will not.'],
   tyr:     ['Is there more meat? There should be more meat.', 'Ha! That last one squealed!', 'I fight better when I am fed.']
 };
 const CAMP_PAIRS = {         // special exchanges for particular pairs: key is the two ids sorted and joined with '+'; [first speaker's line, other's reply]
@@ -5083,7 +5352,10 @@ const CAMP_PAIRS = {         // special exchanges for particular pairs: key is t
   'siren+vesper': [['Your silence is lovely, Vesper.', '...Thank you. Please stop.']],
   'seria+siren':  [['Siren, no singing near the shield.', 'It is a beautiful shield, though.']]
 };
-const TAUNTS = {             // enemy id -> moment -> lines. Moments: start (fight opens), phase (boss changes phase), charm (it charms a hero)
+const TAUNTS = {
+  e_warlord:  { start: ['None pass. None have. None will.', 'My legion marches on.'], phase: ['RISE! ALL OF YOU!', 'You will join the ranks.'] },
+  e_matron:   { start: ['Hush now. Hush. Sleep.', 'Come closer, little ones...'], phase: ['NO MORE LULLABIES!', 'Why won\'t you sleep?!'], charm: ['Sleepwalk for me, dear.', 'Wake and hurt them.'] },
+  e_icequeen: { start: ['You dare enter my court?', 'Kneel, and perhaps I will be merciful.'], phase: ['This court will be YOUR grave.', 'Enough. Winter takes everything.'] },             // enemy id -> moment -> lines. Moments: start (fight opens), phase (boss changes phase), charm (it charms a hero)
   e_boss:     { start: ['INTRUDERS. DEACTIVATING.', 'This throne is not yours.'], phase: ['SYSTEMS... UNLEASHED!', 'You have damaged me. Now I damage you.'] },
   e_siren:    { start: ['Come closer. Listen.', 'Such lovely voices... let me hear them.'], phase: ['Now you will SING for me!', 'Enough pretty words.'], charm: ['Sleep, little one. Turn on them.', 'Such a sweet song, is it not?'] },
   e_keeper:   { start: ['The storm answers to me.', 'Turn back. The sea is angry.'], phase: ['LET THE TEMPEST ROAR!', 'You called the storm. Here it is.'] },
@@ -5091,7 +5363,10 @@ const TAUNTS = {             // enemy id -> moment -> lines. Moments: start (fig
   e_necro:    { start: ['More bones for my collection.', 'You will make fine servants.'], phase: ['Rise! Rise, all of you!', 'Death is only the beginning.'] },
   e_shuten:   { start: ['Ha! Drinking partners at last!', 'Come, mortals. Make me laugh.'], phase: ['NOW the real feast begins!', 'You have woken the oni.'] }
 };
-const QUEST_INTRO = {        // one sentence the first time a quest's first fight opens
+const QUEST_INTRO = {
+  pass: 'Snow swallows the road. Somewhere above, a horn sounds from a dead throat.',
+  valley: 'The village is silent. The wind sounds a lot like humming.',
+  castle: 'The gates stand open. Nothing here has any reason to be welcoming.',        // one sentence the first time a quest's first fight opens
   ruins: 'The Sentinel Ruins stand silent... but not empty.',
   yokai: 'Lanterns drift through the dark. The Night Parade has begun.',
   crypt: 'Cold air seeps from the crypt doors. Something below is awake.',
@@ -5182,7 +5457,7 @@ const MUSIC = {
   battle: { notes: [110, 131, 147, 165, 196],  wave: 'sawtooth', lp: 420,  every: 2200 }
 };
 let musicArea = '', musicTimer = null, mGain = null;
-const areaFor = n => ({ hub: 'town', shop: 'town', gear: 'town', 'train-select': 'town', 'train-method': 'town', spa: 'beach', 'spa-select': 'town', 'party-select': 'town', 'quest-select': 'town', beach: 'beach', 'beach-pick': 'beach', vb: 'beach', camp: 'camp', event: 'camp', 'battle-scene': 'battle' })[n] || '';
+const areaFor = n => ({ hub: 'town', shop: 'town', gear: 'town', 'train-select': 'town', 'train-method': 'town', spa: 'beach', 'spa-select': 'town', 'party-select': 'town', 'quest-select': 'town', beach: 'beach', 'beach-pick': 'beach', vb: 'beach', camp: 'camp', event: 'camp', 'battle-scene': 'battle', lake: 'beach', dive: 'battle' })[n] || '';
 function musicVol() { if (mGain && actx) mGain.gain.setTargetAtTime(sndMuted ? 0 : FX.vol * 0.35, actx.currentTime, 0.3); if (!sndMuted && FX.vol > 0 && !musicTimer && musicArea) musicSet(musicArea, true); }
 function musicSet(area, force) {
   if (area === musicArea && !force) return; musicArea = area;
@@ -5203,6 +5478,313 @@ function musicSet(area, force) {
 document.addEventListener('pointerdown', () => { if (!sndMuted && !musicTimer && musicArea) musicSet(musicArea, true); }, { passive: true });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !sndMuted && !musicTimer && musicArea) musicSet(musicArea, true); });
 applyFxLook();
+
+/* ============ BLIZZARDS: chill, numbness and torches (Act 3 groundwork) ============ */
+// A blizzard is an optional weather for a fight. While it rages and no torch burns, every hero slowly gets colder (u.chill, 0-100). Chill never stuns: it lowers the hero's chance to land an
+// attack, from 100% down to 50% at full chill (BLIZ.minHit), so a numb hero can still act (light a torch, finish the last enemy). It is shown by a blue tint on the hero. Cold sources: no torch
+// (+BLIZ.cold a round, x BLIZ.broken if the armour is broken), ice hits (+BLIZ.frostHit, same multiplier). Warmth: a burning torch (-BLIZ.warm a round) and lighting one (-BLIZ.lightWarm at once).
+// A torch (cheap Shop item, uses a hero's turn) burns for a random 3-6ish rounds, shown as a glow that fades from bright yellow to dim red as the screen darkens.
+// Heroes with numbImmune:true (the frost hero) never chill. Quests turn blizzards on with quest.def.blizzard = { chance, max } (never the first or a boss fight); Quick Battle has a switch.
+const BLIZ = { cold: 9, broken: 2.5, frostHit: 16, warm: 12, lightWarm: 18, minHit: 0.5, burnLo: 0.16, burnHi: 0.42, relight: 0.4 };
+const blizzardsKnown = () => !!devMode || QUESTS.some(q => q.blizzard && questCleared(q.id)) || QUESTS.some(q => q.blizzard);
+const numbHit = u => (!u || u.numbImmune || !blizz.on || !(u.chill > 0)) ? 1 : 1 - (1 - BLIZ.minHit) * Math.min(1, u.chill / 100);
+const torchCanLight = () => !!(blizz && blizz.on && blizz.torch <= BLIZ.relight);
+function addChill(u, n) {
+  if (!blizz.on || !u || u.team !== 'p' || u.numbImmune || !isAlive(u)) return;
+  u.chill = Math.max(0, Math.min(100, (u.chill || 0) + n * (u.state !== 'armoured' ? BLIZ.broken : 1)));
+}
+function blizzStart(node) {
+  blizz = { on: false, torch: 0 };
+  party.forEach(u => { u.chill = 0; });
+  let on = false;
+  if (quest.dev) on = !!quest.devBlizz;
+  else if (!quest.bonus && quest.def.blizzard && !node.boss && quest.node > 0 && (quest.blizzUsed || 0) < (quest.def.blizzard.max || 2)) on = Math.random() < (quest.def.blizzard.chance || .4);
+  if (!on) return;
+  if (!quest.dev) quest.blizzUsed = (quest.blizzUsed || 0) + 1;
+  blizz = { on: true, torch: quest.dev && quest.devTorch ? 1 : 0, rounds: 0 };
+  if (quest.dev && quest.devChill) party.forEach(u => { if (!u.numbImmune) u.chill = quest.devChill; });
+}
+function blizzTick(round) {
+  if (!blizz.on) return;
+  if (round > 1 && blizz.torch > 0) {                                            // the torch burns down at an uneven rate
+    const slow = Math.min(.8, party.reduce((a, u) => Math.max(a, isAlive(u) && u.rel && u.rel.torchSlow || 0), 0));
+    blizz.torch = Math.max(0, blizz.torch - (BLIZ.burnLo + Math.random() * (BLIZ.burnHi - BLIZ.burnLo)) * (1 - slow));
+    if (blizz.torch <= 0) log('🔥 The torch gutters out. The cold creeps back in.', 'log-status');
+  }
+  if (round > 1) party.filter(isAlive).forEach(u => { if (u.numbImmune) return; if (blizz.torch > 0) u.chill = Math.max(0, (u.chill || 0) - BLIZ.warm); else addChill(u, BLIZ.cold); });
+  blizzFx(); render();
+}
+function lightTorch(u) {
+  blizz.torch = 1; party.filter(isAlive).forEach(h => { if (!h.numbImmune) h.chill = Math.max(0, (h.chill || 0) - BLIZ.lightWarm); });
+  log(`🔥 ${u.name} lights a torch. Warmth floods back (${quest.items.torch} left).`, 'log-heal'); floatText(u, '🔥 TORCH', 'tag'); sfx('charge', 'fire'); flash('#ff9a3c', .25, 500); blizzFx();
+}
+function blizzStop() { blizz = { on: false, torch: 0 }; blizzFx(); party.forEach(u => { u.chill = 0; }); }
+let snowRaf = 0, snowFlakes = [];
+function blizzFx() {
+  const el = document.getElementById('blizz'), hud = document.getElementById('torch-hud'); if (!el) return;
+  el.classList.toggle('on', !!blizz.on); hud.classList.toggle('on', !!blizz.on);
+  if (!blizz.on) { cancelAnimationFrame(snowRaf); snowRaf = 0; windStop(); return; }
+  const t = Math.max(0, Math.min(1, blizz.torch)), lit = t > 0;
+  const warm = lit ? `rgba(${255},${Math.round(90 + 120 * t)},${Math.round(40 + 50 * t)},.6)` : 'rgba(0,0,0,0)';        // bright yellow when strong, dim red when nearly out
+  el.style.setProperty('--dark', lit ? (0.32 + 0.3 * (1 - t)).toFixed(2) : '0.68'); el.style.setProperty('--tg', lit ? (0.35 + 0.65 * t).toFixed(2) : '0'); el.style.setProperty('--tc', warm);
+  hud.querySelector('i').style.setProperty('--w', Math.round(t * 100) + '%'); hud.querySelector('i').style.setProperty('--tc2', lit ? `hsl(${Math.round(8 + 44 * t)},95%,${Math.round(40 + 18 * t)}%)` : '#333');
+  hud.querySelector('span').textContent = lit ? '🔥 Torch' : '🌑 No torch';
+  if (!snowRaf && !FX.calm) snowLoop(); windStart();
+}
+function snowLoop() {
+  const c = document.getElementById('blizz-snow'), g = c.getContext('2d'); const W = c.width = innerWidth, H = c.height = innerHeight;
+  if (!snowFlakes.length) for (let i = 0; i < 160; i++) snowFlakes.push({ x: Math.random() * W, y: Math.random() * H, r: 1 + Math.random() * 2.6, s: 2 + Math.random() * 4, w: 3 + Math.random() * 5 });
+  const step = () => {
+    if (!blizz.on || FX.calm) { snowRaf = 0; g.clearRect(0, 0, W, H); return; }
+    g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(235,245,255,.8)';
+    for (const f of snowFlakes) { f.x -= f.w; f.y += f.s; if (f.x < -5) f.x = W + 5; if (f.y > H + 5) { f.y = -5; f.x = Math.random() * W; } g.beginPath(); g.arc(f.x, f.y, f.r, 0, 6.3); g.fill(); }
+    snowRaf = requestAnimationFrame(step);
+  };
+  snowRaf = requestAnimationFrame(step);
+}
+// howling wind: filtered noise with a slow swell (follows the Sound switch)
+let windSrc = null;
+function windStart() {
+  if (windSrc || sndMuted || !ac()) return;
+  const s = actx.createBufferSource(), bp = actx.createBiquadFilter(), g = actx.createGain(), lfo = actx.createOscillator(), lg = actx.createGain();
+  s.buffer = anoise; s.loop = true; bp.type = 'bandpass'; bp.frequency.value = 520; bp.Q.value = 1.4; g.gain.value = 0.05; lfo.frequency.value = 0.18; lg.gain.value = 0.035; lfo.connect(lg); lg.connect(g.gain);
+  s.connect(bp); bp.connect(g); g.connect(amaster); s.start(); lfo.start(); windSrc = { s, lfo, g };
+}
+function windStop() { if (!windSrc) return; try { windSrc.g.gain.setTargetAtTime(0, actx.currentTime, 0.3); const w = windSrc; setTimeout(() => { try { w.s.stop(); w.lfo.stop(); } catch (e) {} }, 1200); } catch (e) {} windSrc = null; }
+// steam breath in the cold: in Act 3 every figure puffs a little fog cloud in time with its breathing animation (same --bt / --bd as the idle breathe)
+function breathFx() {
+  const cold = !!(quest && quest.def && !quest.dev && questAct(quest.def.id) === 3) || !!(quest && quest.dev && blizz.on);
+  [...party, ...enemies].forEach(u => { const f = figs.get(u); if (!f) return; const b = f.querySelector(':scope > .breath');
+    if (cold && isAlive(u)) { if (!b) { const d = document.createElement('div'); d.className = 'breath'; f.appendChild(d); } } else if (b) b.remove(); });
+}
+// the blue tint level of each hero, kept in sync after every render
+const _renderChill = render;
+render = function () { _renderChill(); try { breathFx(); } catch (e) {} try { if (blizz.on) party.forEach(u => { const f = figs.get(u); if (f) { const card = f.closest('.combatant-card'); if (card) card.style.setProperty('--chill', ((u.chill || 0) / 100).toFixed(2)); } }); } catch (e) {} };
+
+/* ============ THE FROZEN LAKE: polar dip (Act 3 minigame) ============ */
+// Pick a hero, pay the fee, jump in. A tiny Vampire-Survivors-style swim: you only steer (WASD / arrows / stick / drag on touch); your attack fires by itself on a timer, every kill earns Frost Crystals,
+// and every few kills you choose 1 of 3 upgrades. Enemies are shrunk Act 3 monsters and get stronger faster than any upgrade can keep up, so a run always ends. Crystals are kept whatever happens.
+// The first dive with a hero also awakens that hero's Potential (game.dived[heroId]). Art: the hero's winter gear idle (surface), swimsuit damaged (sinking), swimsuit idle (swimming); enemies use their normal idle.
+const LAKE = { cost: 100, hpBase: 60, hpPer: 0.7, speed: 175, atkEvery: 0.7, dmgMul: 2.6, firstLevel: 5, levelStep: 3, maxAlive: 64, regionOpen: ['pass', 'valley', 'castle'] };
+const DIVE_FOES = [        // id, size (px tall), speed, hp, contact damage, crystals, appears from (s), spawn weight
+  { id: 'e_husk',     size: 44, spd: 52,  hp: 22,  dmg: 7,  val: 1, from: 0,   w: 10 },
+  { id: 'e_hound',    size: 34, spd: 108, hp: 14,  dmg: 5,  val: 1, from: 20,  w: 8 },
+  { id: 'e_shade',    size: 34, spd: 86,  hp: 12,  dmg: 6,  val: 1, from: 45,  w: 7 },
+  { id: 'e_chorus',   size: 42, spd: 50,  hp: 32,  dmg: 6,  val: 2, from: 70,  w: 5 },
+  { id: 'e_wight',    size: 44, spd: 64,  hp: 30,  dmg: 9,  val: 2, from: 100, w: 5 },
+  { id: 'e_stitched', size: 58, spd: 44,  hp: 80,  dmg: 12, val: 3, from: 140, w: 3 },
+  { id: 'e_revenant', size: 70, spd: 38,  hp: 170, dmg: 18, val: 6, from: 190, w: 1.2 }
+];
+const DIVE_COL = { fire: '#ff8a3c', ice: '#8fe0ff', shock: '#ffe65c', poison: '#8bdc5a', bleed: '#ff5c7a', none: '#ffffff' };
+const DIVE_UP = [          // upgrades offered on level up (each stacks up to max)
+  { id: 'dmg',   icon: '💥', name: 'Power',        max: 5, desc: '+20% damage' },
+  { id: 'rate',  icon: '⏱️', name: 'Haste',        max: 5, desc: 'Attack 14% faster' },
+  { id: 'multi', icon: '🔱', name: 'Multishot',    max: 4, desc: '+1 attack each time' },
+  { id: 'orbit', icon: '🌀', name: 'Orbit',        max: 5, desc: '+1 spinning shard that hurts what it touches' },
+  { id: 'pulse', icon: '🔔', name: 'Shockwave',    max: 5, desc: 'A ring blast around you every few seconds (stronger each level)' },
+  { id: 'chain', icon: '⛓️', name: 'Chain',        max: 4, desc: 'Hits jump to +1 more enemy' },
+  { id: 'move',  icon: '🏊', name: 'Swim Speed',   max: 4, desc: '+10% move speed' },
+  { id: 'hp',    icon: '❤️', name: 'Vitality',     max: 5, desc: '+25 max HP and heal 25' },
+  { id: 'regen', icon: '🩹', name: 'Regeneration', max: 4, desc: 'Heal 1 HP per second' }
+];
+const lakeOpen = () => !!devMode || LAKE.regionOpen.some(questCleared);
+const lakeNum = (k) => (game && game[k]) || 0;
+function openLake() { if (!lakeOpen()) return; showScene('lake'); }
+function renderLake() {
+  game.dived = game.dived || {}; game.lake = game.lake || { best: {} };
+  const can = game.gold >= LAKE.cost;
+  $('lake-intro').innerHTML = `Cut a hole in the ice and jump in. Each dive costs <b>${LAKE.cost}g</b>. Swim, survive the horde, and earn <b>❄️ Frost Crystals</b> from every kill (you keep them all). Your first dive with a hero awakens their <b>Potential</b>. <span class="hub-gold">Gold: ${game.gold} · ❄️ ${lakeNum('crystals')}</span>`;
+  $('lake-list').innerHTML = game.roster.map(id => { const h = heroById(id); if (!h) return '';
+    const done = game.dived[id], best = game.lake.best[id];
+    return `<div class="pick${can ? '' : ' full'}" ${can ? `onclick="startDive('${id}')"` : ''}><div class="mini-sprite port-box" data-port="${h.id}">${h.tag}</div>
+      <div><strong>${h.name}</strong> ${elIcons(h)}<div class="sk">${done ? `Best: ${Math.floor(best / 60)}:${String(Math.floor(best % 60)).padStart(2, '0')}` : '✨ First dive awakens their Potential'}${can ? ' · ' + LAKE.cost + 'g' : ' · not enough gold'}</div></div></div>`; }).join('');
+}
+const diveArt = {};
+function diveLoadEl(a) { return new Promise(res => { if (a.ext === 'mp4' || a.ext === 'webm') { const v = document.createElement('video'); v.src = a.url; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.oncanplay = () => { v.play().catch(() => {}); res({ el: v, w: v.videoWidth, h: v.videoHeight, url: a.url }); }; v.onerror = () => res(null); }
+  else { const i = new Image(); i.onload = () => res({ el: i, w: i.naturalWidth, h: i.naturalHeight, url: a.url }); i.onerror = () => res(null); i.src = a.url; } }); }
+async function diveSpr(paths) {                 // first path that exists wins (null when there is no art yet: a placeholder is drawn)
+  const key = paths.join('|'); if (key in diveArt) return diveArt[key];
+  for (const p of paths) { const a = await findAsset(p); if (a) { const e = await diveLoadEl(a); if (e) return diveArt[key] = e; } }
+  return diveArt[key] = null;
+}
+let dv = null, dvUi = false, dvRaf = 0, dvKeys = {}, dvJoy = null;
+const diveLive = () => !!(dv && dv.running && !dvUi);
+async function startDive(id) {
+  const h = heroById(id); if (!h || game.gold < LAKE.cost || dv) return;
+  game.gold -= LAKE.cost; game.dived = game.dived || {}; const first = !game.dived[id]; game.dived[id] = true; writeSave();
+  const B = ANIM.base, skin = ['armoured - winter gear', 'armoured'];
+  const [winter, sinkSpr, swim] = await Promise.all([diveSpr(skin.map(f => `${B}/${id}/${f}/idle`)), diveSpr([`${B}/${id}/armoured - swimsuit/damaged`, `${B}/${id}/armoured/damaged`, `${B}/${id}/armoured/idle`]), diveSpr([`${B}/${id}/armoured - swimsuit/idle`, `${B}/${id}/armoured/idle`])]);
+  const foes = {}; await Promise.all(DIVE_FOES.map(async f => { foes[f.id] = await diveSpr([`${B}/${f.id}/idle`]); }));
+  const sk0 = h.skills[0], el = sk0.el || (h.elems || [])[0] || null, d = sk0.d || [10, 12];
+  const maxHp = Math.round(LAKE.hpBase + h.hp * LAKE.hpPer);
+  dv = { id, h, first, el, col: DIVE_COL[el] || DIVE_COL.none, melee: sk0.r === 'melee', base: (d[0] + d[1]) / 2 * LAKE.dmgMul, running: false, t: 0, kills: 0, crystals: 0, lvl: 1, need: LAKE.firstLevel, lvlKills: 0,
+         hp: maxHp, maxHp, x: 0, y: 0, face: 1, inv: 0, en: [], shots: [], fxs: [], nums: [], cd: 0.4, spawnT: 0.6, nextSwarm: 35, nextElite: 190, pulseT: 4, orbitA: 0,
+         w: { dmg: 1, rate: 1, multi: 0, orbit: 0, pulse: 0, chain: 0, move: 1, regen: 0 }, up: {}, spr: { winter, sinkSpr, swim, foes }, over: false };
+  showScene('dive'); fitDive(); dvUi = true; diveHud();
+  $('dv-end').classList.remove('on'); $('dv-choose').classList.remove('on'); $('dv-pausebox').classList.remove('on');
+  await diveIntro(winter, sinkSpr, h);
+  dvUi = false; dv.running = true; dv.last = performance.now(); cancelAnimationFrame(dvRaf); dvRaf = requestAnimationFrame(diveFrame);
+}
+function diveImgHtml(a, h) { return a && a.url ? `<img src="${a.url}" draggable="false">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;width:120px;border:2px dashed #6aa;border-radius:10px;color:#cfe;font-weight:700">${h.tag}</div>`; }
+function diveIntro(winter, sinkSpr, h) {
+  return new Promise(res => {
+    const box = $('dv-intro'), calm = FX.calm; let done = false;
+    const end = () => { if (done) return; done = true; box.classList.remove('on'); box.removeEventListener('pointerdown', end); document.removeEventListener('keydown', end); res(); };
+    $('dvi-hero').className = 'dvi-hero'; $('dvi-hero').innerHTML = diveImgHtml(winter, h); $('dvi-sink').innerHTML = diveImgHtml(sinkSpr, h);
+    $('dvi-surface').style.opacity = 1; $('dvi-under').classList.remove('on'); box.classList.add('on');
+    box.addEventListener('pointerdown', end); document.addEventListener('keydown', end);
+    const k = calm ? 0.4 : 1;
+    setTimeout(() => $('dvi-hero').classList.add('jump'), 1100 * k);
+    setTimeout(() => { $('dvi-under').classList.add('on'); $('dvi-surface').style.opacity = 0; }, 1650 * k);
+    setTimeout(end, 3400 * k);
+  });
+}
+function fitDive() { const c = $('dv-cv'), r = devicePixelRatio > 1.5 ? 1.5 : 1; c.width = Math.round(innerWidth * r); c.height = Math.round(innerHeight * r); dv && (dv.scale = r); }
+addEventListener('resize', () => { if (dv) fitDive(); });
+function diveHud() {
+  if (!dv) return; const p = Math.max(0, dv.hp / dv.maxHp); $('dv-hpf').style.width = (p * 100) + '%'; $('dv-hpt').textContent = `${Math.ceil(dv.hp)} / ${dv.maxHp}`;
+  $('dv-xpf').style.width = Math.min(100, dv.lvlKills / dv.need * 100) + '%';
+  const m = Math.floor(dv.t / 60), s = Math.floor(dv.t % 60); $('dv-time').textContent = `${m}:${String(s).padStart(2, '0')}`; $('dv-kills').textContent = `${dv.kills} kills`; $('dv-cry').textContent = `❄️ ${dv.crystals}`; $('dv-lvl').textContent = `Lv ${dv.lvl}`;
+}
+const diveHard = t => ({ hp: 1 + t / 40 + (t / 160) ** 2, dmg: 1 + t / 100 + (t / 220) ** 2 });      // the ramp: outgrows whatever upgrades you pick
+function diveSpawn(def, ring) {
+  const hd = diveHard(dv.t), R = Math.hypot(innerWidth, innerHeight) / 2 + 50, a = Math.random() * 6.283;
+  dv.en.push({ def, x: dv.x + Math.cos(a) * R, y: dv.y + Math.sin(a) * R, hp: def.hp * hd.hp, mhp: def.hp * hd.hp, dmg: def.dmg * hd.dmg, spd: def.spd * (0.92 + Math.random() * .16), face: 1, flash: 0, touch: 0, orb: 0, r: def.size * 0.34 });
+}
+function diveDirector(dt) {
+  const t = dv.t, alive = dv.en.length;
+  dv.spawnT -= dt;
+  if (dv.spawnT <= 0) {
+    dv.spawnT = Math.max(0.22, 1.1 - t / 150);
+    const n = 1 + Math.floor(t / 70);
+    for (let i = 0; i < n && dv.en.length < LAKE.maxAlive; i++) {
+      const pool = DIVE_FOES.filter(f => f.from <= t && f.id !== 'e_revenant'), tot = pool.reduce((a, f) => a + f.w, 0); let x = Math.random() * tot, pick = pool[0];
+      for (const f of pool) { x -= f.w; if (x < 0) { pick = f; break; } } diveSpawn(pick);
+    }
+  }
+  if (t >= dv.nextSwarm) { dv.nextSwarm += 45; const hound = DIVE_FOES[1]; for (let i = 0; i < 9 + Math.floor(t / 40) && dv.en.length < LAKE.maxAlive + 14; i++) diveSpawn(hound); }
+  if (t >= dv.nextElite) { dv.nextElite += 60; diveSpawn(DIVE_FOES[6]); }
+}
+function diveHurt(e, dmg, crit) {
+  if (e.hp <= 0) return; e.hp -= dmg; e.flash = 0.12; if (FX.numbers && dv.nums.length < 40) dv.nums.push({ x: e.x, y: e.y - e.def.size * .6, v: Math.round(dmg), life: .6 });
+  if (e.hp <= 0) { dv.kills++; dv.crystals += e.def.val; dv.lvlKills++; sfx('hit', 'phys', false, false, true); if (dv.lvlKills >= dv.need) diveLevel(); }
+}
+function diveChain(from, dmg) {
+  let cur = from; const seen = new Set([from]);
+  for (let i = 0; i < dv.w.chain; i++) { let best = null, bd = 150 * 150; for (const e of dv.en) { if (e.hp <= 0 || seen.has(e)) continue; const d = (e.x - cur.x) ** 2 + (e.y - cur.y) ** 2; if (d < bd) { bd = d; best = e; } }
+    if (!best) break; seen.add(best); dv.fxs.push({ k: 'line', x: cur.x, y: cur.y, x2: best.x, y2: best.y, life: .15, c: dv.col }); diveHurt(best, dmg * .55); cur = best; }
+}
+function diveFire() {
+  const d = dv, dmg = d.base * d.w.dmg; let tgt = null, bd = 1e9; for (const e of d.en) { if (e.hp <= 0) continue; const q = (e.x - d.x) ** 2 + (e.y - d.y) ** 2; if (q < bd) { bd = q; tgt = e; } }
+  const ang0 = tgt ? Math.atan2(tgt.y - d.y, tgt.x - d.x) : (d.face > 0 ? 0 : Math.PI), n = 1 + d.w.multi;
+  for (let i = 0; i < n; i++) {
+    if (d.melee) {                                             // a wide slash around the swimmer (extra slashes spread around her)
+      const a = ang0 + i * (6.283 / n), R = 96;
+      d.fxs.push({ k: 'arc', x: d.x, y: d.y, a, r: R, life: .2, c: d.col });
+      for (const e of d.en) { if (e.hp <= 0) continue; const dx = e.x - d.x, dy = e.y - d.y, dist = Math.hypot(dx, dy); if (dist > R + e.r) continue; let da = Math.abs(Math.atan2(dy, dx) - a); da = Math.min(da, 6.283 - da); if (da < 1.25) { diveHurt(e, dmg); if (d.w.chain) diveChain(e, dmg); } }
+    } else {                                                   // a bolt toward the nearest enemy (extra bolts fan out)
+      const a = ang0 + (i - (n - 1) / 2) * 0.26; d.shots.push({ x: d.x, y: d.y, vx: Math.cos(a) * 420, vy: Math.sin(a) * 420, life: 1.3, dmg, hit: new Set() });
+    }
+  }
+}
+function diveLevel() {
+  dv.lvl++; dv.lvlKills = 0; dv.need += LAKE.levelStep; dvUi = true;
+  const pool = DIVE_UP.filter(u => (dv.up[u.id] || 0) < u.max).sort(() => Math.random() - .5).slice(0, 3);
+  if (!pool.length) pool.push({ id: 'hp', icon: '❤️', name: 'Second wind', desc: 'Heal 40 HP', heal: 40 });
+  $('dvc-row').innerHTML = pool.map((u, i) => `<button onclick="divePick('${u.id}')"><span class="ic">${u.icon}</span><b>${i + 1}. ${u.name}</b><small>${u.desc}</small><small>${u.heal ? '' : 'Level ' + ((dv.up[u.id] || 0) + 1)}</small></button>`).join('');
+  $('dv-choose').classList.add('on'); diveHud();
+}
+function divePick(id) {
+  if (!dv || !$('dv-choose').classList.contains('on')) return; const u = DIVE_UP.find(x => x.id === id);
+  dv.up[id] = (dv.up[id] || 0) + 1; const w = dv.w;
+  if (id === 'dmg') w.dmg += .2; else if (id === 'rate') w.rate += .14; else if (id === 'multi') w.multi++; else if (id === 'orbit') w.orbit++; else if (id === 'pulse') w.pulse++; else if (id === 'chain') w.chain++;
+  else if (id === 'move') w.move += .1; else if (id === 'hp') { dv.maxHp += 25; dv.hp = Math.min(dv.maxHp, dv.hp + 25); } else if (id === 'regen') w.regen++;
+  $('dv-choose').classList.remove('on'); dvUi = false; dv.last = performance.now(); sfx('click');
+}
+function divePause(on) { if (!dv || !dv.running || dv.over) return; if (on) { dvUi = true; $('dv-pausebox').classList.add('on'); } else { dvUi = false; $('dv-pausebox').classList.remove('on'); dv.last = performance.now(); } }
+function diveEnd(why) {
+  if (!dv || dv.over) return; dv.over = true; dv.running = false; dvUi = true; cancelAnimationFrame(dvRaf);
+  $('dv-pausebox').classList.remove('on'); $('dv-choose').classList.remove('on');
+  game.crystals = (game.crystals || 0) + dv.crystals; game.lake = game.lake || { best: {} }; const prev = game.lake.best[dv.id] || 0; const best = dv.t > prev; if (best) game.lake.best[dv.id] = dv.t; writeSave();
+  const m = Math.floor(dv.t / 60), s = Math.floor(dv.t % 60);
+  $('dv-end').innerHTML = `<div class="dve"><h3>${why === 'surface' ? '🏊 You surfaced' : '❄️ Overwhelmed by the cold dark'}</h3><div class="big">+${dv.crystals} ❄️ Frost Crystals</div>
+    <div>${dv.h.name} survived <b>${m}:${String(s).padStart(2, '0')}</b>${best && prev ? ' (new best!)' : ''} · ${dv.kills} kills · reached level ${dv.lvl}</div>
+    ${dv.first ? '<div style="margin-top:8px;color:#ffd54f">✨ First dive: this hero\'s Potential is awakened!</div>' : ''}
+    <div style="margin-top:6px;color:#a9d3ea;font-size:.8rem">Total: ❄️ ${game.crystals} · Gold: ${game.gold}</div>
+    <div class="row"><button class="primary" onclick="diveAgain()" ${game.gold < LAKE.cost ? 'disabled' : ''}>Dive again · ${LAKE.cost}g</button><button onclick="diveLeave()">Back to the lake</button></div></div>`;
+  $('dv-end').classList.add('on');
+}
+function diveLeave() { const id = dv && dv.id; dv = null; dvUi = false; $('dv-end').classList.remove('on'); showScene('lake'); }
+function diveAgain() { const id = dv.id; dv = null; dvUi = false; $('dv-end').classList.remove('on'); startDive(id); }
+function diveInput() {
+  let x = (dvKeys.ArrowRight || dvKeys.d || dvKeys.D ? 1 : 0) - (dvKeys.ArrowLeft || dvKeys.a || dvKeys.A ? 1 : 0), y = (dvKeys.ArrowDown || dvKeys.s || dvKeys.S ? 1 : 0) - (dvKeys.ArrowUp || dvKeys.w || dvKeys.W ? 1 : 0);
+  try { const p = (navigator.getGamepads && [...navigator.getGamepads()].find(g => g)) || null; if (p) { const ax = p.axes[0] || 0, ay = p.axes[1] || 0; if (Math.hypot(ax, ay) > .25) { x += ax; y += ay; } if (p.buttons[14] && p.buttons[14].pressed) x -= 1; if (p.buttons[15] && p.buttons[15].pressed) x += 1; if (p.buttons[12] && p.buttons[12].pressed) y -= 1; if (p.buttons[13] && p.buttons[13].pressed) y += 1; } } catch (e) {}
+  if (dvJoy) { const dx = dvJoy.x - dvJoy.ox, dy = dvJoy.y - dvJoy.oy, m = Math.hypot(dx, dy); if (m > 8) { x += dx / Math.max(m, 55) * Math.min(1, m / 55) * 1.2; y += dy / Math.max(m, 55) * Math.min(1, m / 55) * 1.2; } }
+  const m = Math.hypot(x, y); if (m > 1) { x /= m; y /= m; } return [x, y];
+}
+function diveFrame(now) {
+  if (!dv || !dv.running) return; dvRaf = requestAnimationFrame(diveFrame);
+  const cv = $('dv-cv'), g = cv.getContext('2d');
+  let dt = Math.min(0.05, (now - dv.last) / 1000); dv.last = now;
+  if (document.hidden && !dvUi) { divePause(true); }
+  if (!dvUi) diveStep(dt);
+  diveDraw(g, cv);
+}
+function diveStep(dt) {
+  const d = dv; d.t += dt; if (d.inv > 0) d.inv -= dt;
+  const [ix, iy] = diveInput(), sp = LAKE.speed * d.w.move; d.x += ix * sp * dt; d.y += iy * sp * dt; if (Math.abs(ix) > .15) d.face = ix > 0 ? 1 : -1;
+  if (d.w.regen && d.hp < d.maxHp) d.hp = Math.min(d.maxHp, d.hp + d.w.regen * dt);
+  diveDirector(dt);
+  d.cd -= dt; if (d.cd <= 0) { d.cd = LAKE.atkEvery / d.w.rate; diveFire(); }
+  if (d.w.pulse) { d.pulseT -= dt; if (d.pulseT <= 0) { d.pulseT = Math.max(2, 6.5 - d.w.pulse * .8); const R = 110 + 24 * d.w.pulse, dm = d.base * d.w.dmg * (1 + d.w.pulse * .35); d.fxs.push({ k: 'ring', x: d.x, y: d.y, r: R, life: .35, c: d.col });
+    for (const e of d.en) if (e.hp > 0 && Math.hypot(e.x - d.x, e.y - d.y) < R + e.r) { diveHurt(e, dm); const a = Math.atan2(e.y - d.y, e.x - d.x); e.x += Math.cos(a) * 36; e.y += Math.sin(a) * 36; } } }
+  if (d.w.orbit) { d.orbitA += dt * 3.2; const n = d.w.orbit, R = 62; for (let i = 0; i < n; i++) { const a = d.orbitA + i * 6.283 / n, ox = d.x + Math.cos(a) * R, oy = d.y + Math.sin(a) * R;
+    for (const e of d.en) if (e.hp > 0 && e.orb <= 0 && Math.hypot(e.x - ox, e.y - oy) < e.r + 9) { e.orb = .45; diveHurt(e, d.base * d.w.dmg * .6); } } }
+  for (const s of d.shots) { s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt;
+    for (const e of d.en) { if (e.hp <= 0 || s.hit.has(e) || s.life <= 0) continue; if (Math.hypot(e.x - s.x, e.y - s.y) < e.r + 8) { s.hit.add(e); s.life = 0; diveHurt(e, s.dmg); if (d.w.chain) diveChain(e, s.dmg); } } }
+  d.shots = d.shots.filter(s => s.life > 0);
+  for (const e of d.en) {                                      // enemies swim straight at you, and push each other apart a little
+    const dx = d.x - e.x, dy = d.y - e.y, m = Math.hypot(dx, dy) || 1; e.x += dx / m * e.spd * dt; e.y += dy / m * e.spd * dt; if (Math.abs(dx) > 4) e.face = dx > 0 ? 1 : -1;
+    if (e.flash > 0) e.flash -= dt; if (e.touch > 0) e.touch -= dt; if (e.orb > 0) e.orb -= dt;
+    if (m < e.r + 14 && e.touch <= 0 && d.inv <= 0) { e.touch = .8; d.inv = .25; d.hp -= e.dmg; d.hurt = .2; if (d.hp <= 0) { d.hp = 0; diveEnd('dead'); return; } }
+  }
+  const en = d.en; for (let i = 0; i < en.length; i++) for (let j = i + 1; j < en.length; j++) { const a = en[i], b = en[j], dx = b.x - a.x, dy = b.y - a.y, q = dx * dx + dy * dy, r = (a.r + b.r) * .8; if (q < r * r && q > .01) { const m = Math.sqrt(q), p = (r - m) / 2; a.x -= dx / m * p; a.y -= dy / m * p; b.x += dx / m * p; b.y += dy / m * p; } }
+  d.en = en.filter(e => e.hp > 0); d.fxs.forEach(f => f.life -= dt); d.fxs = d.fxs.filter(f => f.life > 0); d.nums.forEach(n => { n.life -= dt; n.y -= 24 * dt; }); d.nums = d.nums.filter(n => n.life > 0);
+  if (d.hurt > 0) d.hurt -= dt; diveHud();
+}
+function diveBlit(g, a, x, y, h, flip, fallback, tag, flash) {          // draw a sprite (or a simple placeholder) standing with its feet at (x, y)
+  if (a && a.el && (a.el.complete !== false) && a.w) { const w = h * a.w / a.h; g.save(); g.translate(x, y); if (flip < 0) g.scale(-1, 1); g.drawImage(a.el, -w / 2, -h, w, h); if (flash) { g.globalAlpha = .45; g.fillStyle = '#fff'; g.fillRect(-w / 2, -h, w, h); } g.restore(); }
+  else { g.save(); g.translate(x, y - h / 2); g.fillStyle = fallback; g.beginPath(); g.arc(0, 0, h / 2.2, 0, 6.283); g.fill(); g.fillStyle = '#fff'; g.font = `bold ${Math.round(h / 4.5)}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(tag, 0, 0); if (flash) { g.globalAlpha = .5; g.beginPath(); g.arc(0, 0, h / 2.2, 0, 6.283); g.fill(); } g.restore(); }
+}
+function diveDraw(g, cv) {
+  const d = dv, sc = d.scale || 1, W = cv.width, H = cv.height; g.setTransform(1, 0, 0, 1, 0, 0);
+  const grd = g.createLinearGradient(0, 0, 0, H); grd.addColorStop(0, '#0f6aa6'); grd.addColorStop(.55, '#08365f'); grd.addColorStop(1, '#031428'); g.fillStyle = grd; g.fillRect(0, 0, W, H);
+  g.setTransform(sc, 0, 0, sc, 0, 0); const vw = W / sc, vh = H / sc, cx = vw / 2 - d.x, cy = vh / 2 - d.y;
+  g.fillStyle = 'rgba(190,235,255,.06)'; for (let i = 0; i < 4; i++) { const x = ((i * 330 + 120 - d.x * .15) % (vw + 300) + vw + 300) % (vw + 300) - 150; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 90, 0); g.lineTo(x - 140, vh); g.lineTo(x - 230, vh); g.fill(); }
+  g.fillStyle = 'rgba(210,240,255,.28)'; const T = 260; for (let i = 0; i < 46; i++) { const bx = (((i * 97.3) % T) * 4.1 + cx * (.6 + (i % 3) * .2)) % (vw + 40), by = (((i * 61.7) % T) * 3.2 + cy * (.6 + (i % 3) * .2) - d.t * 14 * (1 + (i % 3) * .4)) % (vh + 40); g.beginPath(); g.arc(((bx % (vw + 40)) + vw + 40) % (vw + 40) - 20, ((by % (vh + 40)) + vh + 40) % (vh + 40) - 20, 1.5 + (i % 4), 0, 6.283); g.fill(); }
+  const items = [...d.en.map(e => ({ y: e.y, e })), { y: d.y, p: 1 }].sort((a, b) => a.y - b.y);
+  for (const it of items) { if (it.e) { const e = it.e; diveBlit(g, d.spr.foes[e.def.id], e.x + cx, e.y + cy, e.def.size, e.face, '#3b2a5a', e.def.id.slice(2, 5).toUpperCase(), e.flash > 0); }
+    else { if (d.hurt > 0) { g.save(); g.globalAlpha = .55; g.fillStyle = '#ff2b4a'; g.beginPath(); g.arc(d.x + cx, d.y + cy - 28, 36, 0, 6.283); g.fill(); g.restore(); } diveBlit(g, d.spr.swim, d.x + cx, d.y + cy, 64, d.face, '#2b7fb8', d.h.tag.slice(0, 3), d.inv > .12); } }
+  g.save(); g.lineWidth = 4; for (const f of d.fxs) { const k = f.life / (f.k === 'arc' ? .2 : f.k === 'ring' ? .35 : .15); g.globalAlpha = Math.max(0, k); g.strokeStyle = f.c; g.fillStyle = f.c;
+    if (f.k === 'arc') { g.lineWidth = 14 * k + 2; g.beginPath(); g.arc(f.x + cx, f.y + cy - 28, f.r * .8, f.a - 1.05, f.a + 1.05); g.stroke(); }
+    else if (f.k === 'ring') { g.lineWidth = 8 * k + 2; g.beginPath(); g.arc(f.x + cx, f.y + cy - 28, f.r * (1.2 - k * .4), 0, 6.283); g.stroke(); }
+    else { g.lineWidth = 3; g.beginPath(); g.moveTo(f.x + cx, f.y + cy - 20); g.lineTo(f.x2 + cx, f.y2 + cy - 20); g.stroke(); } }
+  g.restore();
+  g.fillStyle = d.col; for (const s of d.shots) { g.beginPath(); g.arc(s.x + cx, s.y + cy - 28, 6, 0, 6.283); g.fill(); }
+  if (d.w.orbit) for (let i = 0; i < d.w.orbit; i++) { const a = d.orbitA + i * 6.283 / d.w.orbit; g.beginPath(); g.arc(d.x + cx + Math.cos(a) * 62, d.y + cy - 28 + Math.sin(a) * 62, 8, 0, 6.283); g.fill(); }
+  g.fillStyle = '#fff'; g.font = 'bold 13px sans-serif'; g.textAlign = 'center'; for (const n of d.nums) { g.globalAlpha = Math.min(1, n.life * 2.5); g.fillText(n.v, n.x + cx, n.y + cy); } g.globalAlpha = 1;
+  if (d.hp / d.maxHp < .3) { const rg = g.createRadialGradient(vw / 2, vh / 2, vh * .35, vw / 2, vh / 2, vh * .9); rg.addColorStop(0, 'rgba(255,0,40,0)'); rg.addColorStop(1, 'rgba(255,0,40,.3)'); g.fillStyle = rg; g.fillRect(0, 0, vw, vh); }
+}
+document.addEventListener('keydown', e => { if (!dv) return; dvKeys[e.key] = true; if (e.key === 'Escape' && dv.running) divePause(!dvUi || $('dv-pausebox').classList.contains('on') ? !$('dv-pausebox').classList.contains('on') : true); if ($('dv-choose').classList.contains('on') && '123'.includes(e.key)) { const b = $('dvc-row').children[+e.key - 1]; if (b) b.click(); } if (dv && dv.running && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault(); });
+document.addEventListener('keyup', e => { delete dvKeys[e.key]; });
+window.addEventListener('blur', () => { dvKeys = {}; });
+(function () {   // touch / mouse drag steering: a floating stick appears where you press
+  const root = document.getElementById('dive'), joy = document.getElementById('dv-joy'), knob = joy.firstElementChild;
+  root.addEventListener('pointerdown', e => { if (!diveLive() || e.target.closest('button')) return; dvJoy = { id: e.pointerId, ox: e.clientX, oy: e.clientY, x: e.clientX, y: e.clientY }; joy.style.display = 'block'; joy.style.left = e.clientX + 'px'; joy.style.top = e.clientY + 'px'; knob.style.transform = ''; try { root.setPointerCapture(e.pointerId); } catch (x) {} });
+  root.addEventListener('pointermove', e => { if (!dvJoy || e.pointerId !== dvJoy.id) return; dvJoy.x = e.clientX; dvJoy.y = e.clientY; const dx = dvJoy.x - dvJoy.ox, dy = dvJoy.y - dvJoy.oy, m = Math.hypot(dx, dy), k = m > 50 ? 50 / m : 1; knob.style.transform = `translate(${dx * k}px,${dy * k}px)`; });
+  const up = e => { if (dvJoy && e.pointerId === dvJoy.id) { dvJoy = null; joy.style.display = 'none'; } };
+  root.addEventListener('pointerup', up); root.addEventListener('pointercancel', up);
+})();
 
 /* ============ THE BEACH (unlocked by clearing any Tidelands quest) ============ */
 // A second town screen with a grey, gloomy shore. A few heroes stand about in their skins (some with the sea over their feet). For now it has one activity: Beach Volleyball, a
@@ -5279,22 +5861,22 @@ function renderBeach() {
 /* ---- picking two heroes ---- */
 let vbPick = [];
 function openBeachPick() { vbPick = []; showScene('beach-pick'); }
-const t2List = id => [...new Set((game.traits[id] || []).filter(isT2))];
+const t2List = id => [...new Set((game.traits[id] || []).filter(x => isT2(x) || isT3(x)))];          // perks that can be traded away: Tier II (for a Tier I perk) and Tier III (for a Tier II perk)
 function renderBeachPick() {
   const can = game.gold >= VB.cost, sel = vbPick.length === 2, ok = sel && vbPick.some(id => t2List(id).length);
-  $('bp-intro').innerHTML = `Pick 2 heroes to play on a team. Each game costs <b>${VB.cost}g</b> (win or lose). Win and each of them may swap one <b>Tier II</b> perk for any <b>Tier I</b> perk. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('bp-intro').innerHTML = `Pick 2 heroes to play on a team. Each game costs <b>${VB.cost}g</b> (win or lose). Win and each of them may trade one <b>Tier II</b> perk for any <b>Tier I</b> perk, or one <b>Tier III</b> perk for any <b>Tier II</b> perk. <span class="hub-gold">Gold: ${game.gold}</span>`;
   $('bp-list').innerHTML = game.roster.map(id => {
     const h = heroById(id); if (!h) return '';
     const t2 = t2List(id);
     return `<div class="pick${vbPick.includes(id) ? ' on' : ''}${t2.length ? '' : ' nope'}" onclick="vbTogglePick('${id}')"><div class="mini-sprite port-box" data-port="${h.id}">${h.tag}</div>
-      <div><strong>${h.name}</strong><div class="sk">${t2.length ? 'Tier II: ' + traitChips(t2) : '<span class="dim">No Tier II perks yet (clear Tidelands quests)</span>'}</div></div></div>`;
+      <div><strong>${h.name}</strong><div class="sk">${t2.length ? 'Tradable: ' + traitChips(t2) : '<span class="dim">No Tier II or III perks yet (clear Tidelands quests)</span>'}</div></div></div>`;
   }).join('');
   const rw = game.vb && game.vb.reward, c = $('bp-claim');
   c.style.display = rw ? 'flex' : 'none';
   c.innerHTML = rw ? `<div>🏆 You have an unclaimed swap from your last win.</div><button class="primary" onclick="vbClaim()">Claim swap</button>` : '';
   const b = $('bp-play'); b.textContent = `Play · ${VB.cost}g`;
   b.disabled = !(ok && can);
-  b.title = !sel ? 'Pick 2 heroes' : !ok ? 'At least one of them needs a Tier II perk to trade' : !can ? 'Not enough gold' : '';
+  b.title = !sel ? 'Pick 2 heroes' : !ok ? 'At least one of them needs a Tier II or III perk to trade' : !can ? 'Not enough gold' : '';
 }
 function vbTogglePick(id) {
   const i = vbPick.indexOf(id); if (i >= 0) vbPick.splice(i, 1); else { if (vbPick.length >= 2) vbPick.shift(); vbPick.push(id); }
@@ -5433,31 +6015,32 @@ $('vb-hit').addEventListener('pointerdown', e => { vbLastPtr = performance.now()
 $('vb-hit').addEventListener('click', () => { if (performance.now() - vbLastPtr > 400) vbTap(); });
 document.addEventListener('keydown', e => { if ((e.code === 'Space' || e.code === 'Enter') && $('vb').classList.contains('show') && vb && vb.wait) { e.preventDefault(); vbTap(); } });
 
-/* ---- the reward: swap a Tier II perk for a Tier I perk (each of the 2 heroes, once) ---- */
+/* ---- the reward: trade a Tier II perk for any Tier I perk, or a Tier III perk for any Tier II perk (each of the 2 heroes, once) ---- */
 let vbSel = {};
 const t1Choices = hid => Object.values(TRAIT).filter(t => t.kind === 'good' && !t.base && (!t.el || heroElems(hid).includes(t.el)));
+const vbTakeFor = (hid, out) => isT3(out) ? t1Choices(hid).map(t => TRAIT[t.id + '2']).filter(Boolean) : t1Choices(hid);      // Tier III -> any Tier II, Tier II -> any Tier I
 function vbClaim() { showScene('vb'); $('vb-court').classList.add('won'); $('vb-hit').style.display = 'none'; $('vb-quit').style.display = 'none'; $('vb-msg').textContent = ''; vbSwapUi(); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true)); const rw = game.vb && game.vb.reward; if (rw) { vbSwapBackdrop(rw.heroes); } }
 function vbSwapBackdrop(team) { const foes = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2); vbBuild(team, foes); }
 function vbSwapUi() {
   const rw = game.vb && game.vb.reward, p = $('vb-panel'); if (!rw) { showScene('beach'); return; }
   p.style.display = 'flex';
-  p.innerHTML = `<div><b>🏆 You win!</b> Trade one Tier II perk for any Tier I perk, for each hero (optional).</div>` + rw.heroes.map(id => {
+  p.innerHTML = `<div><b>🏆 You win!</b> Trade one Tier II perk for any Tier I perk, or one Tier III perk for any Tier II perk, for each hero (optional).</div>` + rw.heroes.map(id => {
     const h = heroById(id), S = vbSel[id] = vbSel[id] || {}, done = rw.done[id];
     if (done) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk">✔ Swapped ${done}</div></div>`;
     const t2 = t2List(id);
-    if (!t2.length) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk dim">No Tier II perks to trade.</div></div>`;
+    if (!t2.length) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk dim">No Tier II or III perks to trade.</div></div>`;
     const out = t2.map(t => `<button class="${S.out === t ? 'on' : ''}" title="${TRAIT[t].desc}" onclick="vbChoose('${id}','out','${t}')">${TRAIT[t].icon} ${TRAIT[t].name}</button>`).join('');
-    const inn = t1Choices(id).map(t => `<button class="${S.inn === t.id ? 'on' : ''}" title="${t.desc}" onclick="vbChoose('${id}','inn','${t.id}')">${t.icon} ${t.name}</button>`).join('');
+    const inn = vbTakeFor(id, S.out).map(t => `<button class="${S.inn === t.id ? 'on' : ''}" title="${t.desc}" onclick="vbChoose('${id}','inn','${t.id}')">${t.icon} ${t.name}</button>`).join('');
     return `<div class="swaprow"><strong>${h.name}</strong>
-      <h5>Give up (Tier II)</h5><div class="trg">${out}</div>
-      <h5>Take (Tier I)${S.inn ? ' — ' + TRAIT[S.inn].desc : ''}</h5><div class="trg">${inn}</div>
+      <h5>Give up (Tier II or III)</h5><div class="trg">${out}</div>
+      <h5>Take (${S.out && isT3(S.out) ? 'Tier II' : 'Tier I'})${S.inn ? ' — ' + TRAIT[S.inn].desc : ''}</h5><div class="trg">${inn}</div>
       <button class="primary" ${S.out && S.inn ? '' : 'disabled'} onclick="vbSwap('${id}')">Swap${S.out && S.inn ? `: ${TRAIT[S.out].name} → ${TRAIT[S.inn].name}` : ''}</button></div>`;
   }).join('') + `<button onclick="vbDone()">Done</button>`;
 }
-function vbChoose(id, k, t) { vbSel[id] = vbSel[id] || {}; vbSel[id][k] = t; vbSwapUi(); }
+function vbChoose(id, k, t) { vbSel[id] = vbSel[id] || {}; if (k === 'out' && isT3(t) !== isT3(vbSel[id].out)) vbSel[id].inn = null; vbSel[id][k] = t; vbSwapUi(); }
 function vbSwap(id) {
   const rw = game.vb && game.vb.reward, S = vbSel[id]; if (!rw || !S || !S.out || !S.inn || rw.done[id]) return;
-  const list = game.traits[id] || [], i = list.indexOf(S.out); if (i < 0 || !TRAIT[S.inn] || TRAIT[S.inn].kind !== 'good' || TRAIT[S.inn].base) return;
+  const list = game.traits[id] || [], i = list.indexOf(S.out); if (i < 0 || !TRAIT[S.inn] || TRAIT[S.inn].kind !== 'good' || !(isT3(S.out) ? isT2(S.inn) : (isT2(S.out) && !TRAIT[S.inn].base))) return;
   list.splice(i, 1, S.inn); rw.done[id] = `${TRAIT[S.out].name} → ${TRAIT[S.inn].name}`; delete vbSel[id]; writeSave(); sfx('heal'); vbSwapUi();
 }
 function vbDone() { if (game.vb) game.vb.reward = null; game.vb = null; vbSel = {}; writeSave(); $('vb-court').classList.remove('won'); showScene('beach'); }
@@ -5487,7 +6070,8 @@ const GP = (() => {
     for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
     for (const id of ['guide', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
     const t = document.getElementById('title'); if (t && !t.classList.contains('hide')) return { root: t };
-    const sc = document.querySelector('.scene.show'); return { root: sc || document.body, scene: sc && sc.id };
+    const sc = document.querySelector('.scene.show'); if (sc && sc.id === 'dive' && typeof diveLive !== 'undefined' && diveLive()) return { root: sc, skip: true, noClick: true };
+    return { root: sc || document.body, scene: sc && sc.id };
   }
   const SEL = 'button,[onclick],.pick,.fslot,select,input[type=range],input[type=checkbox]';
   const NOFOCUS = '#menu-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has)';
@@ -5584,7 +6168,7 @@ const GP = (() => {
     const wake = !S.active && any; if (wake) { on(); for (const k of ['up', 'dn', 'lf', 'rt']) if (down[k]) S.held[k] = now + 380; }
     const L = layer(); const list = ensureFocus(L);
     if (!wake) {
-      if (L.skip) { if (edge('A') || edge('B') || edge('START')) L.root.click(); }
+      if (L.skip) { if (!L.noClick && (edge('A') || edge('B') || edge('START'))) L.root.click(); }
       else {
         if (rep('up')) move(0, -1, L, list); if (rep('dn')) move(0, 1, L, list); if (rep('lf')) move(-1, 0, L, list); if (rep('rt')) move(1, 0, L, list);
         if (edge('A')) press(S.focus);
