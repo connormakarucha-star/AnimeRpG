@@ -544,6 +544,12 @@ body.calm .breath{display:none}
 .dve h3{margin:0 0 8px;color:#d6f1ff}.dve .big{font-size:1.5rem;color:#7fd8ff;font-weight:800}.dve .row{margin-top:12px;display:flex;gap:10px;justify-content:center}
 #relic-modal{display:none;position:fixed;inset:0;z-index:180;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
 #relic-modal.show{display:flex}
+#pot-modal{display:none;position:fixed;inset:0;z-index:181;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+#pot-modal.show{display:flex}
+.pot-cry{font-size:.85rem;color:#8fe0ff;margin-left:8px}
+.pot-opt{display:flex;align-items:center;gap:10px;background:#12121a;border:1px solid #262638;border-radius:8px;padding:8px 10px;margin:5px 0;font-size:.78rem;text-align:left}
+.pot-opt .ic{font-size:1.5rem;flex:0 0 auto}.pot-opt .pt{flex:1;min-width:0}.pot-opt .pb{flex:0 0 auto}
+.pot-opt.on{border-color:#7fd8ff;background:#14202c}.pot-opt.locked{opacity:.45}
 #rm-list{display:flex!important;flex-direction:column!important}
 .rm-box{background:#1a1a24;border:2px solid #3a3a56;border-radius:12px;padding:14px;width:100%;max-width:640px;max-height:86vh;overflow:auto;box-sizing:border-box;text-align:left}
 .rm-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;font-size:1rem;color:#ff758c}
@@ -1124,6 +1130,14 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
     <div class="dim" id="rm-sub" style="font-size:.72rem;margin-bottom:6px"></div>
     <div class="pick-list" id="rm-list"></div>
     <div id="rm-msg" style="min-height:1.2em;font-size:.78rem;color:#81c784"></div>
+  </div>
+</div>
+
+<div id="pot-modal" onclick="if (event.target === this) closePot()">
+  <div class="rm-box">
+    <div class="rm-head"><b id="pot-title">Potential</b><button onclick="closePot()">✕ Close</button></div>
+    <div class="dim" id="pot-sub" style="font-size:.72rem;margin-bottom:6px"></div>
+    <div id="pot-list"></div>
   </div>
 </div>
 
@@ -1903,19 +1917,152 @@ function awardTraits(won) {                                // at quest end: a pe
   });
   if (out.length) game.notices.push({ type: 'traits', won, items: out });
 }
-function relicFx(ids, traitIds) {
+function relicFx(ids, traitIds, extra) {
   const A = {};
   const add = fx => { for (const [k, v] of Object.entries(fx)) {
-    if (k === 'elDmg') { A.elDmg = A.elDmg || {}; for (const [e, x] of Object.entries(v)) A.elDmg[e] = (A.elDmg[e] || 0) + x; }
+    if (k === 'elDmg' || k === 'elRes') { const key = k; A[key] = A[key] || {}; for (const [e, x] of Object.entries(v)) A[key][e] = (A[key][e] || 0) + x; }
     else A[k] = Array.isArray(v) ? [...(A[k] || []), ...v] : (v && typeof v === 'object') ? v : (A[k] || 0) + v; } };
   ids.forEach(id => { const r = RELICS[id]; if (r) add(r.fx); });
   (traitIds || []).forEach(id => { const t = TRAIT[id]; if (t) add(t.fx); });
+  if (extra) add(extra);
   return A;
+}
+
+/* ============ POTENTIAL (Act 3) ============ */
+// A second permanent upgrade track, bought with Frost Crystals from the Frozen Lake dive. Each hero has three TIERS: tier 1 and 2 offer 3 curated options each, tier 3 offers one hero-specific option.
+// Buy an option once, then switch freely in the Dorm between quests (one ACTIVE option per tier). Tier 1 unlocks when the Mountain Pass is cleared, tier 2 with the Frozen Valley, tier 3 with the Ice Queen's Castle.
+// A hero's Potential appears after their first dive. Saved in game.pot[heroId] = { owned: [option id], active: { 1: id, 2: id, 3: id } } and game.crystals.
+// POT_HERO picks each hero's options (spec = the Potential sheet). el = their specialty element (damage and "Skill 1 [element]"), weak = the element their resistance / immunity options cover.
+const POTENTIAL = { cost: { 1: 40, 2: 120, 3: 300 }, unlock: { 1: 'pass', 2: 'valley', 3: 'castle' }, counter: 0.2, chain: 0.5, sadistic: 0.25, masochist: 0.5, restore: 0.6, dodge: 0.2, resist: [0.05, 0.10], elRes: [0.10, 0.20], lifesteal: [0.05, 0.10], hp: [0.08, 0.16], armour: [0.08, 0.16], eldmg: [0.10, 0.20], brk: [0.25, 0.50], skelBrk: 0.4, greedy: 0.25, chef: 0.5 };
+const POT_HERO = {
+  seria:   { el: 'fire',   weak: 'poison', t1: ['health', 'armour', 'skel'],        t2: ['counter', 'resist', 'chef'],        t3: 'vow' },
+  aria:    { el: 'ice',    weak: 'fire',   t1: ['eldmg', 'elres', 'armour'],        t2: ['restore', 'evasion', 'greedy'],     t3: 'aegis' },
+  vesper:  { el: 'shock',  weak: 'ice',    t1: ['eldmg', 'break', 'lifesteal'],     t2: ['chain', 'sadistic', 'immunity'],    t3: 'dance' },
+  iris:    { el: 'fire',   weak: 'poison', t1: ['skel', 'health', 'break'],         t2: ['counter', 'masochist', 'lifesteal'], t3: 'dragon' },
+  aneesah: { el: 'shock',  weak: 'ice',    t1: ['eldmg', 'break', 'elres'],         t2: ['chain', 'hoarder', 'evasion'],      t3: 'eye' },
+  siren:   { el: 'shock',  weak: 'shock',  t1: ['eldmg', 'health', 'elres'],        t2: ['sadistic', 'immunity', 'greedy'],   t3: 'call' },
+  irae:    { el: 'bleed',  weak: 'fire',   t1: ['skel', 'break', 'lifesteal'],      t2: ['evasion', 'chain', 'sadistic'],     t3: 'shadow' },
+  jean:    { el: 'bleed',  weak: 'shock',  t1: ['eldmg', 'health', 'elres'],        t2: ['cleanser', 'chef', 'immunity'],     t3: 'formula' },
+  tyr:     { el: 'bleed',  weak: 'fire',   t1: ['eldmg', 'health', 'armour'],       t2: ['lifesteal', 'masochist', 'counter'], t3: 'eternal' },
+  frigid:  { el: 'ice',    weak: 'fire',   t1: ['eldmg', 'break', 'elres'],         t2: ['chain', 'sadistic', 'immunity'],    t3: 'embrace' }
+};
+const ELEM_STATUS = ['burn', 'bleed', 'poison', 'frozen', 'shocked'];     // the elemental ailments (Sadistic / Masochistic count these; charm, chill and numbness do not)
+const pctT = v => Math.round(v * 100) + '%';
+function potBuild(hid, tier, kind) {          // -> { id, hero, tier, kind, icon, name, desc, cost, fx, mods }
+  const h = HEROES.find(x => x.id === hid), C = POT_HERO[hid]; if (!h || !C) return null;
+  const k = tier === 2 ? 1 : 0, s1 = h.skills[0], s2 = h.skills[1], sk = tier === 2 ? [0, 1] : [0], skN = tier === 2 ? `${s1.n} and ${s2.n}` : s1.n;
+  const E = e => ELEM_NAME[e], I = e => ICON[e], o = { id: hid + '.' + kind, hero: hid, tier, kind, cost: POTENTIAL.cost[tier], fx: {}, mods: [] };
+  const set = (icon, name, desc) => Object.assign(o, { icon, name, desc });
+  switch (kind) {
+    case 'eldmg': set(I(C.el), 'Elemental damage', `${skN}: +${pctT(POTENTIAL.eldmg[k])} damage and +${pctT(POTENTIAL.eldmg[k])} break damage (elemental skills only)`); o.mods.push({ kind: 'eldmg', idx: sk, dmg: POTENTIAL.eldmg[k], brk: POTENTIAL.eldmg[k] }); break;
+    case 'break': set('💥', 'Break damage', `${skN}: +${pctT(POTENTIAL.brk[k])} break damage`); o.mods.push({ kind: 'break', idx: sk, pct: POTENTIAL.brk[k] }); break;
+    case 'skel': set(I(C.el), `Skill 1 ${E(C.el)}`, `${s1.n} gains ${E(C.el)} (to inflict ${E(C.el)} effects), but its break damage drops ${pctT(1 - POTENTIAL.skelBrk)}. No extra damage`); o.mods.push({ kind: 'skel', el: C.el, idx: [0] }); break;
+    case 'health': set('❤️', 'Health', `+${pctT(POTENTIAL.hp[k])} max HP`); o.fx.hpPct = POTENTIAL.hp[k]; break;
+    case 'armour': set('🛡️', 'Armour', `+${pctT(POTENTIAL.armour[k])} max armour (both layers)`); o.fx.brk = POTENTIAL.armour[k]; break;
+    case 'lifesteal': set('🦷', 'Lifesteal', `Heals ${pctT(POTENTIAL.lifesteal[k])} of the damage dealt`); o.fx.lifesteal = POTENTIAL.lifesteal[k]; break;
+    case 'resist': set('🧱', 'Resistance', `Takes ${pctT(POTENTIAL.resist[k])} less damage while the armour is not broken`); o.fx.resist = POTENTIAL.resist[k]; break;
+    case 'elres': set(I(C.weak), `${E(C.weak)} resistance`, `Takes ${pctT(POTENTIAL.elRes[k])} less ${E(C.weak)} damage`); o.fx.elRes = { [C.weak]: POTENTIAL.elRes[k] }; break;
+    case 'evasion': set('💨', 'Evasion', `+${pctT(POTENTIAL.dodge)} chance to evade an attack (stacks with Evasive; does not work against area attacks)`); o.fx.dodge = POTENTIAL.dodge; break;
+    case 'counter': set('↩️', 'Counter attacker', `+${pctT(POTENTIAL.counter)} chance to counter with ${s1.n} when attacked`); o.mods.push({ kind: 'counter', add: POTENTIAL.counter }); break;
+    case 'immunity': set(I(C.weak), `${E(C.weak)} immunity`, `Immune to the ailment of ${E(C.weak)} (still takes the HP and armour damage)`); o.fx.immune = [ELEM[C.weak].status]; break;
+    case 'restore': set('💚', 'Restoration', `Barrier skills also heal for ${pctT(POTENTIAL.restore)} of the barrier's strength`); o.fx.restore = POTENTIAL.restore; break;
+    case 'cleanser': set('✨', 'Cleanser', `Her healing and barrier skills cleanse 1 more ailment`); o.mods.push({ kind: 'cleanser' }); break;
+    case 'chain': set('⛓️', 'Chaining', `Single-target attacks also hit a random other enemy for ${pctT(POTENTIAL.chain)} damage`); o.fx.chain = POTENTIAL.chain; break;
+    case 'greedy': set('🪙', 'Greedy', `+${pctT(POTENTIAL.greedy)} gold from fights while in the party`); o.fx.gold = POTENTIAL.greedy; break;
+    case 'hoarder': set('🎒', 'Hoarder', `Can wear a third relic`); o.fx.slot = 1; break;
+    case 'chef': set('🍙', 'Chef', `At camp, ${pctT(POTENTIAL.chef)} chance not to use up a ration`); o.fx.chef = POTENTIAL.chef; break;
+    case 'masochist': set('🩸', 'Masochistic', `+${pctT(POTENTIAL.masochist)} damage while afflicted by an elemental ailment (burn, bleed, poison, freeze, shock)`); o.fx.masochist = POTENTIAL.masochist; break;
+    case 'sadistic': set('😈', 'Sadistic', `+${pctT(POTENTIAL.sadistic)} damage against enemies afflicted by an elemental ailment`); o.fx.sadistic = POTENTIAL.sadistic; break;
+    case 'vow': set('🗡️', 'Unbreakable Vow', 'Once per battle, a killing blow leaves her on 1 HP instead. She gains a barrier and every enemy must target her next'); o.fx.vow = 1; break;
+    case 'aegis': set('🧊', "Winter's Aegis", "Aegis wraps allies in a frost shell: when a shell's barrier breaks, the attacker takes ice damage and is frozen"); o.fx.aegis = 1; break;
+    case 'dance': set('⚡', 'Storm Dancer', 'Whenever she evades an attack (Evasive or a dodge) her next skill deals +50%. Chain Lightning also jumps to one extra target'); o.fx.dance = 1; break;
+    case 'dragon': set('🐉', 'Dragon Heart', "Dragon's Wrath lasts one extra turn and heals her 15% max HP when cast"); o.fx.dragon = 1; break;
+    case 'eye': set('🌩️', 'Eye of the Storm', 'Tempest Unbound always fires 3 small bolts, and every bolt deals double damage to its target, friend or foe'); o.fx.eye = 1; o.mods.push({ kind: 'storm2' }); break;
+    case 'call': set('🎶', "Siren's Call", 'Enthralling Song lasts one more attack, and charmed enemies take +25% damage'); o.fx.call = 1; break;
+    case 'shadow': set('🌑', 'Shadow Step', 'After Smoke Bomb her next attack deals +60% and cannot miss'); o.fx.shadow = 1; break;
+    case 'formula': set('⚗️', 'Stable Formula', 'Untested Potions also cleanses one non-poison ailment from each ally when drunk'); o.fx.formula = 1; break;
+    case 'eternal': set('🦇', 'Eternal Night', 'Undying Night lasts one more turn, and while it lasts her hits heal her for 60% of the damage dealt'); o.fx.eternal = 1; o.mods.push({ kind: 'dur', add: 1 }); break;
+    case 'embrace': set('❄️', "Winter's Embrace", 'Once per battle, Absolute Zero also freezes every enemy (they skip their next turn)'); o.fx.embrace = 1; break;
+    default: return null;
+  }
+  return o;
+}
+const POT_OPTS = {};          // id -> option, built once for every hero
+Object.keys(POT_HERO).forEach(hid => { const C = POT_HERO[hid];
+  [[1, C.t1], [2, C.t2], [3, [C.t3]]].forEach(([tier, kinds]) => kinds.forEach(kind => { const o = potBuild(hid, tier, kind); if (o) POT_OPTS[o.id] = o; })); });
+const potList = (hid, tier) => Object.values(POT_OPTS).filter(o => o.hero === hid && o.tier === tier);
+const potState = hid => { game.pot = game.pot || {}; return game.pot[hid] || (game.pot[hid] = { owned: [], active: {} }); };
+const potTierOpen = tier => !!devMode || questCleared(POTENTIAL.unlock[tier]);
+const potAwake = hid => !!devMode || !!(game.dived && game.dived[hid]);
+const potActiveIds = hid => { const a = (game && game.pot && game.pot[hid] && game.pot[hid].active) || {}; return [1, 2, 3].map(t => a[t]).filter(id => POT_OPTS[id] && potTierOpen(POT_OPTS[id].tier) && potAwake(hid)); };
+const potHas = (hid, kind) => potActiveIds(hid).some(id => POT_OPTS[id].kind === kind);
+function potEffects(hid) {                    // the merged fx and skill changes of a hero's active options, or null
+  if (!game || !POT_HERO[hid]) return null;
+  const ids = potActiveIds(hid); if (!ids.length) return null;
+  const P = { fx: {}, mods: [] };
+  ids.forEach(id => { const o = POT_OPTS[id]; P.mods.push(...o.mods); for (const [k, v] of Object.entries(o.fx)) {
+    if (k === 'elRes') { P.fx.elRes = P.fx.elRes || {}; for (const [e, x] of Object.entries(v)) P.fx.elRes[e] = (P.fx.elRes[e] || 0) + x; }
+    else P.fx[k] = Array.isArray(v) ? [...(P.fx[k] || []), ...v] : (P.fx[k] || 0) + v; } });
+  return P;
+}
+function applyPotMods(u, P) {                 // skill-level changes (after relics and perks, so everything stacks)
+  u.skills = u.skills.map((sk, i) => {
+    let x = sk;
+    for (const m of P.mods) {
+      if (m.idx && !m.idx.includes(i)) continue;
+      if (m.kind === 'eldmg' && x.t === 'dmg' && x.el) { x = scaleDmg(x, 1 + m.dmg); if (x.brk) x = { ...x, brk: Math.max(1, Math.round(x.brk * (1 + m.brk))) }; }
+      else if (m.kind === 'break' && x.t === 'dmg' && (x.el || x.chip) && x.brk) x = { ...x, brk: Math.max(1, Math.round(x.brk * (1 + m.pct))) };
+      else if (m.kind === 'skel' && x.t === 'dmg' && !x.el) x = { ...x, el: m.el, brk: Math.max(2, Math.round((x.brk || 8) * POTENTIAL.skelBrk)) };
+      else if (m.kind === 'counter' && i === 0 && x.t === 'dmg') x = { ...x, counter: (x.counter || 0) + m.add };
+      else if (m.kind === 'cleanser' && ['tonic', 'barrier', 'barrierAll'].includes(x.t)) x = { ...x, cleanse: (x.cleanse || 0) + 1 };
+      else if (m.kind === 'storm2' && x.storm) x = scaleDmg(x, 2);
+      else if (m.kind === 'dur' && x.t === 'immortal') x = { ...x, dur: x.dur + m.add };
+    }
+    return x;
+  });
+}
+const potTaken = (s, t) => { const A = t && t.rel; if (!A) return 0; return (t.state === 'armoured' ? (A.resist || 0) : 0) + (s && s.el && A.elRes ? (A.elRes[s.el] || 0) : 0); };       // Potential: fraction of damage a unit takes less
+const potCrystals = () => (game && game.crystals) || 0;
+function potBuy(id) {
+  const o = POT_OPTS[id]; if (!o || !potAwake(o.hero) || !potTierOpen(o.tier)) return;
+  const st = potState(o.hero); if (st.owned.includes(id) || potCrystals() < o.cost) return;
+  game.crystals -= o.cost; st.owned.push(id); if (!st.active[o.tier] && !gearLocked()) st.active[o.tier] = id;
+  writeSave(); renderPot();
+}
+function potSet(id) {                         // make an owned option the active one of its tier (or switch it off again)
+  const o = POT_OPTS[id]; if (!o || gearLocked() || !potAwake(o.hero)) return;
+  const st = potState(o.hero); if (!st.owned.includes(id)) return;
+  const was = st.active[o.tier]; if (was === id) delete st.active[o.tier]; else st.active[o.tier] = id;
+  if (!potHas(o.hero, 'hoarder')) { const a = game.equip[o.hero]; if (a && a.length > RELIC.slots) a.length = RELIC.slots; }          // no Hoarder: the third relic goes back to the bag
+  writeSave(); renderPot(); if (dormHero) renderGear();
+}
+let potHero = null;
+function openPot(hid) { if (!heroById(hid)) return; potHero = hid; renderPot(); $('pot-modal').classList.add('show'); }
+function closePot() { $('pot-modal').classList.remove('show'); potHero = null; }
+function renderPot() {
+  const hid = potHero; if (!hid) return; const h = heroById(hid), st = potState(hid), C = POT_HERO[hid], lock = gearLocked();
+  $('pot-title').innerHTML = `✨ ${h.name}'s Potential <span class="pot-cry">❄️ ${potCrystals()}</span>`;
+  $('pot-sub').textContent = lock ? 'A quest is in progress: options can be bought but not switched until it ends.' : `Buy an option once, then switch freely between quests. One option per tier is active. Specialty: ${ELEM_NAME[C.el]} · Weak to: ${ELEM_NAME[C.weak]}`;
+  $('pot-list').innerHTML = [1, 2, 3].map(t => {
+    const open = potTierOpen(t), q = QUESTS.find(x => x.id === POTENTIAL.unlock[t]);
+    return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}</div>` + potList(hid, t).map(o => {
+      const owned = st.owned.includes(o.id), on = st.active[t] === o.id, afford = potCrystals() >= o.cost;
+      return `<div class="pot-opt${on ? ' on' : ''}${open ? '' : ' locked'}"><span class="ic">${o.icon}</span><div class="pt"><b>${o.name}</b><br>${o.desc}</div>
+        <div class="pb">${!open ? '' : owned ? `<button onclick="potSet('${o.id}')" ${lock ? 'disabled' : ''}>${on ? '✔ Active' : 'Equip'}</button>` : `<button class="primary" onclick="potBuy('${o.id}')" ${afford ? '' : 'disabled'}>❄️ ${o.cost}</button>`}</div></div>`; }).join('') + '</div>';
+  }).join('');
+}
+function potSection(hid) {                    // the Dorm panel: hidden until Act 3 is open
+  if (!POT_HERO[hid] || !lakeOpen()) return '';
+  if (!potAwake(hid)) return `<div class="dh">POTENTIAL</div><div class="dim" style="font-size:.78rem">Not awakened yet. Take ${heroById(hid).name} for a dive at the Frozen Lake in town.</div>`;
+  const on = potActiveIds(hid).map(id => POT_OPTS[id]);
+  return `<div class="dh">POTENTIAL</div><div class="dtr">${on.map(o => `<div class="tr-row good">${o.icon} <b>${o.name}</b> <span class="dim">(tier ${o.tier})</span>: ${o.desc}</div>`).join('') || '<div class="dim" style="font-size:.78rem">Nothing active yet</div>'}</div>
+    <button onclick="openPot('${hid}')">✨ Open Potential · ❄️ ${potCrystals()}</button>`;
 }
 function applyRelics(u, ids, traitIds) {            // bakes relics AND the hero's permanent traits into the unit
   u.relics = (ids || []).filter(id => RELICS[id]); u.traits = (traitIds || []).filter(id => TRAIT[id]); u.rel = {}; u.revived = false;
-  if (!u.relics.length && !u.traits.length) return;
-  const A = u.rel = relicFx(u.relics, u.traits);
+  const P = potEffects(u.id);                                   // the hero's active Potential options (bought with Frost Crystals)
+  if (!u.relics.length && !u.traits.length && !P) return;
+  const A = u.rel = relicFx(u.relics, u.traits, P && P.fx);
   if (A.hp || A.hpPct) { u.maxHp = Math.max(1, u.maxHp + (A.hp || 0) + Math.round(u.maxHp * (A.hpPct || 0))); u.hp = u.maxHp; }
   if (A.brk) { const kb = Math.max(0.4, 1 + A.brk); u.maxBreak = Math.max(1, Math.round(u.maxBreak * kb)); u.breakBar = u.maxBreak; u.maxBreak2 = Math.max(1, Math.round(u.maxBreak2 * kb)); u.break2 = u.maxBreak2; }
   if (A.spd) u.spd = Math.max(1, u.spd + A.spd);
@@ -1934,6 +2081,7 @@ function applyRelics(u, ids, traitIds) {            // bakes relics AND the hero
     if (A.cd && x.cd > 0) x = { ...x, cd: Math.max(1, x.cd + A.cd) };
     return x;
   });
+  if (P) applyPotMods(u, P);
   u.icons += u.relics.map(id => RELICS[id].icon).join('');
 }
 const canRevive = t => !!(t.rel && t.rel.revive && !t.revived);
@@ -1948,10 +2096,14 @@ function sanitizeGear(s) {                               // keep saves consisten
   const eq = {}, used = new Set();
   Object.entries(s.equip && typeof s.equip === 'object' && !Array.isArray(s.equip) ? s.equip : {}).forEach(([hid, arr]) => {
     if (!HEROES.some(h => h.id === hid) || !Array.isArray(arr)) return;
-    const out = []; for (let i = 0; i < RELIC.slots; i++) { const id = arr[i]; if (id && owned.includes(id) && !used.has(id)) { used.add(id); out.push(id); } else out.push(null); }
+    const out = [], cap = RELIC.slots + ((s.pot && s.pot[hid] && s.pot[hid].active && Object.values(s.pot[hid].active).includes(hid + '.hoarder')) ? 1 : 0); for (let i = 0; i < cap; i++) { const id = arr[i]; if (id && owned.includes(id) && !used.has(id)) { used.add(id); out.push(id); } else out.push(null); }
     eq[hid] = out;
   });
   s.equip = eq;
+  if (!s.pot || typeof s.pot !== 'object' || Array.isArray(s.pot)) s.pot = {};              // Potential: keep only known options, owned ones active
+  Object.keys(s.pot).forEach(hid => { const st = s.pot[hid]; if (!POT_HERO[hid] || !st || typeof st !== 'object') { delete s.pot[hid]; return; }
+    st.owned = (Array.isArray(st.owned) ? st.owned : []).filter((id, i, a) => POT_OPTS[id] && POT_OPTS[id].hero === hid && a.indexOf(id) === i);
+    const act = {}; [1, 2, 3].forEach(t => { const id = st.active && st.active[t]; if (id && st.owned.includes(id) && POT_OPTS[id].tier === t) act[t] = id; }); st.active = act; });
   if (!s.shop || typeof s.shop !== 'object' || !Array.isArray(s.shop.stock)) s.shop = { stock: rollStock(owned) };
   s.shop.stock = s.shop.stock.filter(id => RELICS[id] && !owned.includes(id));
   return s;
@@ -2160,6 +2312,9 @@ function renderGuide() {
       <h4>Perks</h4>${perks.map(t => g(`${t.icon} <b>${t.name}</b>: ${t.desc}`, 'good')).join('')}
       <h4>Tier II perks (the Tidelands)</h4>${g(`Clearing a <b>Tidelands</b> quest (Cove, Lighthouse, Shoals) <b>upgrades</b> a perk the hero already has (Hardy → Hardy II, about 1.75× as strong) instead of giving a new one. A hero with nothing to upgrade gets a new perk as usual. After your first Tidelands quest, the <b>Beach</b> opens in town: win <b>Beach Volleyball</b> (${VB.cost}g a game) to trade a Tier II perk for any Tier I perk.`)}
       <h4>Flaws</h4>${flaws.map(t => g(`${t.icon} <b>${t.name}</b>: ${t.desc}`, 'bad')).join('')}
+      <h4>Potential (Act 3)</h4>${g(`Clear any Frostbound Peaks quest to open the <b>Frozen Lake</b> in town. Pay a fee, jump in, and survive the <b>polar dip</b>: steer, your attack fires by itself, pick upgrades on level-up, and every kill earns ❄️ <b>Frost Crystals</b> (you keep them even if you fall). A hero's first dive awakens their <b>Potential</b>, found on their Dorm page.`, 'good')}
+      ${g(`Each hero has 3 tiers: tiers 1 and 2 offer 3 options each, tier 3 one special option. <b>Buy</b> an option once with crystals, then <b>equip</b> it in the Dorm (locked during a quest); one option is active per tier. Tier 1 unlocks with the Mountain Pass, tier 2 with the Frozen Valley, tier 3 with the Ice Queen's Castle.`, 'good')}
+      ${g(`<b>Evasion</b> is a real chance to avoid a direct attack (it stacks with Evasive and never works on area attacks). <b>Sadistic</b> and <b>Masochistic</b> count burn, bleed, poison, freeze and shock only.`, 'good')}
       <h4>Relics</h4>${g(`Each hero wears up to ${RELIC.slots} relics, set from the Dorm (locked during a quest). Relics come from the Shop (restocked after every run) and boss drops. Rarity: common, rare, epic. Tidelands bosses and road finds drop <b>Tier II</b> relics (Iron Band II…, about 1.5× as strong) and a few coast-only relics; they are never sold in the Shop.`)}`;
   }
   $('guide-body').innerHTML = h; $('guide-body').scrollTop = 0;
@@ -2304,7 +2459,7 @@ function posMod(s, t) {
 }
 const scaleBy = (v, k) => v > 0 ? Math.max(1, Math.round(v * k)) : 0;
 const biteMod = (s, t) => s && s.bite && t && (t.statuses || []).some(x => x.type === 'bleed') ? s.bite.dmg : 0;      // Crimson Bite: extra damage against a bleeding target
-function adjRange(s, t) { const [a, b] = dmgRange(s), k = (1 + posMod(s, t) + biteMod(s, t)) * (1 - drOf(t)); return [scaleBy(a, k), scaleBy(b, k)]; }
+function adjRange(s, t) { const [a, b] = dmgRange(s), k = (1 + posMod(s, t) + biteMod(s, t)) * (1 - drOf(t)) * (1 - potTaken(s, t)); return [scaleBy(a, k), scaleBy(b, k)]; }
 function rollDamage(s, t, u) {
   const [lo, hi] = dmgRange(s), chance = critChance(s, t), mod = posMod(s, t);
   let amount = scaleBy(lo + Math.floor(rand() * (hi - lo + 1)), 1 + mod + biteMod(s, t));
@@ -2314,7 +2469,13 @@ function rollDamage(s, t, u) {
   if (A) {
     if (A.brokenBonus && t && t.state && t.state !== 'armoured') amount = scaleBy(amount, 1 + A.brokenBonus);
     if (A.lowHpBonus && u.hp < u.maxHp / 2) amount = scaleBy(amount, 1 + A.lowHpBonus);
+    if (A.sadistic && t && (t.statuses || []).some(x => ELEM_STATUS.includes(x.type))) amount = scaleBy(amount, 1 + A.sadistic);                       // Potential: Sadistic
+    if (A.masochist && (u.statuses || []).some(x => ELEM_STATUS.includes(x.type))) amount = scaleBy(amount, 1 + A.masochist);                         // Potential: Masochistic
+    if (u.danceBuff) amount = scaleBy(amount, 1.5);                                                                                                    // Potential: Storm Dancer
+    if (u.shadow) amount = scaleBy(amount, 1.6);                                                                                                       // Potential: Shadow Step
   }
+  { const ch = t && (t.statuses || []).find(x => x.type === 'charmed' && x.amp); if (ch) amount = scaleBy(amount, 1 + ch.amp); }                        // Potential: Siren's Call
+  if (potTaken(s, t) > 0) amount = scaleBy(amount, 1 - Math.min(.9, potTaken(s, t)));                       // Potential: Resistance / element resistance
   if (drOf(t) > 0) amount = scaleBy(amount, 1 - drOf(t));                   // Defiant Slam's stance
   return { amount, crit, chance, mod };
 }
@@ -3293,6 +3454,12 @@ async function flushTriggers() {
 function lethalGuard(t, hp) {
   if (hp > 0) return hp;
   if (t.immortal > 0) return 1;
+  if (t.team === 'p' && t.rel && t.rel.vow && !t.vowUsed) {                         // Potential: Unbreakable Vow, once per battle
+    t.vowUsed = true; t.barrier = Math.max(t.barrier || 0, 25); t.holdBarrier = false;
+    enemies.forEach(e => { if (isAlive(e)) { e.taunt = t; if (e.intent && !e.intent.skip && e.skills[e.intent.i].t === 'dmg') e.intent.target = t; } });
+    log(`🗡️ ${t.name}'s vow holds! She clings to 1 HP behind a barrier, and every enemy turns on her.`, 'log-heal'); floatText(t, '🗡️ VOW', 'tag'); fx(t, 'ward'); sfx('ward');
+    return 1;
+  }
   const i = t.team === 'p' ? t.skills.findIndex((k, idx) => k.t === 'immortal' && !(t.once && t.once[idx])) : -1;
   if (i >= 0) {
     t.once = t.once || {}; t.once[i] = true; t.immortal = t.skills[i].dur; t.immortalFresh = false;
@@ -3514,7 +3681,8 @@ function applyStatus(t, el, src) {
 
 function applyCharm(t, src) {            // Siren: the target's next attack will hit one of its own friends instead
   if (hasCharm(t)) { log(`${t.name} is already charmed.`, 'log-status'); return; }
-  t.statuses.push({ type: 'charmed', dot: 0, stun: false, dur: 1 });
+  const call = !!(src && src.rel && src.rel.call);
+  t.statuses.push({ type: 'charmed', dot: 0, stun: false, dur: 1, left: call ? 2 : 1, amp: call ? .25 : 0 });
   log(`💘 ${t.name} is <strong>CHARMED</strong>: its next attack will hit a friend!`, 'log-status'); floatText(t, '💘 CHARMED', 'tag');
 }
 
@@ -3539,14 +3707,22 @@ async function hit(u, t, s) {
   if (s.t === 'dmg' && t.stealth > 0 && t.team !== u.team && Math.random() < EVADE.stealth) {      // Irae in stealth: the attack finds nothing
     log(`💨 ${t.name} is hidden in the shadows: ${u.name}'s ${s.n} misses!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
   }
-  if (s.t === 'dmg' && u.team === 'p' && numbHit(u) < 1 && Math.random() >= numbHit(u)) {                 // numb from the cold: the attack can miss
+  if (s.t === 'dmg' && !s.noDodge && t.team !== u.team && t.rel && t.rel.dodge > 0 && Math.random() < t.rel.dodge) {          // Potential: Evasion (area attacks and storm bolts cannot be dodged)
+    log(`💨 ${t.name} evades ${u.name}'s ${s.n}!`, 'log-status'); floatText(t, '💨 EVADED', 'tag'); sfx('swing'); if (t.rel.dance) { t.danceBuff = true; floatText(t, '⚡ DANCING', 'tag'); } render(); await sleep(320); return;
+  }
+  if (s.t === 'dmg' && u.team === 'p' && !u.shadow && numbHit(u) < 1 && Math.random() >= numbHit(u)) {                 // numb from the cold: the attack can miss
     log(`❄️ ${u.name} is numb with cold: ${s.n} misses ${t.name}!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
   }
   const r = rollDamage(s, t, u), m = matchup(s, t);
   const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = (s.el || s.chip) ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
   const dmg = r.amount - soak, bled = !!(s.bite && (t.statuses || []).some(x => x.type === 'bleed'));
   qStat(u, t, dmg, r.crit); if (s.el === 'ice' && t.team === 'p') addChill(t, BLIZ.frostHit);
-  t.barrier = b - soak;                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
+  if (t.rel && t.rel.dance && t.team !== u.team && r.mod < 0 && t.evasive > 1 && !t.danceBuff) { t.danceBuff = true; floatText(t, '⚡ DANCING', 'tag'); }      // Storm Dancer also procs off Evasive
+  t.barrier = b - soak;
+  if (b > 0 && t.barrier <= 0 && t.shell && t.team !== u.team && isAlive(u)) {                                                      // Winter's Aegis: the frost shell shatters on whoever broke it
+    const sh = t.shell; t.shell = null; const hit0 = u.hp; u.hp = Math.max(1, u.hp - 10);
+    log(`🧊 The frost shell around ${t.name} shatters: ${u.name} takes ${hit0 - u.hp} ice damage and is frozen!`, 'log-status'); floatText(u, hit0 - u.hp, 'e-ice'); applyStatus(u, 'ice', sh);
+  }                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
   t.hp = lethalGuard(t, t.hp - dmg);                           // never below 0, even for a frame (and immortal units stop at 1)
   if (dmg > 0 && t.stealth > 0) { t.stealth = 0; t.stealthFresh = false; log(`🌫️ ${t.name} is hit and loses her stealth!`, 'log-status'); }
   if (t.hp <= 0 && !canRevive(t)) { t.statuses = []; t.stealth = 0; }             // a unit going down carries no ailments (or stealth) into the death animation
@@ -3556,6 +3732,10 @@ async function hit(u, t, s) {
   }
   if (s.drain && dmg > 0 && isAlive(u)) {                      // Tyr: her claws drink a share of the damage they deal
     const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(dmg * s.drain)));
+    if (u.hp > b0) setTimeout(() => floatText(u, '+' + (u.hp - b0), 'heal'), 120);
+  }
+  if (u.rel && u.rel.eternal && u.immortal > 0 && dmg > 0 && isAlive(u)) {        // Eternal Night: while immortal, her hits heal her
+    const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(dmg * .6)));
     if (u.hp > b0) setTimeout(() => floatText(u, '+' + (u.hp - b0), 'heal'), 120);
   }
   if (u.rel && u.rel.lifesteal && dmg > 0 && isAlive(u)) {     // Vampiric Fang
@@ -3649,12 +3829,12 @@ async function perform(u, i, target) {
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
     log(`🌫️ ${u.name} throws a ${s.n}! She slips back and vanishes into the smoke.`, 'log-player'); floatText(u, '🌫️ STEALTH', 'tag');
     tail(u, 'smoke'); sfx('poof'); await sleep(200);
-    moveUnit(u, 'back'); u.stealth = s.dur; u.stealthFresh = true;
+    moveUnit(u, 'back'); u.stealth = s.dur; u.stealthFresh = true; if (u.rel && u.rel.shadow) { u.shadow = true; floatText(u, '🌑 SHADOW', 'tag'); }
     enemies.forEach(e => { if (isAlive(e) && e.intent && e.intent.target === u && e.skills[e.intent.i].t === 'dmg' && Math.random() > STEALTH.weight) e.intent.target = weightedHero(); });      // anyone who was aiming at her picks again
     if (s.free) u.extraTurn = true;
     render(); await sleep(100); return;
   }
-  if (s.t === 'buff') { sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
+  if (s.t === 'buff') { if (u.rel && u.rel.dragon) { u.wrathExtra = true; const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * .15)); if (u.hp > b0) floatText(u, '+' + (u.hp - b0), 'heal'); } sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
     const wasBleeding = !!(target && target.statuses && target.statuses.some(x => x.type === 'bleed')), wasArmoured = !!target && target.state !== 'broken' && target.state !== 'super';
     await Promise.all([clip, hit(u, target, s)]);
@@ -3663,14 +3843,27 @@ async function perform(u, i, target) {
     if (s.aoe && isAlive(u)) {                                      // Thunderstorm: everyone else on the other side is caught in it too
       const others = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && e !== target);
       if (others.length) log(`🌩️ ${s.n} sweeps over ${others.map(e => e.name).join(', ')}!`, 'log-status');
-      for (const e of others) if (isAlive(e)) await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)) });
+      for (const e of others) if (isAlive(e)) await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)), noDodge: true });
+    }
+    if (u.rel && u.rel.chain && !s.aoe && !s.storm && !countering && isAlive(u) && u.team === 'p') {            // Potential: Chaining
+      const others = enemies.filter(e => isAlive(e) && e !== target);
+      if (others.length) { const v = others[Math.floor(Math.random() * others.length)]; log(`⛓️ ${s.n} chains to ${v.name}!`, 'log-status'); countering = true; try { await hit(u, v, { ...scaleDmg(s, u.rel.chain), brk: Math.round((s.brk || 0) * u.rel.chain), noDodge: true }); } finally { countering = false; } }
+    }
+    if (u.rel && u.rel.dance && s.n === 'Chain Lightning' && !countering && isAlive(u)) {                             // Potential: Storm Dancer, Chain Lightning jumps once more
+      const others = enemies.filter(e => isAlive(e) && e !== target);
+      if (others.length) { const v = others[Math.floor(Math.random() * others.length)]; log(`⚡ Chain Lightning jumps to ${v.name}!`, 'log-status'); countering = true; try { await hit(u, v, { ...scaleDmg(s, .6), brk: Math.round((s.brk || 0) * .6), noDodge: true }); } finally { countering = false; } }
+    }
+    if (u.rel && u.rel.embrace && s.n === 'Absolute Zero' && !u.embraceUsed && isAlive(u)) {                          // Potential: Winter's Embrace, once per battle
+      u.embraceUsed = true; const foes = enemies.filter(isAlive);
+      log(`❄️ Winter's Embrace! Absolute Zero freezes every enemy solid.`, 'log-status'); floatText(u, "❄️ EMBRACE", 'tag');
+      foes.forEach(e => { if (!stunned(e)) applyStatus(e, 'ice', u); }); render(); await sleep(300);
     }
     if (s.dr && isAlive(u)) {                                       // Defiant Slam: her own stance, for dr.dur of her turns
       u.dr = { mult: s.dr.mult, turns: s.dr.dur, fresh: true };
       log(`🔰 ${u.name} braces: she takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} turns.`, 'log-heal'); floatText(u, `🔰 −${Math.round(s.dr.mult * 100)}%`, 'ward'); render();
     }
     if (s.storm) {                                                  // the storm answers: 1-3 small bolts. Odd = a random foe, even = a random friend (the caster too)
-      const n = 1 + Math.floor(Math.random() * 3), foes = u.team === 'p' ? enemies : party, friends = u.team === 'p' ? party : enemies, spark = u.skills[0];
+      const eye = !!(u.rel && u.rel.eye), n = eye ? 3 : 1 + Math.floor(Math.random() * 3), foes = u.team === 'p' ? enemies : party, friends = u.team === 'p' ? party : enemies, spark = { ...(eye ? scaleDmg(u.skills[0], 2) : u.skills[0]), noDodge: true };
       log(`🌩️ The storm answers with ${n} more strike${n > 1 ? 's' : ''}!`, 'log-status');
       for (let k = 1; k <= n; k++) {
         if (!foes.some(isAlive) || !friends.some(isAlive)) break;
@@ -3705,6 +3898,7 @@ async function perform(u, i, target) {
   if (s.t === 'brew') {                                        // Untested Potions: everyone drinks (herself included)
     const who = party.filter(isAlive);
     who.forEach(a => { a.brew = { turns: BREW.dur, fresh: a === u }; floatText(a, '⚗️ BREWED', 'ward'); });
+    if (u.rel && u.rel.formula) who.forEach(a => { const pool = (a.statuses || []).filter(x => x.type !== 'poison' && !x.debt); if (pool.length) { const g = pool[Math.floor(Math.random() * pool.length)]; a.statuses = a.statuses.filter(x => x !== g); log(`⚗️ Stable Formula cleanses ${a.name} of ${g.type.toUpperCase()}.`, 'log-heal'); floatText(a, '✨ CLEANSED', 'ward'); } });
     log(`⚗️ ${u.name} passes round her untested potions: ${who.map(a => a.name).join(', ')} hit harder for ${BREW.dur} turns (more while poisoned), then pay for it.`, 'log-status'); render(); return;
   }
   if (s.t === 'immortal') {                                    // Undying Night, cast by hand
@@ -3724,6 +3918,8 @@ async function perform(u, i, target) {
   if (!targets.length) { log(`${u.name} has no one to protect.`, 'log-round'); return; }
   const gains = targets.map(t => addBarrier(t, s.p));
   targets.forEach((t, k) => log(`${u.name} uses ${s.n}: ${t.name} ${gains[k] ? `gains a ${t.barrier} barrier` : `already has a ${t.barrier} barrier (barriers don't stack)`}.`, 'log-heal'));
+  if (u.rel && u.rel.restore) targets.forEach(t => { const b0 = t.hp; t.hp = Math.min(t.maxHp, t.hp + Math.round(s.p * u.rel.restore)); if (t.hp > b0) setTimeout(() => floatText(t, '+' + (t.hp - b0), 'heal'), 200); });          // Potential: Restoration
+  if (u.rel && u.rel.aegis && s.t === 'barrierAll') targets.forEach((t, k) => { if (gains[k]) t.shell = u; });                                              // Potential: Winter's Aegis
   const cleansed = s.cleanse ? targets.map(t => cleanse(t, s.cleanse)) : [];
   cleansed.forEach((g, k) => { if (g.length) log(`✨ ${targets[k].name} is cleansed of ${g.map(x => x.toUpperCase()).join(', ')}.`, 'log-heal'); });
   render();
@@ -4056,7 +4252,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
     if (ch && !act.shift && !act.skip && !act.item && u.skills[act.i] && u.skills[act.i].t === 'dmg') {
       const mates = (u.team === 'p' ? party : enemies).filter(a => a !== u && isAlive(a));
       if (mates.length) {
-        const v = mates[Math.floor(Math.random() * mates.length)]; u.statuses = u.statuses.filter(x => x !== ch); u.taunt = null;
+        const v = mates[Math.floor(Math.random() * mates.length)]; if (ch.left > 1) ch.left--; else u.statuses = u.statuses.filter(x => x !== ch); u.taunt = null;
         log(`💘 ${u.name} is charmed and turns on ${v.name}!`, 'log-status'); floatText(u, '💘 CHARMED', 'tag'); speak(u, 'charmed'); act = { ...act, target: v };
       }
     } }
@@ -4072,9 +4268,9 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
   } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(140); }
   else if (act.item && ITEMS[act.item].type === 'torch') { say(`${u.name} lights a torch`); await useItem(u, act.item, u); }
   else if (act.item) { setSpot([u, act.target]); say(`${u.name} uses ${ITEMS[act.item].name} on ${act.target.name}`); await useItem(u, act.item, act.target); }
-  else await perform(u, act.i, act.target);
+  else { await perform(u, act.i, act.target); if (u.skills[act.i] && u.skills[act.i].t === 'dmg') { u.danceBuff = false; u.shadow = false; } }
   if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on a random enemy, then the buff is gone
-    u.wrath = false;
+    u.wrath = false; if (u.wrathExtra) { u.wrathExtra = false; u.wrath = true; }          // Potential: Dragon Heart keeps the wrath up one more turn
     const foes = enemies.filter(isAlive);
     if (isAlive(u) && foes.length) {
       const v = foes[Math.floor(Math.random() * foes.length)];
@@ -4556,6 +4752,8 @@ function startDev() {
   game.relics = Object.keys(RELICS); game.shop = { stock: [] };
   Object.keys(ITEMS).forEach(id => { game.items[id] = 99; });
   Object.defineProperty(game, 'gold', { get: () => 9999999, set: () => {}, enumerable: true, configurable: true });
+  Object.defineProperty(game, 'crystals', { get: () => 9999999, set: () => {}, enumerable: true, configurable: true });
+  game.dived = {}; game.roster.forEach(id => { game.dived[id] = true; });
   devFlaws(); hubNote = 'Developer mode: everything is unlocked and nothing is saved.';
   startGame();
 }
@@ -4603,7 +4801,7 @@ function startQuest(ids, questId) {
 function startNode() {
   const node = curNode(), total = quest.def.nodes.length;
   party = quest.party;                                               // same unit objects: HP/armour carry over
-  party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.dr = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.rank = i; u.cd = u.skills.map(() => 0); });
+  party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.dr = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.vowUsed = false; u.danceBuff = false; u.shadow = false; u.embraceUsed = false; u.wrathExtra = false; u.shell = null; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = (quest.bonus ? quest.def.nodes[quest.node] : node).scale || {};            // quest-wide difficulty x this node's own scaling
   const ids = quest.bonus ? quest.bonus.ids : (quest.plan && quest.plan.nodes[quest.node] || node.enemies), mods = quest.bonus ? quest.bonus.mods : (quest.devMods || (RAND.on && quest.plan && quest.plan.mods && quest.plan.mods[quest.node]));
   const T = tierDef(quest.tier);
@@ -4661,9 +4859,10 @@ function renderCamp() {
 function useFood() {
   const q = quest, it = ITEMS.ration;
   if ((q.items.ration || 0) <= 0 || !q.party.some(u => u.hp < u.maxHp)) return;
-  q.items.ration--; let total = 0;
+  const chefs = q.party.filter(u => u.rel && u.rel.chef).length, saved = chefs > 0 && Math.random() < 1 - Math.pow(1 - POTENTIAL.chef, chefs);          // Potential: Chef
+  if (!saved) q.items.ration--; let total = 0;
   q.party.forEach(u => { const b = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(u.maxHp * it.pct))); total += u.hp - b; });
-  sfx('heal'); campMsg = `The party eats together: +${Math.round(it.pct * 100)}% max HP each (${total} HP in all).`;
+  sfx('heal'); campMsg = `The party eats together: +${Math.round(it.pct * 100)}% max HP each (${total} HP in all).${saved ? ' 🍙 The chef made it stretch: no ration used!' : ''}`;
   saveQuest(); renderCamp();
 }
 function useKit(i) {
@@ -4889,7 +5088,8 @@ function buyItem(id) {
 let gearSel = null, gearMsg = '', dormHero = null, relicMode = null;
 const gearLocked = () => !!game.quest;
 const wornBy = id => Object.keys(game.equip).find(h => (game.equip[h] || []).includes(id)) || null;
-const slotsOf = hid => { const a = game.equip[hid] || (game.equip[hid] = []); while (a.length < RELIC.slots) a.push(null); return a; };
+const slotCount = hid => RELIC.slots + (potHas(hid, 'hoarder') ? 1 : 0);          // Potential: Hoarder allows a third relic
+const slotsOf = hid => { const a = game.equip[hid] || (game.equip[hid] = []); while (a.length < slotCount(hid)) a.push(null); while (a.length > slotCount(hid) && !a[a.length - 1]) a.pop(); return a; };
 const heroArtCache = {};
 async function heroArt(id) { const k = id + '|' + (skinOf(id) || ''); if (!(k in heroArtCache)) heroArtCache[k] = await baseIdle(id); return heroArtCache[k]; }
 function fillHeroArt(root) {       // puts the armoured idle picture (breathing, like in combat) into every [data-art] box; the labelled stand-in stays if there is none
@@ -4975,9 +5175,10 @@ function renderGear() {
     $('dorm-char').innerHTML = `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
       <div class="dorm-info"><h3>${h.name} ${elIcons(h)}</h3>
         ${BIOS[dormHero] ? `<div class="dbio">${BIOS[dormHero].bio}<br><span class="likes">♥ Likes: ${BIOS[dormHero].like}</span> · <span class="hates">✖ Dislikes: ${BIOS[dormHero].hate}</span></div>` : ''}
-        <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
+        <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}${u.rel && u.rel.dodge ? ` · 🌀 Evade ${Math.round(u.rel.dodge * 100)}%` : ''}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
         ${skinsFor(dormHero).length ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${n || 'Default'}</button>`).join('')}</div>` : ''}
         <div class="dh">RELICS</div><div class="rslots">${rs}</div>
+        ${potSection(dormHero)}
         <div class="dh">SKILLS</div>${sk}
         <div class="dh">PERKS (${traitCount(dormHero, 'good')}/${TRAITS.maxGood})</div><div class="dtr">${group('good')}</div>
         <div class="dh">FLAWS (${traitCount(dormHero, 'bad')}/${TRAITS.maxBad})</div><div class="dtr">${group('bad')}</div></div>`;
@@ -6068,7 +6269,7 @@ const GP = (() => {
   // which layer is on top right now
   function layer() {
     for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
-    for (const id of ['guide', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
+    for (const id of ['guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
     const t = document.getElementById('title'); if (t && !t.classList.contains('hide')) return { root: t };
     const sc = document.querySelector('.scene.show'); if (sc && sc.id === 'dive' && typeof diveLive !== 'undefined' && diveLive()) return { root: sc, skip: true, noClick: true };
     return { root: sc || document.body, scene: sc && sc.id };
@@ -6134,6 +6335,7 @@ const GP = (() => {
   function back(L) {
     if (L.skip) return L.root.click();
     if (L.modal === 'guide') return closeGuide();
+    if (L.modal === 'pot-modal') return closePot();
     if (L.modal === 'relic-modal') return closeRelics();
     if (L.modal === 'summary') return closeSummary();
     if (L.modal === 'inspect') return closeInspect();
