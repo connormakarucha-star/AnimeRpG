@@ -1605,7 +1605,9 @@ function renderGuide() {
   $('guide-tabs').innerHTML = GUIDE_TABS.map(([k, n]) => `<button class="${k === guideTab ? 'sel' : ''}" onclick="guideTabTo('${k}')">${n}</button>`).join('');
   const g = (t, c = '') => `<div class="g ${c}">${t}</div>`, pb = Math.round(POS.bonus * 100);
   let h = '';
-  if (guideTab === 'basics') h = `<h4>A turn</h4>
+  if (guideTab === 'basics') h = `<h4>Controller</h4>
+    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>X</b> opens Items in battle, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip Guide tabs, <b>Start</b> presses Continue, <b>Select</b> opens this guide and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
+    <h4>A turn</h4>
     ${g(`Fighters act in <b>speed</b> order, highest first (the bar at the top shows the order). On your turn pick one of three <b>skills</b>, then a target. Strong skills have a <b>cooldown</b>: they cannot be used again for that many turns. You can also <b>Shift Line</b> (swap places with the ally ahead; it ends your turn) or use a potion from your bag.`)}
     <h4>Rows and range</h4>
     ${g(`Each side stands in a line. The first ${POS.front} are the <b>front row</b>, the rest the <b>back row</b>. ${RICON.melee} <b>Melee</b> skills hit the front row for <b>+${pb}%</b> and the back row for <b>−${pb}%</b>. ${RICON.ranged} <b>Ranged</b> skills are the reverse. Fallen fighters leave the line and the others step up.`)}
@@ -4630,6 +4632,146 @@ function spaFinished(hero, won, target) {
 
 try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); } catch (e) { storageOk = false; }
 refreshTitle();      // the game itself starts from the title screen buttons (startGame)
+
+// ======================= CONTROLLER SUPPORT (Gamepad API) =======================
+// Works with any standard-mapping pad (Xbox / PlayStation / Switch Pro / 8BitDo...), wired or Bluetooth, on PC and phones.
+// Keyboard/mouse/touch keep working; the pad takes over only when it is used and hands back the moment you touch the mouse/screen.
+const GP = (() => {
+  const st = document.createElement('style');
+  st.textContent = `
+  body.gp .gp-focus{outline:3px solid #ffd54f !important;outline-offset:2px;box-shadow:0 0 16px 2px rgba(255,213,79,.85) !important;position:relative;z-index:3}
+  #gp-hint{display:none;position:fixed;left:50%;top:6px;transform:translateX(-50%);z-index:9999;background:rgba(10,10,16,.82);border:1px solid #444;border-radius:12px;padding:4px 10px;font-size:.62rem;color:#cfd2e6;pointer-events:none;white-space:nowrap;max-width:96vw;overflow:hidden}
+  body.gp #gp-hint{display:block}
+  #gp-hint b{display:inline-block;min-width:1.3em;text-align:center;border-radius:50%;background:#2d2d3d;color:#ffd54f;padding:0 3px;margin:0 2px 0 6px}
+  body.gp{cursor:none}`;
+  document.head.appendChild(st);
+  const hint = document.createElement('div'); hint.id = 'gp-hint'; document.body.appendChild(hint);
+  const HINTS_S = '<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>Start</b>Next';
+  const HINTS = '<b>◀▶▲▼</b>Move<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>LB/RB</b>Tabs<b>Start</b>Continue<b>Sel</b>Guide';
+
+  const S = { active: false, focus: null, cx: 0, cy: 0, prev: {}, held: {}, synth: false };
+  const vis = el => { if (!el.isConnected) return false; const r = el.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || cs.pointerEvents === 'none') return false; return r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth; };
+  const shown = id => { const e = document.getElementById(id); return e && e.classList.contains('show') ? e : null; };
+
+  // which layer is on top right now
+  function layer() {
+    for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) return { root: e, skip: true }; }
+    for (const id of ['guide', 'relic-modal', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
+    const t = document.getElementById('title'); if (t && !t.classList.contains('hide')) return { root: t };
+    const sc = document.querySelector('.scene.show'); return { root: sc || document.body, scene: sc && sc.id };
+  }
+  const SEL = 'button,[onclick],.pick,.fslot,select,input[type=range],input[type=checkbox]';
+  const NOFOCUS = '#snd-btn,#guide-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has)';
+  function candidates(L) {
+    let list = [...L.root.querySelectorAll(SEL)].filter(e => e !== L.root && !e.disabled && !e.closest(NOFOCUS) && vis(e));
+    if (L.scene === 'battle-scene') { const t = list.filter(e => e.classList.contains('targetable')); list = t.length ? t : list.filter(e => !e.classList.contains('combatant-card')); }
+    return list.filter(e => !list.some(o => o !== e && e.contains(o)));       // containers are not targets, their buttons are
+  }
+  const ctr = e => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+  function setFocus(e) {
+    if (S.focus && S.focus !== e) S.focus.classList.remove('gp-focus');
+    S.focus = e; if (!e) return; e.classList.add('gp-focus'); [S.cx, S.cy] = ctr(e);
+    try { e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (_) {}
+  }
+  function nearestTo(list, x, y) { let b = null, bd = 1e12; for (const e of list) { const [a, c] = ctr(e); const d = (a - x) ** 2 + (c - y) ** 2; if (d < bd) { bd = d; b = e; } } return b; }
+  function defaultFocus(L, list) {
+    if (!list.length) return null;
+    const pri = list.find(e => e.id === 'btn0' || e.id === 'btn1' || e.id === 'btn2') || list.find(e => e.id === 'notice-btn' || e.classList.contains('primary')) || list.find(e => e.classList.contains('on') || e.classList.contains('sel'));
+    const isBack = e => /^\W*(back|cancel|close|leave|return|exit)\b/i.test(e.textContent.trim()), pool = list.filter(e => !isBack(e)).length ? list.filter(e => !isBack(e)) : list;
+    return pri || pool.slice().sort((a, b) => { const A = ctr(a), B = ctr(b); return (A[1] - B[1]) || (A[0] - B[0]); })[0];
+  }
+  function ensureFocus(L) {
+    if (L.skip) return null;
+    const list = candidates(L);
+    if (S.focus && list.includes(S.focus)) { [S.cx, S.cy] = ctr(S.focus); return list; }
+    let nf = null;
+    if (S.focus && S.focus.id) nf = list.find(e => e.id === S.focus.id);            // re-rendered: same button again
+    if (!nf && list.length && S.focus !== null && S.lastLayer === (L.modal || L.scene || 'x')) nf = nearestTo(list, S.cx, S.cy);
+    if (!nf) nf = defaultFocus(L, list);
+    if (S.focus) S.focus.classList.remove('gp-focus');
+    S.focus = null; if (nf) setFocus(nf);
+    S.lastLayer = L.modal || L.scene || 'x';
+    return list;
+  }
+  function move(dx, dy, L, list) {
+    const f = S.focus; if (!f || !list) return;
+    const [fx, fy] = ctr(f); let best = null, bs = 1e12;
+    for (const e of list) {
+      if (e === f) continue; const [x, y] = ctr(e), vx = x - fx, vy = y - fy;
+      const along = vx * dx + vy * dy, perp = Math.abs(vx * dy) + Math.abs(vy * dx);
+      if (along <= 2 || perp > along * 2.2 + 30) continue;
+      const s = along + perp * 2; if (s < bs) { bs = s; best = e; }
+    }
+    if (best) { setFocus(best); try { sfx('click'); } catch (_) {} } else if (dy) scrollNear(f, dy * 90);
+  }
+  function scrollNear(from, amt) {
+    let n = from; while (n && n !== document.body) { const o = getComputedStyle(n).overflowY; if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight + 2) { n.scrollTop += amt; return; } n = n.parentElement; }
+    (document.scrollingElement || document.documentElement).scrollTop += amt;
+  }
+  function press(el) {
+    if (!el) return;
+    if (el.classList.contains('fslot') && el.classList.contains('has')) {     // formation slot: tap-to-pick / tap-to-swap uses pointer events
+      const [x, y] = ctr(el); S.synth = true;
+      const o = { bubbles: true, clientX: x, clientY: y, button: 0, pointerId: 1, pointerType: 'mouse' };
+      el.dispatchEvent(new PointerEvent('pointerdown', o)); document.dispatchEvent(new PointerEvent('pointerup', o)); S.synth = false;
+    } else el.click();
+  }
+  const visBtn = re => [...document.querySelectorAll('button')].find(b => !b.disabled && vis(b) && !b.closest('#gp-hint') && re.test(b.textContent.trim()));
+  function back(L) {
+    if (L.skip) return L.root.click();
+    if (L.modal === 'guide') return closeGuide();
+    if (L.modal === 'relic-modal') return closeRelics();
+    if (L.modal === 'inspect') return closeInspect();
+    if (L.modal === 'notice') return $('notice-btn').click();
+    if (L.scene === 'battle-scene') { if (waiting && sel !== null) return chooseSkill(sel); if (waiting && (selItem || invOpen)) return toggleInv(); return; }
+    if (L.root.id === 'title') { const b = visBtn(/^(←|‹|back|cancel|close)/i); return b && b.click(); }
+    const b = [...L.root.querySelectorAll('button')].find(b => !b.disabled && vis(b) && /^\W*(back|cancel|close|leave|return|exit|done)\b/i.test(b.textContent.trim()) && !/title/i.test(b.textContent));
+    if (b) b.click();
+  }
+  function guideStep(d) { const ks = GUIDE_TABS.map(t => t[0]), i = ks.indexOf(guideTab); guideTabTo(ks[(i + d + ks.length) % ks.length]); }
+
+  function on() { if (S.active) return; S.active = true; document.body.classList.add('gp'); hint.innerHTML = innerWidth < 700 ? HINTS_S : HINTS; }
+  function off() { if (!S.active) return; S.active = false; document.body.classList.remove('gp'); if (S.focus) S.focus.classList.remove('gp-focus'); S.focus = null; }
+  addEventListener('pointerdown', e => { if (!S.synth && e.isTrusted !== false) off(); }, true);
+  addEventListener('mousemove', e => { if (Math.abs(e.movementX) + Math.abs(e.movementY) > 2) off(); }, true);
+  addEventListener('keydown', e => { if (e.isTrusted) off(); }, true);
+
+  function frame(now) {
+    const pads = (navigator.getGamepads && navigator.getGamepads()) || []; const p = [...pads].find(x => x && x.connected);
+    if (p) tick(p, now || performance.now());
+    requestAnimationFrame(frame);
+  }
+  function tick(p, now) {
+    const b = i => !!(p.buttons[i] && (p.buttons[i].pressed || p.buttons[i].value > .6)), ax = i => p.axes[i] || 0;
+    const dead = .5, down = {
+      up: b(12) || ax(1) < -dead, dn: b(13) || ax(1) > dead, lf: b(14) || ax(0) < -dead, rt: b(15) || ax(0) > dead,
+      A: b(0), B: b(1), X: b(2), Y: b(3), LB: b(4), RB: b(5), SEL: b(8), START: b(9)
+    };
+    const any = Object.values(down).some(Boolean) || Math.abs(ax(2)) > .3 || Math.abs(ax(3)) > .3;
+    const edge = k => down[k] && !S.prev[k];
+    const rep = k => { if (!down[k]) { S.held[k] = 0; return false; } if (!S.held[k]) { S.held[k] = now + 380; return true; } if (now >= S.held[k]) { S.held[k] = now + 120; return true; } return false; };
+    const wake = !S.active && any; if (wake) { on(); for (const k of ['up', 'dn', 'lf', 'rt']) if (down[k]) S.held[k] = now + 380; }
+    const L = layer(); const list = ensureFocus(L);
+    if (!wake) {
+      if (L.skip) { if (edge('A') || edge('B') || edge('START')) L.root.click(); }
+      else {
+        if (rep('up')) move(0, -1, L, list); if (rep('dn')) move(0, 1, L, list); if (rep('lf')) move(-1, 0, L, list); if (rep('rt')) move(1, 0, L, list);
+        if (edge('A')) press(S.focus);
+        if (edge('B')) back(L);
+        if (edge('X') && L.scene === 'battle-scene' && !$('btn-items').disabled) $('btn-items').click();
+        if (edge('Y') && S.focus) { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
+        if (L.modal === 'guide') { if (edge('LB')) guideStep(-1); if (edge('RB')) guideStep(1); }
+        if (edge('START')) { const m = $('btn-end-main') && vis($('btn-end-main')) ? $('btn-end-main') : [...L.root.querySelectorAll('button.primary')].find(e => !e.disabled && vis(e)); if (m) m.click(); }
+        if (edge('SEL')) { if (L.modal === 'guide') closeGuide(); else openGuide(); }
+        const ry = ax(3); if (Math.abs(ry) > .3) scrollNear(S.focus || L.root.querySelector('*') || document.body, ry * 18);
+      }
+    }
+    S.prev = down;
+  }
+  addEventListener('gamepadconnected', () => { try { document.title = document.title; } catch (_) {} });
+  requestAnimationFrame(frame);
+  return S;
+})();
 </script>
 </body>
 </html>
