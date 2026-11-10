@@ -327,8 +327,6 @@ body.dev #btn-quick{display:inline-block}
   .stats-info .nm .spd{font-size:.85em}
   .chips{gap:2px}
 }
-#snd-btn{position:fixed;right:10px;bottom:10px;z-index:120;width:38px;height:38px;border-radius:50%;padding:0;font-size:1.1rem;background:rgba(20,18,32,.85);border:1px solid #4a4a6e}
-body.in-battle #snd-btn{display:none}
 .fxbar{display:flex;gap:6px;justify-content:center;margin:0 0 6px}
 .fxbar button{padding:3px 8px;font-size:.62rem;font-weight:normal;color:#b0b0c8}
 #inspect{display:none;position:fixed;inset:0;z-index:125;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
@@ -427,9 +425,6 @@ body.in-battle #snd-btn{display:none}
 #guide-body .g b{color:#ffd9a0}
 #guide-body .g.good{border-color:#2d5a3a}#guide-body .g.bad{border-color:#6b2f3a}
 #guide-body .dim{font-size:.9em}
-#snd-btn{right:10px}
-#guide-btn{position:fixed;right:56px;bottom:10px;z-index:120;width:38px;height:38px;border-radius:50%;padding:0;font-size:1.05rem;background:rgba(20,18,32,.85);border:1px solid #4a4a6e}
-body.in-battle #guide-btn{display:none}
 /* ===== Town (hub), Dorm (gear) and the shop's side panel ===== */
 #town-map{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 #town-map .hub-title,#town-map .hub-sub,#hub-msg,#hub-back{grid-column:1/-1}
@@ -446,6 +441,7 @@ body.in-battle #guide-btn{display:none}
 .dorm-char{text-align:left;display:grid;grid-template-columns:1fr;gap:10px;margin:8px 0}
 .dorm-art{position:relative;background:radial-gradient(ellipse at 50% 80%,rgba(255,117,140,.13),transparent 65%),#12121a;border:1px solid #262638;border-radius:10px;overflow:hidden}
 .dorm-art .figure.dorm-big{width:100%;height:300px}
+#event-art .figure.dorm-big{height:min(34vh,300px)}
 .dorm-info{display:flex;flex-direction:column;gap:8px;min-width:0}
 .dorm-info h3{margin:0;font-size:1.15rem;color:#ff758c}
 .dorm-stats{font-size:.75rem;color:#c0c0d8;line-height:1.5}
@@ -463,6 +459,27 @@ body.in-battle #guide-btn{display:none}
 .dtr{display:flex;flex-direction:column;gap:4px}
 .dtr .tr-row{background:#12121a;border:1px solid #262638;border-radius:8px;padding:6px 10px;font-size:.74rem}
 .dtr .tr-row.good{border-color:#2d5a3a}.dtr .tr-row.bad{border-color:#6b2f3a}
+#summary{display:none;position:fixed;inset:0;z-index:181;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+#summary.show{display:flex;animation:sumIn .3s ease-out}@keyframes sumIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.sumrow{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center;margin:6px 0;font-size:.8rem}.sumrow .bar{height:10px;background:#262638;border-radius:6px;overflow:hidden}.sumrow .bar i{display:block;height:100%;background:linear-gradient(90deg,#ff758c,#ffb74d)}
+.sumtop{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}.sumtop div{flex:1;min-width:90px;background:#12121a;border:1px solid #262638;border-radius:8px;padding:8px;text-align:center}.sumtop b{display:block;font-size:1.1rem;color:#ffd54f}
+.mvp{color:#ffd54f;font-weight:700}
+#guide.show .gbox,#guide.show>div{animation:sumIn .25s ease-out}
+button:not(:disabled):active{transform:scale(.94);transition:transform .08s}
+body.calm #summary.show,body.calm #guide.show>div{animation:none}
+body.cb .float.e-fire{color:#e69f00}body.cb .float.e-ice{color:#56b4e9}body.cb .float.e-shock{color:#f0e442}body.cb .float.e-poison{color:#cc79a7}body.cb .float.e-bleed{color:#d55e00}
+body.cb .float.heal{color:#56b4e9}body.cb .float.hurt{color:#e69f00}
+#weather{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;transition:opacity .8s}
+#weather.rain,#weather.mist,#weather.lantern{opacity:1}
+#weather.rain::before{content:"";position:absolute;inset:-20% 0 0;background:repeating-linear-gradient(105deg,transparent 0 14px,rgba(190,210,230,.16) 14px 15px,transparent 15px 30px);animation:rainfall .55s linear infinite}
+#weather.rain::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(20,30,50,.28),rgba(20,30,50,.1))}
+@keyframes rainfall{to{background-position:-60px 160px}}
+#weather.mist::before,#weather.mist::after{content:"";position:absolute;left:-30%;width:160%;height:45%;background:radial-gradient(ellipse at center,rgba(190,205,215,.2),transparent 65%);animation:mistdrift 26s ease-in-out infinite alternate}
+#weather.mist::before{top:30%}#weather.mist::after{top:55%;animation-duration:34s;animation-direction:alternate-reverse}
+@keyframes mistdrift{to{transform:translateX(18%)}}
+#weather.lantern{background:radial-gradient(circle at 12% 34%,rgba(255,180,90,.2),transparent 9%),radial-gradient(circle at 38% 62%,rgba(255,170,80,.16),transparent 8%),radial-gradient(circle at 63% 30%,rgba(255,190,100,.18),transparent 9%),radial-gradient(circle at 88% 58%,rgba(255,170,80,.18),transparent 9%);animation:lantern 3.2s ease-in-out infinite alternate;mix-blend-mode:screen}
+@keyframes lantern{from{opacity:.65}to{opacity:1}}
+body.calm #weather{display:none}
 #relic-modal{display:none;position:fixed;inset:0;z-index:180;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
 #relic-modal.show{display:flex}
 #rm-list{display:flex!important;flex-direction:column!important}
@@ -707,16 +724,110 @@ body.in-battle #guide-btn{display:none}
   #battle-scene #active-panel{max-height:118px;font-size:.72rem}
 }
 
+
+/* ============ BEACH (Tidelands hub + volleyball) ============ */
+#vb .hub-wrap{max-width:720px}
+#beach .hub-wrap{max-width:none;padding:0}
+#beach .hub-hall,#vb .hub-hall{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+#beach-pick .hub-hall{background:linear-gradient(#17222b,#10171d);border-color:#24505f}
+.bmap{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;margin:0 auto;overflow:hidden;background:#12161d;container-type:inline-size;text-align:left;border-radius:6px}
+#vb .bmap{width:100%}
+.bmap .bart{position:absolute;inset:0}
+.bmap .bart svg{display:block;width:100%;height:100%}
+.bmap.has-art .bart{display:none}
+.btitle{position:absolute;top:1.6%;left:50%;transform:translateX(-50%);z-index:5;font-weight:bold;font-size:clamp(18px,3cqw,48px);color:#dbe8ee;text-shadow:0 2px 10px #000;pointer-events:none;text-align:center;white-space:nowrap}
+.btitle small{display:block;font-size:.38em;color:#ffd54f;font-weight:bold;margin-top:.2em}
+.bbtns{position:absolute;left:0;right:0;bottom:2.5%;display:flex;gap:2%;justify-content:center;z-index:8}
+.bbtns button{font-size:clamp(11px,1.5cqw,22px);padding:.55em 1.3em;border-radius:24px;background:rgba(12,16,22,.86);border:1px solid #6c8a99;color:#dbe8ee}
+.bbtns button.primary{border-color:#7fe3ff;color:#e7fbff}
+.bspot{position:absolute;transform:translateX(-50%);width:13%;height:34%;pointer-events:none}
+.bspot .figure{width:100%;height:100%;position:absolute;inset:0}
+.bfig .spr{left:50%;right:auto;width:auto;max-width:none;height:var(--sprH,85%);transform:translateX(-50%)}
+.bfig.flip .spr{transform:translateX(-50%) scaleX(-1)}
+.bspot .wave{position:absolute;left:-18%;right:-18%;bottom:-3%;height:27%;z-index:3;background:linear-gradient(rgba(70,100,112,.62),rgba(22,40,50,.9));border-radius:50% 50% 0 0/32% 32% 0 0;box-shadow:0 -2px 6px rgba(200,225,235,.28);animation:bwave 3.4s ease-in-out infinite;pointer-events:none}
+.bspot .wave::before{content:"";position:absolute;left:6%;right:6%;top:-9%;height:22%;border-radius:50%;border-top:2px solid rgba(210,230,238,.42)}
+@keyframes bwave{0%,100%{transform:translateY(0)}50%{transform:translateY(-9%)}}
+/* volleyball court */
+.vbstage{position:absolute;inset:0;transition:filter .6s}
+#vb-court.won .vbstage{filter:blur(7px) brightness(.5)}
+.vbnet{position:absolute;left:50%;top:44%;bottom:19%;width:0;z-index:2}
+.vbnet::before{content:"";position:absolute;left:-.25cqw;width:.5cqw;top:0;bottom:-2%;background:#b4bec4;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.vbnet i{position:absolute;left:-1.7cqw;width:3.4cqw;top:0;height:30%;box-sizing:border-box;border-top:3px solid #f2f5f6;background:repeating-linear-gradient(0deg,rgba(240,244,246,.85) 0 1px,transparent 1px 8px),repeating-linear-gradient(90deg,rgba(240,244,246,.85) 0 1px,transparent 1px 8px),rgba(20,26,32,.35)}
+#vb-ball{position:absolute;z-index:6;font-size:clamp(14px,3cqw,44px);transform:translate(-50%,-50%);left:24%;top:20%;display:none;filter:drop-shadow(0 4px 3px rgba(0,0,0,.5));line-height:1}
+#vb-ring{position:absolute;z-index:5;width:7cqw;height:7cqw;border:.5cqw solid #ffd54f;border-radius:50%;transform:translate(-50%,-50%);display:none;box-shadow:0 0 12px rgba(255,213,79,.7);pointer-events:none}
+#vb-hud{position:absolute;top:2%;left:0;right:0;display:flex;justify-content:center;gap:2%;z-index:9;pointer-events:none;font-size:clamp(11px,1.8cqw,26px);font-weight:bold;color:#e8f1f5}
+#vb-hud span{background:rgba(10,14,20,.72);border-radius:20px;padding:.2em .9em}
+#vb-hud .lives{color:#ff7a8e;letter-spacing:.1em}
+#vb-judge{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);z-index:9;font-size:clamp(18px,4.4cqw,64px);font-weight:bold;color:#fff;text-shadow:0 2px 8px #000;pointer-events:none;opacity:0}
+#vb-judge.pop{animation:vbpop .8s ease-out}
+#vb-judge.perfect{color:#ffd54f}#vb-judge.miss{color:#ff6b6b}
+@keyframes vbpop{0%{opacity:1;transform:translate(-50%,-50%) scale(.6)}25%{transform:translate(-50%,-50%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
+.bspot.vbp{transition:left .35s}
+.bspot .figure.hop{animation:vbhop .32s}
+@keyframes vbhop{40%{transform:translateY(-16%)}}
+#vb-msg{text-align:center;font-size:.8rem;color:#c9d6dc;margin:8px 0;min-height:1.3em}
+#vb-hit{width:100%;padding:22px 8px;font-size:1.3rem;margin-bottom:6px;touch-action:manipulation;user-select:none}
+#vb-quit{width:100%;margin-bottom:6px}
+#vb-panel .swaprow{border-top:1px solid #262638;padding-top:8px;margin-top:6px;text-align:left}
+#vb-panel .trg{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
+#vb-panel .trg button{padding:4px 8px;font-size:.68rem}
+#vb-panel .trg button.on{border-color:#7fe3ff;background:#123040}
+#vb-panel h5{margin:6px 0 2px;color:#9fd8e8;font-size:.72rem}
+#bp-list .pick.nope{opacity:.55}
+
+/* ===== battle chatter ===== */
+.sbubble{position:fixed;z-index:70;max-width:min(190px,42vw);padding:5px 10px;border-radius:12px;background:#fff;color:#1b1b26;font-weight:700;font-size:.72rem;line-height:1.25;box-shadow:0 3px 10px rgba(0,0,0,.55);pointer-events:none;text-align:center;animation:sbin .18s ease-out,sbout .3s ease-in var(--dur,1500ms) forwards}
+.sbubble::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-top-color:#fff;border-bottom:0}
+.sbubble.shout{font-size:.8rem;border:2px solid #ffd54f}
+.dbio{font-size:.8rem;line-height:1.4;margin:6px 0 8px;padding:7px 10px;border-left:3px solid #ffd54f;background:rgba(255,255,255,.05);border-radius:0 8px 8px 0}.dbio .likes{color:#8fd694}.dbio .hates{color:#ff8a80}
+.sbubble.foe{background:#2a1620;color:#ffd9de;border:2px solid #ff6b81;font-style:italic}
+.sbubble.foe::after{border-top-color:#2a1620}
+.sbubble.cold{background:#dff4ff;color:#4d86a3;font-style:italic;letter-spacing:.2em}
+.sbubble.cold::after{border-top-color:#dff4ff}
+@keyframes sbin{from{opacity:0;transform:translateY(6px) scale(.85)}to{opacity:1;transform:none}}
+@keyframes sbout{to{opacity:0;transform:translateY(-4px)}}
+
+/* ===== the Menu (gear): options + controls + guide ===== */
+#menu-btn{position:fixed;right:10px;bottom:10px;z-index:120;width:40px;height:40px;border-radius:50%;padding:0;font-size:1.25rem;background:rgba(20,18,32,.88);border:1px solid #4a4a6e;line-height:1}
+body.in-battle #menu-btn{top:6px;bottom:auto;right:12px;width:34px;height:34px;font-size:1.05rem}
+#battle-scene .fxbar{right:54px!important}
+.optrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#12121a;border:1px solid #262638;border-radius:8px;padding:10px 12px;margin:6px 0;text-align:left}
+.optrow small{display:block;color:#9a9ab8;font-size:.68rem;margin-top:2px;font-weight:normal}
+.optsw{min-width:64px;padding:8px 12px;font-weight:bold;border-radius:20px}
+.optsw.on{background:#1f4d36;border-color:#4caf7a;color:#d9ffe9}
+.optsw.off{background:#3a2430;border-color:#7a4455;color:#ffd6de}
+
+/* ===== battle impact ===== */
+.bflash{position:fixed;inset:0;z-index:66;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 20%,var(--c) 130%);opacity:0;animation:bflash 450ms ease-out forwards}
+@keyframes bflash{0%{opacity:var(--p,.3)}100%{opacity:0}}
+body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(200,20,40,.5) 130%);animation:beat 1.5s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.25}18%{opacity:.9}32%{opacity:.35}46%{opacity:.8}}
+.sbanner{position:fixed;left:50%;top:21%;z-index:68;transform:translateX(-50%);pointer-events:none;text-align:center;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px #000,0 0 18px rgba(255,117,140,.7);animation:sbanner 1.25s ease-out forwards;white-space:nowrap}
+.sbanner span{display:block;font-size:clamp(20px,4.2vw,48px);padding:.1em 1.4em;background:linear-gradient(90deg,transparent,rgba(10,8,20,.78) 18%,rgba(10,8,20,.78) 82%,transparent)}
+.sbanner small{display:block;font-size:.8rem;color:#ffd54f;letter-spacing:.3em;margin-bottom:2px}
+.sbanner.e span{text-shadow:0 2px 12px #000,0 0 18px rgba(255,90,60,.9);color:#ffd6c9}
+.sbanner.phase span{font-size:clamp(22px,5vw,58px);color:#ffb08a}
+@keyframes sbanner{0%{opacity:0;transform:translateX(-50%) scale(1.25)}12%{opacity:1;transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-8px)}}
+.bintro{position:fixed;inset:0;z-index:69;display:flex;align-items:center;justify-content:center;background:rgba(5,4,10,.55);animation:bin .35s ease-out;cursor:pointer}
+.bintro.out{opacity:0;transition:opacity .25s}
+.bi-band{width:100%;text-align:center;padding:22px 10px;background:linear-gradient(90deg,transparent,rgba(110,20,40,.85) 20%,rgba(110,20,40,.85) 80%,transparent);animation:biband .5s cubic-bezier(.2,.9,.3,1.1)}
+.bi-band small{display:block;letter-spacing:.35em;color:#ffd54f;font-size:.8rem;text-transform:uppercase}
+.bi-band b{display:block;font-size:clamp(30px,8vw,84px);letter-spacing:.12em;text-transform:uppercase;color:#fff;text-shadow:0 3px 18px #000,0 0 30px rgba(255,80,80,.7);margin:4px 0}
+.bi-band em{display:block;color:#f3c2c8;font-size:.9rem}
+@keyframes bin{from{opacity:0}to{opacity:1}}
+@keyframes biband{from{transform:scaleX(.2);opacity:0}to{transform:none;opacity:1}}
+.float.e-fire{color:#ffa45c}.float.e-ice{color:#9fe6ff}.float.e-shock{color:#ffe65c}.float.e-poison{color:#b6f06a}.float.e-bleed{color:#ff6f8a}
+.float.hurt.e-fire{text-shadow:0 0 8px #ff7a2a,0 2px 3px #000}.float.hurt.e-ice{text-shadow:0 0 8px #5fd0ff,0 2px 3px #000}.float.hurt.e-shock{text-shadow:0 0 8px #ffe030,0 2px 3px #000}.float.hurt.e-poison{text-shadow:0 0 8px #8be03a,0 2px 3px #000}.float.hurt.e-bleed{text-shadow:0 0 8px #ff3a5a,0 2px 3px #000}
+.float.hurt.e-fire,.float.hurt.e-ice,.float.hurt.e-shock,.float.hurt.e-poison,.float.hurt.e-bleed{color:#ff6b6b}
 </style>
 </head>
 <body>
-<button id="snd-btn" onclick="toggleSound()"></button>
+<button id="menu-btn" onclick="openGuide()" title="Menu: options, controls and guide">⚙️</button>
 <div id="film"></div>
 <div id="fade"></div>
-<button id="guide-btn" onclick="openGuide()" title="Game guide">❔</button>
 <div id="guide" onclick="if (event.target === this) closeGuide()">
   <div class="guide-box">
-    <div class="rm-head"><b>📖 Game Guide</b><button onclick="closeGuide()">✕ Close</button></div>
+    <div class="rm-head"><b>⚙️ Menu</b><button onclick="closeGuide()">✕ Close</button></div>
     <div class="guide-tabs" id="guide-tabs"></div>
     <div id="guide-body"></div>
   </div>
@@ -779,11 +890,59 @@ body.in-battle #guide-btn{display:none}
         <button class="hub-btn bld b-dorm" style="--x:54%;--y:21%;--w:25%;--h:39%" onclick="openGear()"><span class="lbl">🛏️ Dorm<small>Heroes, relics and traits</small></span></button>
         <button class="hub-btn bld b-train" style="--x:4%;--y:70%;--w:31%;--h:28%" onclick="openTrain()"><span class="lbl">🎯 Training Ground<small>Earn permanent perks</small></span></button>
         <button class="hub-btn bld embark b-road" style="--x:79%;--y:36%;--w:21%;--h:26%" onclick="openParty()"><span class="lbl">⚔️ The Road<small>Embark: choose a party, then a quest</small></span></button>
+        <button class="hub-btn bld b-beach" id="btn-beach" style="--x:79%;--y:65%;--w:21%;--h:20%;display:none" onclick="openBeach()"><span class="lbl">🏖️ Go to the Beach<small>Gloomy shore · Volleyball</small></span></button>
         <div id="hub-msg"></div>
         <button id="hub-back" onclick="location.reload()">Back to Title</button>
       </div>
     </div>
   </div>
+</div>
+
+<div id="beach" class="scene">
+  <div class="hub-wrap"><div class="hub-hall">
+    <div class="bmap" id="beach-map">
+      <div class="bart" id="beach-art"></div>
+      <div class="btitle">The Grey Shore<small id="beach-gold">Gold: 0</small></div>
+      <div id="beach-figs"></div>
+      <div class="bbtns">
+        <button class="primary" onclick="openBeachPick()">🏐 Beach Volleyball</button>
+        <button onclick="showScene('hub')">↩ Return to Town</button>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<div id="beach-pick" class="scene">
+  <div class="hub-wrap"><div class="hub-hall">
+    <div class="hub-title">🏐 Beach Volleyball</div>
+    <div class="hub-sub" id="bp-intro"></div>
+    <div class="pick-list" id="bp-list"></div>
+    <div class="panel-result" id="bp-claim" style="display:none"></div>
+    <div class="row">
+      <button onclick="showScene('beach')">Back</button>
+      <button class="primary" id="bp-play" onclick="startVb()">Play</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="vb" class="scene">
+  <div class="hub-wrap"><div class="hub-hall">
+    <div class="bmap" id="vb-court">
+      <div class="vbstage" id="vb-stage">
+        <div class="bart" id="vb-art"></div>
+        <div class="vbnet"><i></i></div>
+        <div id="vb-spots"></div>
+        <div id="vb-ring"></div>
+        <div id="vb-ball">🏐</div>
+      </div>
+      <div id="vb-hud"></div>
+      <div id="vb-judge"></div>
+    </div>
+    <div id="vb-msg"></div>
+    <button class="primary" id="vb-hit">🏐 HIT!</button>
+    <button id="vb-quit" onclick="vbQuit()">Give Up (no refund)</button>
+    <div class="panel-result" id="vb-panel"></div>
+  </div></div>
 </div>
 
 <div id="party-select" class="scene">
@@ -868,6 +1027,10 @@ body.in-battle #guide-btn{display:none}
   </div>
 </div>
 
+<div id="summary" onclick="if (event.target === this) closeSummary()">
+  <div class="rm-box"><div class="rm-head"><b id="sum-title">Quest report</b><button onclick="closeSummary()">✕ Close</button></div><div id="sum-body"></div></div>
+</div>
+<div id="weather"></div>
 <div id="relic-modal" onclick="if (event.target === this) closeRelics()">
   <div class="rm-box">
     <div class="rm-head"><b id="rm-title">Relics</b><button onclick="closeRelics()">✕ Close</button></div>
@@ -947,6 +1110,7 @@ body.in-battle #guide-btn{display:none}
     <div class="hub-hall">
       <div class="hub-title" id="event-title"></div>
       <div class="hub-sub" id="event-sub"></div>
+      <div class="dorm-art" id="event-art" style="display:none"></div>
       <div class="event-text" id="event-text"></div>
       <div id="event-choices"></div>
       <div class="event-result" id="event-result"></div>
@@ -959,7 +1123,7 @@ body.in-battle #guide-btn{display:none}
 <h1>Anime RPG Prototype</h1>
 <div class="subtitle" id="battle-sub">Quest battle</div>
 <div id="action-line"></div>
-<div class="fxbar"><button id="btn-log" onclick="toggleLog()">📜 Log</button><button id="fx-n" onclick="toggleFx('numbers')"></button><button id="fx-s" onclick="toggleFx('shake')"></button><button id="fx-snd" onclick="toggleSound()"></button><button id="fx-guide" onclick="openGuide()">❔ Guide</button></div>
+<div class="fxbar"><button id="btn-log" onclick="toggleLog()">📜 Log</button><button id="btn-speed" onclick="cycleSpeed()" title="Battle speed">⏩ 1×</button></div>
 
 <div id="game-container">
   <div id="order"></div>
@@ -987,6 +1151,7 @@ body.in-battle #guide-btn{display:none}
     <div id="inv"></div>
     <div id="end-buttons" style="display:none">
       <button id="btn-end-main" class="primary">Continue</button>
+      <button id="btn-summary" style="display:none" onclick="openSummary()">📊 Summary</button>
       <button onclick="location.reload()">Back to Title</button>
     </div>
     <div id="active-panel"></div>
@@ -1365,7 +1530,37 @@ const RELICS = {};
   ['berserker', '😤', "Berserker's Mask", 'epic', '+40% damage while below half HP', { lowHpBonus: .4 }],
   ['phoenix', '🪶', 'Phoenix Feather', 'epic', 'Once per fight, returns with 30% HP instead of falling', { revive: .3 }]
 ].forEach(([id, icon, name, rarity, desc, fx]) => { RELICS[id] = { id, icon, name, rarity, desc, fx, price: RELIC.price[rarity] }; });
-const relicPool = owned => Object.values(RELICS).filter(r => !owned.includes(r.id));
+/* ---- ACT 2 relics: every Tidelands boss / road find drops the TIER 2 version of a normal relic (about 1.5x as strong, built automatically: id + '2', "Name II"), plus a few
+   relics that exist only on the coast (act2: true). They are never sold in the Shop. Equip them over the tier 1 versions from the Dorm. */
+const T2R = {                // hand-made upgrades where scaling the numbers would not make sense (descriptions / effects)
+  antidote:       ['Immune to poison and bleed, and +12 max HP', { immune: ['poison', 'bleed'], hp: 12 }],
+  lingering_ward: ["Keeps three quarters of this hero's barrier into the next round", { keepBarrier: .75 }],
+  hourglass:      ['Skill cooldowns are 1 turn shorter, and +10% damage', { cd: -1, dmg: .1 }],
+  plague_vial:    ['Burn, poison and bleed this hero inflicts hit 80% harder and last 2 turns longer', { dotMul: .8, dotTurns: 2 }],
+  ward_stone:     ['Immune to frozen and shocked, with only −5% max HP', { immune: ['frozen', 'shocked'], hpPct: -.05 }],
+  glass_ring:     ['+35% damage, −10% max HP', { dmg: .35, hpPct: -.1 }],
+  giants_heart:   ['+60 max HP, −1 speed', { hp: 60, spd: -1 }]
+};
+const k15 = n => Math.round(n * 1.5);
+Object.values(RELICS).slice().forEach(r => {
+  const sc = v => Math.abs(v) < 1 ? Math.sign(v) * k15(Math.abs(v) * 100) / 100 : Math.sign(v) * k15(Math.abs(v));
+  const fx = {}; for (const [k, v] of Object.entries(r.fx)) fx[k] = Array.isArray(v) ? v : (v && typeof v === 'object') ? Object.fromEntries(Object.entries(v).map(([a, b]) => [a, typeof b === 'number' ? k15(b) : b])) : sc(v);
+  const o = T2R[r.id];
+  RELICS[r.id + '2'] = { ...r, id: r.id + '2', name: r.name + ' II', tier2: true, desc: o ? o[0] : r.desc.replace(/(?<!Skill )\b\d+(?! turn)/g, n => k15(+n)), fx: o ? o[1] : fx, price: Math.round(r.price * 1.5) };
+});
+[ // coast-only relics (id, icon, name, rarity, description, fx)
+  ['driftwood_charm', '🪵', 'Driftwood Charm', 'epic', 'Starts every fight with a 24 barrier, and keeps a third of it into the next round', { openBarrier: 24, keepBarrier: .33 }],
+  ['abyssal_pearl', '🦪', 'Abyssal Pearl', 'epic', '+25% damage on elemental skills, and immune to frozen and shocked', { elemDmg: .25, immune: ['frozen', 'shocked'] }],
+  ['mariners_heart', '⚓', "Mariner's Heart", 'epic', '+60 max HP and takes 10% less damage in the front row', { hp: 60, frontMod: -.1 }],
+  ['kraken_ink', '🦑', 'Kraken Ink', 'rare', 'Burn, poison and bleed this hero inflicts hit 60% harder and last 1 turn longer, and immune to poison and bleed', { dotMul: .6, dotTurns: 1, immune: ['poison', 'bleed'] }],
+  ['tide_compass', '🧭', 'Tide Compass', 'rare', '+3 speed and skill cooldowns are 1 turn shorter', { spd: 3, cd: -1 }],
+  ['salt_amulet', '🧂', 'Salt Amulet', 'rare', 'Potions this hero drinks heal 100% more, and +20 max HP', { potion: 1, hp: 20 }]
+].forEach(([id, icon, name, rarity, desc, fx]) => { RELICS[id] = { id, icon, name, rarity, desc, fx, act2: true, price: RELIC.price[rarity] }; });
+// act 0 = the Shop (tier 1 only) · act 2 = Tidelands drops (tier 2 + coast relics; falls back to tier 1 once you own them all)
+const relicPool = (owned, act = 0) => {
+  const all = Object.values(RELICS).filter(r => !owned.includes(r.id)), a2 = all.filter(r => r.tier2 || r.act2);
+  return act === 2 ? (a2.length ? a2 : all.filter(r => !(r.tier2 || r.act2))) : all.filter(r => !(r.tier2 || r.act2));
+};
 function pickWeighted(list, weights) {
   const tot = list.reduce((a, r) => a + weights[r.rarity], 0); let x = Math.random() * tot;
   for (const r of list) { x -= weights[r.rarity]; if (x < 0) return r; }
@@ -1378,7 +1573,7 @@ function rollStock(owned, n = RELIC.shopSize) {          // n different relics t
 }
 function rollDrop(def, owned, bonus = 0) {                  // a boss may drop a relic: def.relicDrop = chance (+ the difficulty's bonus)
   if (Math.random() >= (def.relicDrop || 0) + bonus) return null;
-  const pool = relicPool(owned); return pool.length ? pickWeighted(pool, RELIC.dropWeight).id : null;
+  const pool = relicPool(owned, def && def.id ? questAct(def.id) : 0); return pool.length ? pickWeighted(pool, RELIC.dropWeight).id : null;
 }
 
 /* ============ TRAITS ============ */
@@ -1419,6 +1614,17 @@ const TRAIT = {};
   ['queasy',      '🤢', 'Queasy',         'bad',  'bad',  null, 'Potions this hero drinks heal 12% less', { potion: -.12 }],
   ['unlucky',     '🕷️', 'Unlucky',        'bad',  'bad',  null, '−4% gold from fights',                   { gold: -.04 }]
 ].forEach(([id, icon, name, kind, pool, el, desc, fx]) => { TRAIT[id] = { id, icon, name, kind, pool, el, desc, fx }; });
+/* ---- ACT 2 (the Tidelands): TIER 2 traits. Clearing a Tidelands quest UPGRADES a perk the hero already has (Hardy -> Hardy II, about 1.75x as strong) instead of granting a new one;
+   a hero with no upgradable perk gets a new tier 1 perk as usual. Tier 2 traits are built from the tier 1 list automatically (id + '2'), never roll from Training, and are what the
+   Beach Volleyball swap trades in. */
+const T2S = 1.75, t2n = n => Math.round(n * T2S);
+Object.values(TRAIT).filter(t => t.kind === 'good').forEach(t => {
+  const sc = v => Math.abs(v) < 1 ? Math.sign(v) * t2n(Math.abs(v) * 100) / 100 : Math.sign(v) * t2n(Math.abs(v));
+  const fx = {}; for (const [k, v] of Object.entries(t.fx)) fx[k] = typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([e, x]) => [e, sc(x)])) : sc(v);
+  TRAIT[t.id + '2'] = { ...t, id: t.id + '2', name: t.name + ' II', base: t.id, pool: 'tier2', desc: t.desc.replace(/\d+/g, n => t2n(+n)), fx };
+});
+const isT2 = id => !!(TRAIT[id] && TRAIT[id].base);
+const questAct = id => { const g = QUEST_GROUPS.find(x => x.ids.includes(id)); return g && g.id === 'coast' ? 2 : 1; };
 const heroElems = hid => { const h = HEROES.find(x => x.id === hid); return h ? [...new Set([...h.skills.map(k => k.el), ...(h.elems || [])].filter(Boolean))] : []; };
 const traitCount = (hid, kind) => ((game && game.traits && game.traits[hid]) || []).filter(id => TRAIT[id] && TRAIT[id].kind === kind).length;
 function rollTrait(kind, hid, pool) {                      // a random trait of that kind this hero can use; ones they already have are a little less likely
@@ -1439,7 +1645,14 @@ function awardTraits(won) {                                // at quest end: a pe
   const out = [];
   quest.party.forEach(u => {
     const list = game.traits[u.id] = game.traits[u.id] || [];
-    for (let k = 0; won && k < TRAITS.perWin && traitCount(u.id, 'good') < TRAITS.maxGood; k++) { const t = rollTrait('good', u.id, 'stat'); if (t) { list.push(t.id); out.push({ hero: u.id, id: t.id }); } }
+    for (let k = 0; won && k < TRAITS.perWin; k++) {
+      if (questAct(quest.def.id) === 2) {                                                // Tidelands: improve a perk they already have
+        const up = [...new Set(list.filter(id => TRAIT[id] && TRAIT[id].kind === 'good' && !TRAIT[id].base && TRAIT[id + '2']))];
+        if (up.length) { const from = up[Math.floor(Math.random() * up.length)]; list.splice(list.indexOf(from), 1, from + '2'); out.push({ hero: u.id, id: from + '2', from }); continue; }
+      }
+      if (traitCount(u.id, 'good') >= TRAITS.maxGood) continue;
+      const t = rollTrait('good', u.id, 'stat'); if (t) { list.push(t.id); out.push({ hero: u.id, id: t.id }); }
+    }
     if ((u.downs || 0) > 0 && traitCount(u.id, 'bad') < TRAITS.maxBad && Math.random() < TRAITS.badChance) { const t = rollTrait('bad', u.id); if (t) { list.push(t.id); out.push({ hero: u.id, id: t.id }); } }
   });
   if (out.length) game.notices.push({ type: 'traits', won, items: out });
@@ -1539,13 +1752,33 @@ const hasKind = (h, k) => h.skills.some(s => s.t === 'dmg' && (k === 'physical' 
 
 /* ============ EFFECTS (hit numbers, screen shake) ============ */
 // Visual feedback only. The two toggles are remembered on this device (not part of the game save).
-const FX = { numbers: true, shake: true };
+const FX = { numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5 };
 try {
   const saved = JSON.parse(localStorage.getItem('animeRpgFx') || 'null');
-  if (saved) { FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; }
+  if (saved) { FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; }
   else if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) FX.shake = false;
 } catch (e) {}
-function renderFx() { $('fx-n').textContent = `Hit numbers: ${FX.numbers ? 'ON' : 'OFF'}`; $('fx-s').textContent = `Screen shake: ${FX.shake ? 'ON' : 'OFF'}`; }
+/* ============ BATTLE SPEED (1x / 1.5x / 2x) ============ */
+// Only while a battle is on screen: every timer (so every sleep() and pause), every Web Animation and CSS animation that starts, and cut-in clips run faster. Looping ambient
+// animations (idle breathing, sprites) stay at normal speed. Menus, the town and minigames are never sped up.
+const battleSpd = () => (FX.speed > 1 && document.body.classList.contains('in-battle')) ? FX.speed : 1;
+(() => {
+  const st = window.setTimeout.bind(window);
+  window.setTimeout = (fn, ms, ...a) => st(fn, (ms || 0) / battleSpd(), ...a);
+  const an = Element.prototype.animate;
+  Element.prototype.animate = function (k, o) { const a = an.call(this, k, o); try { const m = battleSpd(); if (m !== 1) a.playbackRate = m; } catch (e) {} return a; };
+  const speedUp = e => { const m = battleSpd(); if (m === 1 || !e.target || !e.target.getAnimations) return; try { e.target.getAnimations().forEach(a => { const it = a.effect && a.effect.getTiming().iterations; if (it !== Infinity) a.playbackRate = m; }); } catch (x) {} };
+  document.addEventListener('animationstart', speedUp, true); document.addEventListener('transitionrun', speedUp, true);
+  const pl = HTMLMediaElement.prototype.play;
+  HTMLMediaElement.prototype.play = function () { try { if (this.classList.contains('clip') || (this.parentElement && this.parentElement.id === 'film')) this.playbackRate = battleSpd(); } catch (e) {} return pl.apply(this, arguments); };
+})();
+function cycleSpeed() {
+  const l = [1, 1.5, 2]; FX.speed = l[(l.indexOf(FX.speed) + 1) % l.length];
+  try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} renderFx();
+  if (document.body.classList.contains('in-battle')) document.getAnimations().forEach(a => { try { const it = a.effect && a.effect.getTiming().iterations; if (it !== Infinity) a.playbackRate = battleSpd(); } catch (e) {} });
+}
+const speedLabel = () => FX.speed === 1 ? '1×' : FX.speed + '×';
+function renderFx() { { const b = document.getElementById('btn-speed'); if (b) b.textContent = `⏩ ${speedLabel()}`; } if (!FX.talk && typeof talkClear === 'function') talkClear(); if (typeof refreshOptions === 'function') refreshOptions(); }
 function toggleFx(k) { FX[k] = !FX[k]; try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} renderFx(); }
 
 /* ============ PORTRAITS ============ */
@@ -1576,7 +1809,7 @@ document.addEventListener('DOMContentLoaded', () => fillPortraits());
 let firstScene = true;
 function sceneFade() {          // a quick dip from black into the new scene (never blocks input; skipped for reduced motion)
   const f = document.getElementById('fade');
-  if (!f || firstScene || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { firstScene = false; return; }
+  if (!f || firstScene || FX.calm || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { firstScene = false; return; }
   f.style.transition = 'none'; f.style.opacity = '1'; void f.offsetWidth;
   f.style.transition = 'opacity .34s ease-out'; f.style.opacity = '0';
 }
@@ -1596,18 +1829,47 @@ function punch(t, k) {
 }
 
 /* ============ GUIDE ============ */
-let guideTab = 'basics';
-const GUIDE_TABS = [['basics', 'Basics'], ['elements', 'Elements'], ['armour', 'Armour'], ['status', 'Buffs & debuffs'], ['traits', 'Traits & relics']];
+let guideTab = 'options';
+const GUIDE_TABS = [['options', '⚙️ Options'], ['controls', '🎮 Controls'], ['basics', '📖 Basics'], ['elements', 'Elements'], ['armour', 'Armour'], ['status', 'Buffs & debuffs'], ['traits', 'Traits & relics']];
 function openGuide(tab) { if (tab) guideTab = tab; renderGuide(); $('guide').classList.add('show'); }
+function refreshOptions() { const gd = document.getElementById('guide'); if (guideTab === 'options' && gd && gd.classList.contains('show')) { const gb = document.getElementById('guide-body'), y = gb.scrollTop; renderGuide(); gb.scrollTop = y; } }
+function saveFx() { try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} }
+function applyFxLook() {
+  document.documentElement.style.fontSize = ['', '112.5%', '125%'][FX.text] || '';
+  document.body.classList.toggle('cb', !!FX.cb); document.body.classList.toggle('calm', !!FX.calm);
+  if (typeof weatherSet === 'function') weatherSet();
+}
+function optToggle(k) {
+  if (k === 'snd') toggleSound(); else if (k === 'speed') cycleSpeed();
+  else if (k === 'text') { FX.text = (FX.text + 1) % 3; saveFx(); applyFxLook(); refreshOptions(); }
+  else if (k === 'calm') { FX.calm = !FX.calm; if (FX.calm) { FX.shake = false; FX.flash = false; } saveFx(); applyFxLook(); refreshOptions(); }
+  else if (k === 'cb') { FX.cb = !FX.cb; saveFx(); applyFxLook(); refreshOptions(); }
+  else toggleFx(k);
+}
+function setVol(v) { FX.vol = Math.max(0, Math.min(1, v)); saveFx(); if (typeof musicVol === 'function') musicVol(); }
+const OPTIONS = [
+  ['snd', '🔊 Sound', 'Sound effects. Off by default on phones.', () => !sndMuted],
+  ['numbers', '💥 Hit numbers', 'The damage numbers that pop up over units.', () => FX.numbers],
+  ['shake', '📳 Screen shake', 'Camera shake on heavy hits. Turn off if it bothers you.', () => FX.shake],
+  ['speed', '⏩ Battle speed', 'Faster animations and pauses in battle: 1× normal, 1.5×, 2×. Also on the battle bar.', () => FX.speed > 1, () => speedLabel()],
+  ['flash', '⚡ Screen flashes', 'Colour flashes on kills, crits and boss phases, and the red pulse when a hero is nearly down. Turn off if flashing bothers you.', () => FX.flash],
+  ['text', '🔤 Text size', 'Makes all text bigger: Normal, Large, Extra large.', () => FX.text > 0, () => ['Normal', 'Large', 'Extra large'][FX.text]],
+  ['calm', '🕊️ Reduced motion', 'Turns off weather, screen shake, flashes and the fade between scenes. Calmer on the eyes.', () => FX.calm],
+  ['cb', '🎨 Colour-blind palette', 'Safer colours for the element numbers (blue, orange and yellow instead of red and green tints).', () => FX.cb],
+  ['talk', '💬 Battle chatter', 'Heroes talk in little speech bubbles: crits, kills, broken armour, boss phases and gag lines.', () => FX.talk]
+];
 function closeGuide() { $('guide').classList.remove('show'); }
 function guideTabTo(t) { guideTab = t; renderGuide(); }
 function renderGuide() {
   $('guide-tabs').innerHTML = GUIDE_TABS.map(([k, n]) => `<button class="${k === guideTab ? 'sel' : ''}" onclick="guideTabTo('${k}')">${n}</button>`).join('');
   const g = (t, c = '') => `<div class="g ${c}">${t}</div>`, pb = Math.round(POS.bonus * 100);
   let h = '';
-  if (guideTab === 'basics') h = `<h4>Controller</h4>
-    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>X</b> opens Items in battle, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip Guide tabs, <b>Start</b> presses Continue, <b>Select</b> opens this guide and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
-    <h4>A turn</h4>
+  if (guideTab === 'options') h = `<h4>Options</h4>` + OPTIONS.map(([k, n, d, on, lab]) => `<div class="optrow"><div><b>${n}</b><small>${d}</small></div><button id="opt-${k}" class="optsw ${on() ? 'on' : 'off'}" onclick="optToggle('${k}')">${lab ? lab() : on() ? 'ON' : 'OFF'}</button></div>`).join('') + `<div class="optrow"><div><b>🎵 Music volume</b><small>Quiet ambient music that changes with the area. Needs Sound on.</small></div><input type="range" id="opt-vol" min="0" max="100" step="5" value="${Math.round(FX.vol * 100)}" oninput="setVol(this.value / 100)" style="width:120px"></div>` + `<div class="g">Options are remembered on this device. The other tabs are the game guide.</div>`;
+  else if (guideTab === 'controls') h = `<h4>Controller</h4>
+    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>X</b> opens Items in battle, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip tabs in this menu, <b>Start</b> presses Continue / Next, <b>Select</b> opens this menu and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
+    <h4>Mouse, touch and keyboard</h4>
+    ${g(`Everything is tappable or clickable. In Beach Volleyball you can also hit <b>Space</b> or <b>Enter</b>, or the big HIT button.`)}`;
+  else if (guideTab === 'basics') h = `<h4>A turn</h4>
     ${g(`Fighters act in <b>speed</b> order, highest first (the bar at the top shows the order). On your turn pick one of three <b>skills</b>, then a target. Strong skills have a <b>cooldown</b>: they cannot be used again for that many turns. You can also <b>Shift Line</b> (swap places with the ally ahead; it ends your turn) or use a potion from your bag.`)}
     <h4>Rows and range</h4>
     ${g(`Each side stands in a line. The first ${POS.front} are the <b>front row</b>, the rest the <b>back row</b>. ${RICON.melee} <b>Melee</b> skills hit the front row for <b>+${pb}%</b> and the back row for <b>−${pb}%</b>. ${RICON.ranged} <b>Ranged</b> skills are the reverse. Fallen fighters leave the line and the others step up.`)}
@@ -1645,11 +1907,12 @@ function renderGuide() {
       + g(`<b>Immunity</b> (some relics, Unyielding elites): ignores the listed statuses.`, 'good')
       + `<h4>Elite enemies ★</h4>` + Object.values(ELITE.mods).map(m => g(`${m.icon} <b>${m.name}</b>: ${m.desc}`)).join('');
   } else {
-    const perks = Object.values(TRAIT).filter(t => t.kind === 'good'), flaws = Object.values(TRAIT).filter(t => t.kind === 'bad');
+    const perks = Object.values(TRAIT).filter(t => t.kind === 'good' && !t.base), flaws = Object.values(TRAIT).filter(t => t.kind === 'bad');
     h = `<h4>How traits work</h4>${g(`Heroes grow through <b>traits</b>. Clearing a quest gives each hero who went a random <b>perk</b>; the Training Ground sells more (up to ${TRAITS.maxGood}). A hero who falls may pick up a <b>flaw</b> (up to ${TRAITS.maxBad}); the Spa removes them. Repeats stack.`)}
       <h4>Perks</h4>${perks.map(t => g(`${t.icon} <b>${t.name}</b>: ${t.desc}`, 'good')).join('')}
+      <h4>Tier II perks (the Tidelands)</h4>${g(`Clearing a <b>Tidelands</b> quest (Cove, Lighthouse, Shoals) <b>upgrades</b> a perk the hero already has (Hardy → Hardy II, about 1.75× as strong) instead of giving a new one. A hero with nothing to upgrade gets a new perk as usual. After your first Tidelands quest, the <b>Beach</b> opens in town: win <b>Beach Volleyball</b> (${VB.cost}g a game) to trade a Tier II perk for any Tier I perk.`)}
       <h4>Flaws</h4>${flaws.map(t => g(`${t.icon} <b>${t.name}</b>: ${t.desc}`, 'bad')).join('')}
-      <h4>Relics</h4>${g(`Each hero wears up to ${RELIC.slots} relics, set from the Dorm (locked during a quest). Relics come from the Shop (restocked after every run) and boss drops. Rarity: common, rare, epic.`)}`;
+      <h4>Relics</h4>${g(`Each hero wears up to ${RELIC.slots} relics, set from the Dorm (locked during a quest). Relics come from the Shop (restocked after every run) and boss drops. Rarity: common, rare, epic. Tidelands bosses and road finds drop <b>Tier II</b> relics (Iron Band II…, about 1.5× as strong) and a few coast-only relics; they are never sold in the Shop.`)}`;
   }
   $('guide-body').innerHTML = h; $('guide-body').scrollTop = 0;
 }
@@ -1724,18 +1987,14 @@ const SFX = {
   repair() { const t = actx.currentTime; [0, 0.09, 0.18].forEach(o => { AU.tone('square', 1500, 1200, t + o, 0.05, 0.07); AU.noise(t + o, 0.05, 0.1, 'highpass', 3000, 3000, 1); }); }
 };
 function sfx(name, ...args) { if (sndMuted) return; try { if (ac()) SFX[name](...args); } catch (e) {} }
-function renderSnd() {
-  const b = document.getElementById('snd-btn'), f = document.getElementById('fx-snd');
-  if (b) { b.textContent = sndMuted ? '🔇' : '🔊'; b.title = sndMuted ? 'Sound is off (tap to turn on)' : 'Sound is on (tap to mute)'; }
-  if (f) f.textContent = `Sound: ${sndMuted ? 'OFF' : 'ON'}`;
-}
+function renderSnd() { if (typeof refreshOptions === 'function') refreshOptions(); }
 function toggleSound() {
   sndMuted = !sndMuted; try { localStorage.setItem('animeRpgSound', sndMuted ? '0' : '1'); } catch (e) {}
-  renderSnd(); if (!sndMuted) { sfx('hit', 'phys', false, false, false); }
+  renderSnd(); if (!sndMuted) { sfx('hit', 'phys', false, false, false); musicSet(musicArea, true); } else { if (mGain) mGain.gain.value = 0; clearInterval(musicTimer); musicTimer = null; }
 }
 renderSnd();
 document.addEventListener('pointerdown', () => { if (!sndMuted) ac(); }, { passive: true });
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('button'); if (b && !b.disabled && b.id !== 'snd-btn' && b.id !== 'fx-snd') sfx('click'); });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('button'); if (b && !b.disabled && !b.classList.contains('optsw')) sfx('click'); });
 document.addEventListener('visibilitychange', () => { if (actx) { if (document.hidden) actx.suspend().catch(() => {}); else if (!sndMuted) actx.resume().catch(() => {}); } });
 function cardEl(u) {
   const i = party.indexOf(u); if (i >= 0) return $('party-cards').children[i];
@@ -2848,7 +3107,7 @@ function skillDesc0(s) {
 }
 
 function render() {
-  renderPanel();
+  renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
   $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
   $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
@@ -3030,6 +3289,7 @@ async function hit(u, t, s) {
   const r = rollDamage(s, t, u), m = matchup(s, t);
   const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = (s.el || s.chip) ? (s.brk || 0) : 0, brk = brkIn - Math.min(b, brkIn);
   const dmg = r.amount - soak, bled = !!(s.bite && (t.statuses || []).some(x => x.type === 'bleed'));
+  qStat(u, t, dmg, r.crit);
   t.barrier = b - soak;                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
   t.hp = lethalGuard(t, t.hp - dmg);                           // never below 0, even for a frame (and immortal units stop at 1)
   if (dmg > 0 && t.stealth > 0) { t.stealth = 0; t.stealthFresh = false; log(`🌫️ ${t.name} is hit and loses her stealth!`, 'log-status'); }
@@ -3048,13 +3308,21 @@ async function hit(u, t, s) {
   }
   log(`${u.name} uses ${s.n} on ${t.name} for ${dmg} damage${soak ? ` (🛡️ ${soak} blocked)` : ''}${r.crit ? ` <strong style="color:#ffd54f">CRITICAL! (+${Math.max(0, num(CRIT.bonus))})</strong>` : ''}${m === 'weak' ? ` · weak to ${ELEM_NAME[s.el]}` : m === 'resist' ? ` · resists ${ELEM_NAME[s.el]}` : ''}${pmText(r.mod) ? ` · position ${pmText(r.mod)}` : ''}.`, u.team === 'p' ? 'log-player' : 'log-enemy');
   render();
-  floatText(t, `${m === 'weak' ? '<small>WEAK</small>' : m === 'resist' ? '<small>RESIST</small>' : soak ? `<small>🛡️ ${soak} BLOCKED</small>` : ''}${dmg}${r.crit ? '!' : ''}`, (t.team === 'p' ? 'hurt ' : '') + (r.crit ? 'crit' : ''));
+  floatText(t, `${m === 'weak' ? '<small>WEAK</small>' : m === 'resist' ? '<small>RESIST</small>' : soak ? `<small>🛡️ ${soak} BLOCKED</small>` : ''}${dmg}${r.crit ? '!' : ''}`, (t.team === 'p' ? 'hurt ' : '') + (r.crit ? 'crit ' : '') + (s.el ? 'e-' + s.el : ''));
   shake(r.crit ? 2 : 1); if (dmg > 0) bump(t, 'hurt');
+  if (dmg > 0) {                                                    // chatter: bragging, wincing, and the odd gag (each hero speaks at most once at a time)
+    if (u.team === 'p' && t.team === 'e') speak(u, t.hp <= 0 ? 'kill' : r.crit ? 'crit' : null);
+    if (t.team === 'p') {
+      if (t.hp > 0 && t.hp / t.maxHp < .25 && !t.saidLow) { t.saidLow = true; if (speak(t, 'low')) { /* said it */ } }
+      if (!speak(t, r.crit ? 'critTaken' : s.el ? null : 'hitPhys')) { /* silence is fine */ }
+    }
+  }
   if (dmg > 0) sfx('hit', s.el || 'phys', r.crit, m === 'weak'); else sfx('ward');
   const anim = dmg > 0 ? playDamaged(t, s.el || 'slash', true) : (fx(t, 'ward'), sleep(200));       // the victim's reaction plays while the rest is worked out
-  if (dmg > 0 && (r.crit || t.hp <= 0)) { const kill = t.hp <= 0; await hitStop(r.crit && kill ? 130 : 85); punch(t, r.crit && kill ? 1.06 : kill ? 1.05 : 1.035); }      // heavy hits: a beat of stillness, then a punch toward the victim
+  if (dmg > 0 && (r.crit || t.hp <= 0)) { const kill = t.hp <= 0; flash(kill ? '#ffffff' : '#ffd54f', kill ? .38 : .2, kill ? 520 : 380); await hitStop(r.crit && kill ? 160 : kill ? 120 : 85); punch(t, r.crit && kill ? 1.06 : kill ? 1.05 : 1.035); }      // heavy hits: a beat of stillness, then a punch toward the victim
   if (t.hp <= 0) {
     if (tryRevive(t)) { render(); await anim; return; }
+    if (t.team === 'p') speak(t, 'down');
     const f = fall(t); await Promise.all([anim, f]); return;
   }
   if (s.taunt && isAlive(u) && t.team !== u.team) {         // Defiant Slam: works through armour and barriers; the target's next attack must go at the taunter
@@ -3066,7 +3334,7 @@ async function hit(u, t, s) {
       t.breakBar -= brk;
       log(brk ? `${t.name}'s armour takes ${brk} break damage.` : `${t.name}'s barrier shields the armour.`, 'log-status');
       if (t.breakBar <= 0) {
-        t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2);
+        t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2); speak(t, 'broken');
         log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
         armourBreak(t, false);
         if (s.stunOnBreak && s.el && isAlive(t)) applyStatus(t, s.el, u);       // Vesper: a shock that breaks the armour stuns at once
@@ -3077,7 +3345,7 @@ async function hit(u, t, s) {
         t.break2 -= brk;
         log(brk ? `${t.name}'s damaged armour takes ${brk} break damage.` : `${t.name}'s barrier shields the damaged armour.`, 'log-status');
         if (t.break2 <= 0) {
-          t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3);
+          t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3); flash('#ff1744', .3, 520); speak(t, 'super');
           log(`<strong style="color:#ff1744">${t.name} is SUPER BROKEN!</strong>`);
           armourBreak(t, true);
         }
@@ -3095,7 +3363,7 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
   if (it.type === 'heal') {
     const before = t.hp; t.hp = Math.min(t.maxHp, t.hp + Math.round(it.heal * (1 + ((u.rel && u.rel.potion) || 0))));
     log(`${u.name} uses a ${it.name} on ${t.name}: heals ${t.hp - before} HP. (${quest.items[id]} left)`, 'log-heal');
-    sfx('heal'); render(); floatText(t, '+' + (t.hp - before), 'heal');
+    sfx('heal'); render(); floatText(t, '+' + (t.hp - before), 'heal'); speak(t, 'thanks');
   }
   render(); await sleep(200);
 }
@@ -3104,6 +3372,7 @@ async function perform(u, i, target) {
   const s = effSkill(u, i);
   say(target && s.t !== 'barrierAll' && s.t !== 'buff' ? `${u.name} uses ${s.n} on ${target.name}` : `${u.name} uses ${s.n}`);
   if (target && (s.t === 'dmg' || s.t === 'charm' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]);
+  if ((u.team === 'p' && (i === 2 || s.cd >= 3)) || (u.team === 'e' && u.boss && s.cd >= 3)) banner(s.n, u.team, u.short || u.name);           // the big moves get announced
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
   // The order of a hit: 1) her skill picture replaces the idle  2) a short charge-up effect for elemental attacks  3) the attack connects (bolt flies / blow lands)  4) the target's damaged picture and hit effects (in hit()).
   // A video in the skill slot is a film: it plays alone, full screen, nobody moves, and the hit only happens once it ends (see skillFilm).
@@ -3166,7 +3435,7 @@ async function perform(u, i, target) {
     sfx('charm'); await sleep(ANIM.impact);
     if (!target || !isAlive(target)) { log(`${u.name}'s song finds no one.`, 'log-round'); return; }
     if (!charmable(target)) { log(`${target.name} shrugs off the song.`, 'log-status'); floatText(target, 'RESISTS', 'tag'); render(); return; }
-    log(`🎶 ${u.name} sings ${s.n} to ${target.name}.`, 'log-player'); applyCharm(target, u); render(); return;
+    log(`🎶 ${u.name} sings ${s.n} to ${target.name}.`, 'log-player'); applyCharm(target, u); render(); tauntFoe(u, 'charm'); return;
   }
   if (s.t === 'tonic') {                                       // Jean's Tonic: heal now, and the same amount returns as poison that ignores armour
     if (!target || !isAlive(target) || target.team !== u.team) { log(`${u.name} has no one to treat.`, 'log-round'); return; }
@@ -3453,6 +3722,7 @@ async function bossPhase(b, ph) {
   if (ph.spd) b.spd += ph.spd;
   b.icons += '🔥';
   shake(3); render(); floatText(b, `🔥 PHASE ${(b.phase || 0) + 2}`, 'tag'); sfx('hit', 'phys', false, false, true);
+  setTimeout(() => { if (!tauntFoe(b, 'phase')) speakTeam('phase'); else setTimeout(() => speakTeam('phase'), 1500); }, 1250); flash('#ff5a1a', .5, 800);       // the banner first, then the team reacts (never both on top of each other) banner(ph.msg || `${b.name} makes a last stand!`, 'phase e');
   await sleep(900);
   if (ph.summon) await summonAdds(b, ph.summon);
   if (isAlive(b)) b.intent = enemyChoose(b, true);        // its next move is telegraphed again, with the new skills in the mix
@@ -3484,7 +3754,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
     u.hp = lethalGuard(u, u.hp - tick);
     if (st.left !== undefined) st.left -= tick;
     if (u.hp <= 0 && !canRevive(u)) { u.statuses = []; u.stealth = 0; u.barrier = 0; }
-    log(`${u.name} takes ${tick} damage from ${st.type}!`, 'log-status');
+    log(`${u.name} takes ${tick} damage from ${st.type}!`, 'log-status'); speak(u, st.type);
     render(); floatText(u, tick, 'dot');
     sfx('hit', STATUS_FX[st.type] || 'phys', false, false, true);
     await playDamaged(u, STATUS_FX[st.type] || 'slash');
@@ -3494,7 +3764,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
   }
   const stun = bonus ? null : u.statuses.find(x => x.stun);
   if (stun) {
-    log(`${u.name} is ${stun.type} and misses their turn!`, 'log-status');
+    log(`${u.name} is ${stun.type} and misses their turn!`, 'log-status'); speak(u, stun.type);
     u.wrath = false; u.wrathNow = false;
     sfx('hit', STATUS_FX[stun.type] || 'phys', false, false, true);
     await playDamaged(u, STATUS_FX[stun.type] || 'slash');
@@ -3530,7 +3800,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
       const mates = (u.team === 'p' ? party : enemies).filter(a => a !== u && isAlive(a));
       if (mates.length) {
         const v = mates[Math.floor(Math.random() * mates.length)]; u.statuses = u.statuses.filter(x => x !== ch); u.taunt = null;
-        log(`💘 ${u.name} is charmed and turns on ${v.name}!`, 'log-status'); floatText(u, '💘 CHARMED', 'tag'); act = { ...act, target: v };
+        log(`💘 ${u.name} is charmed and turns on ${v.name}!`, 'log-status'); floatText(u, '💘 CHARMED', 'tag'); speak(u, 'charmed'); act = { ...act, target: v };
       }
     } }
   if (act.shift) {
@@ -3600,19 +3870,20 @@ function checkEnd() {
     awardTraits(false);
     hubNote = `Quest failed. Half your gold made it home: +${kept} (of ${quest.gold} carried).${pn}`;
     $('turn-indicator').innerText = 'Defeat - Party Defeated';
-    log(`<strong style="color:#ff5252">Your party was defeated and retreats to town.</strong>`);
+    log(`<strong style="color:#ff5252">Your party was defeated and retreats to town.</strong>`); charDefeat();
     log(`You were carrying ${quest.gold} gold; half (${kept}) makes it home.`, 'log-heal');
-    main.textContent = 'Return to Town'; main.onclick = () => showScene('hub');
+    main.textContent = 'Return to Town'; main.onclick = () => showScene('hub'); endSummary(false);
     quest = null; saved = writeSave();
   } else {
     const elites = enemies.filter(e => e.mod).length;
     const gb = Math.min(.5, party.reduce((a, u) => a + ((u.rel && u.rel.gold) || 0), 0)), earned = Math.round(node.gold * (1 + gb) * (tierDef(quest.tier).gold || 1)) + elites * ELITE.gold;
     quest.gold += earned; settleDebts();
+    setTimeout(() => speakTeam('win'), 900);
     log(`<strong style="color:#4caf50">Victory!</strong> +${earned} gold${gb ? ' (Lucky Coin bonus)' : ''}${elites ? ` (★ elite loot +${elites * ELITE.gold})` : ''}.`, 'log-heal');
     for (let k = 0; k < elites; k++) if (Math.random() < ELITE.relic) { const r = grantRelic('An elite dropped a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} falls from the elite's remains!</strong>`, 'log-heal'); }
     if (quest.bonus && quest.bonus.relic && Math.random() < quest.bonus.relic) { const r = grantRelic(quest.bonus.kind === 'champion' ? 'The champion left you a relic!' : 'You found a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} is among the spoils!</strong>`, 'log-heal'); }
     if (last) {
-      const coastWas = coastOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
+      const coastWas = coastOpen(), beachWas = beachOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
       const qt = quest.tier || 0; game.tiers.cleared[quest.def.id] = Math.max(tierCleared(quest.def.id), qt); tierUnlock();                 // New Game+: remember the difficulty, maybe open the next one
       game.gold += quest.gold; game.stats.won++; game.quest = null;
       const drop = rollDrop(quest.def, game.relics, tierDef(quest.tier).relic || 0);                                        // the boss may drop a relic
@@ -3622,11 +3893,12 @@ function checkEnd() {
       const un = quest.def.unlocks;
       if (un && heroById(un) && !game.roster.includes(un)) { game.roster.push(un); game.notices.push({ type: 'unlock', id: un }); }   // first clear unlocks the hero
       if (!coastWas && coastOpen()) game.notices.push({ type: 'region', id: 'coast' });                                                   // the third Old Lands quest opens the Tidelands
+      if (!beachWas && beachOpen()) game.notices.push({ type: 'beach' });                                                                 // clearing the Sunbaked Shoals opens the beach in town
       awardTraits(true);                                                                    // then the traits notice (a perk for every hero, a flaw for any who fell)
       hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold.${pn}${drop ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
       $('turn-indicator').innerText = 'Quest Complete!';
       log(`<strong style="color:#4caf50">The boss falls and the quest is complete! All ${quest.gold} gold goes home with you.</strong>`);
-      main.textContent = 'Return to Town'; main.onclick = () => showScene('hub');
+      main.textContent = 'Return to Town'; main.onclick = () => showScene('hub'); endSummary(true);
       quest = null; saved = writeSave();
     } else if (quest.bonus) {                                  // an event fight: back to the same camp, with no new rest allowance
       quest.bonus = null;
@@ -3673,9 +3945,12 @@ const heroById = id => HEROES.find(h => h.id === id);
 const elIcons = h => [...new Set([...h.skills.map(s => s.el), ...(h.elems || [])].filter(Boolean))].map(e => ICON[e]).join('');
 
 function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
+  if (name !== 'battle-scene' && typeof talkClear === 'function') talkClear();
   const rv = document.getElementById('tm-full'); if (rv) rv.className = '';
-  ['hub', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle'].forEach(id => $(id).classList.toggle('show', id === name));
+  ['hub', 'beach', 'beach-pick', 'vb', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle'].forEach(id => $(id).classList.toggle('show', id === name));
   if (name === 'hub') renderHub();
+  if (name === 'beach') renderBeach();
+  if (name === 'beach-pick') renderBeachPick();
   if (name === 'party-select') renderParty();
   if (name === 'quest-select') renderQuests();
   if (name === 'dev-battle') renderDev();
@@ -3687,9 +3962,9 @@ function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'c
   if (name === 'gear') renderGear();
   if (name === 'train-select') renderTrainSelect();
   if (name === 'train-method') renderTrainMethods();
-  sceneFade();
+  sceneFade(); try { musicSet(areaFor(name)); weatherSet(name); } catch (e) {}
   document.body.classList.toggle('in-battle', name === 'battle-scene');
-  document.body.classList.toggle('in-town', name === 'hub');
+  document.body.classList.toggle('in-town', name === 'hub' || name === 'beach');
   window.scrollTo(0, 0);
 }
 
@@ -3780,7 +4055,7 @@ async function loadTownBg() {
 }
 
 function renderHub() {
-  $('hub-gold').textContent = `Gold: ${game.gold}`;
+  $('hub-gold').textContent = `Gold: ${game.gold}`; $('btn-beach').style.display = beachOpen() ? '' : 'none';
   loadTownBg();
   $('hub-msg').textContent = hubNote; hubNote = '';
   showNotice();      // e.g. the result of the last quest
@@ -3793,6 +4068,13 @@ function showNotice() {                      // pending pop-ups (saved, so they 
     $('notice-title').textContent = `🔥 ${T.name} unlocked!`;
     $('notice-text').textContent = n.id === 1 ? 'Every quest is beaten. The whole game can now be played again on a harder difficulty, keeping all your heroes, relics, traits and skins. Pick the difficulty when you embark.' : `A harder difficulty is open: ${T.name}. Clear every quest on the current one to climb higher.`;
     $('notice-skills').textContent = tierText(T);
+    return;
+  }
+  if (n && n.type === 'beach') {
+    box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🏖️'; $('notice-btn').textContent = 'To the beach!';
+    $('notice-title').textContent = '🏖️ A path to the beach!';
+    $('notice-text').textContent = 'With your first Tidelands victory, a gloomy little beach has opened up below the town. Play Beach Volleyball there to trade a hero\'s Tier II perk for any Tier I perk you like.';
+    $('notice-skills').textContent = 'Tidelands quests now UPGRADE a perk a hero already has, and their bosses drop Tier II relics.';
     return;
   }
   if (n && n.type === 'region') {
@@ -3809,7 +4091,7 @@ function showNotice() {                      // pending pop-ups (saved, so they 
   if (tr) {
     $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🏅'; $('notice-btn').textContent = 'OK';
     $('notice-title').textContent = n.won ? '🏅 Quest complete: new traits' : '💀 The quest cost you';
-    $('notice-text').innerHTML = tr.map(x => { const t = TRAIT[x.id]; return `<div><b>${heroById(x.hero).name.split(' ')[0]}</b> ${t.kind === 'good' ? '▲' : '▼'} ${t.icon} ${t.name} <span class="dim">(${t.desc})</span></div>`; }).join('');
+    $('notice-text').innerHTML = tr.map(x => { const t = TRAIT[x.id]; return x.from ? `<div><b>${heroById(x.hero).name.split(' ')[0]}</b> ⬆ ${t.icon} ${TRAIT[x.from].name} → <b>${t.name}</b> <span class="dim">(${t.desc})</span></div>` : `<div><b>${heroById(x.hero).name.split(' ')[0]}</b> ${t.kind === 'good' ? '▲' : '▼'} ${t.icon} ${t.name} <span class="dim">(${t.desc})</span></div>`; }).join('');
     $('notice-skills').textContent = 'The Spa removes flaws. The Training Ground buys perks.';
     return;
   }
@@ -3941,7 +4223,7 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, Number(v) || 0));
 // The quest is checkpointed into game.quest at embark, after each win, on entering camp and after each purchase.
 // Continue resumes there: node 0 = start of the first fight, otherwise the camp before that node.
 function snapshotQuest() {
-  return { id: quest.def.id, tier: quest.tier || 0, node: quest.node, gold: quest.gold, plan: quest.plan, eventDone: !!quest.eventDone, bonus: quest.bonus || null,
+  return { stats: quest.stats || null, id: quest.def.id, tier: quest.tier || 0, node: quest.node, gold: quest.gold, plan: quest.plan, eventDone: !!quest.eventDone, bonus: quest.bonus || null,
            items: { ...quest.items },
            party: quest.party.map(u => ({ id: u.id, hp: u.hp, breakBar: u.breakBar, break2: u.break2, state: u.state, downs: u.downs || 0, rank: u.rank, campHeal: u.campHeal || 0, relics: u.relics || [] })) };
 }
@@ -3977,7 +4259,7 @@ function restoreQuest(s) {
     members.push(u);
   }
   const items = {}; Object.keys(ITEMS).forEach(id => { items[id] = Math.max(0, Math.floor(Number(s.items && s.items[id]) || 0)); });
-  return { def, tier: Math.max(0, Math.min(MAX_TIER, s.tier | 0)), node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : (() => { const pl = rollPlan(def, s.tier | 0); if (s.node > 0 && !pl.camps.includes(s.node - 1)) pl.camps = [...pl.camps, s.node - 1].sort((x, y) => x - y); return pl; })(), eventDone: !!s.eventDone,
+  return { stats: validStats(s.stats), def, tier: Math.max(0, Math.min(MAX_TIER, s.tier | 0)), node: s.node, gold: Math.max(0, Math.floor(Number(s.gold) || 0)), party: members, items, plan: validPlan(s.plan, def) ? s.plan : (() => { const pl = rollPlan(def, s.tier | 0); if (s.node > 0 && !pl.camps.includes(s.node - 1)) pl.camps = [...pl.camps, s.node - 1].sort((x, y) => x - y); return pl; })(), eventDone: !!s.eventDone,
            bonus: s.bonus && Array.isArray(s.bonus.ids) && s.bonus.ids.length && s.bonus.ids.length <= 4 && s.bonus.ids.every(id => enemyById(id)) && Array.isArray(s.bonus.mods) && s.bonus.mods.every(m => m == null || ELITE.mods[m])
              ? { kind: String(s.bonus.kind || ''), name: String(s.bonus.name || 'Event Fight').slice(0, 40), ids: s.bonus.ids.slice(), mods: s.bonus.mods.slice(), gold: Math.max(0, Math.floor(Number(s.bonus.gold) || 0)), hp: clamp(s.bonus.hp || 1, 0.5, 2), relic: clamp(s.bonus.relic || 0, 0, 1) } : null };
 }
@@ -4053,6 +4335,7 @@ function startNode() {
   const T = tierDef(quest.tier);
   enemies = buildEnemies(ids, mods, { hp: (qs.hp || 1) * (ns.hp || 1) * (T.hp || 1) * (quest.bonus && quest.bonus.hp || 1), atk: (qs.atk || 1) * (ns.atk || 1) * (T.atk || 1) });
   order = []; actor = null; cur = null; sel = null; waiting = null; over = false;
+  lastSummary = null; { const sb = document.getElementById('btn-summary'); if (sb) sb.style.display = 'none'; }
   $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = '';
   $('end-buttons').style.display = 'none';
   $('turn-indicator').innerText = 'Preparing...';
@@ -4060,7 +4343,7 @@ function startNode() {
   $('enemy-head').textContent = node.name.toUpperCase();
   showScene('battle-scene');
   renderFx(); renderSnd(); loadStageBg();
-  render(); return battle();
+  render(); lowHpPulse(); return introCard().then(() => { if (quest && $('battle-scene').classList.contains('show')) { charStart(); return battle(); } });
 }
 
 const repairCost = u => u.state === 'super' ? 0   // super broken armour can't be repaired at all
@@ -4079,7 +4362,7 @@ function reviveAtCamp() {
 function showCamp() {
   campMsg = reviveAtCamp();
   saveQuest();
-  showScene('camp');
+  showScene('camp'); campBanter();
 }
 function renderCamp() {
   const q = quest, next = q.def.nodes[q.node], n = q.party.length;
@@ -4088,7 +4371,7 @@ function renderCamp() {
   $('camp-msg').textContent = campMsg;
   $('campfire').innerHTML = '<div class="fire">🔥</div>' + q.party.map((u, i) => {      // heroes evenly spaced around the fire
     const a = (-90 + i * 360 / n) * Math.PI / 180, R = 33;
-    return `<div class="camper" style="left:${50 + R * Math.cos(a)}%;top:${50 + R * Math.sin(a)}%">
+    return `<div class="camper" data-hid="${u.id}" style="left:${50 + R * Math.cos(a)}%;top:${50 + R * Math.sin(a)}%">
       <div class="mini-sprite port-box" data-port="${u.id}">${u.tag}</div><strong>${u.short}</strong><br>HP ${u.hp}/${u.maxHp}${armourTag(u)}</div>`;
   }).join('');
   const ra = ITEMS.ration, rk = ITEMS.kit, nR = q.items.ration || 0, nK = q.items.kit || 0, hurt = q.party.some(u => u.hp < u.maxHp);
@@ -4136,7 +4419,7 @@ const evRepairCost = () => Math.ceil(quest.party.reduce((a, u) => a + (u.state =
 function evRepairAll() { quest.party.forEach(u => { u.breakBar = u.maxBreak; u.break2 = u.maxBreak2; u.state = 'armoured'; }); }
 const evPotions = () => quest.items.potion || 0;
 function grantRelic(why, floor) {                          // a relic found on the road goes straight to the hub's collection
-  const pool = relicPool(game.relics).filter(r => floor !== 'rare' || r.rarity !== 'common');
+  const pool = relicPool(game.relics, quest && quest.def && quest.def.id ? questAct(quest.def.id) : 0).filter(r => floor !== 'rare' || r.rarity !== 'common');
   if (!pool.length) return null;
   const r = pickWeighted(pool, RELIC.dropWeight); game.relics.push(r.id); game.notices.push({ type: 'relic', id: r.id, title: `🎁 ${why}` }); return r;
 }
@@ -4233,7 +4516,7 @@ const EVENTS = [
       return out;
     }, extra: d => d.r.q },
   // Very rare: only when Jean has not joined yet. A healing potion buys her trust; she then joins the roster back at the hub.
-  { id: 'doctor', icon: '🩺', title: 'The Plague Doctor', weight: 0.35, only: () => !game.roster.includes('jean'),
+  { id: 'doctor', art: 'jean', icon: '🩺', title: 'The Plague Doctor', weight: 0.35, only: () => !game.roster.includes('jean'),
     text: 'A figure in a long coat and a bird-beaked mask is crouched over a rack of clinking vials, muttering. "Hm? Customers? Everyone I treat complains about the side effects, you know. But the results! The results are undeniable." They eye your pack. "A genuine healing potion, now. I have been wanting to study one."',
     choices(q) {
       const has = evPotions() > 0, here = game.roster.includes('jean');
@@ -4275,6 +4558,7 @@ function renderEvent() {
   const ev = st.ev;
   $('event-title').textContent = `${ev.icon} ${ev.title}`;
   $('event-sub').textContent = `${quest.def.name} · Gold: ${quest.gold} · Potions: ${evPotions()}`;
+  $('event-art').style.display = ev.art ? 'block' : 'none'; $('event-art').innerHTML = ev.art ? `<div class="figure dorm-big" data-art="${ev.art}"><div class="ph">${heroById(ev.art).tag}</div></div>` : ''; if (ev.art) fillHeroArt($('event-art'));
   $('event-text').innerHTML = ev.text + (ev.extra ? `<div class="event-q">${ev.extra(st.d)}</div>` : '');
   $('event-choices').innerHTML = st.result ? '' : st.choices.map((c, i) =>
     `<button class="event-choice" onclick="chooseEvent(${i})" ${c.off ? 'disabled' : ''}><strong>${c.label}</strong>${c.sub ? `<small>${c.sub}</small>` : ''}</button>`).join('');
@@ -4415,6 +4699,7 @@ function renderGear() {
       return Object.keys(n).map(id => { const t = TRAIT[id]; return `<div class="tr-row ${kind}">${t.icon} <b>${t.name}</b>${n[id] > 1 ? ' ×' + n[id] : ''}: ${t.desc}${n[id] > 1 ? ' <span class="dim">(each)</span>' : ''}</div>`; }).join('') || '<div class="dim" style="font-size:.78rem">None</div>'; };
     $('dorm-char').innerHTML = `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
       <div class="dorm-info"><h3>${h.name} ${elIcons(h)}</h3>
+        ${BIOS[dormHero] ? `<div class="dbio">${BIOS[dormHero].bio}<br><span class="likes">♥ Likes: ${BIOS[dormHero].like}</span> · <span class="hates">✖ Dislikes: ${BIOS[dormHero].hate}</span></div>` : ''}
         <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
         ${skinsFor(dormHero).length ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${n || 'Default'}</button>`).join('')}</div>` : ''}
         <div class="dh">RELICS</div><div class="rslots">${rs}</div>
@@ -4633,6 +4918,542 @@ function spaFinished(hero, won, target) {
 try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); } catch (e) { storageOk = false; }
 refreshTitle();      // the game itself starts from the title screen buttons (startGame)
 
+/* ============ BATTLE IMPACT (boss intro, skill banners, flashes, low-HP pulse) ============ */
+// Pure presentation. The "Screen flashes" option (Menu > Options) turns the colour flashes and the low-HP pulse off; banners and intros stay.
+function flash(color, peak = .3, ms = 450) {
+  if (!FX.flash) return;
+  const f = document.createElement('div'); f.className = 'bflash'; f.style.setProperty('--c', color); f.style.setProperty('--p', peak); f.style.animationDuration = ms + 'ms';
+  document.body.appendChild(f); setTimeout(() => f.remove(), ms + 60);
+}
+let bannerEl = null, bannerTimer = 0;
+function banner(text, cls = '', sub = '') {           // one banner at a time (a new one replaces the old); never blocks the action
+  if (!$('battle-scene').classList.contains('show')) return;
+  if (bannerEl) bannerEl.remove();
+  const b = bannerEl = document.createElement('div'); b.className = 'sbanner ' + cls; b.innerHTML = `${sub ? `<small>${sub}</small>` : ''}<span>${text}</span>`;
+  document.body.appendChild(b); clearTimeout(bannerTimer); bannerTimer = setTimeout(() => { if (bannerEl === b) bannerEl = null; b.remove(); }, 1250);
+}
+function introCard() {                                // a boss name plate before the fight (click or key to skip)
+  const boss = enemies.find(e => e.boss); if (!boss) return Promise.resolve();
+  return new Promise(res => {
+    const c = document.createElement('div'); c.className = 'bintro';
+    c.innerHTML = `<div class="bi-band"><small>${quest && quest.def && !quest.dev ? quest.def.name : 'Boss'}</small><b>${boss.name}</b><em>${(boss.phases && boss.phases.length) || (tierDef(quest && quest.tier).lastStand) ? 'It will not go down easily.' : 'Steel yourselves.'}</em></div>`;
+    document.body.appendChild(c); sfx('hit', 'phys', false, false, true);
+    let done = false; const end = () => { if (done) return; done = true; c.classList.add('out'); setTimeout(() => { c.remove(); res(); }, 260); };
+    c.addEventListener('pointerdown', end); setTimeout(end, 1900);
+    document.addEventListener('keydown', function k(e) { if (e.isTrusted) { end(); document.removeEventListener('keydown', k); } });
+  });
+}
+function lowHpPulse() { document.body.classList.toggle('lowhp', !!FX.flash && document.body.classList.contains('in-battle') && party.some(u => isAlive(u) && u.hp / u.maxHp < .25)); }
+
+/* ============ BATTLE CHATTER (speech bubbles over your heroes) ============ */
+// Heroes pipe up in little pop-up bubbles: brag on crits and kills, grumble when their armour breaks, react together when a boss changes phase, and gag lines when hit or afflicted.
+// Everything is a CHANCE, so it never gets repetitive. To add lines just add strings to a list below (VOICE adds hero-only lines on top: id -> kind -> lines).
+// Rules that keep the screen tidy: a hero shows ONE bubble at a time, at most TALK.max bubbles are up at once, a bubble never sits on top of another (it is dropped instead),
+// small gags are dropped whenever anything else is on screen, and every hero has a cooldown between lines. Higher priority lines (kills, boss phase) can bump a gag.
+const TALK = { max: 2, gap: 450, cd: 2600, gagCd: 6000 };
+const TALK_KIND = {          // pri: 1 gag · 2 reaction · 3 big moment · 4 team moment ; chance: how often it plays
+  crit:      { pri: 3, chance: .55 }, kill:    { pri: 3, chance: .65 }, critTaken: { pri: 2, chance: .7 },
+  broken:    { pri: 2, chance: .8 },  super:   { pri: 3, chance: .9 },  down:      { pri: 3, chance: .75 }, low: { pri: 2, chance: .6 },
+  embark: { pri: 4, chance: 1 }, win: { pri: 4, chance: 1 }, taunt: { pri: 3, chance: 1 },
+  phase:     { pri: 4, chance: 1 },   thanks:  { pri: 2, chance: .5 },
+  hitPhys:   { pri: 1, chance: .2 },  burn:    { pri: 1, chance: .5 },   poison:    { pri: 1, chance: .45 }, bleed: { pri: 1, chance: .45 },
+  frozen:    { pri: 1, chance: .65 }, shocked: { pri: 1, chance: .5 },   charmed:   { pri: 1, chance: .6 }
+};
+const TALK_LINES = {
+  crit:      ['Did you see that?!', 'Right on target!', 'Bullseye!', 'Feel that one?', 'Not bad, huh?', "That's gonna leave a mark!", 'Yes! Perfect hit!', 'Hah! Got you!', 'Right in the weak spot!', "Now THAT'S a hit!", 'Told you I had it.'],
+  kill:      ['One down!', 'Stay down!', 'Next!', "That's that.", 'Too easy.', "Who's next?", 'Was that all?', 'Down you go!', 'Sleep tight.', "I'm on a roll!", 'Did you see that one?!', 'And stay there!'],
+  critTaken: ['Ow, that one hurt!', 'Right in the ribs!', "That's gonna bruise!", 'Ugh... lucky shot!', 'Did it have to be there?!', 'Okay, ow.', 'Hey! Watch it!', 'I felt that in my soul.', "That's... not ideal."],
+  broken:    ["I'm feeling a little exposed...", 'My armour! It cracked!', "Well, that's not good.", 'There goes my armour!', 'Uh-oh. Drafty in here.', 'Somebody cover me!', 'Okay... that was my good armour.', 'Armour is... gone. Great.'],
+  super:     ["I can't take another hit like that!", "I'm totally exposed!", 'Please, someone, cover me!', 'This is bad. This is really bad.', "There's nothing left to protect me!"],
+  down:      ['Tell them... I tried...', "I'll just... rest a moment...", "Everything's spinning...", 'Not like this...', 'Sorry, everyone...', 'Ow... just ow...'],
+  low:       ["I'm not going to last long!", 'Need... a potion... or three.', "I'm running on fumes!", "Don't look at me, I'm fine! (I'm not fine.)", 'One more hit and that\'s it for me!'],
+  phase:     ['They look mad now!', 'Uh oh, that got its attention.', 'Here it comes!', 'Is it... getting bigger?', 'Brace yourselves!', 'I think we made it angry.', "Now it's personal!", 'Stay sharp, everyone!', "That's... not good.", 'Okay, it was holding back.', 'Something changed!'],
+  thanks:    ['Thanks!', 'I needed that!', 'Much better!', 'Ahh, that hits the spot.', "You're a lifesaver!", 'Cheers!'],
+  hitPhys:   ['Gah!', '#$%&!', 'Oof!', 'Ow!', 'Hrk!', 'Ouch!', 'Ngh!', 'Hey, rude!', 'Argh!', 'Bonk!', '@#!*%!', 'Ooh, that stings!'],
+  burn:      ['Ah, hot hot hot!', "I'm on fire! I'm literally on fire!", 'Too warm! Too warm!', 'Somebody get water!', 'Fire! Fire! Fire!', 'My eyebrows!'],
+  poison:    ["Blegh... I don't feel so good.", 'Did I eat something bad?', 'My stomach...', "Everything's green...", 'Ugh, that tastes awful.', 'Why is the floor moving?'],
+  bleed:     ["That's... a lot of red.", "Is that normal? Tell me that's normal.", 'Ow ow ow, I\'m leaking!', 'Not the good kind of red!', "I'd like that to stop, please."],
+  frozen:    ['...', '...!', '......', '. . .', '...?'],
+  shocked:   ['Bzzzt!', 'I can see my bones!', 'My hair! My hair!', 'Zzzap, ow!', 'So... much... static...', 'That tingles! (It does not tingle.)'],
+  charmed:   ['Why do I feel so... fond of them?', 'My hands won\'t listen!', 'Wait, no, not them!', 'I... I\'m sorry in advance.', 'Something is wrong with my head.']
+};
+const VOICE = {
+  seria: { kill: ['Stand down.', 'Order restored.'], hitPhys: ['Hmph.', 'Not through the shield!'], broken: ['The shield holds. Mostly.'], phase: ['Hold the line!'] },
+  jean:  { poison: ['Ah. My own medicine.', 'Occupational hazard.'], hitPhys: ['Noted. Painful.'], kill: ['Prognosis: poor.', 'Time of death noted.'], crit: ['Textbook.'], burn: ['This was not in the manual!'] },
+  tyr:   { kill: ['Another for my claws!', 'Fresh meat!'], hitPhys: ['Grrr!', 'Hah! Do it again!'], crit: ['RAAAH!'], burn: ['Hot! HOT!'] }
+};
+let talkActive = [], talkLoop = false;
+function talkClear() { talkActive.forEach(b => b.el.remove()); talkActive = []; }
+function talkPick(u, kind) {
+  const own = ((VOICE[u.id] || {})[kind]) || [], gen = TALK_LINES[kind] || [];
+  const pool = own.length && Math.random() < .4 ? own : gen; if (!pool.length) return null;
+  const last = u.lastSaid && u.lastSaid[kind], opts = pool.length > 1 ? pool.filter(x => x !== last) : pool;
+  const line = opts[Math.floor(Math.random() * opts.length)]; (u.lastSaid = u.lastSaid || {})[kind] = line; return line;
+}
+const rectsHit = (a, b) => !(a.right + 4 < b.left || b.right + 4 < a.left || a.bottom + 4 < b.top || b.bottom + 4 < a.top);
+function talkPlace(b) {                                   // sit above the speaker's head; follows them while they move
+  const fig = figs.get(b.u); if (!fig || !fig.isConnected) return false;
+  const r = fig.getBoundingClientRect(); if (r.width < 4) return false;
+  const bw = b.el.offsetWidth, bh = b.el.offsetHeight, head = r.bottom - r.height * (typeof SPR_SCALE === 'number' ? SPR_SCALE : .85);
+  let x = r.left + r.width / 2 - bw / 2, y = head - bh - 10 - (b.lift || 0);
+  x = Math.max(4, Math.min(innerWidth - bw - 4, x)); y = Math.max(4, y);
+  b.el.style.left = x + 'px'; b.el.style.top = y + 'px'; b.rect = { left: x, top: y, right: x + bw, bottom: y + bh };
+  return true;
+}
+function talkTick() {
+  talkActive = talkActive.filter(b => { if (performance.now() > b.until || !b.el.isConnected) { b.el.remove(); return false; } return true; });
+  talkActive.forEach(b => { b.lift = 0; talkPlace(b); });
+  for (let i = 1; i < talkActive.length; i++) {                                              // movement made two meet: stack the later one above, and if there is no room drop the smaller
+    const a = talkActive[i], o = talkActive[i - 1];
+    if (a.rect && o.rect && rectsHit(a.rect, o.rect)) { a.lift = a.rect.bottom - o.rect.top + 6; talkPlace(a); if (rectsHit(a.rect, o.rect)) { const lo = a.pri < o.pri ? a : o; lo.until = 0; } }
+  }
+  if (talkActive.length) requestAnimationFrame(talkTick); else talkLoop = false;
+}
+function speak(u, kind, force, text) {                       // text = a ready-made line (used for enemy taunts)
+  try {
+    if (!FX.talk || !u || (u.team !== 'p' && !(text && u.team === 'e')) || !TALK_KIND[kind] || $('battle-scene').classList.contains('show') === false) return false;
+    const K = TALK_KIND[kind], now = performance.now();
+    if (!force && Math.random() >= K.chance) return false;
+    if (!isAlive(u) && kind !== 'down') return false;
+    const mine = talkActive.find(b => b.u === u);
+    if (mine) { if (K.pri > mine.pri) { mine.el.remove(); talkActive = talkActive.filter(b => b !== mine); } else return false; }       // one thing at a time per hero
+    if (K.pri < 4 && now - (u.talkAt || 0) < (K.pri === 1 ? TALK.gagCd : TALK.cd)) return false;
+    const last = talkActive.reduce((m, b) => Math.max(m, b.at), 0);
+    if (K.pri === 1 && (talkActive.length || now - last < 900)) return false;               // gags only play into silence
+    if (K.pri === 2 && (talkActive.length > 1 || now - last < TALK.gap)) return false;
+    if (talkActive.length >= TALK.max) {                                                    // full: a bigger moment bumps the smallest bubble, anything else is dropped
+      const low = talkActive.filter(b => b.pri < K.pri).sort((a, b) => a.pri - b.pri || a.at - b.at)[0];
+      if (!low) return false; low.el.remove(); talkActive = talkActive.filter(b => b !== low);
+    }
+    const line = text || talkPick(u, kind); if (!line) return false;
+    const el = document.createElement('div'), ms0 = Math.min(2900, 1500 + line.length * 40), ms = ms0 / battleSpd();
+    el.className = 'sbubble' + (u.team === 'e' ? ' foe' : '') + (kind === 'frozen' ? ' cold' : '') + (K.pri >= 3 ? ' shout' : ''); el.textContent = line; el.style.setProperty('--dur', (ms0 - 300) + 'ms');
+    el.style.visibility = 'hidden'; document.body.appendChild(el);
+    const b = { u, el, pri: K.pri, at: now, until: now + ms, lift: 0 };
+    if (!talkPlace(b)) { el.remove(); return false; }
+    for (const o of talkActive) if (o.rect && rectsHit(b.rect, o.rect)) { if (K.pri < 3) { el.remove(); return false; } b.lift = b.rect.bottom - o.rect.top + 6; talkPlace(b); if (rectsHit(b.rect, o.rect)) { el.remove(); return false; } }   // never on top of another bubble: stack above it, else drop
+    el.style.visibility = ''; talkActive.push(b); u.talkAt = now;
+    if (!talkLoop) { talkLoop = true; requestAnimationFrame(talkTick); }
+    return true;
+  } catch (e) { return false; }
+}
+function speakTeam(kind) {                                // the whole team reacts, but only two of them speak, a beat apart
+  const alive = party.filter(isAlive).sort(() => Math.random() - .5).slice(0, 2);
+  alive.forEach((u, i) => setTimeout(() => speak(u, kind, true), i * 700));
+}
+
+/* ============ CHARACTERIZATION (camp banter, embark/victory lines, boss taunts, hero bios, quest intros) ============ */
+// All plain text tables, easy to extend. Hero ids: seria aria vesper iris aneesah siren irae jean tyr. Lines are short so bubbles stay small.
+const BIOS = {
+  seria:   { bio: 'A shield-bearer who treats every fight as a duty. Dry, loyal, and quietly proud of her dents.', like: 'Order, clean armour, sturdy walls', hate: 'Fire drills, people who skip briefings' },
+  aria:    { bio: 'Bright, bold and always a step ahead of the plan, usually because she skipped it.', like: 'Big hits, loud victories, warm food', hate: 'Waiting, cold stew, being told to be careful' },
+  vesper:  { bio: 'Quiet and quick. She watches from the edge of the firelight and speaks only when it counts.', like: 'Moonlit nights, silence, clean getaways', hate: 'Bright lanterns, crowds, small talk' },
+  iris:    { bio: 'Steady and kind, the sort who patches everyone up and never mentions it afterwards.', like: 'Tea, tidy camps, quiet mornings', hate: 'Needless risks, wasted rations' },
+  aneesah: { bio: 'Sharp-eyed and sharper-tongued. Always doing the maths on a fight before it starts.', like: 'Good odds, clever plans, being right', hate: 'Surprises, getting mud on her boots' },
+  siren:   { bio: 'Her voice carries a tide of its own. Charming, unsettling, and rarely entirely joking.', like: 'The sea, an audience, harmony', hate: 'Silence, dry land, being interrupted' },
+  irae:    { bio: 'Restless and fierce, she fights like the world owes her a debt she plans to collect.', like: 'A good duel, sharp steel, honest enemies', hate: 'Retreating, rules, slow marches' },
+  jean:    { bio: 'A plague doctor who is oddly cheerful about her work. Her cures are... experimental.', like: 'Research, volunteers, a well-stocked satchel', hate: 'Untidy wounds, being called a quack' },
+  tyr:     { bio: 'A beast of a fighter with a bigger heart. Loud at the fire and louder in the fray.', like: 'Meat, a good brawl, his friends', hate: 'Sitting still, empty bowls' }
+};
+const CAMP_LINES = {         // what each hero says at the fire (one is picked at random)
+  seria:   ['Keep the fire low. We are not alone out here.', 'My shield has taken worse. Probably.', 'Rest while you can. Tomorrow will not wait.'],
+  aria:    ['Is it dinner yet? It feels like dinner.', 'I could go another round, honestly.', 'Somebody tell a story. A loud one.'],
+  vesper:  ['...The stars are better out here.', 'I will take the first watch.', 'Do not mind me. I like the dark.'],
+  iris:    ['Anyone hurt? Let me look, please.', 'There is more tea if anyone wants it.', 'We are doing well. Truly.'],
+  aneesah: ['By my count we have three fights left. Maybe.', 'Nobody touch the map. I have it just so.', 'Statistically, that went well.'],
+  siren:   ['Shall I sing? It is no trouble at all.', 'The fire hums. Did you notice?', 'I miss the sound of waves.'],
+  irae:    ['Next fight, I go first.', 'Resting is just waiting with extra steps.', 'Someone spar with me. Anyone.'],
+  jean:    ['Does anyone want to test a new tonic? Anyone?', 'Please do not eat the green ones.', 'Wounds are just data, really.'],
+  tyr:     ['Is there more meat? There should be more meat.', 'Ha! That last one squealed!', 'I fight better when I am fed.']
+};
+const CAMP_PAIRS = {         // special exchanges for particular pairs: key is the two ids sorted and joined with '+'; [first speaker's line, other's reply]
+  'jean+tyr':     [['Tyr, you look pale. Try this.', 'No.'], ['Sit still, I only need one sample.', 'Sample WHAT?']],
+  'aria+seria':   [['Seria, did you sleep at all?', 'Someone must stand watch.']],
+  'aneesah+aria': [['Aria, the plan was NOT to charge.', 'It worked, did it not?']],
+  'iris+jean':    [['Jean, wash your hands first.', 'They were already clean. Mostly.']],
+  'irae+tyr':     [['Tyr. Spar with me.', 'Finally! Someone gets it!']],
+  'siren+vesper': [['Your silence is lovely, Vesper.', '...Thank you. Please stop.']],
+  'seria+siren':  [['Siren, no singing near the shield.', 'It is a beautiful shield, though.']]
+};
+const TAUNTS = {             // enemy id -> moment -> lines. Moments: start (fight opens), phase (boss changes phase), charm (it charms a hero)
+  e_boss:     { start: ['INTRUDERS. DEACTIVATING.', 'This throne is not yours.'], phase: ['SYSTEMS... UNLEASHED!', 'You have damaged me. Now I damage you.'] },
+  e_siren:    { start: ['Come closer. Listen.', 'Such lovely voices... let me hear them.'], phase: ['Now you will SING for me!', 'Enough pretty words.'], charm: ['Sleep, little one. Turn on them.', 'Such a sweet song, is it not?'] },
+  e_keeper:   { start: ['The storm answers to me.', 'Turn back. The sea is angry.'], phase: ['LET THE TEMPEST ROAR!', 'You called the storm. Here it is.'] },
+  e_crabking: { start: ['*clack clack* THIS IS MY SHORE.', 'Who dares scuttle upon my sand?'], phase: ['MY SHELL... MY RAGE!', '*furious clacking*'] },
+  e_necro:    { start: ['More bones for my collection.', 'You will make fine servants.'], phase: ['Rise! Rise, all of you!', 'Death is only the beginning.'] },
+  e_shuten:   { start: ['Ha! Drinking partners at last!', 'Come, mortals. Make me laugh.'], phase: ['NOW the real feast begins!', 'You have woken the oni.'] }
+};
+const QUEST_INTRO = {        // one sentence the first time a quest's first fight opens
+  ruins: 'The Sentinel Ruins stand silent... but not empty.',
+  yokai: 'Lanterns drift through the dark. The Night Parade has begun.',
+  crypt: 'Cold air seeps from the crypt doors. Something below is awake.',
+  cove: 'A song drifts over the water, sweet and wrong.',
+  lighthouse: 'The beacon is dark and the storm is circling. Climb.',
+  beach: 'The sand is warm and the shore is far too quiet.'
+};
+const pickOf = a => a[Math.floor(Math.random() * a.length)];
+function charStart() {                       // fight opens: quest intro (first fight), embark line, boss taunt
+  try {
+    if (!quest || quest.dev || quest.bonus) return;
+    if (quest.node === 0 && QUEST_INTRO[quest.def.id]) { log(`<em>${QUEST_INTRO[quest.def.id]}</em>`, 'log-round'); say(QUEST_INTRO[quest.def.id]); setTimeout(() => say(''), 3400); }
+    const boss = enemies.find(e => e.boss);
+    setTimeout(() => { if (!$('battle-scene').classList.contains('show') || over) return; if (quest && quest.node === 0) speakTeam('embark'); }, 600);
+    if (boss) setTimeout(() => { if ($('battle-scene').classList.contains('show') && !over) tauntFoe(boss, 'start'); }, quest.node === 0 ? 4200 : 1500);      // after the embark bubbles are gone
+  } catch (e) {}
+}
+const EMBARK = ['Let us go.', 'Here we go!', 'Stay close, everyone.', 'Ready when you are.', 'Time to earn our keep!', 'Eyes open!', 'Together, then.'];
+TALK_LINES.embark = EMBARK;
+TALK_LINES.win = ['That is that!', 'We did it!', 'Everyone still standing? Good.', 'Easy!', 'Well fought, all of you.', 'Another one down!', 'Not bad, team!'];
+function tauntFoe(b, moment) {
+  const t = (TAUNTS[b.id] || {})[moment]; if (!t || !isAlive(b)) return false;
+  return speak(b, 'taunt', true, pickOf(t));
+}
+function charDefeat() { try { const u = pickOf(party); log(`<em>${u.short}: "...We will get them next time."</em>`, 'log-round'); } catch (e) {} }
+let banterTimers = [];
+function campBanter() {
+  banterTimers.forEach(clearTimeout); banterTimers = [];
+  if (!FX.talk || !quest || quest.party.length < 2) return;
+  const two = quest.party.filter(u => u.hp > 0).sort(() => Math.random() - .5).slice(0, 2); if (two.length < 2) return;
+  const key = two.map(u => u.id).sort().join('+'), pair = CAMP_PAIRS[key];
+  let lines;
+  if (pair && Math.random() < .7) { const [a, b] = pickOf(pair), firstId = key.split('+')[0]; lines = [[heroUnitOf(firstId, two), a], [heroUnitOf(key.split('+')[1], two), b]]; }
+  else lines = [[two[0], pickOf(CAMP_LINES[two[0].id] || ['Nice night.'])], [two[1], pickOf(CAMP_LINES[two[1].id] || ['Indeed.'])]];
+  lines.forEach(([u, text], i) => banterTimers.push(setTimeout(() => campBubble(u, text), 900 + i * 3400)));
+}
+const heroUnitOf = (id, two) => two.find(u => u.id === id) || two[0];
+let campBub = null;
+function campBubble(u, text) {               // one bubble at a time over a camper's portrait (never two, so they cannot overlap)
+  if (!$('camp').classList.contains('show')) return;
+  const anchor = document.querySelector(`#campfire .camper[data-hid="${u.id}"]`); if (!anchor) return;
+  if (campBub) campBub.remove();
+  const el = campBub = document.createElement('div'); el.className = 'sbubble'; el.textContent = text; el.style.setProperty('--dur', '2600ms'); el.style.visibility = 'hidden'; document.body.appendChild(el);
+  const r = anchor.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
+  el.style.left = Math.max(4, Math.min(innerWidth - w - 4, r.left + r.width / 2 - w / 2)) + 'px'; el.style.top = Math.max(4, r.top - h - 6) + 'px'; el.style.visibility = '';
+  setTimeout(() => { if (campBub === el) { el.remove(); campBub = null; } }, 3000);
+}
+
+/* ============ ATMOSPHERE: summary, weather, music ============ */
+let lastSummary = null;
+function validStats(x) { const o = { dmg: {}, crit: {}, kill: {}, taken: {} }; if (!x || typeof x !== 'object') return o; for (const k of Object.keys(o)) if (x[k] && typeof x[k] === 'object') for (const id of Object.keys(x[k])) if (heroById(id)) o[k][id] = Math.max(0, Math.floor(Number(x[k][id]) || 0)); return o; }
+function qStat(u, t, dmg, crit) {              // attack damage only (ailments are not counted)
+  if (!quest || quest.dev) return; const S = quest.stats || (quest.stats = validStats(null)), add = (k, id, n) => { S[k][id] = (S[k][id] || 0) + n; };
+  if (u.team === 'p' && t.team === 'e') { add('dmg', u.id, Math.max(0, dmg)); if (crit && dmg > 0) add('crit', u.id, 1); if (t.hp <= 0 && dmg > 0) add('kill', u.id, 1); }
+  else if (t.team === 'p') add('taken', t.id, Math.max(0, dmg));
+}
+function endSummary(won) {
+  try {
+    const S = validStats(quest.stats); lastSummary = { won, name: quest.def.name, gold: quest.gold, fights: quest.node + 1, total: quest.def.nodes.length, S, party: quest.party.map(u => ({ id: u.id, name: u.name, down: u.downs || 0 })) };
+    const b = $('btn-summary'); b.style.display = ''; setTimeout(() => { if (lastSummary && $('battle-scene').classList.contains('show') && !$('summary').classList.contains('show')) openSummary(); }, 2200);
+  } catch (e) {}
+}
+function openSummary() {
+  const L = lastSummary; if (!L) return; const S = L.S, ids = L.party.map(p => p.id), tot = ids.reduce((a, i) => a + (S.dmg[i] || 0), 0), top = ids.reduce((m, i) => (S.dmg[i] || 0) > (S.dmg[m] || 0) ? i : m, ids[0]), mx = Math.max(1, ...ids.map(i => S.dmg[i] || 0));
+  $('sum-title').textContent = `${L.won ? '🏆 Quest complete' : '💀 Quest failed'}: ${L.name}`;
+  $('sum-body').innerHTML = `<div class="sumtop"><div><b>${L.fights}/${L.total}</b>fights</div><div><b>${L.gold}</b>gold carried</div><div><b>${tot}</b>damage dealt</div><div><b>${ids.reduce((a, i) => a + (S.crit[i] || 0), 0)}</b>crits</div></div>`
+    + (tot > 0 ? `<div class="mvp">⭐ MVP: ${L.party.find(p => p.id === top).name}</div>` : '')
+    + L.party.map(p => `<div class="sumrow"><span>${p.name}${p.id === top && tot > 0 ? ' ⭐' : ''}</span><div class="bar"><i style="width:${Math.round((S.dmg[p.id] || 0) / mx * 100)}%"></i></div><span>${S.dmg[p.id] || 0} dmg · ${S.crit[p.id] || 0} crit · ${S.kill[p.id] || 0} KO · ${S.taken[p.id] || 0} taken</span></div>`).join('');
+  $('summary').classList.add('show');
+}
+function closeSummary() { $('summary').classList.remove('show'); }
+
+// Weather: a soft overlay. Rain over the Lighthouse fights, drifting mist at the Cove, the Shoals and the beach, and flickering lantern glow over the town.
+function weatherFor(name) {
+  name = name || (document.querySelector('.scene.show') || {}).id;
+  if (name === 'hub') return 'lantern';
+  if (name === 'beach' || name === 'beach-pick') return 'mist';
+  if (name === 'battle-scene') { const q = quest && quest.def && quest.def.id; return q === 'lighthouse' ? 'rain' : (q === 'cove' || q === 'beach') ? 'mist' : ''; }
+  return '';
+}
+function weatherSet(name) { const w = document.getElementById('weather'); if (w) w.className = FX.calm ? '' : weatherFor(name); }
+
+// Music: a quiet generated pad per area (no audio files). Follows the Sound switch and the Music volume option.
+const MUSIC = {
+  town:   { notes: [262, 330, 392, 440, 523], wave: 'triangle', lp: 900,  every: 2600 },
+  beach:  { notes: [220, 262, 330, 392],       wave: 'sine',     lp: 700,  every: 3400, waves: true },
+  camp:   { notes: [196, 247, 294, 392],       wave: 'sine',     lp: 600,  every: 3000, crackle: true },
+  battle: { notes: [110, 131, 147, 165, 196],  wave: 'sawtooth', lp: 420,  every: 2200 }
+};
+let musicArea = '', musicTimer = null, mGain = null;
+const areaFor = n => ({ hub: 'town', shop: 'town', gear: 'town', 'train-select': 'town', 'train-method': 'town', spa: 'beach', 'spa-select': 'town', 'party-select': 'town', 'quest-select': 'town', beach: 'beach', 'beach-pick': 'beach', vb: 'beach', camp: 'camp', event: 'camp', 'battle-scene': 'battle' })[n] || '';
+function musicVol() { if (mGain && actx) mGain.gain.setTargetAtTime(sndMuted ? 0 : FX.vol * 0.35, actx.currentTime, 0.3); if (!sndMuted && FX.vol > 0 && !musicTimer && musicArea) musicSet(musicArea, true); }
+function musicSet(area, force) {
+  if (area === musicArea && !force) return; musicArea = area;
+  clearInterval(musicTimer); musicTimer = null;
+  if (!area || !MUSIC[area] || sndMuted || FX.vol <= 0 || !ac()) return;
+  if (!mGain) { mGain = actx.createGain(); mGain.gain.value = 0; mGain.connect(amaster); }
+  mGain.gain.setTargetAtTime(FX.vol * 0.35, actx.currentTime, 0.4);
+  const M = MUSIC[area], note = () => {
+    if (sndMuted || FX.vol <= 0 || musicArea !== area || document.hidden) return;
+    const t = actx.currentTime, f = M.notes[Math.floor(Math.random() * M.notes.length)] * (Math.random() < .25 ? .5 : 1), dur = 5 + Math.random() * 3;
+    [0, 1.003].forEach(d => { const o = actx.createOscillator(), g = actx.createGain(), lp = actx.createBiquadFilter(); o.type = M.wave; o.frequency.value = f * (d || 1); lp.type = 'lowpass'; lp.frequency.value = M.lp;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 1.6); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(lp); lp.connect(g); g.connect(mGain); o.start(t); o.stop(t + dur + .1); });
+    if (M.waves) { const s = actx.createBufferSource(), g = actx.createGain(), lp = actx.createBiquadFilter(); s.buffer = anoise; lp.type = 'lowpass'; lp.frequency.value = 500; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 2); g.gain.exponentialRampToValueAtTime(0.0001, t + 5); s.connect(lp); lp.connect(g); g.connect(mGain); s.start(t); s.stop(t + 5.2); }
+    if (M.crackle) for (let i = 0; i < 5; i++) { const s = actx.createBufferSource(), g = actx.createGain(), hp = actx.createBiquadFilter(), at = t + Math.random() * 3; s.buffer = anoise; hp.type = 'highpass'; hp.frequency.value = 3000; g.gain.setValueAtTime(0.03, at); g.gain.exponentialRampToValueAtTime(0.0001, at + .04); s.connect(hp); hp.connect(g); g.connect(mGain); s.start(at); s.stop(at + .06); }
+  };
+  note(); musicTimer = setInterval(note, M.every);
+}
+document.addEventListener('pointerdown', () => { if (!sndMuted && !musicTimer && musicArea) musicSet(musicArea, true); }, { passive: true });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !sndMuted && !musicTimer && musicArea) musicSet(musicArea, true); });
+applyFxLook();
+
+/* ============ THE BEACH (unlocked by clearing any Tidelands quest) ============ */
+// A second town screen with a grey, gloomy shore. A few heroes stand about in their skins (some with the sea over their feet). For now it has one activity: Beach Volleyball, a
+// tiny rhythm game. Win it and the two heroes you played with may each TRADE one Tier II perk for any Tier I perk. Costs VB.cost gold per game, win or lose.
+// Art: drop assets/ui/beach.(png|jpg|webp) to replace the drawn shore, assets/ui/volleyball.(...) for the court.
+const VB = { cost: 150, winPts: 5, lives: 3, perfect: 110, good: 270 };
+const beachOpen = () => QUEST_GROUPS[1].ids.some(questCleared);          // any Tidelands quest opens the beach (the player will have Tier II perks by then)
+let beachArt = null, vbArt = null, beachHeroes = [];
+function beachSVG(court) {
+  let seed = 7; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647, f = n => Math.round(n * 10) / 10, o = [], add = s => o.push(s);
+  add(`<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>
+    <linearGradient id="bSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#11161f"/><stop offset=".6" stop-color="#37424f"/><stop offset="1" stop-color="#7b8892"/></linearGradient>
+    <linearGradient id="bSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e424d"/><stop offset="1" stop-color="#15252d"/></linearGradient>
+    <linearGradient id="bSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f6858"/><stop offset="1" stop-color="#37332b"/></linearGradient>
+    <radialGradient id="bSun"><stop offset="0" stop-color="#dfe5e6" stop-opacity=".5"/><stop offset="1" stop-color="#dfe5e6" stop-opacity="0"/></radialGradient>
+    <linearGradient id="bMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#aab6bd" stop-opacity="0"/><stop offset=".5" stop-color="#aab6bd" stop-opacity=".28"/><stop offset="1" stop-color="#aab6bd" stop-opacity="0"/></linearGradient>
+    <filter id="bBlur"><feGaussianBlur stdDeviation="16"/></filter></defs>`);
+  add(`<rect width="1600" height="420" fill="url(#bSky)"/><circle cx="1130" cy="250" r="190" fill="url(#bSun)"/>`);
+  for (let i = 0; i < 9; i++) add(`<ellipse cx="${f(R() * 1700 - 50)}" cy="${f(40 + R() * 280)}" rx="${f(160 + R() * 240)}" ry="${f(26 + R() * 40)}" fill="#1b222c" opacity="${f(.35 + R() * .3)}" filter="url(#bBlur)"/>`);
+  add(`<rect y="395" width="1600" height="330" fill="url(#bSea)"/>`);
+  for (let i = 0; i < 26; i++) { const y = 410 + R() * 280, x = R() * 1600, w = 50 + R() * 140; add(`<path d="M${f(x)},${f(y)} q${f(w / 4)},-5 ${f(w / 2)},0 t${f(w / 2)},0" fill="none" stroke="#9fb6c0" stroke-width="2" opacity="${f(.1 + R() * .2)}"/>`); }
+  add(`<rect y="388" width="1600" height="40" fill="url(#bMist)"/>`);
+  add(`<path d="M1320,402 L1336,402 L1344,300 L1312,300Z" fill="#232c35"/><rect x="1306" y="288" width="44" height="14" fill="#2c3641"/><path d="M1300,288 L1328,262 L1356,288Z" fill="#232c35"/><path d="M1290,404 Q1330,380 1372,404Z" fill="#1d252d"/>`);
+  for (let i = 0; i < 5; i++) { const x = 300 + R() * 700, y = 150 + R() * 120; add(`<path d="M${f(x)},${f(y)} q8,-8 16,0 q8,-8 16,0" fill="none" stroke="#0f141a" stroke-width="2.4" opacity=".7"/>`); }
+  add(`<g transform="translate(0,${court ? -130 : 0})">`);
+  add(`<path d="M0,650 C260,715 640,640 1040,700 S1500,676 1600,716 L1600,1100 L0,1100Z" fill="url(#bSand)"/>`);
+  add(`<path d="M0,650 C260,715 640,640 1040,700 S1500,676 1600,716 L1600,740 C1500,700 1300,722 1040,724 S260,742 0,676Z" fill="#4a463c" opacity=".7"/>`);
+  add(`<path d="M0,650 C260,715 640,640 1040,700 S1500,676 1600,716" fill="none" stroke="#d3dde1" stroke-width="5" opacity=".34"/><path d="M0,668 C260,731 640,658 1040,716 S1500,694 1600,734" fill="none" stroke="#d3dde1" stroke-width="3" opacity=".2"/>`);
+  for (let i = 0; i < 55; i++) add(`<ellipse cx="${f(R() * 1600)}" cy="${f(760 + R() * 130)}" rx="${f(4 + R() * 9)}" ry="${f(1.5 + R() * 2)}" fill="#26231d" opacity="${f(.15 + R() * .25)}"/>`);
+  add(`<path d="M120,790 q60,-30 150,-12 q-60,22 -150,12Z" fill="#2c261e"/><path d="M180,776 q10,-22 26,-30 l6,4 q-12,10 -18,28Z" fill="#2c261e"/><path d="M1180,822 q50,-26 120,-8 q-50,18 -120,8Z" fill="#2a251d"/>`);
+  add(`<path d="M20,742 q22,-44 70,-34 q40,6 50,36Z" fill="#1b2026"/><path d="M1480,640 q30,-32 80,-22 q30,8 40,28Z" fill="#171c21"/>`);
+  add('</g>');
+  add(`<rect y="880" width="1600" height="20" fill="#000" opacity=".25"/></svg>`);
+  return o.join('').replace(/\bb(Sky|Sea|Sand|Sun|Mist|Blur)\b/g, (court ? 'c' : 'b') + '$1');      // each picture gets its own gradient ids (two copies would clash)
+}
+async function loadBeachBg(mapId, artId, key, svgFn) {
+  const el = $(artId); if (!el.firstChild) el.innerHTML = svgFn();
+  const a = await findAsset(`${ANIM.base}/ui/${key}`);
+  if (a && ['png', 'jpg', 'webp'].includes(a.ext)) { const m = $(mapId); m.style.backgroundImage = `url("${a.url}")`; m.style.backgroundSize = 'cover'; m.classList.add('has-art'); }
+}
+async function beachIdle(id) {         // the hero's idle in her skin (the one she wears, else the first one that exists), else the normal idle
+  const sk = (game.skins && game.skins[id]) || skinsFor(id)[0];
+  return (sk && await findAsset(`${ANIM.base}/${id}/armoured - ${sk}/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`);
+}
+function bFig(id, flip) {
+  const el = document.createElement('div'); el.className = 'figure bfig' + (flip ? ' flip' : '');
+  el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's');
+  el.innerHTML = `<div class="ph">${heroById(id).tag}</div>`;
+  beachIdle(id).then(a => {
+    if (!a) return;
+    const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
+    m.className = 'spr'; m.src = a.url; m.draggable = false;
+    if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; }
+    markLive(m, a); el.prepend(m); el.classList.add('has-art');
+  });
+  return el;
+}
+function openBeach() { if (!beachOpen()) return; showScene('beach'); }
+function renderBeach() {
+  $('beach-gold').textContent = `Gold: ${game.gold}`;
+  loadBeachBg('beach-map', 'beach-art', 'beach', beachSVG);
+  const box = $('beach-figs'); box.innerHTML = '';
+  const pool = game.roster.filter(id => heroById(id)).sort(() => Math.random() - .5).slice(0, 4);
+  // positions: x% of the picture, feet at y% ; water = sea over the lower part of the sprite
+  const spots = [{ x: 14, y: 90, w: 0 }, { x: 31, y: 86, w: 0 }, { x: 70, y: 78, w: 1 }, { x: 87, y: 74, w: 1 }];
+  pool.forEach((id, i) => {
+    const sp = spots[i], d = document.createElement('div'); d.className = 'bspot' + (sp.w ? ' in-water' : '');
+    d.style.left = sp.x + '%'; d.style.bottom = (100 - sp.y) + '%'; d.style.zIndex = Math.round(sp.y);
+    d.appendChild(bFig(id, i % 2 === 1)); if (sp.w) { const w = document.createElement('div'); w.className = 'wave'; w.style.animationDelay = (-i * .7) + 's'; d.appendChild(w); }
+    box.appendChild(d);
+  });
+}
+
+/* ---- picking two heroes ---- */
+let vbPick = [];
+function openBeachPick() { vbPick = []; showScene('beach-pick'); }
+const t2List = id => [...new Set((game.traits[id] || []).filter(isT2))];
+function renderBeachPick() {
+  const can = game.gold >= VB.cost, sel = vbPick.length === 2, ok = sel && vbPick.some(id => t2List(id).length);
+  $('bp-intro').innerHTML = `Pick 2 heroes to play on a team. Each game costs <b>${VB.cost}g</b> (win or lose). Win and each of them may swap one <b>Tier II</b> perk for any <b>Tier I</b> perk. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('bp-list').innerHTML = game.roster.map(id => {
+    const h = heroById(id); if (!h) return '';
+    const t2 = t2List(id);
+    return `<div class="pick${vbPick.includes(id) ? ' on' : ''}${t2.length ? '' : ' nope'}" onclick="vbTogglePick('${id}')"><div class="mini-sprite port-box" data-port="${h.id}">${h.tag}</div>
+      <div><strong>${h.name}</strong><div class="sk">${t2.length ? 'Tier II: ' + traitChips(t2) : '<span class="dim">No Tier II perks yet (clear Tidelands quests)</span>'}</div></div></div>`;
+  }).join('');
+  const rw = game.vb && game.vb.reward, c = $('bp-claim');
+  c.style.display = rw ? 'flex' : 'none';
+  c.innerHTML = rw ? `<div>🏆 You have an unclaimed swap from your last win.</div><button class="primary" onclick="vbClaim()">Claim swap</button>` : '';
+  const b = $('bp-play'); b.textContent = `Play · ${VB.cost}g`;
+  b.disabled = !(ok && can);
+  b.title = !sel ? 'Pick 2 heroes' : !ok ? 'At least one of them needs a Tier II perk to trade' : !can ? 'Not enough gold' : '';
+}
+function vbTogglePick(id) {
+  const i = vbPick.indexOf(id); if (i >= 0) vbPick.splice(i, 1); else { if (vbPick.length >= 2) vbPick.shift(); vbPick.push(id); }
+  renderBeachPick();
+}
+
+/* ---- the game ---- */
+const vbHX = { A: 24, B: 40, O1: 76, O2: 60 }, vbHY = 54;            // where each player's hands are (% of the court)
+let vb = null;
+function vbPosBall(x, y) { const b = $('vb-ball'); b.style.left = x + '%'; b.style.top = y + '%'; if (vb) vb.bp = [x, y]; }
+function vbFly(from, to, dur, apex, ringEl) {
+  return new Promise(res => {
+    const t0 = performance.now(), G = vb;
+    const step = () => {
+      if (!vb || vb !== G || G.dead) return res();
+      const t = Math.min(1, (performance.now() - t0) / dur);
+      vbPosBall(from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t - 4 * apex * t * (1 - t));
+      if (ringEl) ringEl.style.transform = `translate(-50%,-50%) scale(${(1 + 1.5 * (1 - t)).toFixed(3)})`;
+      if (ringEl && G.stopFly) return res();
+      if (t < 1) requestAnimationFrame(step); else res();
+    };
+    step();
+  });
+}
+function vbJudge(text, cls) { const j = $('vb-judge'); j.textContent = text; j.className = ''; void j.offsetWidth; j.className = 'pop ' + (cls || ''); }
+function vbHop(spot) { const f = spot.firstChild; f.classList.remove('hop'); void f.offsetWidth; f.classList.add('hop'); sfx('hit'); }
+function vbHud() {
+  $('vb-hud').innerHTML = `<span>You ${vb.me}</span><span class="lives">${'♥'.repeat(Math.max(0, VB.lives - vb.foe))}${'♡'.repeat(Math.min(VB.lives, vb.foe))}</span><span>Rivals ${vb.foe}</span><span>to ${VB.winPts}</span>`;
+}
+// One touch of the ball: it flies to the hitter's hands and a ring closes on it. Tap while the ring is closing: close to the moment = Perfect.
+async function vbTouch(from, to, dur, apex) {
+  const ring = $('vb-ring'), G = vb; ring.style.left = to[0] + '%'; ring.style.top = to[1] + '%'; ring.style.display = 'block'; G.stopFly = false;
+  const arrive = performance.now() + dur, flight = vbFly(from, to, dur, apex, ring);
+  const q = await new Promise(resolve => {
+    G.wait = { arrive, resolve };
+    setTimeout(() => { if (G.wait && G.wait.resolve === resolve) { G.wait = null; resolve('miss'); } }, dur + VB.good);
+  });
+  G.stopFly = true; ring.style.display = 'none'; await flight;
+  return q;
+}
+function vbTap() {
+  if (!vb || !vb.wait) return;
+  const dt = performance.now() - vb.wait.arrive; if (dt < -VB.good) return;           // far too early: ignored, no penalty
+  const w = vb.wait; vb.wait = null; w.resolve(Math.abs(dt) <= VB.perfect ? 'perfect' : 'good');
+}
+async function vbDrop() { const [x] = vb.bp; await vbFly(vb.bp, [x, 80], 450, 0); sfx('poof'); }
+async function vbSend(q) {            // your spike goes over the net; the rivals may fail to return it
+  const [, , O1, O2] = vb.sp, ret = Math.random() < (q === 'perfect' ? .3 : .5);
+  if (!ret) { await vbFly(vb.bp, [vbHX.O1 - 8, 80], 700, 8); sfx('poof'); return false; }
+  await vbFly(vb.bp, [vbHX.O1, vbHY], 700, 10); if (vb.dead) return false; vbHop(O1);
+  await vbFly(vb.bp, [vbHX.O2, vbHY], 520, 16); if (vb.dead) return false; vbHop(O2);
+  return true;
+}
+async function vbMine() {             // receive, set, spike
+  const [A, B] = vb.sp, T = k => Math.round(k * vb.speed);
+  const plan = [['A', 'RECEIVE', 1450, 24], ['B', 'SET', 1000, 16], ['A', 'SPIKE', 900, 12]];
+  for (const [who, name, dur, apex] of plan) {
+    $('vb-msg').textContent = name === 'RECEIVE' ? 'Receive! Tap as the ring closes.' : name === 'SET' ? 'Set it up!' : 'Spike it!';
+    const hx = name === 'SPIKE' ? 36 : vbHX[who];
+    const q = await vbTouch(vb.bp, [hx, vbHY], T(dur), apex);
+    if (vb.dead) return null;
+    if (q === 'miss') { vbJudge('Miss!', 'miss'); await vbDrop(); return null; }
+    vbJudge(q === 'perfect' ? 'PERFECT!' : 'Good', q); vbHop(who === 'A' ? A : B);
+    if (name === 'SET') A.style.left = '36%';
+    if (name === 'SPIKE') { A.style.left = vbHX.A + '%'; return q; }
+  }
+}
+async function vbPoint(server) {
+  const [A, , O1] = vb.sp; vb.sp[0].style.left = vbHX.A + '%';
+  if (server === 'me') {
+    $('vb-msg').textContent = 'Your serve! Tap as the ring closes.';
+    vbPosBall(vbHX.A, 22);
+    const q = await vbTouch([vbHX.A, 22], [vbHX.A, vbHY], Math.round(1150 * vb.speed), 0);
+    if (vb.dead) return 'dead';
+    if (q === 'miss') { vbJudge('Miss!', 'miss'); await vbDrop(); return 'foe'; }
+    vbJudge(q === 'perfect' ? 'PERFECT!' : 'Good', q); vbHop(A);
+    if (!(await vbSend(q))) return vb.dead ? 'dead' : 'me';
+  } else {
+    $('vb-msg').textContent = 'The rivals serve...'; vbPosBall(vbHX.O1 + 3, vbHY); await sleep(700); if (vb.dead) return 'dead'; vbHop(O1);
+  }
+  for (;;) {
+    const q = await vbMine(); if (vb.dead) return 'dead';
+    if (q === null) return 'foe';
+    if (!(await vbSend(q))) return vb.dead ? 'dead' : 'me';
+  }
+}
+async function vbPlay() {
+  const G = vb;
+  try {
+    let server = 'me';
+    $('vb-ball').style.display = 'block'; vbHud();
+    while (!G.dead && G.me < VB.winPts && G.foe < VB.lives) {
+      await sleep(600); if (G.dead) return;
+      const r = await vbPoint(server); if (G.dead || r === 'dead') return;
+      if (r === 'me') { G.me++; vbJudge('Point!', 'perfect'); } else { G.foe++; vbJudge('Point lost', 'miss'); }
+      G.speed = Math.max(.72, 1 - G.me * .045); vbHud(); server = r; await sleep(800);
+    }
+    if (G.dead) return;
+    vbFinish(G.me >= VB.winPts);
+  } catch (e) { if (!G.dead) throw e; }
+}
+function vbFinish(won) {
+  const G = vb; G.dead = true; $('vb-ball').style.display = 'none'; $('vb-ring').style.display = 'none';
+  $('vb-hit').style.display = 'none'; $('vb-quit').style.display = 'none';
+  if (won) {
+    game.vb = { reward: { heroes: G.team.slice(), done: {} } }; writeSave();
+    $('vb-court').classList.add('won'); $('vb-msg').textContent = ''; vbSwapUi();
+  } else {
+    $('vb-msg').textContent = '';
+    const p = $('vb-panel'); p.style.display = 'flex';
+    p.innerHTML = `<div>🌊 The rivals take it. The ${VB.cost} gold is gone.</div><button class="primary" onclick="openBeachPick()">Back to heroes</button><button onclick="showScene('beach')">Leave the court</button>`;
+  }
+  vb = null;
+}
+function vbBuild(team, foes) {
+  const box = $('vb-spots'); box.innerHTML = '';
+  const cfg = [[team[0], vbHX.A, 0], [team[1], vbHX.B, 0], [foes[0], vbHX.O1, 1], [foes[1], vbHX.O2, 1]], sp = [];
+  cfg.forEach(([id, x, fl]) => { const d = document.createElement('div'); d.className = 'bspot vbp'; d.style.left = x + '%'; d.style.bottom = '19%'; d.style.width = '11%'; d.style.height = '30%'; d.appendChild(bFig(id, !!fl)); box.appendChild(d); sp.push(d); });
+  return sp;
+}
+function startVb() {
+  if (vbPick.length !== 2 || game.gold < VB.cost || !vbPick.some(id => t2List(id).length)) return;
+  game.gold -= VB.cost; writeSave();                                   // paid up front, win or lose
+  const team = vbPick.slice(), others = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2);
+  showScene('vb'); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true));
+  $('vb-court').classList.remove('won'); $('vb-panel').style.display = 'none'; $('vb-hit').style.display = ''; $('vb-quit').style.display = '';
+  vb = { team, me: 0, foe: 0, speed: 1, dead: false, wait: null, bp: [vbHX.A, 22] };
+  vb.sp = vbBuild(team, others); vbPosBall(vbHX.A, 22);
+  $('vb-msg').textContent = 'Get ready...'; vbHud();
+  vbPlay();
+}
+function vbQuit() { if (vb) { vb.dead = true; if (vb.wait) vb.wait.resolve('miss'); vb = null; } showScene('beach-pick'); }
+// the hit button: pointerdown for a snappy tap, click for keyboard / controller (the two are de-duplicated)
+let vbLastPtr = 0;
+$('vb-hit').addEventListener('pointerdown', e => { vbLastPtr = performance.now(); vbTap(); });
+$('vb-hit').addEventListener('click', () => { if (performance.now() - vbLastPtr > 400) vbTap(); });
+document.addEventListener('keydown', e => { if ((e.code === 'Space' || e.code === 'Enter') && $('vb').classList.contains('show') && vb && vb.wait) { e.preventDefault(); vbTap(); } });
+
+/* ---- the reward: swap a Tier II perk for a Tier I perk (each of the 2 heroes, once) ---- */
+let vbSel = {};
+const t1Choices = hid => Object.values(TRAIT).filter(t => t.kind === 'good' && !t.base && (!t.el || heroElems(hid).includes(t.el)));
+function vbClaim() { showScene('vb'); $('vb-court').classList.add('won'); $('vb-hit').style.display = 'none'; $('vb-quit').style.display = 'none'; $('vb-msg').textContent = ''; vbSwapUi(); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true)); const rw = game.vb && game.vb.reward; if (rw) { vbSwapBackdrop(rw.heroes); } }
+function vbSwapBackdrop(team) { const foes = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2); vbBuild(team, foes); }
+function vbSwapUi() {
+  const rw = game.vb && game.vb.reward, p = $('vb-panel'); if (!rw) { showScene('beach'); return; }
+  p.style.display = 'flex';
+  p.innerHTML = `<div><b>🏆 You win!</b> Trade one Tier II perk for any Tier I perk, for each hero (optional).</div>` + rw.heroes.map(id => {
+    const h = heroById(id), S = vbSel[id] = vbSel[id] || {}, done = rw.done[id];
+    if (done) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk">✔ Swapped ${done}</div></div>`;
+    const t2 = t2List(id);
+    if (!t2.length) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk dim">No Tier II perks to trade.</div></div>`;
+    const out = t2.map(t => `<button class="${S.out === t ? 'on' : ''}" title="${TRAIT[t].desc}" onclick="vbChoose('${id}','out','${t}')">${TRAIT[t].icon} ${TRAIT[t].name}</button>`).join('');
+    const inn = t1Choices(id).map(t => `<button class="${S.inn === t.id ? 'on' : ''}" title="${t.desc}" onclick="vbChoose('${id}','inn','${t.id}')">${t.icon} ${t.name}</button>`).join('');
+    return `<div class="swaprow"><strong>${h.name}</strong>
+      <h5>Give up (Tier II)</h5><div class="trg">${out}</div>
+      <h5>Take (Tier I)${S.inn ? ' — ' + TRAIT[S.inn].desc : ''}</h5><div class="trg">${inn}</div>
+      <button class="primary" ${S.out && S.inn ? '' : 'disabled'} onclick="vbSwap('${id}')">Swap${S.out && S.inn ? `: ${TRAIT[S.out].name} → ${TRAIT[S.inn].name}` : ''}</button></div>`;
+  }).join('') + `<button onclick="vbDone()">Done</button>`;
+}
+function vbChoose(id, k, t) { vbSel[id] = vbSel[id] || {}; vbSel[id][k] = t; vbSwapUi(); }
+function vbSwap(id) {
+  const rw = game.vb && game.vb.reward, S = vbSel[id]; if (!rw || !S || !S.out || !S.inn || rw.done[id]) return;
+  const list = game.traits[id] || [], i = list.indexOf(S.out); if (i < 0 || !TRAIT[S.inn] || TRAIT[S.inn].kind !== 'good' || TRAIT[S.inn].base) return;
+  list.splice(i, 1, S.inn); rw.done[id] = `${TRAIT[S.out].name} → ${TRAIT[S.inn].name}`; delete vbSel[id]; writeSave(); sfx('heal'); vbSwapUi();
+}
+function vbDone() { if (game.vb) game.vb.reward = null; game.vb = null; vbSel = {}; writeSave(); $('vb-court').classList.remove('won'); showScene('beach'); }
+
 // ======================= CONTROLLER SUPPORT (Gamepad API) =======================
 // Works with any standard-mapping pad (Xbox / PlayStation / Switch Pro / 8BitDo...), wired or Bluetooth, on PC and phones.
 // Keyboard/mouse/touch keep working; the pad takes over only when it is used and hands back the moment you touch the mouse/screen.
@@ -4647,21 +5468,21 @@ const GP = (() => {
   document.head.appendChild(st);
   const hint = document.createElement('div'); hint.id = 'gp-hint'; document.body.appendChild(hint);
   const HINTS_S = '<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>Start</b>Next';
-  const HINTS = '<b>◀▶▲▼</b>Move<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>LB/RB</b>Tabs<b>Start</b>Continue<b>Sel</b>Guide';
+  const HINTS = '<b>◀▶▲▼</b>Move<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>LB/RB</b>Tabs<b>Start</b>Continue<b>Sel</b>Menu';
 
   const S = { active: false, focus: null, cx: 0, cy: 0, prev: {}, held: {}, synth: false };
-  const vis = el => { if (!el.isConnected) return false; const r = el.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || cs.pointerEvents === 'none') return false; return r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth; };
+  const vis = el => { if (!el.isConnected) return false; const r = el.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || cs.pointerEvents === 'none') return false; return true; };
   const shown = id => { const e = document.getElementById(id); return e && e.classList.contains('show') ? e : null; };
 
   // which layer is on top right now
   function layer() {
-    for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) return { root: e, skip: true }; }
-    for (const id of ['guide', 'relic-modal', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
+    for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
+    for (const id of ['guide', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
     const t = document.getElementById('title'); if (t && !t.classList.contains('hide')) return { root: t };
     const sc = document.querySelector('.scene.show'); return { root: sc || document.body, scene: sc && sc.id };
   }
   const SEL = 'button,[onclick],.pick,.fslot,select,input[type=range],input[type=checkbox]';
-  const NOFOCUS = '#snd-btn,#guide-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has)';
+  const NOFOCUS = '#menu-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has)';
   function candidates(L) {
     let list = [...L.root.querySelectorAll(SEL)].filter(e => e !== L.root && !e.disabled && !e.closest(NOFOCUS) && vis(e));
     if (L.scene === 'battle-scene') { const t = list.filter(e => e.classList.contains('targetable')); list = t.length ? t : list.filter(e => !e.classList.contains('combatant-card')); }
@@ -4683,6 +5504,7 @@ const GP = (() => {
   function ensureFocus(L) {
     if (L.skip) return null;
     const list = candidates(L);
+    if (L.scene === 'battle-scene' && S.bag !== (waiting && invOpen)) { S.bag = !!(waiting && invOpen); const ib = S.bag && list.find(e => e.closest('#inv')); if (ib) { setFocus(ib); S.lastLayer = 'battle-scene'; return list; } }
     if (S.focus && list.includes(S.focus)) { [S.cx, S.cy] = ctr(S.focus); return list; }
     let nf = null;
     if (S.focus && S.focus.id) nf = list.find(e => e.id === S.focus.id);            // re-rendered: same button again
@@ -4721,6 +5543,7 @@ const GP = (() => {
     if (L.skip) return L.root.click();
     if (L.modal === 'guide') return closeGuide();
     if (L.modal === 'relic-modal') return closeRelics();
+    if (L.modal === 'summary') return closeSummary();
     if (L.modal === 'inspect') return closeInspect();
     if (L.modal === 'notice') return $('notice-btn').click();
     if (L.scene === 'battle-scene') { if (waiting && sel !== null) return chooseSkill(sel); if (waiting && (selItem || invOpen)) return toggleInv(); return; }
@@ -4761,6 +5584,7 @@ const GP = (() => {
         if (edge('X') && L.scene === 'battle-scene' && !$('btn-items').disabled) $('btn-items').click();
         if (edge('Y') && S.focus) { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
         if (L.modal === 'guide') { if (edge('LB')) guideStep(-1); if (edge('RB')) guideStep(1); }
+        else if (L.scene === 'battle-scene' && edge('RB')) cycleSpeed();
         if (edge('START')) { const m = $('btn-end-main') && vis($('btn-end-main')) ? $('btn-end-main') : [...L.root.querySelectorAll('button.primary')].find(e => !e.disabled && vis(e)); if (m) m.click(); }
         if (edge('SEL')) { if (L.modal === 'guide') closeGuide(); else openGuide(); }
         const ry = ax(3); if (Math.abs(ry) > .3) scrollNear(S.focus || L.root.querySelector('*') || document.body, ry * 18);
