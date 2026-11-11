@@ -2229,7 +2229,7 @@ function punch(t, k) {
 
 /* ============ GUIDE ============ */
 let guideTab = 'options';
-const GUIDE_TABS = [['options', '⚙️ Options'], ['controls', '🎮 Controls'], ['basics', '📖 Basics'], ['elements', 'Elements'], ['armour', 'Armour'], ['status', 'Buffs & debuffs'], ['traits', 'Traits & relics']];
+const GUIDE_TABS = [['options', '⚙️ Options'], ['controls', '🎮 Controls'], ['basics', '📖 Basics'], ['elements', 'Elements'], ['armour', 'Armour'], ['status', 'Buffs & debuffs'], ['traits', 'Traits & relics'], ['credits', '🏷️ Credits']];
 function openGuide(tab) { if (tab) guideTab = tab; renderGuide(); $('guide').classList.add('show'); }
 function refreshOptions() { const gd = document.getElementById('guide'); if (guideTab === 'options' && gd && gd.classList.contains('show')) { const gb = document.getElementById('guide-body'), y = gb.scrollTop; renderGuide(); gb.scrollTop = y; } }
 function saveFx() { try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} }
@@ -2285,6 +2285,7 @@ function renderGuide() {
     ${g(`🔥 <b>New Game+</b>: once every quest is cleared, the whole game opens again on a harder difficulty (more enemy HP and damage, more elites, more gold and better boss drops). You keep every hero, relic, trait and skin. Pick the difficulty on the quest screen.`)}
     <h4>Defeat and recovery</h4>
     ${g(`Heroes who fall are not lost: they get back up with 1 HP before the next fight. Each run has only a few camps, placed at random after the first couple of fights, so ration your supplies. If your whole party falls the quest ends and you keep only half the gold you carried. At camp, eat <b>Field Rations</b> to heal the party and use <b>Repair Kits</b> on a hero's armour. Buy both in the town Shop.`)}`;
+  else if (guideTab === 'credits') h = `<h4>Credits</h4>${g(`<b>Sound effects:</b> Kenney Impact Sounds, Kenney RPG Audio and Kenney Interface Sounds, by Kenney Vleugels (<a href="https://kenney.nl" target="_blank" rel="noopener">kenney.nl</a>), licensed CC0.`, 'good')}${g(`Music and ambience are generated in the game for now.`, '')}`
   else if (guideTab === 'elements') h = `<h4>Elements</h4>`
     + Object.entries(ELEM).map(([el, e]) => g(`<b>${ICON[el]} ${ELEM_NAME[el]}</b> inflicts <b>${e.status.toUpperCase()}</b>: ` + (e.dot ? `${e.dot} damage at the start of the victim's turn, for ${e.dur} turns.` : `the victim <b>skips its next turn</b>.`))).join('')
     + `<h4>How statuses land</h4>${g(`Status effects only stick to a fighter whose armour is <b>already broken</b>. Elemental skills also deal <b>break damage</b> (shown as "break N") to armour. Plain physical skills do no break damage and apply no status. A fighter can carry several different statuses at once; hitting it with the same element again renews that one instead of stacking.`)}
@@ -2321,8 +2322,7 @@ function renderGuide() {
 }
 
 /* ============ SOUND ============ */
-// Basic synthesized sound effects (Web Audio, no files). Muted by default on touch devices (phones), on by default on PC; the switch remembers its setting per device.
-// Hooks: sfx('hit', element, crit, weak, soft) · 'charge' · 'whoosh' · 'swing' · 'shatter' · 'defeat' · 'heal' · 'ward' · 'poof' · 'repair' · 'click'.
+// Sound effects (see the block below) and generated music. Muted by default on touch devices (phones), on by default on PC; the switch remembers its setting per device.
 let sndMuted = (() => { try { const v = localStorage.getItem('animeRpgSound'); if (v !== null) return v === '0'; } catch (e) {} return !!(window.matchMedia && matchMedia('(pointer: coarse)').matches); })();
 let actx = null, amaster = null, anoise = null;
 function ac() {
@@ -2331,71 +2331,53 @@ function ac() {
     actx = new C(); amaster = actx.createGain(); amaster.gain.value = 1.0;
     const comp = actx.createDynamicsCompressor(); amaster.connect(comp); comp.connect(actx.destination);
     anoise = actx.createBuffer(1, actx.sampleRate, actx.sampleRate); const d = anoise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    sndDecode();
   }
   if (actx.state === 'suspended') actx.resume().catch(() => {});
   return actx;
 }
-const AU = {
-  env(t, dur, vol, atk = 0.004) { const g = actx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol), t + atk); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); g.connect(amaster); return g; },
-  tone(type, f0, f1, t, dur, vol, atk) { const o = actx.createOscillator(); o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur); o.connect(AU.env(t, dur, vol, atk)); o.start(t); o.stop(t + dur + 0.05); },
-  noise(t, dur, vol, type, f0, f1, q = 1, atk) { const s = actx.createBufferSource(); s.buffer = anoise; s.loop = true; const f = actx.createBiquadFilter(); f.type = type; f.Q.value = q;
-    f.frequency.setValueAtTime(f0, t); if (f1 !== f0) f.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur); s.connect(f); f.connect(AU.env(t, dur, vol * 3.2, atk)); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.05); },
-  thump(t, vol, low = 150) { AU.tone('sine', low, 42, t, 0.16, vol); },
-  crackle(t, n, span, vol) { for (let i = 0; i < n; i++) AU.noise(t + Math.random() * span, 0.018, vol, 'highpass', 2500 + Math.random() * 3000, 2500, 1); },
-  bubbles(t, n, span, vol) { for (let i = 0; i < n; i++) { const f = 260 + Math.random() * 260, at = t + (i / n) * span + Math.random() * 0.03; AU.tone('sine', f, f * 2.1, at, 0.09, vol); } },
-  zap(t, dur, vol) { const o = actx.createOscillator(); o.type = 'sawtooth'; let tt = t; o.frequency.setValueAtTime(900, t); for (let i = 0; i < 9; i++) { tt += dur / 9; o.frequency.setValueAtTime(250 + Math.random() * 2600, tt); }
-    const f = actx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1500; f.Q.value = 0.7; o.connect(f); f.connect(AU.env(t, dur, vol)); o.start(t); o.stop(t + dur + 0.05); AU.noise(t, dur * 0.7, vol * 0.7, 'highpass', 4000, 4000, 1); AU.crackle(t, 4, dur, vol * 0.5); }
-};
-const SFX = {
-  click() { const t = actx.currentTime; AU.tone('triangle', 900, 620, t, 0.05, 0.22); },
-  swing() { const t = actx.currentTime; AU.noise(t, 0.16, 0.2, 'bandpass', 500, 2600, 0.8, 0.02); },
-  whoosh(kind) { const t = actx.currentTime;
-    if (kind === 'shock') return AU.zap(t, 0.28, 0.16);
-    if (kind === 'fire') { AU.noise(t, 0.3, 0.2, 'lowpass', 500, 1800, 0.7, 0.04); return AU.crackle(t, 5, 0.3, 0.08); }
-    if (kind === 'ice') { AU.noise(t, 0.24, 0.12, 'highpass', 3000, 6000, 0.8, 0.03); return AU.tone('sine', 2400, 3400, t, 0.2, 0.05); }
-    if (kind === 'poison') { AU.noise(t, 0.26, 0.1, 'bandpass', 900, 600, 1, 0.04); return AU.bubbles(t, 3, 0.22, 0.07); }
-    AU.noise(t, 0.22, 0.17, 'bandpass', 600, 2200, 0.9, 0.03); },
-  charge(kind) { const t = actx.currentTime;
-    if (kind === 'fire') { AU.noise(t, 0.28, 0.14, 'lowpass', 200, 1300, 0.7, 0.1); return AU.tone('sawtooth', 110, 320, t, 0.26, 0.05, 0.1); }
-    if (kind === 'ice') { [1500, 2000, 2700].forEach((f, i) => AU.tone('sine', f, f * 1.25, t + i * 0.05, 0.22, 0.06, 0.03)); return AU.noise(t, 0.22, 0.05, 'highpass', 5000, 7000, 1, 0.05); }
-    if (kind === 'shock') { AU.tone('square', 90, 360, t, 0.26, 0.06, 0.1); return AU.crackle(t, 6, 0.26, 0.06); }
-    if (kind === 'poison') { AU.bubbles(t, 4, 0.24, 0.07); return AU.noise(t, 0.24, 0.05, 'bandpass', 700, 1100, 1, 0.08); }
-    AU.tone('triangle', 200, 700, t, 0.24, 0.06, 0.08); },
-  hit(kind, crit, weak, soft) { const t = actx.currentTime, k = soft ? 0.5 : 1;
-    if (!soft) AU.thump(t, 0.7 * (crit ? 1.15 : 1));
-    if (kind === 'fire') { AU.noise(t, 0.34, 0.22 * k, 'lowpass', 400, 1700, 0.7, 0.01); AU.crackle(t, soft ? 4 : 9, 0.4, 0.1 * k); }
-    else if (kind === 'ice') { AU.noise(t, 0.07, 0.25 * k, 'highpass', 3500, 3500, 1); [2100, 2800, 3500].forEach((f, i) => AU.tone('sine', f, f, t + i * 0.035, 0.3, 0.1 * k)); }
-    else if (kind === 'shock') AU.zap(t, soft ? 0.18 : 0.26, 0.2 * k);
-    else if (kind === 'poison') { AU.bubbles(t, soft ? 3 : 5, 0.3, 0.12 * k); AU.noise(t, 0.3, 0.07 * k, 'bandpass', 2400, 1800, 1, 0.02); }
-    else if (kind === 'bleed') { AU.noise(t, 0.1, 0.22 * k, 'bandpass', 1500, 700, 0.9); AU.noise(t + 0.02, 0.2, 0.12 * k, 'lowpass', 600, 300); AU.tone('sine', 700, 300, t + 0.14, 0.09, 0.07 * k); }
-    else AU.noise(t, 0.11, 0.26 * k, 'bandpass', 1600, 650, 0.9);
-    if (weak && !soft) AU.tone('triangle', 1760, 2350, t + 0.03, 0.14, 0.08);
-    if (crit && !soft) {                                   // extra punch: a deep boom, a snapping crack and a bright metallic ring
-      AU.tone('sine', 95, 30, t, 0.42, 0.7); AU.noise(t, 0.16, 0.38, 'highpass', 1800, 1800, 0.8);
-      AU.tone('sine', 1320, 1320, t + 0.015, 0.5, 0.15); AU.tone('sine', 1985, 1985, t + 0.015, 0.45, 0.11); AU.tone('sine', 2640, 2640, t + 0.015, 0.35, 0.07);
-    } },
-  shatter(big) { const t = actx.currentTime; AU.noise(t, 0.2, 0.34, 'highpass', 2200, 2200, 0.8); AU.tone('sine', 120, 38, t, big ? 0.5 : 0.32, big ? 0.65 : 0.45);
-    [1200, 1730, 2410, 3100].forEach((f, i) => AU.tone('square', f, f * 0.8, t + i * 0.025, 0.2, 0.05)); if (big) AU.noise(t + 0.05, 0.4, 0.2, 'lowpass', 1800, 300); },
-  defeat() { const t = actx.currentTime; AU.tone('sine', 260, 55, t, 0.6, 0.35, 0.02); AU.noise(t, 0.4, 0.12, 'lowpass', 900, 200, 1, 0.02); },
-  heal() { const t = actx.currentTime; [523, 659, 784, 1047].forEach((f, i) => AU.tone('sine', f, f, t + i * 0.07, 0.4, 0.13, 0.01)); },
-  ward() { const t = actx.currentTime; [440, 660, 880].forEach(f => AU.tone('sine', f, f * 1.01, t, 0.5, 0.1, 0.03)); AU.noise(t, 0.3, 0.05, 'highpass', 3000, 5000, 1, 0.05); },
-  charm() { const t = actx.currentTime; [660, 784, 988, 1319].forEach((f, i) => AU.tone('sine', f, f * 1.02, t + i * 0.11, 0.55, 0.1, 0.02)); AU.tone('triangle', 330, 392, t, 0.7, 0.07, 0.05); },
-  poof() { const t = actx.currentTime; AU.noise(t, 0.35, 0.22, 'lowpass', 1500, 250, 0.7, 0.01); },
-  nerve() { const t = actx.currentTime;                    // harsh: a distorted electric scream plus a hard slam
-    AU.thump(t, 0.9); AU.zap(t, 0.4, 0.34);
-    AU.noise(t, 0.3, 0.38, 'highpass', 1500, 4500, 0.7, 0.005);
-    [0, 11, 23].forEach(d => AU.tone('sawtooth', 1250 + d * 7, 240 + d, t, 0.4, 0.13, 0.004));   // clashing detuned saws falling
-    AU.tone('square', 2300, 1700, t, 0.22, 0.1, 0.002); AU.crackle(t, 12, 0.45, 0.16); },
-  cured() { const t = actx.currentTime; [523, 659, 784, 1047, 1319].forEach((f, i) => AU.tone('sine', f, f, t + i * 0.09, 0.7, 0.12, 0.01)); AU.noise(t + 0.3, 0.5, 0.05, 'highpass', 4000, 7000, 1, 0.2); },
-  repair() { const t = actx.currentTime; [0, 0.09, 0.18].forEach(o => { AU.tone('square', 1500, 1200, t + o, 0.05, 0.07); AU.noise(t + o, 0.05, 0.1, 'highpass', 3000, 3000, 1); }); }
-};
-function sfx(name, ...args) { if (sndMuted) return; try { if (ac()) SFX[name](...args); } catch (e) {} }
+// ---- Sound effects are recorded files in assets/audio/ (CC0 packs), mapped to game events by assets/audio/sounds.json ----
+// sounds.json: { "<event>": { "files": ["a.ogg", "b.ogg"], "vol": 0.8, "jitter": 0.05 } } (several files = one is picked at random, with a little pitch variation). An event with no entry is silent.
+// Events the game raises: click · swing · whoosh[.element] · charge[.element] · hit, hit.soft, hit.crit, hit.crit2, hit.weak, hit.<element> · shatter, shatter.big · defeat, defeat.bell · heal · ward · charm · cured · poof · nerve, nerve.slam · repair.
+// The magic events (elements, heal, ward, charm, cured) are deliberately empty for now: adding a magic pack only means adding entries to sounds.json. Music and the blizzard wind are still generated (see MUSIC).
+const SND = { base: 'assets/audio/', map: {}, raw: {}, buf: {}, last: {}, lastFile: {}, pend: {} };
+async function sndLoad() {
+  try {
+    const r = await fetch(SND.base + 'sounds.json', { cache: 'no-cache' }); if (!r.ok) return; const j = await r.json();
+    Object.entries(j).forEach(([k, v]) => { if (k[0] === '_') return; const e = Array.isArray(v) ? { files: v } : v; if (e && Array.isArray(e.files) && e.files.length) SND.map[k] = e; });
+    const files = [...new Set(Object.values(SND.map).flatMap(e => e.files))];
+    await Promise.all(files.map(f => fetch(SND.base + f).then(x => x.ok ? x.arrayBuffer() : null).then(ab => { if (ab) SND.raw[f] = ab; }).catch(() => {})));
+    sndDecode();
+  } catch (e) {}
+}
+function sndDecode() {                                     // needs the audio context (made on the first click or key press)
+  if (!actx) return;
+  Object.entries(SND.raw).forEach(([f, ab]) => { if (SND.buf[f] || SND.pend[f]) return; SND.pend[f] = true; try { const p = actx.decodeAudioData(ab.slice(0), b => { SND.buf[f] = b; }, () => { SND.pend[f] = false; }); if (p && p.catch) p.catch(() => {}); } catch (e) { SND.pend[f] = false; } });
+}
+function sndPlay(key) {
+  const e = SND.map[key]; if (!e) return; const now = performance.now(); if (now - (SND.last[key] || 0) < 40) return; SND.last[key] = now;
+  const ready = e.files.filter(f => SND.buf[f]); if (!ready.length) return;
+  let f = ready[Math.floor(Math.random() * ready.length)]; if (ready.length > 1 && f === SND.lastFile[key]) f = ready[(ready.indexOf(f) + 1) % ready.length]; SND.lastFile[key] = f;
+  const src = actx.createBufferSource(), g = actx.createGain(); src.buffer = SND.buf[f]; src.playbackRate.value = 1 + (Math.random() * 2 - 1) * (e.jitter ?? 0.05);
+  g.gain.value = e.vol ?? 0.8; src.connect(g); g.connect(amaster); src.start();
+}
+function sndKeys(name, a) {                                // game call -> list of sound events (layers)
+  const el = k => (k && k !== 'phys' && k !== 'none') ? k : null;
+  if (name === 'hit') { const [kind, crit, weak, soft] = a, k = [soft ? 'hit.soft' : crit ? 'hit.crit' : 'hit']; if (crit && !soft) k.push('hit.crit2'); if (weak && !soft) k.push('hit.weak'); if (el(kind)) k.push('hit.' + kind); return k; }
+  if (name === 'whoosh') return [el(a[0]) ? 'whoosh.' + a[0] : 'whoosh'];
+  if (name === 'charge') return [a[0] ? 'charge.' + a[0] : 'charge'];
+  if (name === 'shatter') return a[0] ? ['shatter', 'shatter.big'] : ['shatter'];
+  if (name === 'defeat') return ['defeat', 'defeat.bell'];
+  if (name === 'nerve') return ['nerve', 'nerve.slam'];
+  return [name];
+}
+function sfx(name, ...args) { if (sndMuted) return; try { if (!ac()) return; sndDecode(); for (const k of sndKeys(name, args)) sndPlay(k); } catch (e) {} }
 function renderSnd() { if (typeof refreshOptions === 'function') refreshOptions(); }
 function toggleSound() {
   sndMuted = !sndMuted; try { localStorage.setItem('animeRpgSound', sndMuted ? '0' : '1'); } catch (e) {}
   renderSnd(); if (!sndMuted) { sfx('hit', 'phys', false, false, false); musicSet(musicArea, true); } else { if (mGain) mGain.gain.value = 0; clearInterval(musicTimer); musicTimer = null; }
 }
-renderSnd();
+renderSnd(); sndLoad();
 document.addEventListener('pointerdown', () => { if (!sndMuted) ac(); }, { passive: true });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('button'); if (b && !b.disabled && !b.classList.contains('optsw')) sfx('click'); });
 document.addEventListener('visibilitychange', () => { if (actx) { if (document.hidden) actx.suspend().catch(() => {}); else if (!sndMuted) actx.resume().catch(() => {}); } });
