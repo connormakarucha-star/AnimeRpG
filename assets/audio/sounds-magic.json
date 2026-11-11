@@ -1,0 +1,17 @@
+{
+ "_help": "Magic pack (Lentikula, CC0): loaded after sounds.json. Paths are relative to assets/audio/. Edit freely.",
+ "hit.fire":   {"files": ["magic/fire_1.ogg","magic/fire_2.ogg","magic/fire_3.ogg","magic/fire_4.ogg","magic/fire_5.ogg"], "vol": 0.6, "jitter": 0.06},
+ "hit.ice":    {"files": ["magic/ice_1.ogg","magic/ice_2.ogg","magic/ice_3.ogg","magic/ice_4.ogg","magic/ice_5.ogg"], "vol": 0.6, "jitter": 0.06},
+ "hit.shock":  {"files": ["magic/shock_1.ogg","magic/shock_2.ogg","magic/shock_3.ogg","magic/shock_4.ogg","magic/shock_5.ogg"], "vol": 0.55, "jitter": 0.05},
+ "hit.poison": {"files": ["magic/water_1.ogg","magic/water_2.ogg","magic/water_3.ogg","magic/water_4.ogg","magic/water_5.ogg"], "vol": 0.5, "jitter": 0.1},
+ "whoosh.fire":   {"files": ["magic/fire_4.ogg"], "vol": 0.3, "jitter": 0.1},
+ "whoosh.ice":    {"files": ["magic/ice_4.ogg"], "vol": 0.3, "jitter": 0.1},
+ "whoosh.shock":  {"files": ["magic/shock_4.ogg"], "vol": 0.3, "jitter": 0.1},
+ "whoosh.poison": {"files": ["magic/water_4.ogg"], "vol": 0.3, "jitter": 0.1},
+ "charge.fire":   {"files": ["magic/fire_3.ogg"], "vol": 0.5},
+ "charge.poison": {"files": ["magic/water_2.ogg"], "vol": 0.5},
+ "heal":  {"files": ["magic/heal_1.ogg","magic/heal_2.ogg","magic/heal_3.ogg","magic/heal_4.ogg","magic/heal_5.ogg"], "vol": 0.6, "jitter": 0.04},
+ "ward":  {"files": ["magic/heal_6.ogg","magic/heal_7.ogg","magic/heal_8.ogg","magic/heal_9.ogg","magic/heal_10.ogg"], "vol": 0.6, "jitter": 0.04},
+ "charm": {"files": ["magic/heal_11.ogg","magic/heal_12.ogg"], "vol": 0.55},
+ "cured": {"files": ["magic/heal_13.ogg","magic/heal_14.ogg","magic/heal_15.ogg"], "vol": 0.55}
+}
