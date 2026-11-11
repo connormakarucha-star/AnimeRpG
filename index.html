@@ -2285,7 +2285,7 @@ function renderGuide() {
     ${g(`🔥 <b>New Game+</b>: once every quest is cleared, the whole game opens again on a harder difficulty (more enemy HP and damage, more elites, more gold and better boss drops). You keep every hero, relic, trait and skin. Pick the difficulty on the quest screen.`)}
     <h4>Defeat and recovery</h4>
     ${g(`Heroes who fall are not lost: they get back up with 1 HP before the next fight. Each run has only a few camps, placed at random after the first couple of fights, so ration your supplies. If your whole party falls the quest ends and you keep only half the gold you carried. At camp, eat <b>Field Rations</b> to heal the party and use <b>Repair Kits</b> on a hero's armour. Buy both in the town Shop.`)}`;
-  else if (guideTab === 'credits') h = `<h4>Credits</h4>${g(`<b>Sound effects:</b> Kenney Impact Sounds, Kenney RPG Audio and Kenney Interface Sounds, by Kenney Vleugels (<a href="https://kenney.nl" target="_blank" rel="noopener">kenney.nl</a>), licensed CC0.`, 'good')}${g(`Music and ambience are generated in the game for now.`, '')}`
+  else if (guideTab === 'credits') h = `<h4>Credits</h4>${g(`<b>Sound effects:</b> Kenney Impact Sounds, Kenney RPG Audio and Kenney Interface Sounds, by Kenney Vleugels (<a href="https://kenney.nl" target="_blank" rel="noopener">kenney.nl</a>), licensed CC0.`, 'good')}${g(`<b>Magic sound effects:</b> Basic Spell Impacts and Healing Spell Impacts by Lentikula (<a href="https://lentikula.itch.io/" target="_blank" rel="noopener">lentikula.itch.io</a>), licensed CC0.`, 'good')}${g(`Music and ambience are generated in the game for now.`, '')}`
   else if (guideTab === 'elements') h = `<h4>Elements</h4>`
     + Object.entries(ELEM).map(([el, e]) => g(`<b>${ICON[el]} ${ELEM_NAME[el]}</b> inflicts <b>${e.status.toUpperCase()}</b>: ` + (e.dot ? `${e.dot} damage at the start of the victim's turn, for ${e.dur} turns.` : `the victim <b>skips its next turn</b>.`))).join('')
     + `<h4>How statuses land</h4>${g(`Status effects only stick to a fighter whose armour is <b>already broken</b>. Elemental skills also deal <b>break damage</b> (shown as "break N") to armour. Plain physical skills do no break damage and apply no status. A fighter can carry several different statuses at once; hitting it with the same element again renews that one instead of stacking.`)}
@@ -2341,15 +2341,13 @@ function ac() {
 // Events the game raises: click · swing · whoosh[.element] · charge[.element] · hit, hit.soft, hit.crit, hit.crit2, hit.weak, hit.<element> · shatter, shatter.big · defeat, defeat.bell · heal · ward · charm · cured · poof · nerve, nerve.slam · repair.
 // The magic events (elements, heal, ward, charm, cured) are deliberately empty for now: adding a magic pack only means adding entries to sounds.json. Music and the blizzard wind are still generated (see MUSIC).
 const SND = { base: 'assets/audio/', map: {}, raw: {}, buf: {}, last: {}, lastFile: {}, pend: {} };
-async function sndLoad() {
-  try {
-    const r = await fetch(SND.base + 'sounds.json', { cache: 'no-cache' }); if (!r.ok) return; const j = await r.json();
-    Object.entries(j).forEach(([k, v]) => { if (k[0] === '_') return; const e = Array.isArray(v) ? { files: v } : v; if (e && Array.isArray(e.files) && e.files.length) SND.map[k] = e; });
+const SND_MANIFESTS = ['sounds.json', 'sounds-magic.json']; // later files add to / override earlier ones; missing files are skipped
+async function sndLoad() { try {
+    for (const m of SND_MANIFESTS) { try { const r = await fetch(SND.base + m, { cache: 'no-cache' }); if (!r.ok) continue; const j = await r.json();
+        Object.entries(j).forEach(([k, v]) => { if (k[0] === '_') return; const e = Array.isArray(v) ? { files: v } : v; if (e && Array.isArray(e.files) && e.files.length) SND.map[k] = e; }); } catch (e) {} }
     const files = [...new Set(Object.values(SND.map).flatMap(e => e.files))];
     await Promise.all(files.map(f => fetch(SND.base + f).then(x => x.ok ? x.arrayBuffer() : null).then(ab => { if (ab) SND.raw[f] = ab; }).catch(() => {})));
-    sndDecode();
-  } catch (e) {}
-}
+    sndDecode(); } catch (e) {} }
 function sndDecode() {                                     // needs the audio context (made on the first click or key press)
   if (!actx) return;
   Object.entries(SND.raw).forEach(([f, ab]) => { if (SND.buf[f] || SND.pend[f]) return; SND.pend[f] = true; try { const p = actx.decodeAudioData(ab.slice(0), b => { SND.buf[f] = b; }, () => { SND.pend[f] = false; }); if (p && p.catch) p.catch(() => {}); } catch (e) { SND.pend[f] = false; } });
@@ -2365,6 +2363,7 @@ function sndKeys(name, a) {                                // game call -> list 
   const el = k => (k && k !== 'phys' && k !== 'none') ? k : null;
   if (name === 'hit') { const [kind, crit, weak, soft] = a, k = [soft ? 'hit.soft' : crit ? 'hit.crit' : 'hit']; if (crit && !soft) k.push('hit.crit2'); if (weak && !soft) k.push('hit.weak'); if (el(kind)) k.push('hit.' + kind); return k; }
   if (name === 'whoosh') return [el(a[0]) ? 'whoosh.' + a[0] : 'whoosh'];
+  if (name === 'status') return [el(a[0]) ? 'status.' + a[0] : 'status'];
   if (name === 'charge') return [a[0] ? 'charge.' + a[0] : 'charge'];
   if (name === 'shatter') return a[0] ? ['shatter', 'shatter.big'] : ['shatter'];
   if (name === 'defeat') return ['defeat', 'defeat.bell'];
@@ -3657,7 +3656,7 @@ function applyStatus(t, el, src) {
   const rs = (src && src.rel) || {}, dot = e.dot ? Math.round(e.dot * (1 + (rs.dotMul || 0))) : 0, dur = (e.dur || 1) + (e.dot ? (rs.dotTurns || 0) : 0);
   const have = t.statuses.find(x => x.type === e.status);
   if (have) { have.dur = Math.max(have.dur, dur); have.dot = Math.max(have.dot, dot); log(`${t.name}'s <strong>${e.status.toUpperCase()}</strong> is renewed!`, 'log-status'); return; }   // same ailment: refresh, never stack twice
-  t.statuses.push({ type: e.status, dot, stun: !!e.stun, dur });          // different ailments all stick at once
+  t.statuses.push({ type: e.status, dot, stun: !!e.stun, dur }); sfx('status', el);          // different ailments all stick at once
   log(`${t.name} is afflicted with <strong>${e.status.toUpperCase()}</strong>!`, 'log-status');
 }
 
