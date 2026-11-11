@@ -1,0 +1,4 @@
+Sound effects
+=============
+Kenney Impact Sounds, Kenney RPG Audio and Kenney Interface Sounds, by Kenney Vleugels (www.kenney.nl).
+Licence: Creative Commons Zero (CC0 1.0), free for personal and commercial use, no credit required. Licence texts are in the licenses/ folder.
