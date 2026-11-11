@@ -374,9 +374,10 @@ body.dev #btn-quick{display:inline-block}
 .tm-btns{display:flex;flex-direction:column;gap:6px;width:min(300px,100%);margin-top:14px}
 @media (max-width:700px) and (orientation:portrait){#tm-halves{flex-direction:column}.tm-half+.tm-half{border-left:0;border-top:2px solid rgba(255,255,255,.18)}.tm-half .lab{bottom:12px}.tm-half .lab b{font-size:1.2rem}#btn-train-back{bottom:10px}.tm-half:hover{flex:1}}
 @media (prefers-reduced-motion:reduce){#tm-art,.tm-half,.tm-half .art{transition:none}}
-#spa-bg{display:none;position:fixed;inset:0;z-index:-1;background:#0e0e14 center/cover no-repeat;transform-origin:50% 85%;animation:spaBreathe 5.2s ease-in-out infinite}
+#spa-bg{display:none;opacity:1;transition:opacity 1s ease;position:fixed;inset:0;z-index:-1;background:#0e0e14 center/cover no-repeat;transform-origin:50% 85%;animation:spaBreathe 5.2s ease-in-out infinite}
 @keyframes spaBreathe{0%,100%{scale:1.03;translate:0 0}50%{scale:1.065;translate:0 -.9%}}
 #spa-bg.flinch{animation:spaBreathe 5.2s ease-in-out infinite,spaFlinch .45s ease-out}
+#spa-bg.gone{opacity:0}
 @keyframes spaFlinch{0%{filter:brightness(2.2) saturate(1.8) hue-rotate(-20deg);rotate:0deg}15%{rotate:-.8deg}35%{rotate:.7deg;filter:brightness(1.4) saturate(1.4)}60%{rotate:-.3deg}100%{filter:none;rotate:0deg}}
 @media (prefers-reduced-motion:reduce){#spa-bg,#spa-bg.flinch{animation:none;scale:1.03}}
 #spa .hub-hall{background:transparent;border-color:transparent;box-shadow:none}
@@ -1080,9 +1081,9 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
       <button id="btn-spa-quit" style="width:100%" onclick="showScene('spa-select')">Give Up (no refund)</button>
       <div class="panel-result" id="spa-result">
         <div id="spa-result-text"></div>
-        <button class="primary" id="btn-spa-again" onclick="startSpa(spaGame.hero.id, spaGame.target)">Treat Again</button>
+        <button class="primary" id="btn-spa-again" onclick="startSpa(spaGame.hero.id, spaGame.target)">Try Again</button>
         <button onclick="showScene('spa-select')">Choose Another Hero</button>
-        <button onclick="showScene('hub')">Leave Spa</button>
+        <button onclick="showScene('hub')">Return to Town</button>
       </div>
     </div>
   </div>
@@ -2132,9 +2133,7 @@ const enemyById = id => ENEMIES.find(e => e.id === id);
 // the hero's picture. Any size or shape works as long as every row has the same width.
 // Optional art, all per hero and only used if the file exists (like battle animations):
 //   assets/ui/spa_back.png|jpg|webp         ONE shared full-screen backdrop for every hero (covers the screen)
-//   assets/ui/spa_hit.*                     ONE shared clip/picture when a nerve is hit (1st and 2nd hit)
-//   assets/<hero id>/spa/fail.*              plays when the third nerve is hit
-//   assets/<hero id>/spa/success.*           plays when the back is cleared
+//   (the spa no longer uses hit / success / fail pictures: the backdrop fades out and a text summary shows)
 const SPA = {
   cost: 15,           // gold per massage, paid when it starts (no refund for failing or giving up). A won massage removes the flaw you chose to treat.
   maxStrikes: 3,
@@ -2680,7 +2679,7 @@ function importSave() {
 // Combat clips: assets/<unit.id>/<armoured|broken>/<key>.(mp4|webm|webp|png|jpg) plays ON the unit's own sprite (a super-broken unit uses the broken/ art), in place of its idle
 // (melee attackers have run to the target first). Videos play to the end; images hold ~0.7s. Missing file = short pause (falls back to armoured/).
 // Keys: skill1 skill2 skill3 damaged (damaged covers every hit and status tick; the fire/ice/... effect is drawn over it). Idle: idle.
-// Spa and training still use full-screen cut-ins (shared assets/ui/spa_back, spa_hit, train_physical, train_elemental; per hero: spa/success and spa/fail).
+// Training still uses full-screen cut-ins (shared assets/ui/train_physical, train_elemental). The spa only uses the shared assets/ui/spa_back backdrop.
 // IMPORTANT: use lowercase filenames; GitHub Pages is case-sensitive.
 // Sprites only fill the lower part of their figure box (art tops out around 75% of the box height), so effects aim at the BODY, not the box centre.
 const BODY_TOP = 0.25;
@@ -5278,7 +5277,7 @@ function startSpa(id, target) {
   board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
   board.style.aspectRatio = `${cols} / ${rows}`;
-  $('spa-bg').style.backgroundImage = 'none';
+  $('spa-bg').style.backgroundImage = 'none'; $('spa-bg').classList.remove('gone');
   $('spa-title').textContent = `${hero.name}: Massage`;
   $('spa-msg').textContent = 'Tap anywhere to start. Your first tap is always safe.';
   $('spa-result').style.display = 'none';
@@ -5340,7 +5339,6 @@ function spaTap(i) {
       renderSpa(); spaEnd(g, false); return;
     }
     $('spa-msg').textContent = `Ouch! A nerve. ${SPA.maxStrikes - g.strikes} hit${SPA.maxStrikes - g.strikes > 1 ? 's' : ''} left.`;
-    findAsset(`${ANIM.base}/ui/spa_hit`).then(a => { if (a && spaGame === g && !g.over) playClip(a, $('spa-cutin')); });   // optional nerve-hit clip
   } else {
     spaReveal(g, i);
     $('spa-msg').textContent = '';
@@ -5349,26 +5347,20 @@ function spaTap(i) {
   renderSpa();
 }
 
-async function spaEnd(g, won) {
-  const first = g.hero.name.split(' ')[0];
+async function spaEnd(g, won) {                       // no cut-in art: the backdrop fades out and a short summary appears
+  const first = g.hero.name.split(' ')[0], tt = TRAIT[g.target];
   $('btn-spa-quit').style.display = 'none';
   $('spa-msg').textContent = won ? 'Every knot is gone...' : 'Too many nerves hit!';
-  [...skips].forEach(f => f());                                                 // cut off any nerve-hit clip still playing
-  spaFinished(g.hero, won, g.target);                                           // the flaw is removed right away, even if the player leaves during the clip
-  const tt = TRAIT[g.target];
-  if (won) {                                                                    // success: full-screen art, blur, then the cured flaw (hero's own success picture, else Iris')
-    const a = await findAsset(`${ANIM.base}/${g.hero.id}/spa/success`) || await findAsset(`${ANIM.base}/iris/spa/success`);
-    await revealPerk({ art: a, gain: 'CURED', name: `${tt.icon} ${tt.name}`, desc: `${first} feels lighter: this flaw is gone for good.`, sound: 'cured', alive: () => spaGame === g,
-      buttons: [['primary', 'Choose Another Hero', "showScene('spa-select')"], ['', 'Back to Town', "showScene('hub')"]] });
-    return;
-  }
-  await playAnim(g.hero, 'fail', 'spa', $('spa-cutin'));                        // plays only if the file exists
+  spaFinished(g.hero, won, g.target);                                           // the flaw is removed right away, even if the player leaves
+  sfx(won ? 'cured' : 'defeat');
+  $('spa-bg').classList.add('gone');
+  await sleep(700);
   if (spaGame !== g) return;                                                    // left the screen meanwhile
-  $('spa-result-text').textContent = won ? `${first} feels lighter: ${tt.icon} ${tt.name} is gone for good!`
-                                         : `${first} flinched and the treatment failed. The ${SPA.cost} gold is gone.`;
+  $('spa-result-text').innerHTML = won ? `<b>✨ Cured: ${tt.icon} ${tt.name}</b><br>${first} feels lighter: this flaw is gone for good.`
+                                       : `<b>💢 Treatment failed</b><br>${first} flinched and the ${tt.icon} ${tt.name} stays. The ${SPA.cost} gold is gone.`;
   const again = $('btn-spa-again');
   again.style.display = won ? 'none' : '';                                      // a treated flaw is gone, so no repeat
-  again.textContent = `Treat Again (${SPA.cost}g)`; again.disabled = game.gold < SPA.cost;
+  again.textContent = `Try Again (${SPA.cost}g)`; again.disabled = game.gold < SPA.cost;
   $('spa-result').style.display = 'flex';
 }
 // Called once per finished treatment. A win removes that flaw from the hero (stored in the save); a fail does nothing.
