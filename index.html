@@ -6013,9 +6013,8 @@ async function loadBeachBg(mapId, artId, key, svgFn) {
   const a = await findAsset(`${ANIM.base}/ui/${key}`);
   if (a && ['png', 'jpg', 'webp'].includes(a.ext)) { const m = $(mapId); m.style.backgroundImage = `url("${a.url}")`; m.style.backgroundSize = 'cover'; m.classList.add('has-art'); }
 }
-async function beachIdle(id) {         // the hero's idle in her skin (the one she wears, else the first one that exists), else the normal idle
-  const sk = (game.skins && game.skins[id]) || skinsFor(id)[0];
-  return (sk && await findAsset(`${ANIM.base}/${id}/armoured - ${sk}/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`);
+async function beachIdle(id) {         // always the swimsuit idle (armoured - swimsuit), never whatever skin is worn; else the normal idle
+  return (await findAsset(`${ANIM.base}/${id}/armoured - swimsuit/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`);
 }
 function bFig(id, flip) {
   const el = document.createElement('div'); el.className = 'figure bfig' + (flip ? ' flip' : '');
