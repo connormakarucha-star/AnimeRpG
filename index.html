@@ -812,9 +812,15 @@ body.calm .breath{display:none}
 .bspot .figure{width:100%;height:100%;position:absolute;inset:0}
 .bfig .spr{left:50%;right:auto;width:auto;max-width:none;height:var(--sprH,85%);transform:translateX(-50%)}
 .bfig.flip .spr{transform:translateX(-50%) scaleX(-1)}
-.bspot .wave{position:absolute;left:-18%;right:-18%;bottom:-3%;height:27%;z-index:3;background:linear-gradient(rgba(70,100,112,.62),rgba(22,40,50,.9));border-radius:50% 50% 0 0/32% 32% 0 0;box-shadow:0 -2px 6px rgba(200,225,235,.28);animation:bwave 3.4s ease-in-out infinite;pointer-events:none}
-.bspot .wave::before{content:"";position:absolute;left:6%;right:6%;top:-9%;height:22%;border-radius:50%;border-top:2px solid rgba(210,230,238,.42)}
-@keyframes bwave{0%,100%{transform:translateY(0)}50%{transform:translateY(-9%)}}
+/* wading: the lower part of the sprite is cut away at the waterline (no tinted block), and white ripples play around that line */
+.bspot.in-water .figure{clip-path:inset(-30% -40% var(--wl,24%) -40%)}
+.bspot .wave{position:absolute;left:-30%;right:-30%;bottom:var(--wl,24%);height:0;z-index:3;pointer-events:none}
+.bspot .wave i{position:absolute;left:50%;top:0;width:78%;height:2.1cqw;margin:-1.05cqw 0 0 -39%;border-radius:50%;border:max(1px,.14cqw) solid rgba(255,255,255,.7);opacity:0;transform:scale(.45);animation:brip 3.2s ease-out infinite}
+.bspot .wave i:nth-child(2){animation-delay:-1.07s}.bspot .wave i:nth-child(3){animation-delay:-2.13s}
+.bspot .wave b{position:absolute;left:12%;right:12%;top:-.35cqw;height:.7cqw;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.55),rgba(255,255,255,.16) 55%,transparent 72%);animation:bfoam 2.6s ease-in-out infinite alternate}
+@keyframes brip{0%{opacity:0;transform:scale(.45)}18%{opacity:.75}100%{opacity:0;transform:scale(1.25)}}
+@keyframes bfoam{0%{transform:translateX(-3%) scaleX(.92);opacity:.55}100%{transform:translateX(3%) scaleX(1.04);opacity:.9}}
+@media (prefers-reduced-motion:reduce){.bspot .wave i,.bspot .wave b{animation:none}.bspot .wave i{opacity:.4}}
 /* volleyball court */
 .vbstage{position:absolute;inset:0;transition:filter .6s}
 #vb-court.won .vbstage{filter:blur(7px) brightness(.5)}
@@ -6035,7 +6041,7 @@ function renderBeach() {
   pool.forEach((id, i) => {
     const sp = spots[i], d = document.createElement('div'); d.className = 'bspot' + (sp.w ? ' in-water' : '');
     d.style.left = sp.x + '%'; d.style.bottom = (100 - sp.y) + '%'; d.style.zIndex = Math.round(sp.y);
-    d.appendChild(bFig(id, i % 2 === 1)); if (sp.w) { const w = document.createElement('div'); w.className = 'wave'; w.style.animationDelay = (-i * .7) + 's'; d.appendChild(w); }
+    d.appendChild(bFig(id, i % 2 === 1)); if (sp.w) { const w = document.createElement('div'); w.className = 'wave'; w.innerHTML = '<b></b><i></i><i></i><i></i>'; w.style.cssText = `--wl:${sp.wl || 24}%`; d.style.setProperty('--wl', (sp.wl || 24) + '%'); [...w.children].forEach((c, k) => c.style.animationDelay = (-(i * .55 + k * 1.07)) + 's'); d.appendChild(w); }
     box.appendChild(d);
   });
 }
