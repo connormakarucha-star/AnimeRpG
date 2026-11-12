@@ -3922,8 +3922,19 @@ async function dashAssets(u, key) {
   const a = await firstAsset(u, key), b = await firstAsset(u, key + 'b'), img = x => x && x.ext !== 'mp4' && x.ext !== 'webm';
   return img(a) && img(b) ? { a, b } : null;
 }
+/* Hide the rest of the party while a skill-2 close-up plays (Irae's dash, Aneesah's cast), so the big picture has the stage to itself. Compare both looks:
+   SKILL2_HIDE_PARTY = true/false here, or in the browser console  localStorage.skill2Hide='0'  (off) / '1' (on), or add ?hide=0 / ?hide=1 to the address. */
+const SKILL2_HIDE_PARTY = true;
+const skill2Hide = () => { try { const q = new URLSearchParams(location.search).get('hide'); if (q !== null) return q !== '0'; const v = localStorage.getItem('skill2Hide'); if (v !== null) return v !== '0'; } catch (e) { } return SKILL2_HIDE_PARTY; };
+let hidParty = [];
+function hidePartyFor(u) {
+  if (!skill2Hide() || u.team !== 'p') return;
+  party.forEach(m => { if (m === u) return; const f = figs.get(m), c = f && f.closest('.combatant-card'); if (!c) return; const fg = c.querySelector('.fig, .figure') || f; fg.style.transition = 'opacity .15s'; fg.style.opacity = '0'; hidParty.push(fg); });
+}
+function showParty() { hidParty.forEach(f => { f.style.opacity = ''; setTimeout(() => { f.style.transition = ''; }, 200); }); hidParty = []; }
 let dashLive = null;
 function dashClear() {
+  showParty();
   if (!dashLive) return; const d = dashLive; dashLive = null;
   d.parts.forEach(x => x.remove()); if (d.el) d.el.style.visibility = ''; if (d.tcard) { d.tcard.style.zIndex = ''; d.tcard.style.position = ''; }
 }
@@ -3937,7 +3948,7 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
   const main = mk(''), ghosts = Array.from({ length: DASH.ghosts }, () => { const g = mk('ghost'); g.style.opacity = 0; return g; });
   await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
   const d = dashLive = { parts: [main, ...ghosts], el, tcard: null };
-  el.style.visibility = 'hidden';
+  el.style.visibility = 'hidden'; if (art.hide) hidePartyFor(u);
   const tr = (dx, dy, sc) => `translate(${dx}px,${dy}px) scale(${sc})`;
   // the wind-up always happens at ONE fixed foreground spot (the middle of her side), whichever slot she stood in; as big as DASH.near allows while still fitting on screen
   const dy0 = A.h * DASH.drop, dyEnd = B.bottom - A.bottom, im0 = main.querySelector('img.a'), asp = im0 && im0.naturalHeight ? im0.naturalWidth / im0.naturalHeight : 0.6, vw = document.documentElement.clientWidth;
@@ -3972,6 +3983,57 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
       const C = el.isConnected ? figBox(el) : A;
       main.style.zIndex = 71; if (d.tcard) d.tcard.style.zIndex = '';
       await move(tr(C.cx - A.cx, C.bottom - A.bottom, C.h / A.h), DASH.homeMs, 'cubic-bezier(.4,0,.2,1)');
+      dashClear();
+    }
+  };
+}
+
+/* ---- one-picture cast (optional art): the hero stays where she is, her skill picture (assets/<unit>/<armoured|broken|skin>/skill2.png, back view) swells up in the foreground in front of the line-up,
+   a bolt fires from her raised hand to every foe, the hit lands, and she shrinks back into her slot. Needs only the one picture. Placement is the knobs below:
+   h = picture height as a fraction of the screen height, bottom = where its feet sit (fraction of screen height, >1 = cropped by the screen edge),
+   hand = the raised hand measured from the picture's horizontal centre (dx) and up from its bottom (up), both in picture heights. */
+const STAND = { aneesah: { i: 1, h: 1.08, bottom: 1.14, hand: { dx: 0.292, up: 0.753 } } };
+async function stageAssets(u, key) {
+  if (!MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  const a = await firstAsset(u, key); return a && a.ext !== 'mp4' && a.ext !== 'webm' ? { a } : null;
+}
+async function stageBegin(u, t, art, s) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = STAND[u.id], vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = u.team === 'p' ? SPR.flipParty : SPR.flipEnemy;
+  const d0 = document.createElement('div'); d0.className = 'dashfx' + (flip ? ' flip' : '');
+  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+  const im = document.createElement('img'); im.className = 'a'; im.src = art.a.url; im.draggable = false; d0.appendChild(im); document.body.appendChild(d0);
+  if (im.decode) await im.decode().catch(() => {});
+  const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
+  const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx = pr && pr.width ? pr.left + pr.width / 2 : A.cx;
+  const H = vh * K.h, S0 = H / (A.h * SPR_SCALE), dy = vh * K.bottom - A.bottom, dir = flip ? -1 : 1;
+  const tr = (x, y, sc) => `translate(${x}px,${y}px) scale(${sc})`, P0 = tr(0, 0, 1), P1 = tr(fx - A.cx, dy, S0), hx = fx + dir * K.hand.dx * H, hy = vh * K.bottom - K.hand.up * H;
+  const anim = (node, frames, ms, ease) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards' });
+  const svgNS = 'http://www.w3.org/2000/svg', mkSvg = () => { const v = document.createElementNS(svgNS, 'svg'); v.setAttribute('viewBox', `0 0 ${vw} ${vh}`); Object.assign(v.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: 72, pointerEvents: 'none', overflow: 'visible' }); v.setAttribute('fill', 'none'); v.setAttribute('stroke-linejoin', 'round'); v.setAttribute('stroke-linecap', 'round'); document.body.appendChild(v); d.parts.push(v); return v; };
+  const foes = s && s.aoe ? (u.team === 'p' ? enemies : party).filter(isAlive) : [t];
+  return {
+    async run() {
+      const a1 = anim(d0, [{ transform: P0 }, { transform: P1 }], 190, 'cubic-bezier(.2,.8,.3,1)'); await Promise.race([a1.finished.catch(() => {}), sleep(dspd(190) + 120)]);
+      sfx('charge', 'shock');
+      const g = mkSvg(); g.innerHTML = `<circle cx="${hx}" cy="${hy}" r="${vh * .045}" fill="#7cc4ff" opacity=".35" style="filter:blur(6px)"/><circle cx="${hx}" cy="${hy}" r="${vh * .018}" fill="#fff"/>`;
+      g.animate([{ opacity: 0, transform: 'scale(.3)' }, { opacity: 1, transform: 'scale(1)' }], { duration: dspd(150), fill: 'forwards' }); g.style.transformOrigin = `${hx}px ${hy}px`;
+      await sleep(dspd(170)); sfx('whoosh', 'shock');
+      const svg = mkSvg(); let html = '';
+      foes.forEach(e => { const f = figs.get(e); if (!f || !f.isConnected) return; const B = figBox(f), x2 = B.cx, y2 = B.bottom - B.h * .55, n = 11, dx = x2 - hx, dyy = y2 - hy, len = Math.hypot(dx, dyy) || 1, nx = -dyy / len, ny = dx / len; let pts = '';
+        for (let k = 0; k <= n; k++) { const q = k / n, j = k === 0 || k === n ? 0 : (Math.random() - .5) * (e === t ? 70 : 54); pts += `${(hx + dx * q + nx * j).toFixed(1)},${(hy + dyy * q + ny * j).toFixed(1)} `; }
+        const w = e === t ? 1 : .6; html += `<polyline points="${pts}" stroke="#2f7dff" stroke-width="${26 * w}" opacity=".35"/><polyline points="${pts}" stroke="#7cc4ff" stroke-width="${10 * w}" opacity=".85" style="filter:drop-shadow(0 0 9px #4aa3ff)"/><polyline points="${pts}" stroke="#fff" stroke-width="${4 * w}"/><circle cx="${x2}" cy="${y2}" r="${28 * w}" fill="#7cc4ff" opacity=".4"/>`; });
+      svg.innerHTML = html; svg.animate([{ opacity: 1 }, { opacity: 1, offset: .6 }, { opacity: 0 }], { duration: dspd(300), fill: 'forwards' });
+      g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(300), fill: 'forwards' });
+      await sleep(dspd(130));
+    },
+    async follow() { await sleep(dspd(260)); },
+    async home() {
+      await sleep(dspd(120)); if (dashLive !== d) return;
+      d.parts.slice(1).forEach(x => x.remove());
+      const C = el.isConnected ? figBox(el) : A; showParty();
+      const a = anim(d0, [{ transform: P1 }, { transform: tr(C.cx - A.cx, C.bottom - A.bottom, C.h / A.h) }], 260, 'cubic-bezier(.4,0,.2,1)'); await Promise.race([a.finished.catch(() => {}), sleep(dspd(260) + 120)]);
       dashClear();
     }
   };
@@ -4651,7 +4713,9 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   if (film) { setSpot([]); await playFilm(film); }
   let begun; const started = new Promise(r => begun = r);
   const dashArt = !film && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
-  const dash = dashArt ? await dashBegin(u, target, dashArt) : null;               // two-picture dash strike (skill2 + skill2b), else the normal lunge
+  if (dashArt && i === 1) dashArt.hide = true;
+  const stageArt = !film && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
+  const dash = dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
   const clip = film || dash ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
   const back = dash ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
   if (!film && !dash) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
