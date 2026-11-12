@@ -3159,7 +3159,7 @@ async function advance(u, t, s, key) {                 // returns an async funct
    1) the wind-up picture swells toward the camera and crouches, 2) it dashes across the stage, shrinking as it travels (perspective) with motion ghosts,
    3) on arrival the damage / hit effects / sound happen and the picture swaps to the strike picture, which slips past and behind the target,
    4) it hurries back to the line-up (the real figure reappears). No skill2b file = the normal lunge. Same motion for every skin. */
-const DASH = { near: 1.75, drop: 0.1, windMs: 150, crouchMs: 170, runMs: 230, coastMs: 190, holdMs: 170, homeMs: 300, arriveGap: 0.3, passBy: 0.45, passScale: 0.92, ghosts: 3 };
+const DASH = { near: 2.3, drop: 0.1, windMs: 150, crouchMs: 170, runMs: 230, coastMs: 190, holdMs: 170, homeMs: 300, arriveGap: 0.3, passBy: 0.45, passScale: 0.92, ghosts: 3 };
 const dspd = ms => ms / battleSpd();
 function figBox(el) {            // where a figure will stand once the spotlight zoom has settled: centre x, feet y, width, height (screen px)
   const card = el.closest('.combatant-card') || el, cs = getComputedStyle(card), zc = parseFloat(cs.scale) || 1, zf = card.classList.contains('spot') ? SPOT_Z : 1, k = zf / zc;
@@ -3188,8 +3188,12 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
   const d = dashLive = { parts: [main, ...ghosts], el, tcard: null };
   el.style.visibility = 'hidden';
   const tr = (dx, dy, sc) => `translate(${dx}px,${dy}px) scale(${sc})`;
-  const dy0 = A.h * DASH.drop, dyEnd = B.bottom - A.bottom, S0 = Math.max(1, Math.min(DASH.near, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE)));      // never grows past the top of the screen
-  const P0 = tr(0, 0, 1), P1 = tr(0, dy0, S0), P1c = tr(0, dy0 + A.h * 0.02, S0 * 0.97);                          // wind-up: grows toward the camera, then crouches
+  // the wind-up always happens at ONE fixed foreground spot (the middle of her side), whichever slot she stood in; as big as DASH.near allows while still fitting on screen
+  const dy0 = A.h * DASH.drop, dyEnd = B.bottom - A.bottom, im0 = main.querySelector('img.a'), asp = im0 && im0.naturalHeight ? im0.naturalWidth / im0.naturalHeight : 0.6, vw = document.documentElement.clientWidth;
+  const S0 = Math.max(1, Math.min(DASH.near, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE), (vw * 0.92) / (asp * A.h * SPR_SCALE)));
+  const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, halfW = asp * A.h * SPR_SCALE * S0 / 2;
+  const fx = Math.max(halfW + 8, Math.min(vw - halfW - 8, pr && pr.width ? pr.left + pr.width / 2 : A.cx)), fdx = fx - A.cx;
+  const P0 = tr(0, 0, 1), P1 = tr(fdx, dy0, S0), P1c = tr(fdx, dy0 + A.h * 0.02, S0 * 0.97);                          // wind-up: grows toward the camera, then crouches
   const sc1 = B.h / A.h;                                                                                           // at the target she is its own size
   const P2 = tr(B.cx - dir * B.w * DASH.arriveGap - A.cx, dyEnd, sc1);                                              // impact point: just in front of the target
   const P3 = tr(B.cx + dir * B.w * DASH.passBy - A.cx, dyEnd - B.h * 0.05, sc1 * DASH.passScale);                    // past it, a little further away
