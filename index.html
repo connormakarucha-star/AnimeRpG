@@ -813,6 +813,12 @@ body.calm .breath{display:none}
 .bspot .figure{width:100%;height:100%;position:absolute;inset:0}
 .bfig .spr{left:50%;right:auto;width:auto;max-width:none;height:var(--sprH,85%);transform:translateX(-50%)}
 .bfig.flip .spr{transform:translateX(-50%) scaleX(-1)}
+/* two-stage dash strike (see dashBegin): the hero's two pictures fly across the stage as an overlay */
+.dashfx{position:fixed;z-index:70;pointer-events:none;transform-origin:50% 100%;will-change:transform}
+.dashfx img{position:absolute;left:50%;bottom:0;height:var(--sprH,85%);width:auto;max-width:none;transform:translateX(-50%);object-fit:contain;user-select:none}
+.dashfx img.b{display:none}.dashfx.swap img.a{display:none}.dashfx.swap img.b{display:block}
+.dashfx.flip img{transform:translateX(-50%) scaleX(-1)}
+.dashfx.ghost{z-index:69}
 /* wading: the lower part of the sprite is cut away at the waterline (no tinted block), and white ripples play around that line */
 .bspot.in-water .figure{clip-path:inset(-30% -40% var(--wl,24%) -40%)}
 .bspot .wave{position:absolute;left:-30%;right:-30%;bottom:var(--wl,24%);height:0;z-index:3;pointer-events:none}
@@ -2156,10 +2162,10 @@ const hasKind = (h, k) => h.skills.some(s => s.t === 'dmg' && (k === 'physical' 
 
 /* ============ EFFECTS (hit numbers, screen shake) ============ */
 // Visual feedback only. The two toggles are remembered on this device (not part of the game save).
-const FX = { numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5 };
+const FX = { numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5, sfx: 1 };
 try {
   const saved = JSON.parse(localStorage.getItem('animeRpgFx') || 'null');
-  if (saved) { FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; }
+  if (saved) { FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; FX.sfx = typeof saved.sfx === 'number' ? Math.max(0, Math.min(1, saved.sfx)) : 1; }
   else if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) FX.shake = false;
 } catch (e) {}
 /* ============ BATTLE SPEED (1x / 1.5x / 2x) ============ */
@@ -2250,6 +2256,8 @@ function optToggle(k) {
   else if (k === 'cb') { FX.cb = !FX.cb; saveFx(); applyFxLook(); refreshOptions(); }
   else toggleFx(k);
 }
+let asfx = null;      // sound-effect bus (all effects and the wind go through it; music has its own slider)
+function setSfx(v) { FX.sfx = Math.max(0, Math.min(1, v)); saveFx(); if (asfx && actx) asfx.gain.setTargetAtTime(FX.sfx, actx.currentTime, 0.05); }
 function setVol(v) { FX.vol = Math.max(0, Math.min(1, v)); saveFx(); if (typeof musicVol === 'function') musicVol(); }
 const OPTIONS = [
   ['snd', '🔊 Sound', 'Sound effects. Off by default on phones.', () => !sndMuted],
@@ -2268,7 +2276,7 @@ function renderGuide() {
   $('guide-tabs').innerHTML = GUIDE_TABS.map(([k, n]) => `<button class="${k === guideTab ? 'sel' : ''}" onclick="guideTabTo('${k}')">${n}</button>`).join('');
   const g = (t, c = '') => `<div class="g ${c}">${t}</div>`, pb = Math.round(POS.bonus * 100);
   let h = '';
-  if (guideTab === 'options') h = `<h4>Options</h4>` + OPTIONS.map(([k, n, d, on, lab]) => `<div class="optrow"><div><b>${n}</b><small>${d}</small></div><button id="opt-${k}" class="optsw ${on() ? 'on' : 'off'}" onclick="optToggle('${k}')">${lab ? lab() : on() ? 'ON' : 'OFF'}</button></div>`).join('') + `<div class="optrow"><div><b>🎵 Music volume</b><small>Quiet ambient music that changes with the area. Needs Sound on.</small></div><input type="range" id="opt-vol" min="0" max="100" step="5" value="${Math.round(FX.vol * 100)}" oninput="setVol(this.value / 100)" style="width:120px"></div>` + `<div class="g">Options are remembered on this device. The other tabs are the game guide.</div>`;
+  if (guideTab === 'options') h = `<h4>Options</h4>` + OPTIONS.map(([k, n, d, on, lab]) => `<div class="optrow"><div><b>${n}</b><small>${d}</small></div><button id="opt-${k}" class="optsw ${on() ? 'on' : 'off'}" onclick="optToggle('${k}')">${lab ? lab() : on() ? 'ON' : 'OFF'}</button></div>`).join('') + `<div class="optrow"><div><b>🔊 Effects volume</b><small>Hits, spells, clicks and the blizzard wind. Needs Sound on.</small></div><input type="range" id="opt-sfx" min="0" max="100" step="5" value="${Math.round(FX.sfx * 100)}" oninput="setSfx(this.value / 100)" onchange="sfx('hit')" style="width:120px"></div><div class="optrow"><div><b>🎵 Music volume</b><small>Quiet ambient music that changes with the area. Needs Sound on.</small></div><input type="range" id="opt-vol" min="0" max="100" step="5" value="${Math.round(FX.vol * 100)}" oninput="setVol(this.value / 100)" style="width:120px"></div>` + `<div class="g">Options are remembered on this device. The other tabs are the game guide.</div>`;
   else if (guideTab === 'controls') h = `<h4>Controller</h4>
     ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>X</b> opens Items in battle, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip tabs in this menu, <b>Start</b> presses Continue / Next, <b>Select</b> opens this menu and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
     <h4>Mouse, touch and keyboard</h4>
@@ -2333,7 +2341,7 @@ let actx = null, amaster = null, anoise = null;
 function ac() {
   if (!actx) {
     const C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
-    actx = new C(); amaster = actx.createGain(); amaster.gain.value = 1.0;
+    actx = new C(); amaster = actx.createGain(); amaster.gain.value = 1.0; asfx = actx.createGain(); asfx.gain.value = FX.sfx; asfx.connect(amaster);
     const comp = actx.createDynamicsCompressor(); amaster.connect(comp); comp.connect(actx.destination);
     anoise = actx.createBuffer(1, actx.sampleRate, actx.sampleRate); const d = anoise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     sndDecode();
@@ -2362,7 +2370,7 @@ function sndPlay(key) {
   const ready = e.files.filter(f => SND.buf[f]); if (!ready.length) return;
   let f = ready[Math.floor(Math.random() * ready.length)]; if (ready.length > 1 && f === SND.lastFile[key]) f = ready[(ready.indexOf(f) + 1) % ready.length]; SND.lastFile[key] = f;
   const src = actx.createBufferSource(), g = actx.createGain(); src.buffer = SND.buf[f]; src.playbackRate.value = 1 + (Math.random() * 2 - 1) * (e.jitter ?? 0.05);
-  g.gain.value = e.vol ?? 0.8; src.connect(g); g.connect(amaster); src.start();
+  g.gain.value = e.vol ?? 0.8; src.connect(g); g.connect(asfx); src.start();
 }
 function sndKeys(name, a) {                                // game call -> list of sound events (layers)
   const el = k => (k && k !== 'phys' && k !== 'none') ? k : null;
@@ -3146,6 +3154,74 @@ async function advance(u, t, s, key) {                 // returns an async funct
   };
 }
 
+/* ---- two-stage dash strike (optional art, per skill) ----
+   A skill with TWO pictures, assets/<unit>/<armoured|broken|skin>/skill2.png (wind-up) and skill2b.png (the strike), plays as a short animated attack built from just those pictures:
+   1) the wind-up picture swells toward the camera and crouches, 2) it dashes across the stage, shrinking as it travels (perspective) with motion ghosts,
+   3) on arrival the damage / hit effects / sound happen and the picture swaps to the strike picture, which slips past and behind the target,
+   4) it hurries back to the line-up (the real figure reappears). No skill2b file = the normal lunge. Same motion for every skin. */
+const DASH = { near: 1.75, drop: 0.1, windMs: 150, crouchMs: 170, runMs: 230, coastMs: 190, holdMs: 170, homeMs: 300, arriveGap: 0.3, passBy: 0.45, passScale: 0.92, ghosts: 3 };
+const dspd = ms => ms / battleSpd();
+function figBox(el) {            // where a figure will stand once the spotlight zoom has settled: centre x, feet y, width, height (screen px)
+  const card = el.closest('.combatant-card') || el, cs = getComputedStyle(card), zc = parseFloat(cs.scale) || 1, zf = card.classList.contains('spot') ? SPOT_Z : 1, k = zf / zc;
+  const r = el.getBoundingClientRect(), cr = card.getBoundingClientRect(), cx = cr.left + cr.width / 2, cy = cr.top + cr.height / 2;
+  return { cx: cx + (r.left + r.width / 2 - cx) * k, w: r.width * k, h: r.height * k, bottom: cy + (r.bottom - cy) * k };
+}
+async function dashAssets(u, key) {
+  if (!MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  const a = await firstAsset(u, key), b = await firstAsset(u, key + 'b'), img = x => x && x.ext !== 'mp4' && x.ext !== 'webm';
+  return img(a) && img(b) ? { a, b } : null;
+}
+let dashLive = null;
+function dashClear() {
+  if (!dashLive) return; const d = dashLive; dashLive = null;
+  d.parts.forEach(x => x.remove()); if (d.el) d.el.style.visibility = ''; if (d.tcard) { d.tcard.style.zIndex = ''; d.tcard.style.position = ''; }
+}
+async function dashBegin(u, t, art) {            // returns { run, follow, home } or null (then the normal lunge is used)
+  dashClear();
+  const el = figs.get(u), tf = figs.get(t); if (!el || !tf || !el.isConnected || !tf.isConnected) return null;
+  const A = figBox(el), B = figBox(tf); if (!A.w || !B.w) return null;
+  const dir = Math.sign(B.cx - A.cx) || (u.team === 'p' ? 1 : -1), flip = u.team === 'p' ? SPR.flipParty : SPR.flipEnemy;
+  const mk = (cls) => { const d = document.createElement('div'); d.className = 'dashfx ' + cls + (flip ? ' flip' : ''); Object.assign(d.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+    ['a', 'b'].forEach(k => { const im = document.createElement('img'); im.className = k; im.src = art[k].url; im.draggable = false; d.appendChild(im); }); document.body.appendChild(d); return d; };
+  const main = mk(''), ghosts = Array.from({ length: DASH.ghosts }, () => { const g = mk('ghost'); g.style.opacity = 0; return g; });
+  await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
+  const d = dashLive = { parts: [main, ...ghosts], el, tcard: null };
+  el.style.visibility = 'hidden';
+  const tr = (dx, dy, sc) => `translate(${dx}px,${dy}px) scale(${sc})`;
+  const dy0 = A.h * DASH.drop, dyEnd = B.bottom - A.bottom, S0 = Math.max(1, Math.min(DASH.near, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE)));      // never grows past the top of the screen
+  const P0 = tr(0, 0, 1), P1 = tr(0, dy0, S0), P1c = tr(0, dy0 + A.h * 0.02, S0 * 0.97);                          // wind-up: grows toward the camera, then crouches
+  const sc1 = B.h / A.h;                                                                                           // at the target she is its own size
+  const P2 = tr(B.cx - dir * B.w * DASH.arriveGap - A.cx, dyEnd, sc1);                                              // impact point: just in front of the target
+  const P3 = tr(B.cx + dir * B.w * DASH.passBy - A.cx, dyEnd - B.h * 0.05, sc1 * DASH.passScale);                    // past it, a little further away
+  const anim = (node, frames, ms, ease, delay = 0, fill = 'forwards') => node.animate(frames, { duration: dspd(ms), easing: ease, fill, delay: dspd(delay) });
+  let cur = P0;
+  const move = async (to, ms, ease) => { const an = anim(main, [{ transform: cur }, { transform: to }], ms, ease); cur = to; await Promise.race([an.finished.catch(() => {}), sleep(dspd(ms) + 120)]); };
+  return {
+    async run() {
+      await move(P1, DASH.windMs, 'cubic-bezier(.2,.8,.3,1)');
+      await move(P1c, DASH.crouchMs, 'ease-in-out');
+      sfx('swing');
+      main.style.filter = 'blur(1.2px) brightness(1.08)';
+      ghosts.forEach((g, i) => { g.style.opacity = ''; const an = anim(g, [{ transform: P1c, opacity: .0 }, { opacity: .32 - i * .08, offset: .25 }, { transform: P2, opacity: 0 }], DASH.runMs + 40, 'cubic-bezier(.5,0,.85,.5)', 34 * (i + 1)); });
+      await move(P2, DASH.runMs, 'cubic-bezier(.5,0,.85,.5)');       // accelerates into the blow
+      main.style.filter = '';
+      ghosts.forEach(g => g.style.opacity = 0);
+    },
+    async follow() {                       // the blow has landed: swap to the strike picture, slip behind the target
+      main.classList.add('swap'); d.tcard = tf.closest('.combatant-card'); if (d.tcard) { d.tcard.style.position = 'relative'; d.tcard.style.zIndex = 80; }
+      await move(P3, DASH.coastMs, 'cubic-bezier(.1,.7,.3,1)');
+    },
+    async home() {                         // back to the line-up (call after any reordering so it lands in her real slot)
+      await sleep(dspd(DASH.holdMs));
+      if (dashLive !== d) return;
+      const C = el.isConnected ? figBox(el) : A;
+      main.style.zIndex = 71; if (d.tcard) d.tcard.style.zIndex = '';
+      await move(tr(C.cx - A.cx, C.bottom - A.bottom, C.h / A.h), DASH.homeMs, 'cubic-bezier(.4,0,.2,1)');
+      dashClear();
+    }
+  };
+}
+
 function bump(u, cls) {          // quick visual nudge on a unit's figure: 'hurt' (flash + wobble) or 'lunge' (step toward the enemy)
   const el = figs.get(u); if (!el) return;
   el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 450);
@@ -3802,15 +3878,17 @@ async function perform(u, i, target) {
   const film = await skillFilm(u, 'skill' + (i + 1));
   if (film) { setSpot([]); await playFilm(film); }
   let begun; const started = new Promise(r => begun = r);
-  const clip = film ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
-  const back = !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
-  if (!film) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
-  if (!film && s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
-  if (!film && s.t === 'dmg' && !(s.el && rangeOf(s) === 'ranged')) sfx('swing');
+  const dashArt = !film && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
+  const dash = dashArt ? await dashBegin(u, target, dashArt) : null;               // two-picture dash strike (skill2 + skill2b), else the normal lunge
+  const clip = film || dash ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
+  const back = dash ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
+  if (!film && !dash) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
+  if (!film && !dash && s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
+  if (!film && !dash && s.t === 'dmg' && !(s.el && rangeOf(s) === 'ranged')) sfx('swing');
   if (s.t === 'barrier' || s.t === 'barrierAll' || s.t === 'guard') sfx('ward');
   if (s.t === 'tonic') sfx('heal'); if (s.t === 'brew') sfx('charge', 'poison'); if (s.t === 'immortal') sfx('charge', 'fire');
   if (film) { if (target && (s.t === 'dmg' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]); }
-  else if (s.t === 'dmg') await (s.storm && target ? skyBolt(target, true) : s.aoe && target && s.el ? Promise.all((u.team === 'p' ? enemies : party).filter(isAlive).map(e => projectile(u, e, s.el))) : s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
+  else if (s.t === 'dmg') await (dash ? dash.run() : s.storm && target ? skyBolt(target, true) : s.aoe && target && s.el ? Promise.all((u.team === 'p' ? enemies : party).filter(isAlive).map(e => projectile(u, e, s.el))) : s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
     log(`🌫️ ${u.name} throws a ${s.n}! She slips back and vanishes into the smoke.`, 'log-player'); floatText(u, '🌫️ STEALTH', 'tag');
@@ -3823,7 +3901,7 @@ async function perform(u, i, target) {
   if (s.t === 'buff') { if (u.rel && u.rel.dragon) { u.wrathExtra = true; const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * .15)); if (u.hp > b0) floatText(u, '+' + (u.hp - b0), 'heal'); } sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
     const wasBleeding = !!(target && target.statuses && target.statuses.some(x => x.type === 'bleed')), wasArmoured = !!target && target.state !== 'broken' && target.state !== 'super';
-    await Promise.all([clip, hit(u, target, s)]);
+    await Promise.all([clip, hit(u, target, s), dash ? dash.follow() : null]);
     if (s.resetOnKO && target && isAlive(u) && (!isAlive(target) || (wasArmoured && target.state === 'broken'))) { u.cd[i] = 0; log(`🗡️ ${u.name} is ready to strike again: ${s.n} is ready.`, 'log-player'); floatText(u, '🗡️ RESET', 'tag'); }
     if (s.bonusOnBleed && wasBleeding && isAlive(u) && u.team === 'p') u.extraTurn = true;
     if (s.aoe && isAlive(u)) {                                      // Thunderstorm: everyone else on the other side is caught in it too
@@ -3859,12 +3937,15 @@ async function perform(u, i, target) {
       }
     }
     if (s.move === 'back' && u.team === 'p' && isAlive(u)) {            // Spark Step: strike, then dash out of the front
-      if (back) await back();
-      if (moveUnit(u, 'back')) { log(`💨 ${u.name} dashes back out of reach.`, 'log-player'); render(); await sleep(200); }
+      if (back && !dash) await back();
+      if (moveUnit(u, 'back')) { log(`💨 ${u.name} dashes back out of reach.`, 'log-player'); render(); if (dash) await sleep(30); else await sleep(200); }
+      if (dash) await dash.home();
     } else if (s.move === 'front' && u.team === 'p' && isAlive(u)) {          // Backstab: she ends up at the front of the line
-      if (back) await back();
-      if (moveUnit(u, 'front')) { log(`🗡️ ${u.name} darts to the front of the line.`, 'log-player'); render(); await sleep(200); }
-    } else if (back) back();
+      if (back && !dash) await back();
+      if (moveUnit(u, 'front')) { log(`🗡️ ${u.name} darts to the front of the line.`, 'log-player'); render(); if (dash) await sleep(30); else await sleep(200); }
+      if (dash) await dash.home();
+    } else if (dash) await dash.home();
+    else if (back) back();
     return;
   }
   if (s.t === 'charm') {                                       // Siren's song: no damage, a broken target turns on its friends
@@ -4361,6 +4442,7 @@ function checkEnd() {
 }
 
 async function battle() {
+  dashClear();
   log(`${curNode().name}: ${party.length} hero${party.length > 1 ? 'es' : ''} face ${enemies.length} enem${enemies.length > 1 ? 'ies' : 'y'}.`);
   for (let round = 1; ; round++) {
     roundNo = round; log(`— Round ${round} —`, 'log-round'); blizzTick(round);
@@ -5728,7 +5810,7 @@ function windStart() {
   if (windSrc || sndMuted || !ac()) return;
   const s = actx.createBufferSource(), bp = actx.createBiquadFilter(), g = actx.createGain(), lfo = actx.createOscillator(), lg = actx.createGain();
   s.buffer = anoise; s.loop = true; bp.type = 'bandpass'; bp.frequency.value = 520; bp.Q.value = 1.4; g.gain.value = 0.05; lfo.frequency.value = 0.18; lg.gain.value = 0.035; lfo.connect(lg); lg.connect(g.gain);
-  s.connect(bp); bp.connect(g); g.connect(amaster); s.start(); lfo.start(); windSrc = { s, lfo, g };
+  s.connect(bp); bp.connect(g); g.connect(asfx); s.start(); lfo.start(); windSrc = { s, lfo, g };
 }
 function windStop() { if (!windSrc) return; try { windSrc.g.gain.setTargetAtTime(0, actx.currentTime, 0.3); const w = windSrc; setTimeout(() => { try { w.s.stop(); w.lfo.stop(); } catch (e) {} }, 1200); } catch (e) {} windSrc = null; }
 // steam breath in the cold: in Act 3 every figure puffs a little fog cloud in time with its breathing animation (same --bt / --bd as the idle breathe)
