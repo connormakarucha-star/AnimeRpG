@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-12 18:21",
+  "generated": "2026-11-12 18:51",
   "files": {
     "aneesah/armoured - swimsuit/damaged": "png",
     "aneesah/armoured - swimsuit/idle": "png",
@@ -8,6 +8,11 @@
     "aneesah/armoured - swimsuit/skill1": "png",
     "aneesah/armoured - swimsuit/skill2": "png",
     "aneesah/armoured - swimsuit/skill3": "mp4",
+    "aneesah/armoured - winter gear/damaged": "png",
+    "aneesah/armoured - winter gear/idle": "png",
+    "aneesah/armoured - winter gear/skill1": "png",
+    "aneesah/armoured - winter gear/skill2": "png",
+    "aneesah/armoured - winter gear/skill3": "mp4",
     "aneesah/armoured/damaged": "png",
     "aneesah/armoured/idle": "png",
     "aneesah/armoured/skill1": "png",
