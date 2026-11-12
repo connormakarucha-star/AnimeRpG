@@ -310,9 +310,9 @@ body.calm .seat .sp{animation:none}
 .sr-keeper{position:absolute;left:50%;top:5cqh;height:86cqh;aspect-ratio:1/2;transform:translateX(-50%);z-index:5;pointer-events:none;transform-origin:50% 40%;animation:srBreathe 4.6s ease-in-out infinite}
 .sr-keeper img,.sr-keeper svg{height:100%;width:auto;max-width:none;display:block;margin:0 auto;position:relative;left:50%;transform:translateX(-50%)}
 @keyframes srBreathe{0%,100%{transform:translateX(-50%) scaleY(1)}50%{transform:translateX(-50%) scaleY(1.012)}}
-.sr-bubble{position:absolute;z-index:20;left:60%;top:7%;max-width:34%;background:#f5ecd9;color:#3a2a1e;border:2px solid #6a4a30;border-radius:12px;padding:.5em .8em;font-size:max(.7rem,1.35cqw);line-height:1.3;box-shadow:0 4px 14px rgba(0,0,0,.5);pointer-events:none}
-.sr-bubble::before{content:"";position:absolute;left:-10px;top:50%;margin-top:-8px;border:8px solid transparent;border-right-color:#6a4a30;border-left:0}
-.sr-bubble.ok{background:#e4f3dc;border-color:#4f7a44}.sr-bubble.ok::before{border-right-color:#4f7a44}
+.sr-bubble{position:absolute;z-index:20;left:54%;top:7%;max-width:30%;padding:.5em 1em;border-radius:12px;background:#fff;color:#1b1b26;font-weight:700;font-size:clamp(12px,.95vw,18px);line-height:1.25;box-shadow:0 3px 10px rgba(0,0,0,.55);pointer-events:none;text-align:center}
+.sr-bubble::after{content:"";position:absolute;left:18%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-top-color:#fff;border-bottom:0}
+.sr-bubble.ok{background:#e9ffe0}.sr-bubble.ok::after{border-top-color:#e9ffe0}
 .sr-bubble.pop{animation:srPop .35s ease-out}
 @keyframes srPop{0%{transform:scale(.85);opacity:.3}100%{transform:scale(1);opacity:1}}
 .sr-lamp{animation:srFlick 3.1s ease-in-out infinite}
@@ -929,12 +929,12 @@ body.calm .pot-back svg.tt{animation:none!important}
   body.in-town{padding:0;background:#0b0914}
   #hub .hub-wrap{max-width:none;padding:0}
   #hub .hub-hall{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
-  #town-map{display:block;position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;margin:0 auto;overflow:hidden;background-size:cover;background-position:center;container-type:inline-size}
+  #town-map{display:block;position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;margin:0 auto;overflow:hidden;background-size:cover;background-position:center;container-type:inline-size}      /* phones / small windows keep the contained picture */
   #town-art{display:block;position:absolute;inset:0}
   #town-art svg{display:block;width:100%;height:100%}
   #town-map.has-art #town-art{display:none}
-  #town-map .hub-title{position:absolute;top:1.2%;left:50%;transform:translateX(-50%);z-index:5;margin:0;font-size:clamp(22px,3.4cqw,56px);text-shadow:0 2px 10px #000,0 0 18px rgba(255,117,140,.5);pointer-events:none}
-  #town-map .hub-sub{position:absolute;top:1.8%;left:1.4%;z-index:5;margin:0;font-size:clamp(12px,1.25cqw,20px);background:rgba(10,8,20,.6);padding:.35em .9em;border-radius:14px;color:#d8d8ea}
+  #town-ui .hub-title{position:absolute;top:1.2%;left:50%;transform:translateX(-50%);z-index:5;margin:0;font-size:clamp(22px,3.4cqw,56px);text-shadow:0 2px 10px #000,0 0 18px rgba(255,117,140,.5);pointer-events:none}
+  #town-ui .hub-sub{position:absolute;top:1.8%;left:1.4%;z-index:5;margin:0;font-size:clamp(12px,1.25cqw,20px);background:rgba(10,8,20,.6);padding:.35em .9em;border-radius:14px;color:#d8d8ea}
   #hub #hub-msg{position:absolute;bottom:2.2%;left:50%;transform:translateX(-50%);z-index:6;margin:0;max-width:62%;background:rgba(8,6,16,.8);border:1px solid rgba(255,213,79,.4);padding:.5em 1.1em;border-radius:12px;font-size:clamp(12px,1.2cqw,19px)}
   #hub #hub-msg:empty{display:none}
   #hub-back{position:absolute;top:1.8%;right:1.4%;z-index:5;margin:0;font-size:clamp(11px,1.05cqw,16px);padding:.45em 1em;background:rgba(10,8,20,.6)}
@@ -944,6 +944,156 @@ body.calm .pot-back svg.tt{animation:none!important}
   #town-map .bld:hover .lbl{background:rgba(70,40,40,.92);transform:translateX(-50%) translateY(-3px)}
   #town-map .bld .lbl small{font-size:.62em;color:#c9b99a}
   #town-map .bld.embark .lbl{border-color:#ff758c;color:#ffd6de}
+}
+/* ===== FULL-SCREEN SCENES: the picture covers the whole window (a little is cropped on screens that are not exactly 16:9), the buttons and titles stay on screen ===== */
+.fs-ui{position:absolute;inset:0;container-type:inline-size;pointer-events:none;z-index:6}
+.fs-ui>*{pointer-events:auto}
+.scene.fsr .hub-hall{position:relative}
+@media (min-width:900px) and (min-height:480px){
+  body.fs{padding:0;background:#0b0914;overflow:hidden}
+  .scene.fsr.show{position:fixed;inset:0;width:100vw;height:100vh;margin:0;display:block;z-index:1}
+  .scene.fsr .hub-wrap{position:absolute;inset:0;max-width:none!important;width:auto;padding:0}
+  .scene.fsr .hub-hall{position:absolute;inset:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+  .fsstage,#town-map,#beach-map,#vb-court{position:absolute;left:50%;top:50%;width:max(100vw,177.78vh)!important;height:max(56.25vw,100vh);aspect-ratio:auto;margin:0;transform:translate(-50%,-50%);overflow:hidden;border-radius:0}
+  #vb-hud{top:2.4%}
+  #vb-pausebtn{position:absolute;top:2.4%;right:1.4%;font-size:clamp(11px,1.05cqw,17px);padding:.45em 1em;background:rgba(10,14,20,.72);border:1px solid #6c8a99;border-radius:20px;color:#dbe8ee}
+  #vb-hint{position:absolute;left:50%;bottom:2.2%;transform:translateX(-50%);font-size:clamp(11px,1.15cqw,18px);color:#c9d6dc;background:rgba(8,12,18,.6);padding:.35em 1.1em;border-radius:16px;white-space:nowrap;pointer-events:none}
+  #vb-msg{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);z-index:8;margin:0;max-width:70vw;text-align:center;background:rgba(8,12,18,.7);padding:.4em 1.3em;border-radius:20px;font-size:clamp(14px,1.4vw,24px);font-weight:bold;pointer-events:none}
+  #vb-msg:empty{display:none}
+  #vb-panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:20;width:min(760px,92vw);max-height:88vh;overflow:auto;background:rgba(12,16,24,.94);border:1px solid #3a5566;border-radius:12px;padding:16px;box-sizing:border-box}
+}
+#vb-pause{display:none;position:absolute;inset:0;z-index:40;background:rgba(6,9,14,.72);align-items:center;justify-content:center}
+#vb-pause.on{display:flex}
+#vb-pause .vp-box{display:flex;flex-direction:column;gap:10px;min-width:240px;padding:22px 26px;background:#141a24;border:1px solid #3a5566;border-radius:14px;text-align:center;font-size:1.3rem}
+#vb-pause .vp-box button{font-size:1rem;padding:12px}
+
+/* ===== FULL-SCREEN HUBS: dorm / spa / training / embark share one layout: the room fills the window, the roster is a list down the right side ===== */
+.scene.fsr{--pw:clamp(260px,19vw,380px)}
+.fsbox{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;container-type:size;background:#14101c}
+.fsbox .fscov{position:absolute;inset:0;width:auto;height:auto;margin:0;border-radius:0;aspect-ratio:auto;transform:none;max-height:none;border:0}
+.fs-chip{margin:6px 8px;text-align:center}
+.rside{margin:8px 0;text-align:left}
+.rs-h{font:700 .78rem 'Segoe UI',sans-serif;letter-spacing:.12em;color:#c8b8e8;margin:2px 2px 8px;text-transform:uppercase}
+.rs-h small{display:block;font-weight:400;letter-spacing:0;text-transform:none;color:#8a8aab;margin-top:3px;font-size:.72rem;line-height:1.3}
+.rlist{display:flex;flex-direction:column;gap:6px}
+.rlist .rc{cursor:pointer;touch-action:auto}
+.rlist .rc.drag{cursor:grab;touch-action:none}
+.rlist .rc.sel{border-color:#ffd54f;background:#2a2412;box-shadow:0 0 14px rgba(255,213,79,.35)}
+.rlist .rc.off{opacity:.45}
+.rlist .rc.on{border-color:#ff758c;background:linear-gradient(90deg,#33202a,#1a1520)}
+.rlist .rc .rc-t small{white-space:normal}
+.rlist .rr-h{font-size:.68rem;letter-spacing:.12em;color:#9a9ab8;margin:8px 2px 0}
+.door{position:absolute;z-index:30;background:none;border:0;padding:0;cursor:pointer;border-radius:6px}
+.door span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(255,255,255,.26);border:1px solid rgba(255,255,255,.55);border-radius:6px;color:#fff;font-weight:800;letter-spacing:.06em;font-size:clamp(11px,1.1vw,19px);line-height:1.2;text-shadow:0 1px 5px #000;transition:background .2s,box-shadow .2s;padding:0 .3em}
+.door:hover span,.door:focus-visible span{background:rgba(255,255,255,.46);box-shadow:0 0 28px rgba(255,255,255,.45)}
+.narrow-back{width:100%}
+#spa-flaws{display:none}
+.sf-card{background:rgba(14,12,22,.94);border:1px solid #5b4a7e;border-radius:14px;padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.6);text-align:left}
+.sf-card h3{margin:0 0 4px;font-size:1.15rem;color:#ffcfd8}
+.sf-card .sk{font-size:.78rem;color:#b4b4cc;margin:4px 0 8px}
+.sf-card .spa-btns{display:flex;flex-direction:column;gap:6px}
+.sf-card .spa-btns button{text-align:left;padding:10px 12px;font-size:.9rem}
+.sf-x{float:right;padding:2px 9px}
+body.fs .qmap{margin:0}
+.em-map,.em-party{position:relative}
+.em-back,.em-begin{margin:6px 0}
+#quest-detail{margin-top:6px}
+#quest-detail .sup-line{font-size:.72rem;color:#c9c9e0;margin:4px 2px}
+#btn-quick{display:none;margin-top:8px}
+.shop-back{display:none}
+@keyframes srOrb{50%{transform:translateY(-4px) scale(1.06)}}
+@media (min-width:900px) and (min-height:480px){
+  .fs-chip{position:absolute;top:2%;left:1.4%;z-index:12;margin:0;text-align:left;background:rgba(10,8,20,.7);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:.45em 1.1em;max-width:min(62vw,calc(100vw - var(--pw) - 40px))}
+  .fs-chip .hub-title{margin:0;font-size:1.3rem}
+  .fs-chip .hub-sub{margin:2px 0 0;font-size:.74rem;text-align:left;color:#d0d0e4}
+  .fsbox{position:absolute;left:0;top:0;bottom:0;right:var(--pw);width:auto;aspect-ratio:auto}
+  .fsbox .fscov{left:50%;top:50%;right:auto;bottom:auto;width:max(100cqw,177.78cqh);height:max(56.25cqw,100cqh);transform:translate(-50%,-50%);container-type:size}
+  .fsbox .fscov.left{left:0;transform:translateY(-50%)}
+  .rside{position:absolute;top:0;right:0;bottom:0;width:var(--pw);margin:0;box-sizing:border-box;z-index:20;display:flex;flex-direction:column;padding:12px 10px 12px 14px;background:linear-gradient(90deg,rgba(14,11,22,.86),rgba(14,11,22,.97) 12%);border-left:1px solid #3a3450;box-shadow:-10px 0 30px rgba(0,0,0,.45)}
+  .rside .rlist{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#4a4468 transparent;padding:0 2px 52px 0}
+  .rlist .rc{flex:0 0 auto;padding:8px 10px}
+  .rlist .rc .mini-sprite{width:56px;height:56px;flex:0 0 56px}
+  .rlist .rc-t b{font-size:.98rem}
+  .rlist .rc-t small{font-size:.74rem}
+  .narrow-back{display:none}
+  /* dorm */
+  #dorm-roster{width:auto;margin:0;text-align:left}
+  #dorm-roster .rr-h{margin:6px 2px 2px}
+  #dorm-list.dorm-room{border:0;border-radius:0;margin:0;width:max(100cqw,177.78cqh)}
+  #dorm-back{display:none}
+  .dorm-room .door{z-index:99}
+  #gear.char #dorm-back{display:block;position:absolute;left:28px;bottom:18px;z-index:30;padding:10px 22px;font-size:.95rem;width:auto;max-width:none}
+  #gear.char .dm-box,#gear.char .dm-side,#gear.char .dm-chip{display:none}
+  #gear.char .dorm-char{position:absolute;inset:0;display:grid;grid-template-columns:minmax(240px,24%) 1fr 1fr;gap:22px;padding:22px 34px 74px;box-sizing:border-box;background:radial-gradient(ellipse at 20% 30%,#2a2040,#15111f 70%);z-index:10;text-align:left;margin:0;max-width:none;overflow:hidden}
+  #gear.char .dorm-art{display:flex;align-items:flex-end;justify-content:center;min-height:0}
+  #gear.char .dorm-art .figure.dorm-big{height:min(86vh,860px);max-height:100%;width:100%}
+  #gear.char .dc-col{min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:#4a4468 transparent}
+  #gear.char .dorm-info h3{font-size:1.7rem;margin:0 0 6px}
+  #gear.char .dtr{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px}
+  #gear.char .dtr .tr-row{font-size:.78rem;margin:0}
+  #gear.char .dsk{font-size:.8rem;padding:7px 9px;margin-bottom:6px}
+  #gear.char .rslots{grid-template-columns:1fr 1fr}
+  #gear.char .rslot{font-size:.78rem;padding:6px 8px;min-height:0}
+  #gear.char .dh{margin:10px 0 4px}
+  #gear.char .dbio{font-size:.8rem}
+  /* spa and training desks */
+  #spa-flaws.on{display:block;position:absolute;left:calc((100% - var(--pw)) / 2);top:50%;transform:translate(-50%,-50%);z-index:25;width:min(520px,calc(100vw - var(--pw) - 60px))}
+  #spa-banner .hb-cap,#train-banner .hb-cap{display:none}
+  /* embark */
+  #party-select .hub-hall{display:grid;grid-template-columns:minmax(0,1fr) var(--pw);grid-template-rows:minmax(0,1fr) clamp(190px,36vh,380px)}
+  #party-select .em-map{grid-column:1;grid-row:1;overflow:hidden;background:#0d1d2b}
+  #party-select .em-party{grid-column:1;grid-row:2;border-top:2px solid #5a4630}
+  #party-select .em-roster{position:relative;grid-column:2;grid-row:1 / 3;z-index:1}
+  #party-select #quest-list{position:absolute;inset:0}
+  #party-select #qmap{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;max-width:none;border:0;border-radius:0;box-shadow:none}
+  #party-select #qmap::after{background:radial-gradient(ellipse at 50% 50%,transparent 62%,rgba(5,8,14,.6) 100%)}
+  #party-select .qmap .mworld{inset:auto;left:0;top:0;width:100%;height:auto;aspect-ratio:16/9}
+  #party-select .qmap img.mart{-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+  #party-select .qm-title{left:11em;top:1.6%}
+  #party-select .qm-hint{top:1.6%;right:1.4%}
+  #party-select .em-back{position:absolute;top:1.6%;left:1.2%;z-index:50;margin:0;padding:.5em 1em;background:rgba(10,8,20,.78);font-size:.85rem}
+  #party-select .em-begin{position:absolute;right:1.4%;bottom:14px;width:clamp(300px,24%,400px);z-index:50;margin:0;padding:.75em 1.8em;font-size:1.1rem;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.55)}
+  #party-select #quest-detail{position:absolute;right:1.4%;bottom:74px;width:clamp(300px,24%,400px);z-index:45;margin:0}
+  #party-select #quest-detail .pick{margin:0 0 6px;background:rgba(14,12,22,.9);backdrop-filter:blur(2px);font-size:.78rem;padding:10px 12px}
+  #party-select #quest-detail .tierbar{background:rgba(14,12,22,.9)}
+  #party-select #quest-detail .sup-line{background:rgba(14,12,22,.82);border-radius:8px;padding:5px 9px}
+  #party-select .gate{position:absolute;inset:0;margin:0;border:0;border-radius:0}
+  #party-select .gate .slots{height:100%;box-sizing:border-box;display:flex;flex-direction:column;padding:8px 18px 12px}
+  #party-select .form-row{flex:1;min-height:0;align-items:stretch;gap:10px}
+  #party-select .fslot{height:auto;min-height:0}
+  #party-select .form-lab{font-size:.78rem}
+  #party-select #btn-quick{display:none}
+
+  /* shop: the room fills the window; the wares sit on its shelves and counter */
+  #shop .shop-room{right:0}
+  #shop .shop-layout,#shop .shop-main,#shop .shelf{display:contents}
+  #shop .shelf-lbl,#shop .plank{display:none}
+  #shop{--W:max(100vw,177.78vh);--H:max(56.25vw,100vh)}
+  #shop .shop-room .fscov{overflow:hidden}
+  #shop .shop-room::after{display:none}
+  #shop .shop-row.ware{position:absolute;box-sizing:border-box;z-index:12;margin:0;left:calc(50% - var(--W) / 2 + var(--W) * var(--x) / 100);top:calc(50% - var(--H) / 2 + var(--H) * var(--y) / 100);width:calc(var(--W) * var(--w) / 100);height:calc(var(--H) * var(--h) / 100);padding:.5vw .6vw;gap:.3vw;justify-content:space-between;background:linear-gradient(rgba(34,22,14,.93),rgba(24,15,10,.95));border:2px solid #7a5638;border-radius:8px;box-shadow:0 8px 18px rgba(0,0,0,.5);font-size:clamp(10px,.68vw,14px);line-height:1.3}
+  #shop .shop-row.ware:hover{transform:translateY(-4px);background:linear-gradient(rgba(48,32,20,.95),rgba(32,20,12,.97))}
+  #shop .shop-row.ware .w-ic{font-size:clamp(24px,2.3vw,44px);padding:0}
+  #shop .shop-row.ware .who{flex:1;min-height:0;overflow:hidden}
+  #shop .shop-row.ware .who strong{font-size:1.18em;color:#ffe9b8}
+  #shop .shop-row.ware .btns button{font-size:1.05em;padding:.55em .4em}
+  #shop .shop-row.rcase{padding:.4vw 0 0;gap:.2vw;background:none;border:0;box-shadow:none;justify-content:flex-start;align-items:center}
+  #shop .shop-row.rcase:hover{background:none;transform:none}
+  #shop .shop-row.rcase .w-ic{font-size:clamp(28px,3vw,58px);filter:drop-shadow(0 0 14px var(--rc,#9a7aff));animation:srOrb 3.4s ease-in-out infinite}
+  #shop .shop-row.rcase.relic-common{--rc:#b8c8d8}#shop .shop-row.rcase.relic-rare{--rc:#7fb6ff}#shop .shop-row.rcase.relic-epic{--rc:#c58aff}#shop .shop-row.rcase.relic-legendary{--rc:#ffcf5a}
+  #shop .shop-row.rcase .who{display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max(230px,16vw);z-index:30;background:rgba(18,12,10,.97);border:2px solid #7a5638;border-radius:8px;padding:.6vw .8vw;text-align:left;pointer-events:none}
+  #shop .shop-row.rcase:hover .who{display:block}
+  #shop .shop-row.rcase .btns{width:78%;margin-top:auto;margin-bottom:6%}
+  #shop .shop-row.rcase .btns button{width:100%;background:rgba(10,6,14,.8)}
+  #shop .sold-out{position:absolute;left:30%;top:84%;z-index:12;background:rgba(10,6,4,.7);padding:.5em 1.2em;border-radius:10px}
+  #shop .shop-side{position:absolute;top:auto;flex:none;right:1.2%;bottom:2.4%;width:clamp(230px,16.5vw,310px);z-index:14;margin:0;background:rgba(14,10,8,.92);border:2px solid #7a5638;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.55)}
+  #shop .shop-side .sup-row{font-size:clamp(11px,.75vw,14px);padding:5px 8px}
+  #shop .shop-side .sup-note{font-size:.62rem}
+  #shop .shop-back{display:block;margin-top:6px;padding:.4em 1em}
+  #shop .fs-chip{max-width:min(46vw,560px)}
+  #shop .fs-chip .hub-sub{max-width:none}
+  body.dev #party-select #btn-quick{display:block}
+  #party-select .em-roster .rs-h{flex:0 0 auto}
 }
 /* ===== Wide screens (PC / landscape). Phones keep the layout above. ===== */
 @media (min-width:900px){
@@ -1240,6 +1390,8 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 #beach-pick .hub-hall{background:linear-gradient(#17222b,#10171d);border-color:#24505f}
 .bmap{position:relative;width:min(100vw,calc(100vh * 16 / 9));aspect-ratio:16/9;margin:0 auto;overflow:hidden;background:#12161d;container-type:inline-size;text-align:left;border-radius:6px}
 #vb .bmap{width:100%}
+#vb-pausebtn{display:none}
+@media (min-width:900px) and (min-height:480px){#vb-pausebtn{display:block}}
 .bmap .bart{position:absolute;inset:0}
 .bmap .bart svg{display:block;width:100%;height:100%}
 .bmap.has-art .bart{display:none}
@@ -1286,8 +1438,6 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 .bspot .figure.hop{animation:vbhop .32s}
 @keyframes vbhop{40%{transform:translateY(-16%)}}
 #vb-msg{text-align:center;font-size:.8rem;color:#c9d6dc;margin:8px 0;min-height:1.3em}
-#vb-hit{width:100%;padding:22px 8px;font-size:1.3rem;margin-bottom:6px;touch-action:manipulation;user-select:none}
-#vb-quit{width:100%;margin-bottom:6px}
 #vb-panel .swaprow{border-top:1px solid #262638;padding-top:8px;margin-top:6px;text-align:left}
 #vb-panel .trg{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
 #vb-panel .trg button{padding:4px 8px;font-size:.68rem}
@@ -1401,20 +1551,22 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   </div>
 </div>
 
-<div id="hub" class="scene">
+<div id="hub" class="scene fsr">
   <div class="hub-wrap">
     <div class="hub-hall">
       <div id="town-map">
         <div id="town-art"></div>
-        <div class="hub-title">Town</div>
-        <div class="hub-sub">Home of the guild · <span class="hub-gold" id="hub-gold">Gold: 0</span></div>
         <button class="hub-btn bld b-shop" style="--x:4.4%;--y:30%;--w:23.8%;--h:35%" onclick="openShop()"><span class="lbl">🛒 Shop<small>Supplies and relics</small></span></button>
         <button class="hub-btn bld b-spa" style="--x:31%;--y:22%;--w:20.5%;--h:36%" onclick="openSpa()"><span class="lbl">♨️ Spa<small>Remove a hero's flaws</small></span></button>
         <button class="hub-btn bld b-dorm" style="--x:54%;--y:21%;--w:25%;--h:39%" onclick="openGear()"><span class="lbl">🛏️ Dorm<small>Heroes, relics and traits</small></span></button>
-        <button class="hub-btn bld b-train" style="--x:4%;--y:70%;--w:31%;--h:28%" onclick="openTrain()"><span class="lbl">🎯 Training Ground<small>Earn permanent perks</small></span></button>
-        <button class="hub-btn bld embark b-road" style="--x:79%;--y:36%;--w:21%;--h:26%" onclick="openParty()"><span class="lbl">⚔️ The Road<small>Embark: choose a party, then a quest</small></span></button>
-        <button class="hub-btn bld b-lake" id="btn-lake" style="--x:44%;--y:79%;--w:22%;--h:15%;display:none" onclick="openLake()"><span class="lbl">🧊 The Frozen Lake<small>Polar dip · Frost crystals</small></span></button>
-        <button class="hub-btn bld b-beach" id="btn-beach" style="--x:79%;--y:65%;--w:21%;--h:20%;display:none" onclick="openBeach()"><span class="lbl">🏖️ Go to the Beach<small>Gloomy shore · Volleyball</small></span></button>
+        <button class="hub-btn bld b-train" style="--x:5%;--y:64%;--w:30%;--h:27%" onclick="openTrain()"><span class="lbl">🎯 Training Ground<small>Earn permanent perks</small></span></button>
+        <button class="hub-btn bld embark b-road" style="--x:76%;--y:34%;--w:19%;--h:26%" onclick="openParty()"><span class="lbl">⚔️ The Road<small>Embark: choose a party, then a quest</small></span></button>
+        <button class="hub-btn bld b-lake" id="btn-lake" style="--x:44%;--y:74%;--w:22%;--h:15%;display:none" onclick="openLake()"><span class="lbl">🧊 The Frozen Lake<small>Polar dip · Frost crystals</small></span></button>
+        <button class="hub-btn bld b-beach" id="btn-beach" style="--x:76%;--y:63%;--w:19%;--h:20%;display:none" onclick="openBeach()"><span class="lbl">🏖️ Go to the Beach<small>Gloomy shore · Volleyball</small></span></button>
+      </div>
+      <div class="fs-ui" id="town-ui">
+        <div class="hub-title">Town</div>
+        <div class="hub-sub">Home of the guild · <span class="hub-gold" id="hub-gold">Gold: 0</span></div>
         <div id="hub-msg"></div>
         <button id="hub-back" onclick="location.reload()">Back to Title</button>
       </div>
@@ -1422,12 +1574,14 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   </div>
 </div>
 
-<div id="beach" class="scene">
+<div id="beach" class="scene fsr">
   <div class="hub-wrap"><div class="hub-hall">
     <div class="bmap" id="beach-map">
       <div class="bart" id="beach-art"></div>
-      <div class="btitle">The Grey Shore<small id="beach-gold">Gold: 0</small></div>
       <div id="beach-figs"></div>
+    </div>
+    <div class="fs-ui" id="beach-ui">
+      <div class="btitle">The Grey Shore<small id="beach-gold">Gold: 0</small></div>
       <div class="bbtns">
         <button class="primary" onclick="openBeachPick()">🏐 Beach Volleyball</button>
         <button onclick="showScene('hub')">↩ Return to Town</button>
@@ -1470,7 +1624,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   </div></div>
 </div>
 
-<div id="vb" class="scene">
+<div id="vb" class="scene fsr">
   <div class="hub-wrap"><div class="hub-hall">
     <div class="bmap" id="vb-court">
       <div class="vbstage" id="vb-stage">
@@ -1480,40 +1634,47 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
         <div id="vb-ring"></div>
         <div id="vb-ball">🏐</div>
       </div>
-      <div id="vb-hud"></div>
       <div id="vb-judge"></div>
     </div>
+    <div class="fs-ui" id="vb-ui">
+      <div id="vb-hud"></div>
+      <button id="vb-pausebtn" onclick="vbPause(true)" title="Pause (Esc)">⏸ Pause</button>
+      <div id="vb-hint">Space · click · A button to hit the ball &nbsp;·&nbsp; Esc to pause</div>
+    </div>
     <div id="vb-msg"></div>
-    <button class="primary" id="vb-hit">🏐 HIT!</button>
-    <button id="vb-quit" onclick="vbQuit()">Give Up (no refund)</button>
+    <div id="vb-pause"><div class="vp-box"><b>Paused</b><button class="primary" onclick="vbPause(false)">Resume</button><button onclick="vbQuit()">Give up (no refund)</button></div></div>
     <div class="panel-result" id="vb-panel"></div>
   </div></div>
 </div>
 
-<div id="party-select" class="scene">
+<div id="party-select" class="scene fsr embark">
   <div class="hub-wrap">
     <div class="hub-hall">
-      <div class="hub-title">Choose Your Party</div>
-      <div class="hub-sub">Tap up to 4 heroes below. Then drag them (or tap one, then another) to swap places in the line.</div>
-      <div class="gate" id="party-gate"><svg class="gate-bg" viewBox="0 0 1600 560" preserveAspectRatio="xMidYMid slice" id="gate-bg"></svg><div class="slots" id="party-slots"></div></div>
-      <div class="pick-list" id="roster-pick"></div>
-      <div class="row">
-        <button onclick="showScene('hub')">Back</button>
-        <button class="primary" id="btn-begin" onclick="toQuestSelect()">Choose Quest ▶</button>
+      <section class="em-map" id="em-map">
+        <div id="quest-list"></div>
+        <button class="em-back" onclick="showScene('hub')">◀ Back to Town</button>
+        <button class="primary em-begin" id="btn-start-quest" onclick="beginQuest()">Begin Quest ▶</button>
+      </section>
+      <section class="em-party">
+        <div class="gate" id="party-gate"><svg class="gate-bg" viewBox="0 0 1600 560" preserveAspectRatio="xMidYMid slice" id="gate-bg"></svg><div class="slots" id="party-slots"></div></div>
+      </section>
+      <aside class="rside em-roster">
+        <div class="rs-h">Your guild<small>Click heroes to add them to the party (up to 4). Drag a party card to change places.</small></div>
+        <div class="rlist" id="roster-pick"></div>
         <button id="btn-quick" onclick="toQuickBattle()">⚡ Quick Battle ▶ (dev)</button>
-      </div>
+      </aside>
     </div>
   </div>
 </div>
 
-<div id="spa-select" class="scene">
+<div id="spa-select" class="scene fsr">
   <div class="hub-wrap">
     <div class="hub-hall">
-      <div class="hub-title">♨️ Spa</div>
-      <div class="hub-sub" id="spa-intro"></div>
-      <div class="hall-banner" id="spa-banner"></div>
-      <div class="pick-list" id="spa-list"></div>
-      <button style="width:100%" onclick="showScene('hub')">Back to Town</button>
+      <div class="fs-chip"><div class="hub-title">♨️ Spa</div><div class="hub-sub" id="spa-intro"></div></div>
+      <div class="fsbox" id="spa-box"><div class="hall-banner fscov left" id="spa-banner"></div></div>
+      <div id="spa-flaws"></div>
+      <aside class="rside"><div class="rs-h">Who needs a massage?<small>Pick a hero to see their flaws.</small></div><div class="rlist" id="spa-list"></div></aside>
+      <button class="narrow-back" onclick="showScene('hub')">Back to Town</button>
     </div>
   </div>
 </div>
@@ -1537,31 +1698,28 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   </div>
 </div>
 
-<div id="gear" class="scene">
+<div id="gear" class="scene fsr">
   <div class="hub-wrap dorm-wrap">
     <div class="hub-hall">
-      <div class="hub-title">🛏️ Dorm</div>
-      <div class="hub-sub" id="gear-sub"></div>
-      <div class="dorm-list dorm-room" id="dorm-list"></div>
-      <div id="dorm-roster"></div>
+      <div class="fs-chip dm-chip"><div class="hub-title">🛏️ Dorm</div><div class="hub-sub" id="gear-sub"></div></div>
+      <div class="fsbox dm-box" id="dorm-box"><div class="dorm-list dorm-room fscov left" id="dorm-list"></div></div>
+      <aside class="rside dm-side"><div class="rs-h">Guild roster<small>Click a hero for details. Drag a card onto a seat to change the party.</small></div><div id="dorm-roster" class="rlist"></div><div id="gear-msg" style="min-height:1.2em;font-size:.8rem;color:#81c784;margin:4px 0 0"></div></aside>
       <div class="dorm-char" id="dorm-char" style="display:none"></div>
-      <div id="gear-msg" style="min-height:1.2em;font-size:.8rem;color:#81c784;margin:4px 0 8px"></div>
-      <button style="width:100%;max-width:420px" id="dorm-back" onclick="dormBack()">Back to Town</button>
+      <button id="dorm-back" onclick="dormBack()">Back to Town</button>
     </div>
   </div>
 </div>
 
-<div id="shop" class="scene">
+<div id="shop" class="scene fsr">
   <div class="hub-wrap shop-wrap">
     <div class="hub-hall">
-      <div class="hub-title">🛒 Shop</div>
-      <div class="hub-sub" id="shop-sub"></div>
-      <div class="shop-room" id="shop-room">
+      <div class="fs-chip shop-chip"><div class="hub-title">🛒 Shop</div><div class="hub-sub" id="shop-sub"></div><button class="shop-back" onclick="showScene('hub')">◀ Back to Town</button></div>
+      <div class="fsbox shop-room" id="shop-room"><div class="fscov">
         <svg class="sr-svg sr-bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" id="sr-bg"></svg>
         <div class="sr-keeper" id="sr-keeper"></div>
         <svg class="sr-svg sr-fg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" id="sr-fg"></svg>
-        <div class="sr-bubble" id="sr-bubble"></div>
-      </div>
+        <div class="sr-bubble sbubble-look" id="sr-bubble"></div>
+      </div></div>
       <div class="shop-layout">
         <div class="shop-main">
           <div class="shelf"><div class="shelf-lbl">ROAD SUPPLIES</div><div class="shelf-row" id="shop-list"></div><div class="plank"></div></div>
@@ -1573,8 +1731,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
           <button class="relic-bag-btn" onclick="openRelics('review')" id="btn-relic-bag">🎒 Relic Inventory</button>
         </aside>
       </div>
-      <div id="shop-msg" style="min-height:1.2em;font-size:.8rem;color:#81c784;margin:4px 0 8px"></div>
-      <button style="width:100%" onclick="showScene('hub')">Back to Town</button>
+      <button class="narrow-back" onclick="showScene('hub')">Back to Town</button>
     </div>
   </div>
 </div>
@@ -1607,14 +1764,13 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   </div>
 </div>
 
-<div id="train-select" class="scene">
+<div id="train-select" class="scene fsr">
   <div class="hub-wrap">
     <div class="hub-hall">
-      <div class="hub-title">🎯 Training Ground</div>
-      <div class="hub-sub" id="train-intro"></div>
-      <div class="hall-banner two" id="train-banner"></div>
-      <div class="pick-list" id="train-list"></div>
-      <button style="width:100%" onclick="showScene('hub')">Back to Town</button>
+      <div class="fs-chip"><div class="hub-title">🎯 Training Ground</div><div class="hub-sub" id="train-intro"></div></div>
+      <div class="fsbox" id="train-box"><div class="hall-banner fscov left" id="train-banner"></div></div>
+      <aside class="rside"><div class="rs-h">Who will train?<small>Pick a hero, then a drill.</small></div><div class="rlist" id="train-list"></div></aside>
+      <button class="narrow-back" onclick="showScene('hub')">Back to Town</button>
     </div>
   </div>
 </div>
@@ -1645,21 +1801,6 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
   </div>
 </div>
 <div id="dev-bar"><b>🛠<span class="lbl"> DEV MODE · nothing is saved</span></b><button onclick="openParty()" title="Quick Battle">⚡<span class="lbl"> Quick Battle</span></button><button onclick="devFlaws()" title="Refill flaws">🔁<span class="lbl"> Refill flaws</span></button><button onclick="location.reload()" title="Exit">⏏<span class="lbl"> Exit</span></button></div>
-<div id="quest-select" class="scene">
-  <div class="hub-wrap">
-    <div class="hub-hall">
-      <div class="hub-title">Choose a Quest</div>
-      <div class="hub-sub">Where will your party venture?</div>
-      <div class="slots" id="quest-party"></div>
-      <div id="quest-list"></div>
-      <div class="row">
-        <button onclick="showScene('party-select')">Back</button>
-        <button class="primary" id="btn-start-quest" onclick="beginQuest()">Begin Quest</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div id="camp" class="scene">
   <div class="hub-wrap">
     <div class="hub-hall">
@@ -5104,19 +5245,20 @@ let picked = [];     // hero ids chosen for the quest, in lineup order (first = 
 const heroById = id => HEROES.find(h => h.id === id);
 const elIcons = h => [...new Set([...h.skills.map(s => s.el), ...(h.elems || [])].filter(Boolean))].map(e => ICON[e]).join('');
 
-function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
+const FS_SCENES = ['hub', 'beach', 'vb', 'gear', 'spa-select', 'train-select', 'party-select', 'shop'];
+function showScene(name) {
+  if (name === 'quest-select') name = 'party-select';           // choosing the party and the quest is one screen now       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
   if (name !== 'battle-scene' && typeof talkClear === 'function') talkClear();
   const rv = document.getElementById('tm-full'); if (rv) rv.className = '';
-  ['hub', 'beach', 'beach-pick', 'vb', 'party-select', 'quest-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle', 'lake', 'dive'].forEach(id => $(id).classList.toggle('show', id === name));
+  ['hub', 'beach', 'beach-pick', 'vb', 'party-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle', 'lake', 'dive'].forEach(id => $(id).classList.toggle('show', id === name));
   if (name === 'hub') renderHub();
   if (name === 'beach') renderBeach();
   if (name === 'beach-pick') renderBeachPick();
   if (name === 'lake') renderLake();
-  if (name === 'party-select') renderParty();
-  if (name === 'quest-select') renderQuests(true);
+  if (name === 'party-select') renderParty(true);
   if (name === 'dev-battle') renderDev();
   $('spa-bg').style.display = name === 'spa' ? 'block' : 'none'; if (name !== 'spa') { $('spa-fin').className = ''; $('spa-fin').innerHTML = ''; $('spa').classList.remove('fin-hide'); }
-  if (name === 'spa-select') { spaGame = null; renderSpaSelect(); }
+  if (name === 'spa-select') { spaGame = null; spaSel = null; renderSpaSelect(); }
   if (name === 'camp') renderCamp();
   if (name === 'event') renderEvent();
   if (name === 'shop') renderShop();
@@ -5127,6 +5269,7 @@ function showScene(name) {       // 'hub' | 'party-select' | 'battle-scene' | 'c
   sceneFade(); try { musicSet(areaFor(name)); weatherSet(name); } catch (e) {}
   document.body.classList.toggle('in-battle', name === 'battle-scene');
   document.body.classList.toggle('in-town', name === 'hub' || name === 'beach');
+  document.body.classList.toggle('fs', FS_SCENES.includes(name));
   window.scrollTo(0, 0);
 }
 
@@ -5311,6 +5454,7 @@ function soon(place) { $('hub-msg').textContent = `${place} isn't open yet. Comi
 
 function openParty() {
   picked = game.lastParty.filter(id => game.roster.includes(id)).slice(0, MAX_PARTY);   // reselect last run's party
+  if (!QUESTS.some(q => q.id === pickedQuest && questOpen(q.id))) pickedQuest = QUESTS.find(q => questOpen(q.id)).id;     // default: the first available quest
   showScene('party-select');
 }
 function togglePick(id) {
@@ -5322,7 +5466,7 @@ function togglePick(id) {
 }
 let formSel = -1;       // slot picked for a tap-swap
 function swapSlots(i, j) { if (i === j || i < 0 || j < 0 || i >= picked.length || j >= picked.length) return; [picked[i], picked[j]] = [picked[j], picked[i]]; }
-function renderParty() {
+function renderParty(full) {
   if (!$('gate-bg').firstChild) $('gate-bg').innerHTML = GATE_SVG;
   const order = Array.from({ length: MAX_PARTY }, (_, k) => MAX_PARTY - 1 - k);      // shown back -> front, like the battlefield: the front line sits next to the enemy
   $('party-slots').innerHTML = `<div class="form-lab"><span>◀ BACK</span><b>Party ${picked.length}/${MAX_PARTY}</b><span>FRONT ▶</span></div><div class="form-row" id="form-row">` +
@@ -5331,18 +5475,12 @@ function renderParty() {
                : `<div class="fslot" data-i="${i}"><span class="pos">${i + 1}</span><div class="empty">empty</div></div>`; }).join('') + '</div>';
   fillHeroArt($('party-slots'));
   wireFormation();
-  $('roster-pick').innerHTML = game.roster.map(id => {
-    const h = heroById(id); if (!h) return '';
-    const n = picked.indexOf(id) + 1;
-    return `<div class="pick${n ? ' on' : ''}${!n && picked.length >= MAX_PARTY ? ' full' : ''}" onclick="togglePick('${id}')">
-      <div class="mini-sprite port-box" data-port="${h.id}">${h.tag}</div>
-      <div><strong>${h.name}</strong> ${elIcons(h)}<br>HP ${h.hp} · Break ${h.brk} · SPD ${h.spd}
-        <div class="sk">${traitChips(game.traits[id]) || '<span class="dim">No traits yet</span>'}</div>
-        <div class="sk">${h.skills.map(s => s.n).join(' · ')}</div>
-        <div class="sk">⚠️ Weak: ${elemIcons(h.weak) || '-'} · 🛡️ Resists: ${elemIcons(h.resist) || '-'}</div></div>
-      ${n ? `<div class="slot">${n}</div>` : ''}</div>`;
+  $('roster-pick').innerHTML = game.roster.filter(id => heroById(id)).map(id => {
+    const h = heroById(id), i = picked.indexOf(id), n = i + 1;
+    return rcard(id, { cls: 'click' + (n ? ' on' : '') + (!n && picked.length >= MAX_PARTY ? ' off' : ''), onclick: `togglePick('${id}')`, sub: `HP ${h.hp} · SPD ${h.spd}${n ? ' · ' + slotName(i, picked.length) : ''}`,
+      title: `${h.skills.map(x => x.n).join(' · ')}  |  Weak: ${(h.weak || []).join(', ') || '-'}  |  Resists: ${(h.resist || []).join(', ') || '-'}`, badge: n || null, badgeTip: 'Line-up position (1 = front line)' });
   }).join('');
-  $('btn-begin').disabled = picked.length === 0;
+  renderQuests(full);
 }
 function wireFormation() {
   const row = $('form-row'); if (!row) return;
@@ -5375,11 +5513,6 @@ function wireFormation() {
 }
 let pickedQuest = null;     // id of the quest chosen on the quest select screen
 const questGold = q => q.nodes.reduce((a, n) => a + n.gold, 0);
-function toQuestSelect() {
-  if (!picked.length) return;
-  if (!QUESTS.some(q => q.id === pickedQuest && questOpen(q.id))) pickedQuest = QUESTS.find(q => questOpen(q.id)).id;     // default: the first available quest
-  showScene('quest-select');
-}
 function pickTier(i) { if (i < 0 || i > game.tiers.max) return; game.tiers.pick = i; writeSave(); renderQuests(); }
 function pickQuest(id) { if (!questOpen(id)) return; pickedQuest = id; renderQuests(); }
 
@@ -5402,22 +5535,34 @@ const MAP_SVG = (() => {
   const fP = [[640, 300, 90, 110], [760, 260, 70, 90], [1060, 280, 100, 120], [1240, 230, 80, 100], [1400, 300, 90, 110], [1520, 230, 70, 90], [820, 120, 80, 100], [1020, 90, 70, 90]].map(a => peak(...a)).join('');
   const route = (() => { const pts = MAP_ROUTE.map(P); return `<path d="M${pts.map(([x, y]) => `${x} ${y}`).join(' L')}" fill="none" stroke="#1a110b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/><path d="M${pts.map(([x, y]) => `${x} ${y}`).join(' L')}" fill="none" stroke="#e8d3a0" stroke-width="5" stroke-dasharray="3 16" stroke-linecap="round" stroke-linejoin="round"/>`; })();
   return `<defs><linearGradient id="mSea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16364a"/><stop offset="1" stop-color="#0a1a2a"/></linearGradient><radialGradient id="mShore" cx="50%" cy="50%" r="50%"><stop offset=".7" stop-color="#3a7a8a" stop-opacity="0"/><stop offset="1" stop-color="#3a7a8a" stop-opacity=".35"/></radialGradient></defs>
-  <rect width="1600" height="900" fill="url(#mSea)"/>
-  ${Array.from({ length: 26 }, (_, i) => { const x = (i * 197) % 1500 + 40, y = (i * 331) % 860 + 20; return `<path d="M${x} ${y} q12 -10 24 0 q12 10 24 0" stroke="#4a8aa0" stroke-width="3" fill="none" opacity=".35"/>`; }).join('')}
+  <rect x="-700" y="-450" width="3000" height="1800" fill="url(#mSea)"/>
+  ${Array.from({ length: 44 }, (_, i) => { const x = (i * 197) % 2400 - 400, y = (i * 331) % 1300 - 200; return `<path d="M${x} ${y} q12 -10 24 0 q12 10 24 0" stroke="#4a8aa0" stroke-width="3" fill="none" opacity=".35"/>`; }).join('')}
   <path d="M10 640 C40 540 180 500 300 520 C420 480 570 500 650 580 C720 650 700 770 650 830 C570 895 380 910 200 900 C80 890 0 770 10 640Z" fill="url(#mShore)" transform="translate(-6 -6) scale(1.02)"/>
   <path d="M30 640 C60 560 180 520 300 540 C420 500 560 520 640 590 C700 650 690 760 640 820 C560 880 380 900 200 890 C90 880 20 760 30 640Z" fill="#4e432c" stroke="#241a0e" stroke-width="5"/>
   <path d="M70 650 C110 590 200 570 300 585 C410 555 540 570 600 620 C650 670 640 750 600 790 C530 840 380 850 220 845 C130 840 60 760 70 650Z" fill="#5f5236" opacity=".8"/>
   ${lT}
   <path d="M700 700 C760 600 900 560 1040 600 C1160 560 1270 640 1240 740 C1220 840 1060 895 900 885 C780 875 690 800 700 700Z" fill="#a8975f" stroke="#4a3c20" stroke-width="5"/>
   <path d="M730 700 C780 630 900 600 1040 630 C1140 600 1210 660 1195 740 C1180 820 1050 860 900 850 C800 840 725 790 730 700Z" fill="#c2b078" opacity=".7"/>${sT}
-  <path d="M560 0 H1600 V430 C1500 390 1390 410 1300 370 C1180 340 1060 390 940 340 C820 310 700 350 620 270 C560 200 545 100 560 0Z" fill="#d6e4f0" stroke="#6f8aa6" stroke-width="5"/>
-  <path d="M600 0 H1600 V380 C1500 340 1390 360 1300 320 C1180 290 1060 340 940 290 C820 260 700 300 650 230 C600 170 590 80 600 0Z" fill="#eef5fb" opacity=".75"/>${fP}
+  <path d="M560 -500 H2300 V430 C1500 390 1390 410 1300 370 C1180 340 1060 390 940 340 C820 310 700 350 620 270 C560 200 545 100 560 0Z" fill="#d6e4f0" stroke="#6f8aa6" stroke-width="5"/>
+  <path d="M600 -500 H2300 V380 C1500 340 1390 360 1300 320 C1180 290 1060 340 940 290 C820 260 700 300 650 230 C600 170 590 80 600 0Z" fill="#eef5fb" opacity=".75"/>${fP}
   ${route}
   <g transform="translate(1440 800)" opacity=".8"><circle r="56" fill="none" stroke="#e8d3a0" stroke-width="3"/><path d="M0 -50 L10 0 L0 50 L-10 0Z M-50 0 L0 -10 L50 0 L0 10Z" fill="#e8d3a0"/><text y="-62" text-anchor="middle" font-size="22" font-family="Georgia,serif" fill="#e8d3a0">N</text></g>
 `;
 })();
 function mapCam(stage) { const c = MAP_CAMS[stage], sc = 100 / c.w; return { t: `scale(${sc}) translate(${-c.x}%,${-c.y}%)`, inv: (1 / sc).toFixed(4) }; }
-function mapApply(box, stage) { const k = mapCam(stage); box.querySelector('.mworld').style.transform = k.t; box.querySelectorAll('.mnode').forEach(n => n.style.setProperty('--inv', k.inv)); }
+const MAP_VIEW = { 1: { cx: 24, cy: 84, w: 56 }, 2: { cx: 56, cy: 64, w: 104 }, 3: { cx: 58, cy: 50, w: 150 } };      // wide screens: centre (% of the picture) and how much of its width is on screen; w over 100 shows open sea around the world
+const mapWide = () => window.matchMedia('(min-width:900px) and (min-height:480px)').matches;
+function mapApply(box, stage) {
+  const world = box.querySelector('.mworld'), cw = box.clientWidth, ch = box.clientHeight; box.dataset.stage = stage;
+  if (!mapWide() || !cw || !ch) { const k = mapCam(stage); world.style.transform = k.t; box.querySelectorAll('.mnode').forEach(n => n.style.setProperty('--inv', k.inv)); return; }
+  const V = MAP_VIEW[stage], z = 100 / V.w, W = cw, H = cw * 9 / 16, vw = cw / z, vh = ch / z;
+  let cx = V.cx / 100 * W, cy = V.cy / 100 * H;
+  const mx = W * .04, my = H * .09;      // the view may drift a little past the picture's edge (the sea goes on), so labels near the edge stay on screen
+  cx = vw < W ? Math.max(vw / 2 - mx, Math.min(W - vw / 2 + mx, cx)) : W / 2; cy = vh < H ? Math.max(vh / 2 - my, Math.min(H - vh / 2 + my, cy)) : H / 2;
+  world.style.transform = `translate(${(cw / 2 - z * cx).toFixed(1)}px,${(ch / 2 - z * cy).toFixed(1)}px) scale(${z.toFixed(4)})`;
+  box.querySelectorAll('.mnode').forEach(n => n.style.setProperty('--inv', (1 / z).toFixed(4)));
+}
+addEventListener('resize', () => { const b = document.getElementById('qmap'); if (b && $('party-select').classList.contains('show')) { b.classList.add('nt'); mapApply(b, +b.dataset.stage || 1); void b.offsetWidth; b.classList.remove('nt'); } });
 function mapHint(stage) {
   const g = QUEST_GROUPS.find(x => !groupOpen(x)); if (!g) return '';
   return `<b>🔒 ${g.name}</b> lies beyond the mist.<br>Clear: ${g.requires.map(id => { const q = QUESTS.find(x => x.id === id); return `<span class="${questCleared(id) ? 'ok' : ''}">${questCleared(id) ? '✔' : '○'} ${q.name}</span>`; }).join(' · ')}`;
@@ -5428,7 +5573,7 @@ function buildQuestMap() {
   const nodes = MAP_ROUTE.filter(open).map(id => { const q = QUESTS.find(x => x.id === id), [x, y, ic] = MAP_NODES[id];
     return `<button class="mnode${id === pickedQuest ? ' on' : ''}" data-q="${id}" style="--x:${x};--y:${y}" onclick="pickQuest('${id}')"><span class="pin">${ic}${questCleared(id) ? '<i class="ck">✔</i>' : ''}</span><span class="nm">${q.name}</span></button>`; }).join('');
   const nodeFogs = [];                       // fog sits over what is still locked, and lifts when it opens
-  const html = `<div class="qmap nt" id="qmap"><div class="mworld"><div class="mart" id="mart">${`<svg class="mart" viewBox="0 0 1600 900" preserveAspectRatio="none">${MAP_SVG}</svg>`}</div>
+  const html = `<div class="qmap nt" id="qmap"><div class="mworld"><div class="mart" id="mart">${`<svg class="mart" viewBox="0 0 1600 900" preserveAspectRatio="none" overflow="visible">${MAP_SVG}</svg>`}</div>
     ${fog(1, 40, 48, 62, 60)}${fog(2, 42, -8, 64, 52)}${nodes}</div><div class="qm-title">The Known World</div>${stage < 3 ? `<div class="qm-hint">${mapHint(stage)}</div>` : ''}</div>`;
   $('quest-list').innerHTML = html + '<div id="quest-detail"></div>';
   const box = $('qmap'); mapApply(box, seen); void box.offsetWidth; box.classList.remove('nt');
@@ -5438,9 +5583,6 @@ function buildQuestMap() {
   } else mapSeenSet(stage);
 }
 function renderQuests(full) {
-  $('quest-party').innerHTML = '<b>Party</b> (front → back)<br>' +
-    picked.map((id, i) => `${i + 1}. ${heroById(id).name.split(' ')[0]}`).join(' &nbsp; ') +
-    '<br>' + (Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 && !/s$/.test(it.name) ? 's' : ''} will come along` : '').filter(Boolean).join(' · ') || 'No supplies in the bag. The Shop sells potions, rations and repair kits.');
   const T = tierDef(game.tiers.pick), tg = T.gold || 1;
   const card = q => {
     const on = q.id === pickedQuest, c = q.camps ?? 1, e = q.events ?? 1;
@@ -5453,8 +5595,9 @@ function renderQuests(full) {
   if (full || !$('qmap')) buildQuestMap();
   document.querySelectorAll('#qmap .mnode').forEach(n => n.classList.toggle('on', n.dataset.q === pickedQuest));
   const pq = QUESTS.find(q => q.id === pickedQuest);
-  $('quest-detail').innerHTML = (pq ? card(pq) : '<div class="dim">Pick a quest on the map.</div>') + tbar;
-  $('btn-start-quest').disabled = !pickedQuest;
+  const sup = Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 && !/s$/.test(it.name) ? 's' : ''}` : '').filter(Boolean).join(' · ');
+  $('quest-detail').innerHTML = (pq ? card(pq) : '<div class="dim">Pick a quest on the map.</div>') + tbar + `<div class="sup-line">${sup ? '🎒 Coming along: ' + sup : '🎒 No supplies in the bag. The Shop sells potions, rations and repair kits.'}</div>`;
+  $('btn-start-quest').disabled = !pickedQuest || !picked.length;
 }
 function beginQuest() {
   if (!pickedQuest || !questOpen(pickedQuest)) return;
@@ -6007,7 +6150,7 @@ function eventContinue() { evState = null; if (quest.bonus) return startNode(); 
 
 /* ============ SHOP ============ */
 let shopMsg = '', shopBuilt = false, shopGreet = '';
-const SHOP_GREETS = ['Welcome in. Mind the lantern.', 'Back from the road? Stock up before you go.', 'Everything here has been paid for in someone\'s blood. Prices reflect that.', 'Potions on the left, trinkets in the case. Don\'t touch the glass.', 'Take your time. Or don\'t. The dungeon won\'t wait.'];
+const SHOP_GREETS = ['Welcome in. Mind the lantern.', 'Back from the road? Stock up before you go.', 'Everything here has been paid for in someone\'s blood. Prices reflect that.', 'Potions on the left, trinkets in the case. Don\'t touch the glass.', 'Take your time. Or don\'t. The dungeon won\'t wait.', 'Mind the potions. They bite less than the monsters, but still.', 'Gold first, questions later. That is the rule of the house.', 'You look like you could use a repair kit. Everyone does, eventually.'];
 const SHOP_BG = `<defs><linearGradient id="sWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2a1f"/><stop offset="1" stop-color="#241911"/></linearGradient>
   <radialGradient id="sGlow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffcf7a" stop-opacity=".85"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient>
   <linearGradient id="sWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6b43"/><stop offset="1" stop-color="#5e3f27"/></linearGradient></defs>
@@ -6036,12 +6179,12 @@ const SHOP_BG = `<defs><linearGradient id="sWall" x1="0" y1="0" x2="0" y2="1"><s
   <path d="M800 0 V150" stroke="#1a110b" stroke-width="4"/><g class="sr-lamp"><circle cx="800" cy="200" r="260" fill="url(#sGlow)" opacity=".55"/><rect x="778" y="150" width="44" height="64" rx="8" fill="#3a2a1e"/><rect x="786" y="160" width="28" height="44" rx="5" fill="#ffd98a"/></g>`;
 const SHOP_FG = `<defs><linearGradient id="sCtr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a87a50"/><stop offset=".12" stop-color="#7a5236"/><stop offset="1" stop-color="#4a301e"/></linearGradient></defs>
   <rect x="0" y="650" width="1600" height="250" fill="url(#sCtr)"/><rect x="0" y="640" width="1600" height="26" rx="6" fill="#c9966a"/><rect x="0" y="662" width="1600" height="6" fill="#3a2414" opacity=".6"/>
-  ${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${60 + i * 260}" y="700" width="200" height="170" rx="8" fill="#5e3f27" stroke="#2e1c10" stroke-width="5"/><rect x="${80 + i * 260}" y="720" width="160" height="130" rx="4" fill="#4e3320" opacity=".7"/>`).join('')}
+  ${[0, 1, 2, 3, 4].map(i => `<rect x="${40 + i * 240}" y="690" width="200" height="150" rx="8" fill="#5e3f27" stroke="#2e1c10" stroke-width="5"/><rect x="${54 + i * 240}" y="702" width="172" height="126" rx="4" fill="#1a1230" opacity=".85"/><rect x="${54 + i * 240}" y="702" width="172" height="126" rx="4" fill="none" stroke="#8fb6c8" stroke-opacity=".35" stroke-width="3"/>`).join('')}
   <!-- on the counter -->
   <g><ellipse cx="300" cy="640" rx="70" ry="10" fill="#000" opacity=".3"/><rect x="250" y="600" width="100" height="40" rx="4" fill="#e9dfc6"/><path d="M262 612 H338 M262 624 H322" stroke="#7a6a4a" stroke-width="3"/></g>
   <g><ellipse cx="1180" cy="640" rx="60" ry="9" fill="#000" opacity=".3"/><path d="M1130 640 q-10 -50 20 -60 q30 -10 60 0 q30 10 20 60Z" fill="#7a4a2a"/><path d="M1160 584 q30 -18 50 0" stroke="#e8c860" stroke-width="6" fill="none"/><circle cx="1260" cy="628" r="12" fill="#e8c860" stroke="#a8802a" stroke-width="3"/><circle cx="1290" cy="634" r="12" fill="#e8c860" stroke="#a8802a" stroke-width="3"/></g>
   <g><rect x="700" y="610" width="200" height="30" rx="4" fill="#3a2a1e" opacity=".0"/></g>`;
-const SHOP_KEEPER_PH = `<svg viewBox="0 0 200 400"><path d="M30 400 Q20 200 70 150 H130 Q180 200 170 400Z" fill="#4a3a52"/><path d="M70 160 Q100 190 130 160 L140 400 H60Z" fill="#d9c9a0" opacity=".9"/><ellipse cx="100" cy="110" rx="52" ry="58" fill="#33283a"/><ellipse cx="100" cy="118" rx="34" ry="38" fill="#d9ad8a"/><path d="M82 118 h10 M108 118 h10" stroke="#2a1c14" stroke-width="5" stroke-linecap="round"/><path d="M88 140 q12 8 24 0" stroke="#7a4a3a" stroke-width="4" fill="none" stroke-linecap="round"/><text x="100" y="260" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#fff" opacity=".7">shopkeeper</text></svg>`;
+const SHOP_KEEPER_PH = `<svg viewBox="0 0 200 400"><path d="M30 400 Q20 200 70 150 H130 Q180 200 170 400Z" fill="#4a3a52"/><path d="M70 160 Q100 190 130 160 L140 400 H60Z" fill="#d9c9a0" opacity=".9"/><ellipse cx="100" cy="110" rx="52" ry="58" fill="#33283a"/><ellipse cx="100" cy="118" rx="34" ry="38" fill="#d9ad8a"/><path d="M82 118 h10 M108 118 h10" stroke="#2a1c14" stroke-width="5" stroke-linecap="round"/><path d="M88 140 q12 8 24 0" stroke="#7a4a3a" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
 function buildShopRoom() {
   if (shopBuilt) return; shopBuilt = true;
   $('sr-bg').innerHTML = SHOP_BG; $('sr-fg').innerHTML = SHOP_FG;
@@ -6053,21 +6196,23 @@ function buildShopRoom() {
   });
 }
 function openShop() { shopMsg = ''; shopGreet = SHOP_GREETS[Math.floor(Math.random() * SHOP_GREETS.length)]; showScene('shop'); }
+const SHOP_SLOTS = [[2.8, 23.4], [16.2, 23.4], [71, 23.4], [84.4, 23.4], [2.8, 34.4], [16.2, 34.4], [71, 34.4], [84.4, 34.4]];      // road-supply tiles on the two shelves: [x, y] in % of the shop picture
 function renderShop() {
   buildShopRoom();
-  $('shop-sub').innerHTML = `Supplies for the road. Whatever is in your bag goes with the party on the next quest. <span class="hub-gold">Gold: ${game.gold}</span>`;
-  $('shop-list').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="shop-row ware"><div class="w-ic">${it.icon}</div>
+  $('shop-sub').innerHTML = `Supplies for the road. Whatever is in your bag goes with the party. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('shop-list').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map((it, k) => { const [x, y] = SHOP_SLOTS[k] || SHOP_SLOTS[SHOP_SLOTS.length - 1];
+    return `<div class="shop-row ware" style="--x:${x};--y:${y};--w:12.8;--h:25.4"><div class="w-ic">${it.icon}</div>
     <div class="who"><strong>${it.name}</strong><br>${it.desc}<br>In your bag: <b>${game.items[it.id] || 0}</b></div>
-    <div class="btns"><button onclick="buyItem('${it.id}')" ${game.gold < it.price ? 'disabled' : ''}>Buy · ${it.price}g</button></div></div>`).join('');
+    <div class="btns"><button onclick="buyItem('${it.id}')" ${game.gold < it.price ? 'disabled' : ''}>Buy · ${it.price}g</button></div></div>`; }).join('');
   const stock = (game.shop && game.shop.stock) || [];
-  $('shop-relics').innerHTML = stock.length ? stock.map(id => { const r = RELICS[id]; return `<div class="shop-row ware relic-${r.rarity}"><div class="w-ic">${r.icon}</div>
+  $('shop-relics').innerHTML = stock.length ? stock.map((id, i) => { const r = RELICS[id];
+    return `<div class="shop-row ware rcase relic-${r.rarity}" style="--x:${(40 + i * 240) / 16};--y:${690 / 9};--w:12.5;--h:${150 / 9}"><div class="w-ic">${r.icon}</div>
     <div class="who"><strong>${r.name}</strong> <span class="rar rar-${r.rarity}">${r.rarity}</span><br>${r.desc}</div>
     <div class="btns"><button onclick="buyRelic('${id}')" ${game.gold < r.price ? 'disabled' : ''}>Buy · ${r.price}g</button></div></div>`; }).join('')
-    : '<div class="dim" style="padding:8px">Sold out. New relics arrive after your next run.</div>';
+    : '<div class="dim sold-out">Sold out. New relics arrive after your next run.</div>';
   $('shop-supplies').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}<small>${it.use === 'camp' ? 'Used at camp' : 'Used in battle'}</small></div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('')
-    + '<div class="dim" style="font-size:.68rem">Everything in the bag goes with the party on the next quest.</div>';
+    + '<div class="dim sup-note">Everything in the bag goes with the party on the next quest.</div>';
   $('btn-relic-bag').textContent = `🎒 Relic Inventory (${game.relics.length})`;
-  $('shop-msg').textContent = shopMsg;
   const b = $('sr-bubble'), t = shopMsg || shopGreet || SHOP_GREETS[0];
   if (b.textContent !== t) { b.textContent = t; b.classList.toggle('ok', !!shopMsg); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
 }
@@ -6223,19 +6368,28 @@ function dormPlace(id, slot) {
   if (from >= 0) [p[from], p[slot]] = [p[slot], p[from]]; else p[slot] = id;
   game.lastParty = p; writeSave(); sfx('click'); renderGear();
 }
+/* ---- shared by the full-screen hubs: a hero card for the roster list, and the door that leads back to town ---- */
+function rcard(id, o = {}) {
+  const h = heroById(id); if (!h) return ''; const u = heroUnit(id);
+  return `<div class="rc${o.cls ? ' ' + o.cls : ''}" data-id="${id}"${o.attr ? ' ' + o.attr : ''}${o.onclick ? ` onclick="${o.onclick}"` : ''}${o.title ? ` title="${o.title}"` : ''}><div class="mini-sprite port-box" data-port="${id}">${h.tag}</div><div class="rc-t"><b>${h.name} ${elIcons(h)}</b><small>${o.sub != null ? o.sub : `HP ${u.maxHp} · SPD ${u.spd}`}</small></div>${o.badge != null ? `<i class="rc-n"${o.badgeTip ? ` title="${o.badgeTip}"` : ''}>${o.badge}</i>` : ''}</div>`;
+}
+const doorBtn = (x, y, w, h) => `<button class="door" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" onclick="showScene('hub')" title="Back to town"><span>Back to town</span></button>`;
+const doorSvg = (x, y, w, h, wood = '#6a4630', dark = '#2a1a12') => `<g><rect x="${x - 14}" y="${y - 14}" width="${w + 28}" height="${h + 14}" fill="${dark}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${wood}"/>
+  <rect x="${x + w * .12}" y="${y + h * .08}" width="${w * .76}" height="${h * .36}" rx="4" fill="rgba(0,0,0,.18)"/><rect x="${x + w * .12}" y="${y + h * .52}" width="${w * .76}" height="${h * .4}" rx="4" fill="rgba(0,0,0,.18)"/>
+  <circle cx="${x + w * .84}" cy="${y + h * .55}" r="${Math.max(5, w * .035)}" fill="#e0b860"/><rect x="${x - 14}" y="${y + h}" width="${w + 28}" height="8" fill="${dark}"/></g>`;
 function renderDormRoom() {
   const p = dormParty(), n = p.length, xs = n === 4 ? DORM_X : n === 3 ? [17, 50, 83] : n === 2 ? [40, 60] : [50];
   $('dorm-list').innerHTML = DORM_BG + xs.map((x, k) => {
     const slot = n - 1 - k, id = p[slot], h = heroById(id), u = heroUnit(id);
     return seatHtml(id, x, DORM_Y, { flip: x > 50, cls: 'clk', attr: `data-slot="${slot}" data-id="${id}" title="${h.name}: HP ${u.maxHp} · SPD ${u.spd}"`, label: `${h.name} ${elIcons(h)}<small>${slotName(slot, n)}</small>` });
-  }).join('') + DORM_FG;
+  }).join('') + DORM_FG + doorBtn(1.6, 17, 14, 37);
   fillSeats($('dorm-list'));
   $('dorm-list').querySelectorAll('.seat[data-id]').forEach(el => { el.onpointerdown = e => dormDrag(e, el, el.dataset.id, () => dormOpen(el.dataset.id)); });
   const card = (id, slot) => { const h = heroById(id), u = heroUnit(id);
-    return `<div class="rc${slot >= 0 ? ' party' : ''}" data-id="${id}"${slot >= 0 ? ` data-slot="${slot}"` : ''}><div class="mini-sprite port-box" data-port="${id}">${h.tag}</div><div class="rc-t"><b>${h.name} ${elIcons(h)}</b><small>HP ${u.maxHp} · SPD ${u.spd}${slot >= 0 ? ' · ' + slotName(slot, n) : ''}</small></div>${slot >= 0 ? `<i class="rc-n" title="Line-up position (1 = front line)">${slot + 1}</i>` : ''}</div>`; };
+    return `<div class="rc drag${slot >= 0 ? ' party' : ''}" data-id="${id}"${slot >= 0 ? ` data-slot="${slot}"` : ''}><div class="mini-sprite port-box" data-port="${id}">${h.tag}</div><div class="rc-t"><b>${h.name} ${elIcons(h)}</b><small>HP ${u.maxHp} · SPD ${u.spd}${slot >= 0 ? ' · ' + slotName(slot, n) : ''}</small></div>${slot >= 0 ? `<i class="rc-n" title="Line-up position (1 = front line)">${slot + 1}</i>` : ''}</div>`; };
   const bench = game.roster.filter(id => heroById(id) && !p.includes(id));
-  $('dorm-roster').innerHTML = `<div class="rr-h">YOUR PARTY · back → front (this is who Embark picks)</div><div class="rr-grid party">${p.map((_, k) => card(p[n - 1 - k], n - 1 - k)).join('')}</div>`
-    + (bench.length ? `<div class="rr-h">ROSTER · drag a card onto a seat or party card, or click it</div><div class="rr-grid">${bench.map(id => card(id, -1)).join('')}</div>` : '');
+  $('dorm-roster').innerHTML = `<div class="rr-h">YOUR PARTY · back → front (who Embark picks)</div>${p.map((_, k) => card(p[n - 1 - k], n - 1 - k)).join('')}`
+    + (bench.length ? `<div class="rr-h">ROSTER · drag a card onto a seat or a party card</div>${bench.map(id => card(id, -1)).join('')}` : '');
   $('dorm-roster').querySelectorAll('.rc').forEach(el => { el.onpointerdown = e => dormDrag(e, el, el.dataset.id, () => dormMenu(el.dataset.id, el)); });
 }
 function dormDrag(e, el, id, onClick) {
@@ -6273,7 +6427,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDormMen
 function renderGear() {
   const locked = gearLocked(), lockNote = '<span style="color:#ffb74d">A quest is in progress: relics are locked until it ends.</span> ';
   $('gear-sub').innerHTML = (locked ? lockNote : '') + (dormHero ? '' : 'Your party lives here: click a hero for details, drag cards onto the seats to change who goes on quests. ') + `<span class="hub-gold">Gold: ${game.gold}</span>`;
-  $('dorm-list').style.display = dormHero ? 'none' : ''; $('dorm-roster').style.display = dormHero ? 'none' : ''; $('dorm-char').style.display = dormHero ? '' : 'none'; closeDormMenu();
+  $('gear').classList.toggle('char', !!dormHero);
+  $('dorm-box').style.display = dormHero ? 'none' : ''; document.querySelector('#gear .dm-side').style.display = dormHero ? 'none' : ''; $('dorm-char').style.display = dormHero ? '' : 'none'; closeDormMenu();
   $('dorm-back').textContent = dormHero ? '◀ Back to the roster' : 'Back to Town';
   if (!dormHero) {
     renderDormRoom();
@@ -6288,13 +6443,13 @@ function renderGear() {
     const group = kind => { const n = {}; tr.forEach(id => { if (TRAIT[id] && TRAIT[id].kind === kind) n[id] = (n[id] || 0) + 1; });
       return Object.keys(n).map(id => { const t = TRAIT[id]; return `<div class="tr-row ${kind}">${t.icon} <b>${t.name}</b>${n[id] > 1 ? ' ×' + n[id] : ''}: ${t.desc}${n[id] > 1 ? ' <span class="dim">(each)</span>' : ''}</div>`; }).join('') || '<div class="dim" style="font-size:.78rem">None</div>'; };
     $('dorm-char').innerHTML = `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
-      <div class="dorm-info"><h3>${h.name} ${elIcons(h)}</h3>
+      <div class="dorm-info dc-col"><h3>${h.name} ${elIcons(h)}</h3>
         ${BIOS[dormHero] ? `<div class="dbio">${BIOS[dormHero].bio}<br><span class="likes">♥ Likes: ${BIOS[dormHero].like}</span> · <span class="hates">✖ Dislikes: ${BIOS[dormHero].hate}</span></div>` : ''}
         <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}${u.rel && u.rel.dodge ? ` · 🌀 Evade ${Math.round(u.rel.dodge * 100)}%` : ''}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
         ${skinsFor(dormHero).length ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${n || 'Default'}</button>`).join('')}</div>` : ''}
         <div class="dh">RELICS</div><div class="rslots">${rs}</div>
-        ${potSection(dormHero)}
-        <div class="dh">SKILLS</div>${sk}
+        ${potSection(dormHero)}</div>
+      <div class="dc-col"><div class="dh" style="margin-top:0">SKILLS</div>${sk}
         <div class="dh">PERKS (${traitCount(dormHero, 'good')}/${TRAITS.maxGood})</div><div class="dtr">${group('good')}</div>
         <div class="dh">FLAWS (${traitCount(dormHero, 'bad')}/${TRAITS.maxBad})</div><div class="dtr">${group('bad')}</div></div>`;
     fillHeroArt($('dorm-char'));
@@ -6314,26 +6469,44 @@ const GATE_SVG = `<defs><linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><s
   <g class="gate-torch" style="animation-delay:1.2s"><circle cx="1180" cy="260" r="110" fill="url(#gTor)"/><rect x="1174" y="270" width="12" height="70" fill="#4a3022"/><ellipse cx="1180" cy="258" rx="14" ry="26" fill="#ffc34a"/></g>
   <path d="M0 470 Q800 400 1600 470 V560 H0Z" fill="#2a2430"/><path d="M640 560 L760 410 H840 L960 560Z" fill="#4a4050" opacity=".75"/>
   ${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${60 + i * 270}" y="${500 + (i % 2) * 14}" width="40" height="14" rx="3" fill="#3a3440" opacity=".7"/>`).join('')}`;
+const SPA_DOOR = [360, 170, 190, 450];       // the door on the spa front desk, in the 1600 x 900 picture (the click area follows it)
 function bannerSpa() {
   const el = $('spa-banner'); if (!el || el.dataset.b) return; el.dataset.b = 1;
-  el.innerHTML = spaRoomSvg(null, null) + `<div class="hb-cap">♨️ Treatment room<small>${SPA.cost}g per massage</small></div>`;
-  findAsset(`${ANIM.base}/ui/spa_room`).then(a => { if (a && el.isConnected) el.innerHTML = spaRoomSvg(a, null) + el.lastElementChild.outerHTML; });
+  const tail = doorBtn(SPA_DOOR[0] / 16, SPA_DOOR[1] / 9, SPA_DOOR[2] / 16, SPA_DOOR[3] / 9) + `<div class="hb-cap">♨️ Treatment room<small>${SPA.cost}g per massage</small></div>`;
+  el.innerHTML = spaRoomSvg(null, null, true) + tail;
+  findAsset(`${ANIM.base}/ui/spa_room`).then(a => { if (a && el.isConnected) el.innerHTML = spaRoomSvg(a, null, true) + tail; });
 }
+const TRAIN_DOOR = [110, 190, 190, 440];
+const trainHallSvg = door => `<svg class="dr-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><defs>
+<linearGradient id="thW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3326"/><stop offset="1" stop-color="#2c1e18"/></linearGradient>
+<linearGradient id="thF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a46"/><stop offset="1" stop-color="#5a4430"/></linearGradient>
+<radialGradient id="thL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffcf7a" stop-opacity=".55"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient></defs>
+<rect width="1600" height="640" fill="url(#thW)"/>${Array.from({ length: 16 }, (_, i) => `<rect x="${i * 100}" y="0" width="4" height="640" fill="rgba(0,0,0,.28)"/>`).join('')}
+<rect y="600" width="1600" height="40" fill="#241812"/>
+<rect y="640" width="1600" height="260" fill="url(#thF)"/>${[670, 710, 760, 820, 880].map(y => `<rect y="${y}" width="1600" height="3" fill="rgba(0,0,0,.2)"/>`).join('')}
+<g><rect x="520" y="90" width="150" height="330" fill="#7a2f3b"/><path d="M520 420 L595 470 L670 420Z" fill="#7a2f3b"/><rect x="505" y="80" width="180" height="14" rx="5" fill="#2a1a12"/><text x="595" y="270" text-anchor="middle" font-size="64" font-family="serif" fill="#f2dca8" transform="rotate(0)">力</text></g>
+<g><rect x="1170" y="90" width="150" height="330" fill="#2f4a6a"/><path d="M1170 420 L1245 470 L1320 420Z" fill="#2f4a6a"/><rect x="1155" y="80" width="180" height="14" rx="5" fill="#2a1a12"/><text x="1245" y="270" text-anchor="middle" font-size="64" font-family="serif" fill="#f2dca8">技</text></g>
+<g><rect x="760" y="250" width="300" height="12" fill="#2a1a12"/><rect x="760" y="330" width="300" height="12" fill="#2a1a12"/><rect x="760" y="250" width="12" height="360" fill="#2a1a12"/><rect x="1048" y="250" width="12" height="360" fill="#2a1a12"/>
+${[0, 1, 2, 3, 4].map(i => `<rect x="${790 + i * 52}" y="150" width="9" height="180" fill="#b8c2cc"/><rect x="${782 + i * 52}" y="316" width="25" height="9" fill="#6a4a2e"/><rect x="${790 + i * 52}" y="342" width="9" height="150" fill="#9aa4ae"/>`).join('')}
+<ellipse cx="910" cy="610" rx="170" ry="16" fill="rgba(0,0,0,.3)"/></g>
+<g><ellipse cx="1420" cy="640" rx="70" ry="14" fill="rgba(0,0,0,.35)"/><rect x="1418" y="300" width="4" height="60" fill="#2a1a12"/><rect x="1380" y="350" width="80" height="230" rx="30" fill="#7a4a2a"/><rect x="1380" y="400" width="80" height="14" fill="#5a331c"/><rect x="1380" y="500" width="80" height="14" fill="#5a331c"/></g>
+<g><circle cx="470" cy="580" r="130" fill="url(#thL)"/><rect x="458" y="560" width="24" height="50" rx="4" fill="#f2e9d8"/><ellipse class="spa-flame" cx="470" cy="548" rx="7" ry="15" fill="#ffc34a"/></g>
+<g><circle cx="1090" cy="580" r="130" fill="url(#thL)"/><rect x="1078" y="560" width="24" height="50" rx="4" fill="#f2e9d8"/><ellipse class="spa-flame" cx="1090" cy="548" rx="7" ry="15" fill="#ffc34a"/></g>
+<rect x="420" y="730" width="760" height="110" rx="12" fill="#a63a3a" opacity=".55"/><rect x="436" y="742" width="728" height="86" rx="8" fill="none" stroke="#e8d3a0" stroke-width="4" opacity=".6"/>
+${door ? doorSvg(TRAIN_DOOR[0], TRAIN_DOOR[1], TRAIN_DOOR[2], TRAIN_DOOR[3], '#8a5a38', '#2a1a12') : ''}</svg>`;
 function bannerTrain() {
   const el = $('train-banner'); if (!el || el.dataset.b) return; el.dataset.b = 1;
-  const pl = `<div>${poolSvg}<div class="hb-cap">🏊 Poolside<small>Elemental Focus</small></div></div>`, gy = `<div>${gymSvg}<div class="hb-cap">🥊 Gym<small>Weapon Drills</small></div></div>`;
-  el.innerHTML = TRAIN_ORDER[0] === 'elemental' ? pl + gy : gy + pl;
+  el.innerHTML = trainHallSvg(true) + doorBtn(TRAIN_DOOR[0] / 16, TRAIN_DOOR[1] / 9, TRAIN_DOOR[2] / 16, TRAIN_DOOR[3] / 9);
+  findAsset(`${ANIM.base}/ui/train_hall`).then(a => { if (a && el.isConnected && ['png', 'jpg', 'webp'].includes(a.ext)) { el.innerHTML = `<img src="${a.url}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` + doorBtn(TRAIN_DOOR[0] / 16, TRAIN_DOOR[1] / 9, TRAIN_DOOR[2] / 16, TRAIN_DOOR[3] / 9); } });
 }
 function openTrain() { showScene('train-select'); }
 function renderTrainSelect() {
   bannerTrain();
   $('train-intro').innerHTML = `Training costs ${TRAIN.cost} gold and earns a permanent perk (a hero can hold ${TRAITS.maxGood}). Weapon Drills give a random stat perk; Elemental Focus a random elemental perk. <span class="hub-gold">Gold: ${game.gold}</span>`;
-  $('train-list').innerHTML = game.roster.map(id => {
-    const h = heroById(id); if (!h) return '';
+  $('train-list').innerHTML = game.roster.filter(id => heroById(id)).map(id => {
     const poor = game.gold < TRAIN.cost, maxed = traitCount(id, 'good') >= TRAITS.maxGood;
-    const sub = maxed ? 'Peak form: no room for more perks' : poor ? `Costs ${TRAIN.cost} gold (you don't have enough)` : `Costs ${TRAIN.cost} gold · tap to choose a method`;
-    return `<div class="pick${maxed ? ' done' : poor ? ' full' : ''}" ${maxed || poor ? '' : `onclick="pickTrainHero('${id}')"`}><div class="mini-sprite port-box" data-port="${h.id}">${h.tag}</div>
-      <div><strong>${h.name}</strong> ${elIcons(h)}<div class="sk">${sub}</div><div class="sk">${traitChips(game.traits[id]) || '<span class="dim">No traits yet</span>'}</div></div></div>`;
+    const sub = maxed ? 'Peak form: no room for more perks' : poor ? `Costs ${TRAIN.cost} gold (not enough)` : `Perks ${traitCount(id, 'good')}/${TRAITS.maxGood} · ${TRAIN.cost} gold`;
+    return rcard(id, { cls: maxed || poor ? 'off' : 'click', onclick: maxed || poor ? '' : `pickTrainHero('${id}')`, sub });
   }).join('');
 }
 function pickTrainHero(id) {
@@ -6454,16 +6627,20 @@ async function revealPerk(o) {
 let spaGame = null;     // { hero, cells, placed, strikes, over, safeLeft, nerves, cols, rows }
 
 function openSpa() { showScene('spa-select'); }
+let spaSel = null;           // the hero whose flaws are showing on the front desk
+function spaPick(id) { spaSel = spaSel === id ? null : id; renderSpaSelect(); }
 function renderSpaSelect() {
   bannerSpa();
   $('spa-intro').innerHTML = `Each massage costs ${SPA.cost} gold. Pick a flaw to treat: win the minigame and it is gone for good. <span class="hub-gold">Gold: ${game.gold}</span>`;
-  $('spa-list').innerHTML = game.roster.map(id => {
-    const h = heroById(id); if (!h) return '';
-    const bad = [...new Set((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad'))], poor = game.gold < SPA.cost;
-    const btns = bad.map(t => `<button onclick="startSpa('${id}','${t}')" ${poor ? 'disabled' : ''}>${TRAIT[t].icon} Treat ${TRAIT[t].name} · ${SPA.cost}g</button>`).join('');
-    return `<div class="pick${bad.length ? '' : ' done'}"><div class="mini-sprite port-box" data-port="${h.id}">${h.tag}</div>
-      <div><strong>${h.name}</strong> ${elIcons(h)}<div class="sk">${bad.length ? 'Flaws: ' + traitChips((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad')) : 'No flaws to treat'}</div>${bad.length ? `<div class="spa-btns">${btns}</div>` : ''}</div></div>`;
-  }).join('');
+  const flaws = id => [...new Set((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad'))];
+  $('spa-list').innerHTML = game.roster.filter(id => heroById(id)).map(id => { const bad = flaws(id);
+    return rcard(id, { cls: 'click' + (spaSel === id ? ' sel' : '') + (bad.length ? '' : ' off'), onclick: `spaPick('${id}')`, sub: bad.length ? `${bad.length} flaw${bad.length === 1 ? '' : 's'} to treat` : 'No flaws to treat', badge: bad.length || null }); }).join('');
+  const box = $('spa-flaws'), h = spaSel && heroById(spaSel);
+  box.classList.toggle('on', !!h);
+  if (!h) { box.innerHTML = ''; return; }
+  const bad = flaws(spaSel), poor = game.gold < SPA.cost, all = (game.traits[spaSel] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad');
+  box.innerHTML = `<div class="sf-card"><button class="sf-x" onclick="spaPick('${spaSel}')">✕</button><h3>${h.name} ${elIcons(h)}</h3>
+    ${bad.length ? `<div class="sk">Flaws: ${traitChips(all)}</div><div class="spa-btns">${bad.map(t => `<button onclick="startSpa('${spaSel}','${t}')" ${poor ? 'disabled' : ''}>${TRAIT[t].icon} Treat ${TRAIT[t].name} · ${SPA.cost}g<small style="display:block;color:#9a9ab8">${TRAIT[t].desc}</small></button>`).join('')}</div>${poor ? '<div class="sk">Not enough gold.</div>' : ''}` : '<div class="sk">No flaws to treat. They are in perfect health!</div>'}</div>`;
 }
 
 function spaNeighbors(g, i) {
@@ -6563,7 +6740,7 @@ function spaTap(i) {
 
 /* ===== Spa result: the hero sits on a massage table in their camp sprite, a little effect plays, then it blurs behind the summary =====
    Art (optional, all shared): assets/ui/spa_room.(png|jpg|webp) replaces the drawn room, assets/ui/spa_table.png replaces the drawn massage table (it is placed in the middle, about 40% of the screen wide). */
-const spaRoomSvg = (room, table) => `<svg class="dr-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><defs>
+const spaRoomSvg = (room, table, door) => `<svg class="dr-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><defs>
 <linearGradient id="spW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9ebe6"/><stop offset="1" stop-color="#a3c9c2"/></linearGradient>
 <linearGradient id="spF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d2b085"/><stop offset="1" stop-color="#a98557"/></linearGradient>
 <radialGradient id="spL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".5"/><stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/></radialGradient></defs>
@@ -6573,7 +6750,7 @@ ${[0,1,2,3,4,5,6,7,8].map(i => `<rect x="${i * 200}" y="0" width="6" height="560
 <rect x="1150" y="110" width="300" height="320" rx="8" fill="#eaf6ff" stroke="#8a6a48" stroke-width="12"/><rect x="1150" y="110" width="300" height="320" rx="8" fill="rgba(255,255,255,.5)"/><rect x="1294" y="110" width="12" height="320" fill="#8a6a48"/>
 <g stroke="#5a8a4a" stroke-width="14" stroke-linecap="round"><path d="M150 0 V250"/><path d="M200 0 V320"/><path d="M250 0 V210"/></g>
 <g fill="#6aa55a"><ellipse cx="150" cy="260" rx="34" ry="14"/><ellipse cx="200" cy="330" rx="34" ry="14"/><ellipse cx="250" cy="220" rx="34" ry="14"/></g>
-<rect y="620" width="1600" height="280" fill="url(#spF)"/>${[650,690,740,800,870].map(y => `<rect y="${y}" width="1600" height="3" fill="rgba(0,0,0,.14)"/>`).join('')}
+<rect y="620" width="1600" height="280" fill="url(#spF)"/>${[650,690,740,800,870].map(y => `<rect y="${y}" width="1600" height="3" fill="rgba(0,0,0,.14)"/>`).join('')}${door ? doorSvg(SPA_DOOR[0], SPA_DOOR[1], SPA_DOOR[2], SPA_DOOR[3], '#b98d5e', '#6a4a30') : ''}
 <g><rect x="1180" y="560" width="240" height="30" rx="8" fill="#e9e1d4"/><rect x="1196" y="530" width="208" height="30" rx="8" fill="#f4eee4"/><rect x="1210" y="500" width="180" height="30" rx="8" fill="#fff"/></g>
 <g><ellipse cx="260" cy="720" rx="70" ry="20" fill="#6b6f72"/><ellipse cx="262" cy="690" rx="54" ry="16" fill="#8a8f92"/><ellipse cx="260" cy="662" rx="38" ry="12" fill="#a6abae"/></g>
 <g><rect x="1380" y="680" width="60" height="70" rx="8" fill="#7a5638"/><path d="M1410 680 C1370 620 1390 570 1410 540 C1420 580 1470 600 1450 680Z" fill="#4a8a52"/></g>
@@ -7092,7 +7269,8 @@ function diveIntro(winter, sinkSpr, h, others = []) {
     setTimeout(end, 3400 * k);
   });
 }
-function fitDive() { const c = $('dv-cv'), r = devicePixelRatio > 1.5 ? 1.5 : 1; c.width = Math.round(innerWidth * r); c.height = Math.round(innerHeight * r); dv && (dv.scale = r); }
+function fitDive() { const c = $('dv-cv'), r = devicePixelRatio > 1.5 ? 1.5 : 1; c.width = Math.round(innerWidth * r); c.height = Math.round(innerHeight * r); dv && (dv.scale = r * diveZoom()); }
+const diveZoom = () => Math.max(1, Math.min(1.9, innerHeight / 640));      // big PC windows draw the dive larger instead of leaving it tiny
 addEventListener('resize', () => { if (dv) fitDive(); });
 function diveHud() {
   if (!dv) return; const p = Math.max(0, dv.hp / dv.maxHp); $('dv-hpf').style.width = (p * 100) + '%'; $('dv-hpt').textContent = `${Math.ceil(dv.hp)} / ${dv.maxHp}`;
@@ -7101,7 +7279,7 @@ function diveHud() {
 }
 const diveHard = t => ({ hp: 1 + t / 40 + (t / 160) ** 2, dmg: 1 + t / 100 + (t / 220) ** 2 });      // the ramp: outgrows whatever upgrades you pick
 function diveSpawn(def, ring) {
-  const hd = diveHard(dv.t), R = Math.hypot(innerWidth, innerHeight) / 2 + 50, a = Math.random() * 6.283;
+  const hd = diveHard(dv.t), R = Math.hypot(innerWidth, innerHeight) / 2 / diveZoom() + 50, a = Math.random() * 6.283;
   dv.en.push({ def, x: dv.x + Math.cos(a) * R, y: dv.y + Math.sin(a) * R, hp: def.hp * hd.hp, mhp: def.hp * hd.hp, dmg: def.dmg * hd.dmg, spd: def.spd * (0.92 + Math.random() * .16), face: 1, flash: 0, touch: 0, orb: 0, r: def.size * 0.34 });
 }
 function diveDirector(dt) {
@@ -7210,7 +7388,7 @@ function diveBlit(g, a, x, y, h, flip, fallback, tag, flash) {          // draw 
   else { g.save(); g.translate(x, y - h / 2); g.fillStyle = fallback; g.beginPath(); g.arc(0, 0, h / 2.2, 0, 6.283); g.fill(); g.fillStyle = '#fff'; g.font = `bold ${Math.round(h / 4.5)}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(tag, 0, 0); if (flash) { g.globalAlpha = .5; g.beginPath(); g.arc(0, 0, h / 2.2, 0, 6.283); g.fill(); } g.restore(); }
 }
 function diveDraw(g, cv) {
-  const d = dv, sc = d.scale || 1, W = cv.width, H = cv.height; g.setTransform(1, 0, 0, 1, 0, 0);
+  const d = dv, sc = d.scale || (devicePixelRatio > 1.5 ? 1.5 : 1) * diveZoom(), W = cv.width, H = cv.height; g.setTransform(1, 0, 0, 1, 0, 0);
   const grd = g.createLinearGradient(0, 0, 0, H); grd.addColorStop(0, '#0f6aa6'); grd.addColorStop(.55, '#08365f'); grd.addColorStop(1, '#031428'); g.fillStyle = grd; g.fillRect(0, 0, W, H);
   g.setTransform(sc, 0, 0, sc, 0, 0); const vw = W / sc, vh = H / sc, cx = vw / 2 - d.x, cy = vh / 2 - d.y;
   g.fillStyle = 'rgba(190,235,255,.06)'; for (let i = 0; i < 4; i++) { const x = ((i * 330 + 120 - d.x * .15) % (vw + 300) + vw + 300) % (vw + 300) - 150; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 90, 0); g.lineTo(x - 140, vh); g.lineTo(x - 230, vh); g.fill(); }
@@ -7338,13 +7516,21 @@ function vbTogglePick(id) {
 /* ---- the game ---- */
 const vbHX = { A: 24, B: 40, O1: 76, O2: 60 }, vbHY = 54;            // where each player's hands are (% of the court)
 let vb = null;
+const vbClock = () => vb ? (vb.paused ? vb.pauseAt : performance.now()) - (vb.lost || 0) : performance.now();      // game time: stands still while paused
+async function vbSleep(ms) { const G = vb; if (!G) return sleep(ms); const t = vbClock(); while (vb === G && !G.dead && vbClock() - t < ms) await new Promise(r => requestAnimationFrame(r)); }
+function vbPause(on) {
+  if (!vb || vb.dead || !!vb.paused === !!on) return;
+  if (on) { vb.paused = true; vb.pauseAt = performance.now(); }
+  else { vb.lost = (vb.lost || 0) + performance.now() - vb.pauseAt; vb.paused = false; }
+  $('vb-pause').classList.toggle('on', !!on);
+}
 function vbPosBall(x, y) { const b = $('vb-ball'); b.style.left = x + '%'; b.style.top = y + '%'; if (vb) vb.bp = [x, y]; }
 function vbFly(from, to, dur, apex, ringEl) {
   return new Promise(res => {
-    const t0 = performance.now(), G = vb;
+    const t0 = vbClock(), G = vb;
     const step = () => {
       if (!vb || vb !== G || G.dead) return res();
-      const t = Math.min(1, (performance.now() - t0) / dur);
+      const t = Math.min(1, (vbClock() - t0) / dur);
       vbPosBall(from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t - 4 * apex * t * (1 - t));
       if (ringEl) ringEl.style.transform = `translate(-50%,-50%) scale(${(1 + 1.5 * (1 - t)).toFixed(3)})`;
       if (ringEl && G.stopFly) return res();
@@ -7361,17 +7547,18 @@ function vbHud() {
 // One touch of the ball: it flies to the hitter's hands and a ring closes on it. Tap while the ring is closing: close to the moment = Perfect.
 async function vbTouch(from, to, dur, apex) {
   const ring = $('vb-ring'), G = vb; ring.style.left = to[0] + '%'; ring.style.top = to[1] + '%'; ring.style.display = 'block'; G.stopFly = false;
-  const arrive = performance.now() + dur, flight = vbFly(from, to, dur, apex, ring);
+  const arrive = vbClock() + dur, flight = vbFly(from, to, dur, apex, ring);
   const q = await new Promise(resolve => {
     G.wait = { arrive, resolve };
-    setTimeout(() => { if (G.wait && G.wait.resolve === resolve) { G.wait = null; resolve('miss'); } }, dur + VB.good);
+    const poll = () => { if (vb !== G || G.dead || !G.wait || G.wait.resolve !== resolve) return; if (vbClock() > arrive + VB.good) { G.wait = null; resolve('miss'); } else requestAnimationFrame(poll); };
+    requestAnimationFrame(poll);
   });
   G.stopFly = true; ring.style.display = 'none'; await flight;
   return q;
 }
 function vbTap() {
-  if (!vb || !vb.wait) return;
-  const dt = performance.now() - vb.wait.arrive; if (dt < -VB.good) return;           // far too early: ignored, no penalty
+  if (!vb || !vb.wait || vb.paused) return;
+  const dt = vbClock() - vb.wait.arrive; if (dt < -VB.good) return;           // far too early: ignored, no penalty
   const w = vb.wait; vb.wait = null; w.resolve(Math.abs(dt) <= VB.perfect ? 'perfect' : 'good');
 }
 async function vbDrop() { const [x] = vb.bp; await vbFly(vb.bp, [x, 80], 450, 0); sfx('poof'); }
@@ -7409,7 +7596,7 @@ async function vbPoint(server) {
     vbJudge(q === 'perfect' ? 'PERFECT!' : 'Good', q); vbHop(A);
     if (!(await vbSend(q))) return vb.dead ? 'dead' : 'me';
   } else {
-    $('vb-msg').textContent = 'The rivals serve...'; vbPosBall(vbHX.O1 + 3, vbHY); await sleep(700); if (vb.dead) return 'dead'; vbHop(O1);
+    $('vb-msg').textContent = 'The rivals serve...'; vbPosBall(vbHX.O1 + 3, vbHY); await vbSleep(700); if (vb.dead) return 'dead'; vbHop(O1);
   }
   for (;;) {
     const q = await vbMine(); if (vb.dead) return 'dead';
@@ -7423,10 +7610,10 @@ async function vbPlay() {
     let server = 'me';
     $('vb-ball').style.display = 'block'; vbHud();
     while (!G.dead && G.me < VB.winPts && G.foe < VB.lives) {
-      await sleep(600); if (G.dead) return;
+      await vbSleep(600); if (G.dead) return;
       const r = await vbPoint(server); if (G.dead || r === 'dead') return;
       if (r === 'me') { G.me++; vbJudge('Point!', 'perfect'); } else { G.foe++; vbJudge('Point lost', 'miss'); }
-      G.speed = Math.max(.72, 1 - G.me * .045); vbHud(); server = r; await sleep(800);
+      G.speed = Math.max(.72, 1 - G.me * .045); vbHud(); server = r; await vbSleep(800);
     }
     if (G.dead) return;
     vbFinish(G.me >= VB.winPts);
@@ -7434,7 +7621,6 @@ async function vbPlay() {
 }
 function vbFinish(won) {
   const G = vb; G.dead = true; $('vb-ball').style.display = 'none'; $('vb-ring').style.display = 'none';
-  $('vb-hit').style.display = 'none'; $('vb-quit').style.display = 'none';
   if (won) {
     game.vb = { reward: { heroes: G.team.slice(), done: {} } }; writeSave();
     $('vb-court').classList.add('won'); $('vb-msg').textContent = ''; vbSwapUi();
@@ -7456,24 +7642,26 @@ function startVb() {
   game.gold -= VB.cost; writeSave();                                   // paid up front, win or lose
   const team = vbPick.slice(), others = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2);
   showScene('vb'); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true));
-  $('vb-court').classList.remove('won'); $('vb-panel').style.display = 'none'; $('vb-hit').style.display = ''; $('vb-quit').style.display = '';
+  $('vb-court').classList.remove('won'); $('vb-panel').style.display = 'none'; $('vb-pause').classList.remove('on');
   vb = { team, me: 0, foe: 0, speed: 1, dead: false, wait: null, bp: [vbHX.A, 22] };
   vb.sp = vbBuild(team, others); vbPosBall(vbHX.A, 22);
   $('vb-msg').textContent = 'Get ready...'; vbHud();
   vbPlay();
 }
-function vbQuit() { if (vb) { vb.dead = true; if (vb.wait) vb.wait.resolve('miss'); vb = null; } showScene('beach-pick'); }
-// the hit button: pointerdown for a snappy tap, click for keyboard / controller (the two are de-duplicated)
-let vbLastPtr = 0;
-$('vb-hit').addEventListener('pointerdown', e => { vbLastPtr = performance.now(); vbTap(); });
-$('vb-hit').addEventListener('click', () => { if (performance.now() - vbLastPtr > 400) vbTap(); });
-document.addEventListener('keydown', e => { if ((e.code === 'Space' || e.code === 'Enter') && $('vb').classList.contains('show') && vb && vb.wait) { e.preventDefault(); vbTap(); } });
+function vbQuit() { if (vb) { vb.dead = true; vb.paused = false; if (vb.wait) vb.wait.resolve('miss'); vb = null; } $('vb-pause').classList.remove('on'); showScene('beach-pick'); }
+// hit the ball with Space / Enter, a click or tap anywhere on the court, or the controller's A button (see the gamepad block); Esc pauses
+document.getElementById('vb').addEventListener('pointerdown', e => { if (!vb || vb.dead || vb.paused || e.button) return; if (e.target.closest('button, #vb-panel, #vb-pause')) return; vbTap(); });
+document.addEventListener('keydown', e => {
+  if (!$('vb').classList.contains('show') || !vb || vb.dead) return;
+  if (e.code === 'Escape') { e.preventDefault(); vbPause(!vb.paused); return; }
+  if ((e.code === 'Space' || e.code === 'Enter') && !vb.paused) { e.preventDefault(); if (!e.repeat) vbTap(); }
+});
 
 /* ---- the reward: trade a Tier II perk for any Tier I perk, or a Tier III perk for any Tier II perk (each of the 2 heroes, once) ---- */
 let vbSel = {};
 const t1Choices = hid => Object.values(TRAIT).filter(t => t.kind === 'good' && !t.base && (!t.el || heroElems(hid).includes(t.el)));
 const vbTakeFor = (hid, out) => isT3(out) ? t1Choices(hid).map(t => TRAIT[t.id + '2']).filter(Boolean) : t1Choices(hid);      // Tier III -> any Tier II, Tier II -> any Tier I
-function vbClaim() { showScene('vb'); $('vb-court').classList.add('won'); $('vb-hit').style.display = 'none'; $('vb-quit').style.display = 'none'; $('vb-msg').textContent = ''; vbSwapUi(); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true)); const rw = game.vb && game.vb.reward; if (rw) { vbSwapBackdrop(rw.heroes); } }
+function vbClaim() { showScene('vb'); $('vb-court').classList.add('won'); $('vb-msg').textContent = ''; vbSwapUi(); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true)); const rw = game.vb && game.vb.reward; if (rw) { vbSwapBackdrop(rw.heroes); } }
 function vbSwapBackdrop(team) { const foes = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2); vbBuild(team, foes); }
 function vbSwapUi() {
   const rw = game.vb && game.vb.reward, p = $('vb-panel'); if (!rw) { showScene('beach'); return; }
@@ -7622,6 +7810,10 @@ const GP = (() => {
     const rep = k => { if (!down[k]) { S.held[k] = 0; return false; } if (!S.held[k]) { S.held[k] = now + 380; return true; } if (now >= S.held[k]) { S.held[k] = now + 120; return true; } return false; };
     const wake = !S.active && any; if (wake) { on(); for (const k of ['up', 'dn', 'lf', 'rt']) if (down[k]) S.held[k] = now + 380; }
     const L = layer(); const list = ensureFocus(L);
+    if (!wake && L.scene === 'vb' && vb && !vb.dead) {      // volleyball: A hits, Start pauses (and resumes)
+      if (edge('START')) vbPause(!vb.paused); else if (vb.paused) { if (edge('A') || edge('B')) vbPause(false); } else if (edge('A')) vbTap();
+      S.prev = down; return;
+    }
     if (!wake) {
       if (L.skip) { if (!L.noClick && (edge('A') || edge('B') || edge('START'))) L.root.click(); }
       else {
