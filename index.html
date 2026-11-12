@@ -852,6 +852,51 @@ body.calm .breath{display:none}
 #relic-modal.show{display:flex}
 #pot-modal{display:none;position:fixed;inset:0;z-index:181;background:rgba(0,0,0,.72);align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
 #pot-modal.show{display:flex}
+#pot-modal{background:radial-gradient(ellipse at 50% 40%,rgba(40,20,80,.8),rgba(4,2,12,.92))}
+.pot-rune{position:absolute;left:50%;top:50%;width:min(130vh,150vw);height:min(130vh,150vw);transform:translate(-50%,-50%);color:#8b6cff;opacity:.16;pointer-events:none;animation:runeSpin 140s linear infinite}
+@keyframes runeSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+body.calm .pot-rune{animation:none}
+#pot-modal .pot-box{position:relative;z-index:1;background:linear-gradient(#171028,#0b0716) padding-box,linear-gradient(135deg,#8b6cff,#ffd88a 50%,#8b6cff) border-box;border:2px solid transparent;border-radius:14px;box-shadow:0 0 0 1px rgba(255,216,138,.18),0 0 40px rgba(139,108,255,.35),0 18px 50px rgba(0,0,0,.7);color:#e9e2ff}
+#pot-modal .pot-box::before{content:"✦";position:absolute;left:8px;top:2px;color:#ffd88a;font-size:.8rem;opacity:.8}
+#pot-modal .rm-head{border-bottom:1px solid rgba(255,216,138,.25);padding-bottom:8px}
+#pot-title{font-family:Georgia,'Times New Roman',serif;letter-spacing:.06em;font-size:1.15rem;background:linear-gradient(90deg,#ffe9b0,#c9b6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+#pot-title .pot-cry{-webkit-text-fill-color:#8fe0ff}
+#pot-modal .rm-head button{background:rgba(139,108,255,.15);border:1px solid #6b55b8;color:#e9e2ff}
+.pot-tier .dh{display:flex;align-items:center;gap:8px;color:#ffd88a;font-family:Georgia,serif;letter-spacing:.18em;font-size:.72rem;margin:12px 0 4px}
+.pot-tier .dh::before,.pot-tier .dh::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,216,138,.45),transparent)}
+.pot-opt{background:linear-gradient(90deg,rgba(70,48,130,.32),rgba(20,14,40,.6));border:1px solid #3d2f6e;transition:box-shadow .25s,border-color .25s,transform .15s}
+.pot-opt:hover{border-color:#8b6cff;transform:translateX(2px)}
+.pot-opt.on{border-color:var(--c,#9fd8ff);background:linear-gradient(90deg,rgba(255,255,255,.08),rgba(20,14,40,.6));box-shadow:0 0 14px var(--c,#9fd8ff),inset 0 0 22px rgba(255,255,255,.07);animation:optGlow 3.2s ease-in-out infinite}
+@keyframes optGlow{50%{box-shadow:0 0 24px var(--c,#9fd8ff),inset 0 0 30px rgba(255,255,255,.12)}}
+body.calm .pot-opt.on{animation:none}
+.pot-opt.prev{border-color:#ffd88a}
+.pot-opt .ic.tt-ic{width:46px;height:46px;flex:0 0 46px;color:#cdbdf5;background:rgba(0,0,0,.35);border:1px solid #3d2f6e;border-radius:8px;padding:3px;box-sizing:border-box}
+.pot-opt.on .ic.tt-ic{color:#fff;filter:drop-shadow(0 0 5px var(--c,#9fd8ff));border-color:var(--c,#9fd8ff)}
+.pot-opt.locked .ic.tt-ic{opacity:.5}
+.pot-opt .unequip{background:none;border:0;color:#9a8fc4;font-size:.62rem;text-decoration:underline;padding:2px 4px;cursor:pointer;opacity:.7}
+.pot-opt .unequip:hover{color:#fff;opacity:1}
+.pot-back{border:1px solid #6b55b8;box-shadow:0 0 20px rgba(139,108,255,.3)}
+.pot-hint{color:#b9a8ee}
+
+#pot-modal .pot-box{max-width:980px}
+.pot-body{display:grid;grid-template-columns:minmax(240px,38%) 1fr;gap:14px;align-items:start}
+.pot-backwrap{position:sticky;top:0}
+.pot-back{position:relative;width:100%;aspect-ratio:5/6;border-radius:10px;overflow:hidden;border:1px solid #3a3450;background:#1a1620 center/cover no-repeat;--c:#9fd8ff}
+.pot-back .pb-body,.pot-back svg.tt{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pot-back svg.tt{color:#0a0d14;mix-blend-mode:multiply;opacity:.93}
+.pot-back svg.tt.ghost{color:var(--c);mix-blend-mode:normal;opacity:.5;animation:ttGhost 1.2s ease-in-out infinite alternate}
+@keyframes ttGhost{from{opacity:.25}to{opacity:.6}}
+.pot-back svg.tt.zone{color:#fff;mix-blend-mode:normal;opacity:.07}
+.pot-back.done svg.tt:not(.ghost):not(.zone){filter:drop-shadow(0 0 5px var(--c));animation:ttGlow 3s ease-in-out infinite}
+@keyframes ttGlow{50%{filter:drop-shadow(0 0 12px var(--c)) drop-shadow(0 0 3px var(--c))}}
+.pot-back svg.tt.in1{animation:ttIn1 1.5s ease-out both}.pot-back svg.tt.in2{animation:ttIn2 1.4s ease-out both}.pot-back svg.tt.in3{animation:ttIn1 1.5s ease-out both}
+@keyframes ttIn1{from{clip-path:inset(0 0 100% 0);filter:drop-shadow(0 0 8px var(--c))}to{clip-path:inset(0 0 0 0);filter:none}}
+@keyframes ttIn2{from{clip-path:inset(0 50% 0 50%);filter:drop-shadow(0 0 8px var(--c))}to{clip-path:inset(0 0 0 0);filter:none}}
+body.calm .pot-back svg.tt{animation:none!important}
+.pot-hint{font-size:.68rem;text-align:center;margin-top:4px}
+.pot-opt{cursor:pointer}.pot-opt.prev{border-color:#ffd54f}
+@media (max-width:760px){.pot-body{grid-template-columns:1fr}.pot-backwrap{position:static}.pot-back{max-height:46vh;width:auto;margin:0 auto;aspect-ratio:5/6;height:46vh}}
+
 .pot-cry{font-size:.85rem;color:#8fe0ff;margin-left:8px}
 .pot-opt{display:flex;align-items:center;gap:10px;background:#12121a;border:1px solid #262638;border-radius:8px;padding:8px 10px;margin:5px 0;font-size:.78rem;text-align:left}
 .pot-opt .ic{font-size:1.5rem;flex:0 0 auto}.pot-opt .pt{flex:1;min-width:0}.pot-opt .pb{flex:0 0 auto}
@@ -1551,10 +1596,14 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 </div>
 
 <div id="pot-modal" onclick="if (event.target === this) closePot()">
-  <div class="rm-box">
+  <svg class="pot-rune" viewBox="-200 -200 400 400" aria-hidden="true"><g fill="none" stroke="currentColor"><circle r="190" stroke-width="1.5"/><circle r="176" stroke-width=".8" stroke-dasharray="2 7"/><circle r="140" stroke-width="1"/><path d="M0 -140 L121 70 L-121 70Z M0 140 L121 -70 L-121 -70Z" stroke-width="1"/><circle r="100" stroke-width=".8" stroke-dasharray="14 6"/></g><g fill="currentColor" font-size="13" font-family="serif" text-anchor="middle"></g></svg>
+  <div class="rm-box pot-box">
     <div class="rm-head"><b id="pot-title">Potential</b><button onclick="closePot()">✕ Close</button></div>
     <div class="dim" id="pot-sub" style="font-size:.72rem;margin-bottom:6px"></div>
-    <div id="pot-list"></div>
+    <div class="pot-body">
+      <div class="pot-backwrap"><div class="pot-back" id="pot-back"></div><div class="dim pot-hint" id="pot-hint">Tap an option to preview its tattoo.</div></div>
+      <div id="pot-list"></div>
+    </div>
   </div>
 </div>
 
@@ -2451,16 +2500,124 @@ function potBuy(id) {
   game.crystals -= o.cost; st.owned.push(id); if (!st.active[o.tier] && !gearLocked()) st.active[o.tier] = id;
   writeSave(); renderPot();
 }
-function potSet(id) {                         // make an owned option the active one of its tier (or switch it off again)
+function potSet(id) {                         // make an owned option the active one of its tier (there is no switching off, only switching to another)
   const o = POT_OPTS[id]; if (!o || gearLocked() || !potAwake(o.hero)) return;
   const st = potState(o.hero); if (!st.owned.includes(id)) return;
-  const was = st.active[o.tier]; if (was === id) delete st.active[o.tier]; else st.active[o.tier] = id;
+  if (st.active[o.tier] === id) return;          // an owned option stays on; picking another option of the tier replaces it
+  st.active[o.tier] = id;
   if (!potHas(o.hero, 'hoarder')) { const a = game.equip[o.hero]; if (a && a.length > RELIC.slots) a.length = RELIC.slots; }          // no Hoarder: the third relic goes back to the bag
   writeSave(); renderPot(); if (dormHero) renderGear();
 }
 let potHero = null;
-function openPot(hid) { if (!heroById(hid)) return; potHero = hid; renderPot(); $('pot-modal').classList.add('show'); }
-function closePot() { $('pot-modal').classList.remove('show'); potHero = null; }
+function openPot(hid) { if (!heroById(hid)) return; potHero = hid; delete potDrawn[hid]; renderPot(); $('pot-modal').classList.add('show'); }
+function closePot() { $('pot-modal').classList.remove('show'); potHero = null; potPrev = null; }
+/* ===== Potential tattoo =====
+   The back is drawn on a 1000 x 1200 sheet (spine at x=500). Tier 1 = the column down the spine, tier 2 = the two sides (mirrored), tier 3 = the lower back.
+   Every design in a tier meets the next at the SAME seam points (TAT.ys on the column edge, TAT.end at the bottom of the sides, TAT.low at the top of the lower back), through the same
+   shared connector pieces, so any mix of options joins up into one tattoo. Between the seams each option is free to look different. */
+const TAT = { ys: [340, 470, 600, 730], spine: 500, XB: 560, XS: 610, end: [684, 786], low: [[444, 800], [556, 800]], ink: '#0a0d14' };
+const tatBz = (a, b, c, d, n = 22) => { const o = []; for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; o.push([u*u*u*a[0] + 3*u*u*t*b[0] + 3*u*t*t*c[0] + t*t*t*d[0], u*u*u*a[1] + 3*u*u*t*b[1] + 3*u*t*t*c[1] + t*t*t*d[1]]); } return o; };
+const tatPoly = (pts, wf) => {
+  const n = pts.length, L = [], R = [];
+  for (let i = 0; i < n; i++) {
+    const p = pts[Math.max(0, i - 1)], q = pts[Math.min(n - 1, i + 1)]; let dx = q[0] - p[0], dy = q[1] - p[1]; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    const w = wf(i / (n - 1)) / 2; L.push([pts[i][0] - dy * w, pts[i][1] + dx * w]); R.push([pts[i][0] + dy * w, pts[i][1] - dx * w]);
+  }
+  return 'M' + [...L, ...R.reverse()].map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z';
+};
+const TW = { lens: w => t => w * Math.pow(Math.sin(Math.PI * t), .65) + .6, blade: w => t => w * Math.min(1, t * 3.5) * Math.pow(1 - t, .75) + .6, tip: w => t => w * Math.pow(1 - t, .85) + .6, even: w => t => w * (t < .1 || t > .9 ? .6 : 1) };
+const TWK = 1.9;
+const tb = (a, b, c, d, w, k = 'lens') => tatPoly(tatBz(a, b, c, d), TW[k](w * TWK));
+const tarc = (cx, cy, r, a0, a1, w, k = 'lens', sq = 1) => { w *= TWK; const pts = []; for (let i = 0; i <= 28; i++) { const a = a0 + (a1 - a0) * i / 28; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r * sq]); } return tatPoly(pts, TW[k](w)); };
+const tspiral = (cx, cy, r, a0, turns, w, dir = 1) => { w *= TWK; const pts = [], N = 60; for (let i = 0; i <= N; i++) { const t = i / N, a = a0 + dir * t * turns * Math.PI * 2, rr = r * (1 - .72 * t); pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]); } return tatPoly(pts, TW.tip(w)); };
+const tspike = (x, y, ang, len, w) => { w *= 1.5; len *= 1.2; const c = Math.cos(ang), s = Math.sin(ang); return `M${(x - s * w / 2).toFixed(1)} ${(y + c * w / 2).toFixed(1)}L${(x + c * len).toFixed(1)} ${(y + s * len).toFixed(1)}L${(x + s * w / 2).toFixed(1)} ${(y - c * w / 2).toFixed(1)}Z`; };
+const tdia = (x, y, rx, ry) => (rx *= 1.3, ry *= 1.3, `M${x - rx} ${y}L${x} ${y - ry}L${x + rx} ${y}L${x} ${y + ry}Z`);
+const tring = (cx, cy, r, w) => (w *= 1.6, `M${cx - r - w / 2} ${cy}a${r + w / 2} ${r + w / 2} 0 1 0 ${2 * r + w} 0a${r + w / 2} ${r + w / 2} 0 1 0 ${-2 * r - w} 0ZM${cx - r + w / 2} ${cy}a${r - w / 2} ${r - w / 2} 0 1 1 ${2 * r - w} 0a${r - w / 2} ${r - w / 2} 0 1 1 ${-2 * r + w} 0Z`);
+const tdot = (cx, cy, r) => `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
+const teli = (cx, cy, rx, ry, w) => { w *= 1.6; const pts = []; for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI * 2; pts.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]); } return tatPoly(pts, () => w); };
+// the universal seam pieces: identical in every design, so neighbouring tiers always meet
+const tSeam = y => [tb([TAT.XB - 6, y], [TAT.XB + 14, y - 5], [TAT.XS - 14, y + 5], [TAT.XS, y], 11, 'even'), tdia(TAT.XS + 4, y, 10, 11)];
+const tEnd = () => [tb([TAT.XS, 730], [638, 748], [662, 768], [TAT.end[0], TAT.end[1]], 11, 'even'), tdia(TAT.end[0] + 2, TAT.end[1], 9, 12)];
+const tLow = () => [tb([TAT.low[1][0], TAT.low[1][1]], [TAT.low[1][0] + 4, 780], [TAT.low[1][0] - 4, 790], [TAT.low[1][0], 806], 10, 'even'), tdia(TAT.low[1][0], 800, 9, 10), tb([TAT.low[1][0], 800], [570, 840], [550, 880], [538, 916], 11, 'blade')];
+const YS = TAT.ys, SX = 500, XB = TAT.XB, XS = TAT.XS;
+/* tier 1: right half (r) mirrored to the left, plus centre strokes (c); every design ends its branches at (XB, y) for each seam y */
+const TAT1 = {
+  health: () => ({ c: [tb([500, 252], [462, 400], [538, 650], [500, 812], 13, 'lens')], r: YS.flatMap(y => [tb([500, y + 62], [524, y + 44], [542, y + 20], [XB, y], 17, 'lens'), tb([504, y + 104], [524, y + 98], [538, y + 78], [548, y + 64], 10, 'lens'), tb([500, y - 34], [514, y - 52], [530, y - 62], [542, y - 62], 8, 'lens')]) }),
+  armour: () => ({ c: [tb([500, 255], [500, 400], [500, 650], [500, 815], 15, 'even'), ...[300, 395, 530, 665, 770].map(y => tdia(500, y, 12, 17))], r: YS.flatMap(y => [tb([500, y + 70], [520, y + 46], [540, y + 22], [XB, y], 15, 'blade'), tb([500, y + 38], [514, y + 24], [530, y + 12], [546, y + 8], 10, 'blade'), tb([500, y + 100], [522, y + 80], [538, y + 66], [552, y + 62], 8, 'blade')]) }),
+  skel: () => ({ c: [tb([500, 252], [500, 400], [500, 650], [500, 815], 8, 'even'), ...Array.from({ length: 11 }, (_, i) => tdia(500, 285 + i * 52, 13, 21))], r: YS.flatMap(y => [tarc(500, y + 4, 58, -1.45, .25, 12, 'blade'), tarc(500, y + 4, 40, -1.35, .1, 8, 'blade'), tdot(XB - 2, y, 5)]) }),
+  eldmg: () => ({ c: [tb([500, 255], [478, 420], [522, 640], [500, 815], 12, 'lens')], r: YS.flatMap(y => [tb([500, y + 80], [506, y + 40], [548, y + 40], [XB, y], 18, 'blade'), tb([500, y + 44], [520, y + 20], [540, y + 18], [548, y - 8], 11, 'blade'), tspike(536, y - 22, -1.9, 26, 10)]) }),
+  elres: () => ({ c: [tb([500, 252], [500, 400], [500, 650], [500, 815], 10, 'even')], r: YS.flatMap(y => [tarc(500, y, 60, -1.57, 1.57, 11, 'lens'), tarc(500, y, 42, -1.57, 1.57, 8, 'lens'), tarc(500, y, 24, -1.57, 1.57, 6, 'lens'), tdot(XB, y, 6)]) }),
+  break: () => ({ c: [tb([500, 252], [478, 420], [522, 640], [500, 815], 9, 'lens')], r: YS.flatMap(y => [tatPoly([[500, y + 40], [518, y + 18], [514, y + 12], [534, y - 8], [530, y - 12], [XB, y]], TW.blade(14 * TWK)), tatPoly([[500, y + 90], [520, y + 76], [516, y + 70], [536, y + 56]], TW.blade(10)), tspike(520, y - 6, -1.1, 22, 8)]) }),
+  lifesteal: () => ({ c: [tb([500, 252], [500, 400], [500, 650], [500, 815], 10, 'even')], r: YS.flatMap(y => [tb([500, y - 36], [524, y - 34], [550, y - 14], [XB, y + 2], 18, 'tip'), tb([500, y + 24], [520, y + 24], [538, y + 40], [544, y + 70], 14, 'tip'), tdot(548, y + 88, 6)]) })
+};
+/* tier 2: right side (mirrored); every design starts at the four seam nodes (XS, y), ends on the shared bottom node, and is free in between */
+const T2F = {
+  blades: (L, dy, curl, thick) => YS.flatMap((y, i) => [tb([XS, y], [XS + L * .3, y - curl], [XS + L * .7, y - dy - curl], [XS + L, y - dy], thick, 'blade'), tb([XS + 14, y + 16], [XS + L * .35, y + 8], [XS + L * .6, y - dy * .4], [XS + L * .78, y - dy * .5 - 8], thick * .55, 'blade')]),
+  scrolls: (r, w) => YS.flatMap(y => [tspiral(XS + r, y, r, Math.PI, 1.3, w), tspike(XS + r * 1.9, y - r * .2, -.6, r * .9, w * .7)]),
+  hooks: (L, spikes) => YS.flatMap(y => [tb([XS, y], [XS + L * .5, y + 14], [XS + L * 1.1, y - 46], [XS + L * .85, y - 88], 20, 'tip'), ...(spikes ? [tspike(XS + L * .55, y + 12, .5, 26, 10), tspike(XS + L * .9, y - 30, -.2, 24, 9)] : [])]),
+  scales: (rs, w) => YS.flatMap(y => rs.map(r => tarc(XS + r, y, r, Math.PI * .98, Math.PI * 2.55, w, 'lens'))),
+  links: (rx, ry, w) => YS.flatMap((y, i) => [teli(XS + rx, y, rx, ry, w), ...(i < 3 ? [tb([XS + rx, y + ry], [XS + rx + 8, y + ry + 30], [XS + rx - 8, y + 100], [XS + rx, YS[i + 1] - ry], w * .9, 'even')] : [])]),
+  rings: (r, w) => YS.flatMap(y => [tring(XS + r + 8, y, r, w), tdot(XS + r + 8, y, r * .38), tb([XS, y], [XS + 4, y], [XS + 8, y], [XS + 8, y], 6, 'even')]),
+  leaves: (L, w, veins) => YS.flatMap(y => [tb([XS, y], [XS + L * .3, y - 34], [XS + L * .7, y - 36], [XS + L, y - 4], w, 'lens'), tb([XS, y], [XS + L * .3, y + 30], [XS + L * .7, y + 32], [XS + L * .85, y + 10], w * .8, 'lens'), ...(veins ? [tb([XS + 6, y], [XS + L * .4, y - 4], [XS + L * .6, y - 6], [XS + L * .8, y - 6], 4, 'tip')] : [])]),
+  fangs: (L, drops) => YS.flatMap(y => [tb([XS, y - 24], [XS + L * .5, y - 40], [XS + L * .9, y - 6], [XS + L, y + 60], 20, 'tip'), tb([XS, y + 6], [XS + L * .4, y + 6], [XS + L * .7, y + 30], [XS + L * .75, y + 70], 13, 'tip'), ...(drops ? [tdot(XS + L * .9, y + 90, 6), tdot(XS + L * .7, y + 96, 4)] : [])])
+};
+const TAT2 = {
+  counter: () => T2F.hooks(80, false), sadistic: () => T2F.hooks(70, true), evasion: () => T2F.blades(150, 70, 30, 18), chef: () => T2F.scrolls(40, 14), greedy: () => T2F.rings(28, 9), hoarder: () => T2F.rings(20, 7).concat(YS.flatMap(y => [tring(XS + 78, y, 14, 6)])),
+  resist: () => T2F.scales([30, 48, 66], 9), immunity: () => T2F.scales([26, 40], 11).concat(YS.map(y => tdia(XS + 76, y, 10, 22))), chain: () => T2F.links(44, 22, 8), restore: () => T2F.leaves(110, 16, true), cleanser: () => T2F.leaves(80, 20, false),
+  masochist: () => T2F.fangs(96, false), lifesteal: () => T2F.fangs(80, true)
+};
+/* tier 3: the lower back. A shared frame (ring, wings, crown) with a different emblem in the middle of it and different ornaments around it */
+const tLowBase = () => ({ all: [tring(500, 960, 84, 10), tspike(500, 1040, Math.PI / 2, 110, 28), tdia(500, 876, 8, 12)],
+  mir: [tb([580, 972], [660, 990], [710, 920], [720, 790], 16, 'blade'), tb([576, 936], [628, 930], [670, 880], [688, 832], 10, 'blade'), tb([584, 1000], [650, 1030], [700, 1010], [730, 960], 11, 'blade'), tspike(548, 1030, Math.PI / 2 + .5, 64, 15)] });
+const TAT3 = {
+  vow: () => [tb([470, 920], [490, 940], [510, 960], [530, 980], 8, 'even'), tb([530, 920], [510, 940], [490, 960], [470, 980], 8, 'even'), teli(500, 950, 22, 12, 6), tdia(500, 950, 8, 16)],
+  aegis: () => [tatPoly([[468, 918], [532, 918], [532, 958], [500, 988], [468, 958], [468, 918]], () => 8), tb([500, 926], [500, 940], [500, 960], [500, 978], 6, 'even'), tb([476, 940], [490, 942], [510, 942], [524, 940], 6, 'even')],
+  dance: () => [tatPoly([[512, 912], [488, 944], [506, 944], [484, 988]], TW.blade(13)), tatPoly([[528, 920], [510, 946], [524, 946], [506, 980]], TW.blade(9)), tatPoly([[474, 924], [460, 946], [470, 946], [458, 972]], TW.blade(8))],
+  dragon: () => [tspiral(500, 950, 36, -Math.PI / 2, 1.5, 12), tspike(526, 926, -.9, 30, 10), tspike(472, 976, 2.2, 24, 8)],
+  eye: () => [teli(500, 950, 40, 18, 8), tdot(500, 950, 11), tb([454, 950], [470, 930], [530, 930], [546, 950], 5, 'even')],
+  call: () => [tarc(500, 950, 14, -1.2, 1.2, 8), tarc(500, 950, 28, -1.2, 1.2, 8), tarc(500, 950, 42, -1.2, 1.2, 8), tdot(494, 950, 6)],
+  shadow: () => [tarc(500, 950, 34, 1.1, 5.2, 18, 'lens'), tdot(524, 936, 5), tdot(534, 962, 3)],
+  formula: () => [tb([490, 916], [490, 936], [470, 960], [466, 982], 10, 'lens'), tb([510, 916], [510, 936], [530, 960], [534, 982], 10, 'lens'), tb([466, 982], [490, 992], [510, 992], [534, 982], 10, 'lens'), tdot(500, 962, 8), tdot(516, 946, 5)],
+  eternal: () => [tb([500, 952], [470, 900], [440, 910], [428, 940], 14, 'blade'), tb([500, 952], [530, 900], [560, 910], [572, 940], 14, 'blade'), tdia(500, 950, 8, 14), tspike(490, 916, -2.0, 18, 8), tspike(510, 916, -1.1, 18, 8)],
+  embrace: () => Array.from({ length: 6 }, (_, i) => { const a = i * Math.PI / 3; return tb([500, 950], [500 + Math.cos(a) * 14, 950 + Math.sin(a) * 14], [500 + Math.cos(a) * 28, 950 + Math.sin(a) * 28], [500 + Math.cos(a) * 44, 950 + Math.sin(a) * 44], 8, 'tip'); })
+};
+function tatPaths(tier, kind) {          // -> { all: svg path strings that are NOT mirrored, mir: path strings that get mirrored to the left }
+  if (tier === 1) { const d = TAT1[kind] && TAT1[kind](); return d ? { all: d.c, mir: [...d.r, ...YS.flatMap(tSeam)] } : { all: [], mir: [] }; }
+  if (tier === 2) { const f = TAT2[kind]; return f ? { all: [], mir: [...f(), ...YS.flatMap(tSeam), ...tEnd()] } : { all: [], mir: [] }; }
+  if (tier === 3) { const f = TAT3[kind]; return f ? { all: tLowBase().all, glyph: f(), mir: [...tLowBase().mir, ...tLow()] } : { all: [], mir: [] }; }
+  return { all: [], mir: [] };
+}
+const tatSvg = (tier, kind, cls = '') => { const p = tatPaths(tier, kind); return `<g class="${cls}" fill="currentColor">${p.all.map(d => `<path d="${d}"/>`).join('')}${p.glyph ? `<g transform="translate(500 960) scale(1.9) translate(-500 -950)">${p.glyph.map(d => `<path d="${d}"/>`).join('')}</g>` : ''}${p.mir.length ? `<g>${p.mir.map(d => `<path d="${d}"/>`).join('')}</g><g transform="translate(1000 0) scale(-1 1)">${p.mir.map(d => `<path d="${d}"/>`).join('')}</g>` : ''}</g>`; };
+
+let potPrev = null, potDrawn = {}, potBackArt = undefined;
+const POT_VB = { 1: '392 276 216 280', 2: '600 276 250 280', 3: '330 820 340 250' };      // which part of the back each tier's little icon shows
+const potIcon = o => `<svg class="ic tt-ic" viewBox="${POT_VB[o.tier]}" preserveAspectRatio="xMidYMid meet">${tatSvg(o.tier, o.kind)}</svg>`;
+const POT_BACK_SVG = `<svg class="pb-body" viewBox="0 0 1000 1200" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="pbSkin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4a886"/><stop offset="1" stop-color="#b98765"/></linearGradient><radialGradient id="pbShade" cx=".5" cy=".4" r=".7"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient></defs>
+  <rect width="1000" height="1200" fill="#2a1f28"/><path d="M430 0 Q430 120 380 190 Q200 240 90 330 L40 1200 H960 L910 330 Q800 240 620 190 Q570 120 570 0Z" fill="url(#pbSkin)"/>
+  <path d="M500 190 Q496 600 500 1200" stroke="#8a5e44" stroke-width="10" fill="none" opacity=".5"/>
+  <path d="M330 330 Q420 360 460 480 Q420 560 330 540Z M670 330 Q580 360 540 480 Q580 560 670 540Z" fill="#a67a5c" opacity=".35"/>
+  <path d="M250 800 Q330 860 440 880 M750 800 Q670 860 560 880" stroke="#8a5e44" stroke-width="8" fill="none" opacity=".25"/><rect width="1000" height="1200" fill="url(#pbShade)"/></svg>`;
+function potActiveKinds(hid) { const st = potState(hid), on = potActiveIds(hid), o = {}; on.forEach(id => { const x = POT_OPTS[id]; if (x) o[x.tier] = x.kind; }); return o; }
+function renderPotBack() {
+  const hid = potHero, box = $('pot-back'); if (!hid || !box) return; const h = heroById(hid), kinds = potActiveKinds(hid), prev = potDrawn[hid] || {}, first = !potDrawn[hid];
+  box.style.setProperty('--c', elemColor(h)); $('pot-modal').style.setProperty('--c', elemColor(h));
+  if (!box.dataset.hero || box.dataset.hero !== hid) { box.dataset.hero = hid; box.innerHTML = ''; }
+  if (!box.querySelector('.pb-body')) box.insertAdjacentHTML('afterbegin', potBackArt ? '' : POT_BACK_SVG);
+  const wrap = (cls, inner, delay) => `<svg class="tt ${cls}" viewBox="0 0 ${TAT.w || 1000} 1200" preserveAspectRatio="xMidYMid slice" ${delay ? `style="animation-delay:${delay}s"` : ''}>${inner}</svg>`;
+  box.querySelectorAll('svg.tt').forEach(n => n.remove());
+  let html = '';
+  [1, 2, 3].forEach((t, i) => { const k = kinds[t]; if (!k) return; const fresh = first || prev[t] !== k; html += wrap(`t${t}${fresh ? ' in' + t : ''}`, tatSvg(t, k), first ? i * .7 : 0); });
+  const pv = potPrev && POT_OPTS[potPrev] && POT_OPTS[potPrev].hero === hid ? POT_OPTS[potPrev] : null;
+  if (pv && kinds[pv.tier] !== pv.kind) html += wrap('ghost', tatSvg(pv.tier, pv.kind));
+  box.insertAdjacentHTML('beforeend', html); potDrawn[hid] = kinds;
+  [1, 2, 3].forEach(t => { const k = kinds[t]; if (!k) return;          // your own drawing of a piece replaces the generated one: assets/ui/tattoo/t<tier>_<option>.png, drawn on the same 1000 x 1200 sheet
+    findAsset(`${ANIM.base}/ui/tattoo/t${t}_${k}`).then(art => { const el = box.querySelector(`svg.tt.t${t}`); if (art && el && el.isConnected && potHero === hid) el.innerHTML = `<image href="${art.url}" width="1000" height="1200" preserveAspectRatio="xMidYMid slice"/>`; }); });
+  box.classList.toggle('done', !!(kinds[1] && kinds[2] && kinds[3]));
+  if (potBackArt === undefined) { potBackArt = null; findAsset(`${ANIM.base}/ui/spa_back`).then(a => { potBackArt = a; if (a) { box.style.backgroundImage = `url("${a.url}")`; box.querySelectorAll('.pb-body').forEach(n => n.remove()); } }); }
+  else if (potBackArt) { box.style.backgroundImage = `url("${potBackArt.url}")`; box.querySelectorAll('.pb-body').forEach(n => n.remove()); }
+  $('pot-hint').textContent = pv ? `Preview: ${pv.name}. Equip it to ink it on.` : 'Tap an option to preview its tattoo.';
+}
+function potPreview(id) { potPrev = potPrev === id ? null : id; renderPot(); }
 function renderPot() {
   const hid = potHero; if (!hid) return; const h = heroById(hid), st = potState(hid), C = POT_HERO[hid], lock = gearLocked();
   $('pot-title').innerHTML = `✨ ${h.name}'s Potential <span class="pot-cry">❄️ ${potCrystals()}</span>`;
@@ -2469,9 +2626,10 @@ function renderPot() {
     const open = potTierOpen(t), q = QUESTS.find(x => x.id === POTENTIAL.unlock[t]);
     return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}</div>` + potList(hid, t).map(o => {
       const owned = st.owned.includes(o.id), on = st.active[t] === o.id, afford = potCrystals() >= o.cost;
-      return `<div class="pot-opt${on ? ' on' : ''}${open ? '' : ' locked'}"><span class="ic">${o.icon}</span><div class="pt"><b>${o.name}</b><br>${o.desc}</div>
-        <div class="pb">${!open ? '' : owned ? `<button onclick="potSet('${o.id}')" ${lock ? 'disabled' : ''}>${on ? '✔ Active' : 'Equip'}</button>` : `<button class="primary" onclick="potBuy('${o.id}')" ${afford ? '' : 'disabled'}>❄️ ${o.cost}</button>`}</div></div>`; }).join('') + '</div>';
+      return `<div class="pot-opt${on ? ' on' : ''}${open ? '' : ' locked'}${potPrev === o.id ? ' prev' : ''}" onclick="potPreview('${o.id}')">${potIcon(o)}<div class="pt"><b>${o.name}</b><br>${o.desc}</div>
+        <div class="pb">${!open ? '' : owned ? (on ? '' : `<button onclick="event.stopPropagation();potSet('${o.id}')" ${lock ? 'disabled' : ''}>Equip</button>`) : `<button class="primary" onclick="event.stopPropagation();potBuy('${o.id}')" ${afford ? '' : 'disabled'}>❄️ ${o.cost}</button>`}</div></div>`; }).join('') + '</div>';
   }).join('');
+  renderPotBack();
 }
 function potSection(hid) {                    // the Dorm panel: hidden until Act 3 is open
   if (!POT_HERO[hid] || !lakeOpen()) return '';
