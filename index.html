@@ -3592,12 +3592,18 @@ async function advance(u, t, s, key) {                 // returns an async funct
   el.style.zIndex = 40;
   const go = el.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], { duration: MOVE.inMs, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
   await Promise.race([go.finished.catch(() => {}), sleep(MOVE.inMs + 150)]);
-  return async () => {
+  const home = async () => {
     const back = el.animate([{ transform: `translateX(${dx}px)` }, { transform: 'translateX(0)' }], { duration: MOVE.outMs, easing: 'ease-in-out' });
     go.cancel();
     await Promise.race([back.finished.catch(() => {}), sleep(MOVE.outMs + 150)]);
     el.style.zIndex = '';
   };
+  home.hop = async () => {                           // a quick step back and straight in again, so two identical strikes in a row read as a one-two
+    const d = -Math.sign(dx || dir) * 52 / A.z, ms = dspd(90);
+    const h = el.animate([{ transform: `translateX(${dx}px)` }, { transform: `translateX(${dx + d}px)`, offset: .55, easing: 'ease-out' }, { transform: `translateX(${dx}px)` }], { duration: ms + dspd(70), easing: 'ease-in' });
+    await Promise.race([h.finished.catch(() => {}), sleep(ms + dspd(70) + 120)]);
+  };
+  return home;
 }
 
 /* ---- two-stage dash strike (optional art, per skill) ----
@@ -4334,7 +4340,7 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
   render(); await sleep(200);
 }
 
-async function perform(u, i, target) {
+async function perform(u, i, target, opts) {      // opts.hold: do not walk home after a melee strike, hand the way back to the caller in opts.held (Iris's one-two)
   const s = effSkill(u, i);
   say(target && s.t !== 'barrierAll' && s.t !== 'buff' ? `${u.name} uses ${s.n} on ${target.name}` : `${u.name} uses ${s.n}`);
   if (target && (s.t === 'dmg' || s.t === 'charm' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]);
@@ -4412,7 +4418,7 @@ async function perform(u, i, target) {
       if (moveUnit(u, 'front')) { log(`🗡️ ${u.name} darts to the front of the line.`, 'log-player'); render(); if (dash) await sleep(30); else await sleep(200); }
       if (dash) await dash.home();
     } else if (dash) await dash.home();
-    else if (back) back();
+    else if (back) { if (opts && opts.hold && !dash && !film) opts.held = back; else back(); }
     return;
   }
   if (s.t === 'charm') {                                       // Siren's song: no damage, a broken target turns on its friends
@@ -4732,6 +4738,7 @@ function tickBuffs(u) {
 async function takeTurn(u, bonus = false) {      // bonus: an extra action inside the same turn (no cooldown / ailment / buff ticks)
   if (!bonus && u.holdBarrier) { u.holdBarrier = false; u.barrier = 0; }                  // Shield Wall's barrier ends with the guard
   if (!bonus) party.forEach(x => { if (x.guardedBy === u) x.guardedBy = null; });     // Shield Wall ends when its caster's next turn begins
+  let keep = null;
   const hadWrath = !bonus && !!u.wrath; u.wrathNow = hadWrath;     // set on an earlier turn: this turn it pays off, then wears off
   if (!bonus) u.cd = u.cd.map(c => Math.max(0, c - 1));
   // Status effects resolve at the start of the unit's turn
@@ -4802,27 +4809,32 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
   } else if (act.skip) { log(`${u.name} has nothing ready and waits.`, 'log-round'); await sleep(140); }
   else if (act.item && ITEMS[act.item].type === 'torch') { say(`${u.name} lights a torch`); await useItem(u, act.item, u); }
   else if (act.item) { setSpot([u, act.target]); say(`${u.name} uses ${ITEMS[act.item].name} on ${act.target.name}`); await useItem(u, act.item, act.target); }
-  else { await perform(u, act.i, act.target); if (u.skills[act.i] && u.skills[act.i].t === 'dmg') { u.danceBuff = false; u.shadow = false; } }
-  if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on a random enemy, then the buff is gone
+  else { const one2 = hadWrath && u.skills[act.i] && u.skills[act.i].t === 'dmg' && act.i <= 1 && act.target ? { hold: true, held: null } : null;
+    await perform(u, act.i, act.target, one2); keep = one2; if (u.skills[act.i] && u.skills[act.i].t === 'dmg') { u.danceBuff = false; u.shadow = false; } }
+  if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on the SAME enemy (a random one if it fell, or if her action was not a strike), then the buff is gone
     u.wrath = false; if (u.wrathExtra) { u.wrathExtra = false; u.wrath = true; }          // Potential: Dragon Heart keeps the wrath up one more turn
     const foes = enemies.filter(isAlive);
     if (isAlive(u) && foes.length) {
-      const v = foes[Math.floor(Math.random() * foes.length)];
+      const held = keep && keep.held, same = !!held && !!act.target && isAlive(act.target) && foes.includes(act.target), v = same ? act.target : foes[Math.floor(Math.random() * foes.length)];
+      if (held && !same) { await held(); keep.held = null; }       // the first target fell: walk home, then find a new one
       log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
       const w = wrathStrike(u, 0); setSpot([u, v]);
       const film2 = await skillFilm(u, 'skill1');
-      if (film2) { setSpot([]); await playFilm(film2); setSpot([u, v]); }
+      if (film2) { if (same) { await held(); keep.held = null; } setSpot([]); await playFilm(film2); setSpot([u, v]); }
+      if (same && !film2 && act.i === 0 && held.hop) await held.hop();          // Skill 1 twice: step back, then the second punch
       let begun2; const started2 = new Promise(r => begun2 = r);
       const clip2 = film2 ? Promise.resolve() : playAnim(u, 'skill1', undefined, undefined, begun2);
-      const back2 = film2 ? (() => {}) : await advance(u, v, w, 'skill1');
+      const back2 = film2 ? (() => {}) : same && keep.held ? keep.held : await advance(u, v, w, 'skill1');
+      if (same && keep) keep.held = null;
       if (!film2) {
         await Promise.race([started2, sleep(500)]);
-        if (auraFits(u, w)) await aura(u, w.el);
-        sfx('swing'); await sleep(ANIM.impact);
+        if (auraFits(u, w) && !same) await aura(u, w.el);
+        sfx('swing'); await sleep(same ? 50 : ANIM.impact);
       }
       await Promise.all([clip2, hit(u, v, w)]); back2();
     }
   }
+  if (keep && keep.held) { const h = keep.held; keep.held = null; await h(); }          // she stayed forward for the follow-up that never came
   u.wrathNow = false;
   if (!bonus && u.extraTurn) {                 // Tyr's Rending Claws on a bleeding target: one more action before the turn ends
     u.extraTurn = false;
