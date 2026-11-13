@@ -5601,7 +5601,7 @@ async function battle() {
    A defeat in a real run rolls the whole save back to the snapshot taken before the run (FB.snap). In dev mode nothing is saved, so it only reports.
    Art (all optional): bosses are normal boss folders, assets/e_final_l/... and assets/e_final_r/... (armoured/idle, damaged, skill1-3, broken/idle). Draw them facing LEFT like any enemy: the right screen mirrors them. */
 const fbScale = u => FB && FB.active !== false && u.team === 'p' ? FINAL.partyScale : 1;       // the final fight shrinks the party, and with it the skill 2 close-ups
-const FINAL = { guestDmg: 600, guestBreaks: 3, dummy: false, floor: 1.2, partyScale: 0.5, bossScale: 1.0, hp: 4800, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
+const FINAL = { guestDmg: 600, guestBreaks: 3, dummy: false, floor: 1.35, partyScale: 0.5, bossScale: 1.0, hp: 4800, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
 const FB_SIDES = ['LEFT FRONT', 'RIGHT FRONT'];
 const FB_SAY = {
   revive: ['Up you get! On the house… this time.', 'Don\'t you dare die on my watch!', 'Drink up! I\'m not done selling to you yet!', 'One potion, one more round. Go!'],
@@ -5844,7 +5844,7 @@ async function fbRoundEnd() {
 /* ---- the rubber band: each boss body judges ITS OWN side's party against that side's share of the damage curve, just before it acts (all of it hidden from the player) ----
    curve = cumulative share of the boss's HP that should be gone by the END of each round (9 rounds, 3 phases, front-loaded round 1, back-loaded inside each phase).
    "ahead" is measured in rounds' worth of damage (+ break, weighted). Retribution = damage x (1 + gain x ahead), capped; sweep (AOE) chance climbs the same way, capped. Behind the curve nothing changes. */
-const FINAL_RB = { rounds: 12, curve: [.11, .17, .23, .333, .40, .46, .55, .667, .74, .81, .89, 1], phaseBase: [.8, 1.15, 1.05], phaseGain: [.4, .9, .9], p1Main: .9, p1Follow: .4, p2Double: 1, split: .65, dualAoe: .25, p3Extra: .4, gain: 1.1, cap: 2.5, aoeBase: .2, aoeGain: .18, aoeCap: .7, brkW: .35, brokenZapChance: .35 };
+const FINAL_RB = { aoePhase: [.95, 1.1, 1], rounds: 12, curve: [.11, .17, .23, .333, .40, .46, .55, .667, .74, .81, .89, 1], phaseBase: [.8, 1.15, 1.05], phaseGain: [.4, .9, .9], p1Main: .9, p1Follow: .4, p2Double: 1, split: .65, dualAoe: .25, p3Extra: .4, gain: 1.1, cap: 2.5, aoeBase: .4, aoeGain: .18, aoeCap: .7, brkW: .35, brokenZapChance: .35 };
 const fbCurve = r => r <= 0 ? 0 : FINAL_RB.curve[Math.min(r, FINAL_RB.curve.length) - 1];
 function fbPressure(side) {
   const B = FB.bosses[0], r = FB.round, n = FINAL_RB.curve.length;
@@ -5852,7 +5852,7 @@ function fbPressure(side) {
   const aheadB = (FB.brk[side] / B.maxBreak - (r / (n / 3)) * .5) / (.5 / 3);              // one full break per phase (n/3 rounds) is the pace: how many breaks' worth ahead
   const A = Math.max(0, aheadD) + FINAL_RB.brkW * Math.max(0, aheadB);
   const ph = Math.min(2, FB.bosses[0].phase || 0), pb = FINAL_RB.phaseBase[ph], pg = FINAL_RB.phaseGain[ph];     // phase 1 is gentle, phase 3 is not
-  return { A, mult: pb * Math.min(FINAL_RB.cap, 1 + FINAL_RB.gain * pg * A), aoeP: Math.min(FINAL_RB.aoeCap, (FINAL_RB.aoeBase + FINAL_RB.aoeGain * A) * (ph ? 1 : .6)), aheadD, aheadB };
+  return { A, mult: pb * Math.min(FINAL_RB.cap, 1 + FINAL_RB.gain * pg * A), aoeP: Math.min(FINAL_RB.aoeCap, (FINAL_RB.aoeBase + FINAL_RB.aoeGain * A) * FINAL_RB.aoePhase[ph]), aheadD, aheadB };
 }
 function fbChoose(u, ahead) {          // the boss's pick: a sweep with the pressure's chance, else a single target; some skills need a broken victim
   const P = fbPressure(u.pside != null ? u.pside : u.side), cdOk = i => u.cd[i] <= (ahead ? 1 : 0);
