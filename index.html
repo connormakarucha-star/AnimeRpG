@@ -313,6 +313,8 @@ body.calm .seat .sp{animation:none}
 .sr-bubble{position:absolute;z-index:20;left:54%;top:7%;max-width:30%;padding:.5em 1em;border-radius:12px;background:#fff;color:#1b1b26;font-weight:700;font-size:clamp(12px,.95vw,18px);line-height:1.25;box-shadow:0 3px 10px rgba(0,0,0,.55);pointer-events:none;text-align:center}
 .sr-bubble::after{content:"";position:absolute;left:18%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-top-color:#fff;border-bottom:0}
 .sr-bubble.ok{background:#e9ffe0}.sr-bubble.ok::after{border-top-color:#e9ffe0}
+.sr-bubble{transition:opacity .7s ease,transform .7s ease}
+.sr-bubble.gone{opacity:0;transform:translateY(6px)}
 .sr-bubble.pop{animation:srPop .35s ease-out}
 @keyframes srPop{0%{transform:scale(.85);opacity:.3}100%{transform:scale(1);opacity:1}}
 .sr-lamp{animation:srFlick 3.1s ease-in-out infinite}
@@ -714,10 +716,14 @@ body.calm #travel{display:none!important}
 .qmap .mart{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill}
 .qmap::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:30;background:radial-gradient(ellipse at 50% 50%,transparent 58%,rgba(5,8,14,.55) 100%)}
 .mnode{position:absolute;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);z-index:10;transform:translate(-50%,-50%) scale(var(--inv,1));transition:transform 1.8s cubic-bezier(.45,0,.2,1);background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff}
+.mnode::before{content:"";position:absolute;inset:-10px -14px;z-index:-1}
 .mnode .pin{width:max(34px,5.4cqw);height:max(34px,5.4cqw);border-radius:50%;display:grid;place-items:center;font-size:max(1.1rem,2.6cqw);background:radial-gradient(circle at 35% 30%,#4a3a5a,#241a30);border:3px solid #c9a46a;box-shadow:0 3px 10px rgba(0,0,0,.6);position:relative;transition:box-shadow .2s,border-color .2s}
 .mnode:hover .pin{border-color:#ffe08a;box-shadow:0 0 14px rgba(255,224,138,.6)}
-.mnode.on .pin{border-color:#ffd54f;box-shadow:0 0 0 4px rgba(255,213,79,.3),0 0 22px rgba(255,213,79,.8);animation:mnPulse 1.6s ease-in-out infinite}
-@keyframes mnPulse{50%{box-shadow:0 0 0 8px rgba(255,213,79,.12),0 0 30px rgba(255,213,79,.9)}}
+.mnode.on .pin{border-color:#ffd54f;box-shadow:0 0 0 4px rgba(255,213,79,.3),0 0 22px rgba(255,213,79,.8)}
+.mnode.on .pin::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(255,213,79,.7);pointer-events:none;animation:mnPulse 1.6s ease-in-out infinite}      /* the pulse is a ring on top, so the button itself never changes while you click it */
+@keyframes mnPulse{from{transform:scale(.9);opacity:.9}to{transform:scale(1.25);opacity:0}}
+.mnode .pin,.mnode .nm{pointer-events:none}
+.mnode.on,.mnode:active{transition:none}
 .mnode .nm{font-size:max(.6rem,1.15cqw);font-weight:700;white-space:nowrap;background:rgba(14,10,20,.78);border:1px solid rgba(201,164,106,.5);border-radius:8px;padding:.1em .6em;text-shadow:0 1px 2px #000}
 .mnode.on .nm{border-color:#ffd54f;color:#ffe9a0}
 .mnode .ck{position:absolute;right:-6px;top:-6px;background:#2f8a46;color:#fff;border-radius:50%;width:1.3em;height:1.3em;font-size:.62em;display:grid;place-items:center;border:2px solid #0d1d2b}
@@ -3450,7 +3456,7 @@ const manifestReady = (async () => {
    A skin is an alternative look for a hero's ARMOURED state: assets/<hero id>/armoured - <name>/  (idle, damaged, skill1-3, same file names as armoured/).
    The Dorm lets you switch; the game then reads that folder instead of armoured/ while the hero is not broken. Anything missing from the skin folder falls back to armoured/.
    Skins are found from assets/manifest.json automatically; SKIN_HINTS lists them for when there is no manifest (local testing). The broken state is never skinned. */
-const SKIN_HINTS = { iris: ['Skin'] };
+const SKIN_HINTS = { iris: ['swimsuit', 'winter gear'] };
 /* ---- quest groups: how the embark menu is laid out, and what opens the second group ---- */
 const QUEST_GROUPS = [
   { id: 'lands', icon: '⚔️', name: 'The Old Lands', blurb: 'Sentinels, yokai and the restless dead', ids: ['ruins', 'yokai', 'crypt'] },
@@ -3931,7 +3937,7 @@ async function advance(u, t, s, key) {                 // returns an async funct
    1) the wind-up picture swells toward the camera and crouches, 2) it dashes across the stage, shrinking as it travels (perspective) with motion ghosts,
    3) on arrival the damage / hit effects / sound happen and the picture swaps to the strike picture, which slips past and behind the target,
    4) it hurries back to the line-up (the real figure reappears). No skill2b file = the normal lunge. Same motion for every skin. */
-const DASH = { near: 2.3, drop: 0.1, windMs: 150, crouchMs: 170, runMs: 230, coastMs: 190, holdMs: 170, homeMs: 300, arriveGap: 0.3, passBy: 0.45, passScale: 0.92, ghosts: 3 };
+const DASH = { near: 3.1, floor: 0.97, drop: 0.1, windMs: 150, crouchMs: 170, runMs: 230, coastMs: 190, holdMs: 170, homeMs: 300, arriveGap: 0.3, passBy: 0.45, passScale: 0.92, ghosts: 3 };
 const dspd = ms => ms / battleSpd();
 function figBox(el) {            // where a figure will stand once the spotlight zoom has settled: centre x, feet y, width, height (screen px)
   const card = el.closest('.combatant-card') || el, cs = getComputedStyle(card), zc = parseFloat(cs.scale) || 1, zf = card.classList.contains('spot') ? SPOT_Z : 1, k = zf / zc;
@@ -3972,7 +3978,7 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
   el.style.visibility = 'hidden'; if (art.hide) hidePartyFor(u);
   const tr = (dx, dy, sc) => `translate(${dx}px,${dy}px) scale(${sc})`;
   // the wind-up always happens at ONE fixed foreground spot (the middle of her side), whichever slot she stood in; as big as DASH.near allows while still fitting on screen
-  const dy0 = A.h * DASH.drop, dyEnd = B.bottom - A.bottom, im0 = main.querySelector('img.a'), asp = im0 && im0.naturalHeight ? im0.naturalWidth / im0.naturalHeight : 0.6, vw = document.documentElement.clientWidth;
+  const vh0 = document.documentElement.clientHeight, dy0 = Math.max(A.h * DASH.drop, vh0 * DASH.floor - A.bottom), dyEnd = B.bottom - A.bottom, im0 = main.querySelector('img.a'), asp = im0 && im0.naturalHeight ? im0.naturalWidth / im0.naturalHeight : 0.6, vw = document.documentElement.clientWidth;
   const S0 = Math.max(1, Math.min(DASH.near, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE), (vw * 0.92) / (asp * A.h * SPR_SCALE)));
   const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, halfW = asp * A.h * SPR_SCALE * S0 / 2;
   const fx = Math.max(halfW + 8, Math.min(vw - halfW - 8, pr && pr.width ? pr.left + pr.width / 2 : A.cx)), fdx = fx - A.cx;
@@ -4053,8 +4059,9 @@ async function stageBegin(u, t, art, s) {
     async home() {
       await sleep(dspd(120)); if (dashLive !== d) return;
       d.parts.slice(1).forEach(x => x.remove());
-      const C = el.isConnected ? figBox(el) : A; showParty();
-      const a = anim(d0, [{ transform: P1 }, { transform: tr(C.cx - A.cx, C.bottom - A.bottom, C.h / A.h) }], 260, 'cubic-bezier(.4,0,.2,1)'); await Promise.race([a.finished.catch(() => {}), sleep(dspd(260) + 120)]);
+      showParty();                                   // the picture only reaches her knees, so it does not shrink back into the line-up: it stays put and fades out while the real figure and the party return
+      const a = d0.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(300), easing: 'ease-in', fill: 'forwards' }); if (el.isConnected) el.style.visibility = '';
+      await Promise.race([a.finished.catch(() => {}), sleep(dspd(300) + 120)]);
       dashClear();
     }
   };
@@ -5599,7 +5606,7 @@ function wireFormation() {
 let pickedQuest = null;     // id of the quest chosen on the quest select screen
 const questGold = q => q.nodes.reduce((a, n) => a + n.gold, 0);
 function pickTier(i) { if (i < 0 || i > game.tiers.max) return; game.tiers.pick = i; writeSave(); renderQuests(); }
-function pickQuest(id) { if (!questOpen(id)) return; pickedQuest = id; renderQuests(); }
+function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.querySelector('#qmap .mnode.on[data-q="' + id + '"]'))) return; pickedQuest = id; renderQuests(); }
 
 /* ---- the world map ----
    One painted world (MAP_SVG, or assets/ui/map_world.* if you draw one: same 16:9 frame, whole world visible) and a camera that zooms out as areas open:
@@ -5656,7 +5663,7 @@ function buildQuestMap() {
   const stage = mapStage(), seen = Math.min(mapSeenGet(), stage), open = id => questOpen(id);
   const fog = (grp, x, y, w, h) => groupOpen(QUEST_GROUPS[grp]) ? '' : `<div class="mfog" data-g="${QUEST_GROUPS[grp].id}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;background:radial-gradient(ellipse at 50% 50%,rgba(26,34,52,.97) 35%,rgba(26,34,52,.85) 62%,transparent 100%)"></div>`;
   const nodes = MAP_ROUTE.filter(open).map(id => { const q = QUESTS.find(x => x.id === id), [x, y, ic] = MAP_NODES[id];
-    return `<button class="mnode${id === pickedQuest ? ' on' : ''}" data-q="${id}" style="--x:${x};--y:${y}" onclick="pickQuest('${id}')"><span class="pin">${ic}${questCleared(id) ? '<i class="ck">✔</i>' : ''}</span><span class="nm">${q.name}</span></button>`; }).join('');
+    return `<button class="mnode${id === pickedQuest ? ' on' : ''}" data-q="${id}" style="--x:${x};--y:${y}" onpointerdown="if(event.button===0)pickQuest('${id}')" onclick="pickQuest('${id}')"><span class="pin">${ic}${questCleared(id) ? '<i class="ck">✔</i>' : ''}</span><span class="nm">${q.name}</span></button>`; }).join('');
   const nodeFogs = [];                       // fog sits over what is still locked, and lifts when it opens
   const html = `<div class="qmap nt" id="qmap"><div class="mworld"><div class="mart" id="mart">${`<svg class="mart" viewBox="0 0 1600 900" preserveAspectRatio="none" overflow="visible">${MAP_SVG}</svg>`}</div>
     ${fog(1, 40, 48, 62, 60)}${fog(2, 42, -8, 64, 52)}${nodes}</div><div class="qm-title">The Known World</div>${stage < 3 ? `<div class="qm-hint">${mapHint(stage)}</div>` : ''}</div>`;
@@ -6280,7 +6287,7 @@ function buildShopRoom() {
     $('sr-keeper').innerHTML = ''; $('sr-keeper').appendChild(m);
   });
 }
-function openShop() { shopMsg = ''; shopGreet = SHOP_GREETS[Math.floor(Math.random() * SHOP_GREETS.length)]; showScene('shop'); }
+function openShop() { shopMsg = ''; if ($('sr-bubble')) $('sr-bubble').textContent = ''; shopGreet = SHOP_GREETS[Math.floor(Math.random() * SHOP_GREETS.length)]; showScene('shop'); }
 const SHOP_SLOTS = [[2.8, 23.4], [16.2, 23.4], [71, 23.4], [84.4, 23.4], [2.8, 34.4], [16.2, 34.4], [71, 34.4], [84.4, 34.4]];      // road-supply tiles on the two shelves: [x, y] in % of the shop picture
 function renderShop() {
   buildShopRoom();
@@ -6298,9 +6305,22 @@ function renderShop() {
   $('shop-supplies').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}<small>${it.use === 'camp' ? 'Used at camp' : 'Used in battle'}</small></div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('')
     + '<div class="dim sup-note">Everything in the bag goes with the party on the next quest.</div>';
   $('btn-relic-bag').textContent = `🎒 Relic Inventory (${game.relics.length})`;
-  const b = $('sr-bubble'), t = shopMsg || shopGreet || SHOP_GREETS[0];
-  if (b.textContent !== t) { b.textContent = t; b.classList.toggle('ok', !!shopMsg); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+  if (shopMsg) { shopSay(shopMsg, true); shopMsg = ''; }
+  else if (!$('sr-bubble').textContent) shopSay(shopGreet || SHOP_GREETS[0], false);
 }
+/* The shopkeeper's speech bubble: a line stays for SHOP_SAY.showMs, fades away, and after a quiet spell he says another one (only while the shop is open). */
+const SHOP_SAY = { showMs: 5500, quietMin: 7000, quietMax: 14000 };
+let shopHideT = 0, shopNextAt = 0;
+function shopSay(text, ok) {
+  const b = $('sr-bubble'); if (!b) return;
+  b.textContent = text; b.classList.toggle('ok', !!ok); b.classList.remove('gone', 'pop'); void b.offsetWidth; b.classList.add('pop');
+  clearTimeout(shopHideT); const ms = SHOP_SAY.showMs + Math.min(3500, text.length * 25); shopHideT = setTimeout(() => b.classList.add('gone'), ms);
+  shopNextAt = Date.now() + ms + SHOP_SAY.quietMin + Math.random() * (SHOP_SAY.quietMax - SHOP_SAY.quietMin);
+}
+setInterval(() => {
+  const sh = $('shop'); if (!sh || !sh.classList.contains('show') || document.hidden || Date.now() < shopNextAt) return;
+  const b = $('sr-bubble'), pool = SHOP_GREETS.filter(g => g !== b.textContent); shopSay(pool[Math.floor(Math.random() * pool.length)], false);
+}, 1000);
 function buyRelic(id) {
   const r = RELICS[id]; if (!r || game.gold < r.price || !game.shop.stock.includes(id) || game.relics.includes(id)) return;
   game.gold -= r.price; game.relics.push(id); game.shop.stock = game.shop.stock.filter(x => x !== id);
@@ -7876,6 +7896,19 @@ const GP = (() => {
     const b = [...L.root.querySelectorAll('button')].find(b => !b.disabled && vis(b) && /^\W*(back|cancel|close|leave|return|exit|done)\b/i.test(b.textContent.trim()) && !/title/i.test(b.textContent));
     if (b) b.click();
   }
+  // Embark: the quests are in a chain on the map, so left / right walk along it (right = the next quest, left = the one before). Y = party row, X = guild roster, LB / RB = difficulty, B = back to town.
+  function embarkPad(down, edge, rep) {
+    const nodes = [...document.querySelectorAll('#qmap .mnode')], f = S.focus;
+    if (f && f.classList.contains('mnode')) {
+      const i = nodes.indexOf(f), d = rep('rt') ? 1 : rep('lf') ? -1 : 0;
+      if (d && nodes.length) { const n = nodes[Math.max(0, Math.min(nodes.length - 1, i + d))]; if (n !== f) { pickQuest(n.dataset.q); const nn = document.querySelector('#qmap .mnode[data-q="' + n.dataset.q + '"]') || n; setFocus(nn); try { sfx('click'); } catch (_) {} } }
+    }
+    if (edge('Y')) { const t = document.querySelector('#form-row .fslot.has') || document.querySelector('#form-row .fslot'); if (t) { setFocus(t); S.skipY = true; } }
+    if (edge('X')) { const t = document.querySelector('#roster-pick .rc'); if (t) setFocus(t); }
+    if (edge('LB') && typeof pickTier === 'function') pickTier(game.tiers.pick - 1);
+    if (edge('RB') && typeof pickTier === 'function') pickTier(game.tiers.pick + 1);
+    if (edge('B')) { const b = document.querySelector('#party-select .em-back'); if (b) b.click(); }
+  }
   function guideStep(d) { const ks = GUIDE_TABS.map(t => t[0]), i = ks.indexOf(guideTab); guideTabTo(ks[(i + d + ks.length) % ks.length]); }
 
   function on() { if (S.active) return; S.active = true; document.body.classList.add('gp'); hint.innerHTML = innerWidth < 700 ? HINTS_S : HINTS; }
@@ -7900,6 +7933,7 @@ const GP = (() => {
     const rep = k => { if (!down[k]) { S.held[k] = 0; return false; } if (!S.held[k]) { S.held[k] = now + 380; return true; } if (now >= S.held[k]) { S.held[k] = now + 120; return true; } return false; };
     const wake = !S.active && any; if (wake) { on(); for (const k of ['up', 'dn', 'lf', 'rt']) if (down[k]) S.held[k] = now + 380; }
     const L = layer(); const list = ensureFocus(L);
+    if (S.active && S.hk !== L.scene) { S.hk = L.scene; hint.innerHTML = L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Party<b>LB/RB</b>Difficulty<b>Start</b>Begin<b>B</b>Town' : (innerWidth < 700 ? HINTS_S : HINTS); }
     if (L.root && L.root.id === 'dive' && typeof dv !== 'undefined' && dv && dv.running && !dv.over && !$('dv-choose').classList.contains('on') && !$('dv-end').classList.contains('on')) {      // Polar Dip: Start / Select pauses; while paused B resumes
       if (edge('START') || edge('SEL')) divePause(!$('dv-pausebox').classList.contains('on'));
       else if ($('dv-pausebox').classList.contains('on') && edge('B')) divePause(false);
@@ -7910,12 +7944,13 @@ const GP = (() => {
       if (edge('START')) vbPause(!vb.paused); else if (vb.paused) { if (edge('A') || edge('B')) vbPause(false); } else if (edge('A')) vbTap();
       S.prev = down; return;
     }
+    if (!wake && L.scene === 'party-select') embarkPad(down, edge, rep);
     if (!wake) {
       if (L.skip) { if (!L.noClick && (edge('A') || edge('B') || edge('START'))) L.root.click(); }
       else {
         if (rep('up')) move(0, -1, L, list); if (rep('dn')) move(0, 1, L, list); if (rep('lf')) move(-1, 0, L, list); if (rep('rt')) move(1, 0, L, list);
         if (edge('A')) press(S.focus);
-        if (edge('B')) back(L);
+        if (edge('B') && L.scene !== 'party-select') back(L);
         if (edge('X') && L.scene === 'battle-scene' && !$('btn-items').disabled) $('btn-items').click();
         if (edge('Y') && S.focus) { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
         if (L.modal === 'guide') { if (edge('LB')) guideStep(-1); if (edge('RB')) guideStep(1); }
