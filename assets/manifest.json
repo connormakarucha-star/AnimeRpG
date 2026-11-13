@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-13 07:36",
+  "generated": "2026-11-13 16:12",
   "files": {
     "aneesah/armoured - swimsuit/damaged": "png",
     "aneesah/armoured - swimsuit/idle": "png",
@@ -180,6 +180,7 @@
     "ui/aneesah_camp": "png",
     "ui/aria_camp": "png",
     "ui/frigid_camp": "png",
+    "ui/guest": "png",
     "ui/irae_camp": "png",
     "ui/iris_camp": "png",
     "ui/jean_camp": "png",
