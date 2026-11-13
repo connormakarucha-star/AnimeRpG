@@ -660,6 +660,13 @@ body.calm #travel{display:none!important}
 .oq.e .mini-sprite{border-color:#ff8a80}
 .oq.act .mini-sprite{border:2px solid #ff758c;box-shadow:0 0 8px #ff758c}.oq.dead{opacity:.35;filter:grayscale(1)}
 .oq b{font-size:.9em}
+#pause{display:none;position:fixed;inset:0;z-index:9500;background:rgba(4,4,10,.72);backdrop-filter:blur(3px);align-items:center;justify-content:center}
+#pause.show{display:flex}
+#pause .pz{display:flex;flex-direction:column;gap:10px;min-width:min(320px,86vw);padding:22px 26px;background:#14121e;border:2px solid #4a4468;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.7)}
+#pause .pz-h{font-size:2rem;text-align:center;opacity:.85}
+#pause .pz button{padding:.75em 1em;font-size:1rem;font-weight:700}
+#pause .pz-ask{display:none;align-items:center;gap:8px}#pause .pz-ask.on{display:flex}#pause .pz-ask span{font-size:1.4rem}#pause .pz-ask button{flex:1}
+#pause .pz button.danger{background:#6b2430;border-color:#ff6b81}
 #guide{display:none;position:fixed;inset:0;z-index:185;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:10px;box-sizing:border-box}
 #guide.show{display:flex}
 .guide-box{background:#1a1a24;border:2px solid #3a3a56;border-radius:12px;padding:14px;width:100%;max-width:820px;max-height:90vh;display:flex;flex-direction:column;box-sizing:border-box;text-align:left}
@@ -1463,6 +1470,14 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 #vb-panel .trg button{padding:4px 8px;font-size:.68rem}
 #vb-panel .trg button.on{border-color:#7fe3ff;background:#123040}
 #vb-panel h5{margin:6px 0 2px;color:#9fd8e8;font-size:.72rem}
+#vb-panel .hasrow{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px;align-items:center}
+.pchip{display:inline-flex;align-items:center;gap:.3em;padding:.15em .6em;border:1px solid #3a3a55;border-radius:999px;font-size:.72rem;background:#15131d;color:#d7d9ea}
+.pchip.rm{text-decoration:line-through;border-color:#ff6b81;color:#ff9aa8;background:#2a1620}
+.pchip.add{border-color:#52d17c;color:#9df0b8;background:#12281c}
+.pchip.t2{border-color:#6b8cff}.pchip.t3{border-color:#ffcf5a}
+#vb-panel .arrow{color:#9fd8e8;font-weight:800;margin:0 .2em}
+#vb-panel .swtip{min-height:3em;font-size:.78rem;line-height:1.35;color:#d7d9ea;background:rgba(6,10,18,.7);border:1px solid #2a3a4a;border-radius:8px;padding:.45em .75em;margin:6px 0}
+#vb-panel .swtip b{color:#fff}.swtip .lose{color:#ff9aa8}.swtip .gain{color:#9df0b8}
 #bp-list .pick.nope{opacity:.55}
 
 /* ===== battle chatter ===== */
@@ -1513,6 +1528,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 </head>
 <body>
 <button id="menu-btn" onclick="openGuide()" title="Menu: options, controls and guide">⚙️</button>
+<div id="pause" onclick="if (event.target === this) pauseClose()"><div class="pz"><div class="pz-h">⏸</div><button class="primary" onclick="pauseClose()">▶ Resume</button><button onclick="pauseClose();openGuide()">⚙️ Options &amp; Guide</button><button id="pz-title" onclick="pauseAskTitle(true)">🏠 Return to Title</button><div class="pz-ask" id="pz-ask"><span>🏠 ?</span><button class="danger" onclick="location.reload()">✔ Yes</button><button class="primary" onclick="pauseAskTitle(false)">✖ No</button></div></div></div>
 <div id="film"></div>
 <div id="fade"></div>
 <div id="rotate"><b>📱</b>Turn your phone sideways<small style="font-size:1rem;color:#9a9ab8">The game is played in landscape</small></div>
@@ -3028,7 +3044,7 @@ function renderGuide() {
   let h = '';
   if (guideTab === 'options') h = `<h4>Options</h4>` + OPTIONS.map(([k, n, d, on, lab]) => `<div class="optrow"><div><b>${n}</b><small>${d}</small></div><button id="opt-${k}" class="optsw ${on() ? 'on' : 'off'}" onclick="optToggle('${k}')">${lab ? lab() : on() ? 'ON' : 'OFF'}</button></div>`).join('') + `<div class="optrow"><div><b>🔊 Effects volume</b><small>Hits, spells, clicks and the blizzard wind. Needs Sound on.</small></div><input type="range" id="opt-sfx" min="0" max="100" step="5" value="${Math.round(FX.sfx * 100)}" oninput="setSfx(this.value / 100)" onchange="sfx('hit')" style="width:120px"></div><div class="optrow"><div><b>🎵 Music volume</b><small>Quiet ambient music that changes with the area. Needs Sound on.</small></div><input type="range" id="opt-vol" min="0" max="100" step="5" value="${Math.round(FX.vol * 100)}" oninput="setVol(this.value / 100)" style="width:120px"></div>` + `<div class="g">Options are remembered on this device. The other tabs are the game guide.</div>`;
   else if (guideTab === 'controls') h = `<h4>Controller</h4>
-    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>X</b> opens Items in battle, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip tabs in this menu, <b>Start</b> presses Continue / Next, <b>Select</b> opens this menu and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
+    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>X</b> opens Items in battle, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip tabs in this menu, <b>Start</b> opens the pause menu (Esc on the keyboard; it has Return to Title), <b>Select</b> opens this guide and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
     <h4>Mouse, touch and keyboard</h4>
     ${g(`Everything is tappable or clickable. In Beach Volleyball you can also hit <b>Space</b> or <b>Enter</b>, or the big HIT button.`)}`;
   else if (guideTab === 'basics') h = `<h4>A turn</h4>
@@ -4575,6 +4591,28 @@ function inspect(team, idx) {
     <button style="width:100%;margin-top:10px" onclick="closeInspect()">Close</button>`;
   $('inspect').classList.add('show');
 }
+/* ---- universal pause menu: Esc, or Start / Menu on the controller, anywhere in the game (the volleyball and Polar Dip keep their own pause) ---- */
+const pauseOpen = () => $('pause').classList.contains('show');
+function pauseAskTitle(on) { $('pz-ask').classList.toggle('on', on); $('pz-title').style.display = on ? 'none' : ''; }
+function pauseClose() { $('pause').classList.remove('show'); pauseAskTitle(false); }
+function pauseToggle() { if (pauseOpen()) return pauseClose(); $('pause').classList.add('show'); pauseAskTitle(false); const b = $('pause').querySelector('button.primary'); if (b) b.focus && 0; }
+function pauseAllowed() {
+  const t = $('title'); if (t && !t.classList.contains('hide')) return false;
+  if (['film', 'spa-cutin', 'tm-full', 'notice', 'summary'].some(id => { const e = $(id); return e && e.classList.contains('show'); })) return false;
+  if (typeof vb !== 'undefined' && vb && !vb.dead) return false;
+  if (typeof dv !== 'undefined' && dv && dv.running && !dv.over) return false;
+  return true;
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || e.repeat) return;
+  if (pauseOpen()) { pauseClose(); e.stopImmediatePropagation(); return; }
+  if (typeof dormMenuEl !== 'undefined' && dormMenuEl) return;
+  if ($('inspect').classList.contains('show')) return;
+  if ($('guide').classList.contains('show')) { closeGuide(); return; }
+  if ($('pot-modal').classList.contains('show')) { closePot(); return; }
+  if ($('relic-modal').classList.contains('show')) { closeRelics(); return; }
+  if (pauseAllowed()) pauseToggle();
+}, true);
 function closeInspect() { $('inspect').classList.remove('show'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInspect(); });
 
@@ -7543,7 +7581,7 @@ window.addEventListener('blur', () => { dvKeys = {}; });
 // A second town screen with a grey, gloomy shore. A few heroes stand about in their skins (some with the sea over their feet). For now it has one activity: Beach Volleyball, a
 // tiny rhythm game. Win it and the two heroes you played with may each TRADE one Tier II perk for any Tier I perk. Costs VB.cost gold per game, win or lose.
 // Art: drop assets/ui/beach.(png|jpg|webp) to replace the drawn shore, assets/ui/volleyball.(...) for the court.
-const VB = { cost: 150, winPts: 5, lives: 3, perfect: 110, good: 270 };
+const VB = { cost: 150, winPts: 3, lives: 3, perfect: 110, good: 270 };
 const beachOpen = () => QUEST_GROUPS[1].ids.some(questCleared);          // any Tidelands quest opens the beach (the player will have Tier II perks by then)
 let beachArt = null, vbArt = null, beachHeroes = [];
 function beachSVG(court) {
@@ -7735,7 +7773,7 @@ async function vbPlay() {
       await vbSleep(600); if (G.dead) return;
       const r = await vbPoint(server); if (G.dead || r === 'dead') return;
       if (r === 'me') { G.me++; vbJudge('Point!', 'perfect'); } else { G.foe++; vbJudge('Point lost', 'miss'); }
-      G.speed = Math.max(.72, 1 - G.me * .045); vbHud(); server = r; await vbSleep(800);
+      G.speed = Math.max(.72, 1 - (G.me + G.foe * .5) * .07); vbHud(); server = r; await vbSleep(800);
     }
     if (G.dead) return;
     vbFinish(G.me >= VB.winPts);
@@ -7785,27 +7823,39 @@ const t1Choices = hid => Object.values(TRAIT).filter(t => t.kind === 'good' && !
 const vbTakeFor = (hid, out) => isT3(out) ? t1Choices(hid).map(t => TRAIT[t.id + '2']).filter(Boolean) : t1Choices(hid);      // Tier III -> any Tier II, Tier II -> any Tier I
 function vbClaim() { showScene('vb'); $('vb-court').classList.add('won'); $('vb-msg').textContent = ''; vbSwapUi(); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true)); const rw = game.vb && game.vb.reward; if (rw) { vbSwapBackdrop(rw.heroes); } }
 function vbSwapBackdrop(team) { const foes = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2); vbBuild(team, foes); }
+const perkChip = (t, cls = '') => `<span class="pchip${TRAIT[t].tier === 3 ? ' t3' : TRAIT[t].tier === 2 ? ' t2' : ''}${cls ? ' ' + cls : ''}" data-tip="${t}">${TRAIT[t].icon} ${TRAIT[t].name}</span>`;
+const perkTip = t => `<b>${TRAIT[t].icon} ${TRAIT[t].name}</b>${TRAIT[t].tier === 3 ? ' (Tier III)' : TRAIT[t].tier === 2 ? ' (Tier II)' : ' (Tier I)'}: ${TRAIT[t].desc}`;
+function vbTipDefault(S) { return S && S.out && S.inn ? `<span class="lose">− ${perkTip(S.out)}</span><br><span class="gain">+ ${perkTip(S.inn)}</span>` : ''; }
 function vbSwapUi() {
   const rw = game.vb && game.vb.reward, p = $('vb-panel'); if (!rw) { showScene('beach'); return; }
   p.style.display = 'flex';
-  p.innerHTML = `<div><b>🏆 You win!</b> Trade one Tier II perk for any Tier I perk, or one Tier III perk for any Tier II perk, for each hero (optional).</div>` + rw.heroes.map(id => {
+  p.innerHTML = `<div><b>🏆 You win!</b></div>` + rw.heroes.map(id => {
     const h = heroById(id), S = vbSel[id] = vbSel[id] || {}, done = rw.done[id];
-    if (done) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk">✔ Swapped ${done}</div></div>`;
+    if (done) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk">✔ ${done}</div></div>`;
     const t2 = t2List(id);
-    if (!t2.length) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk dim">No Tier II or III perks to trade.</div></div>`;
-    const out = t2.map(t => `<button class="${S.out === t ? 'on' : ''}" title="${TRAIT[t].desc}" onclick="vbChoose('${id}','out','${t}')">${TRAIT[t].icon} ${TRAIT[t].name}</button>`).join('');
-    const inn = vbTakeFor(id, S.out).map(t => `<button class="${S.inn === t.id ? 'on' : ''}" title="${t.desc}" onclick="vbChoose('${id}','inn','${t.id}')">${t.icon} ${t.name}</button>`).join('');
-    return `<div class="swaprow"><strong>${h.name}</strong>
-      <h5>Give up (Tier II or III)</h5><div class="trg">${out}</div>
-      <h5>Take (${S.out && isT3(S.out) ? 'Tier II' : 'Tier I'})${S.inn ? ' — ' + TRAIT[S.inn].desc : ''}</h5><div class="trg">${inn}</div>
-      <button class="primary" ${S.out && S.inn ? '' : 'disabled'} onclick="vbSwap('${id}')">Swap${S.out && S.inn ? `: ${TRAIT[S.out].name} → ${TRAIT[S.inn].name}` : ''}</button></div>`;
+    if (!t2.length) return `<div class="swaprow"><strong>${h.name}</strong><div class="sk dim">—</div></div>`;
+    const cur = (game.traits[id] || []).filter(x => TRAIT[x] && TRAIT[x].kind === 'good'), ready = S.out && S.inn;
+    let now = cur.slice(), outDone = false; const nowChips = now.map(t => { if (!outDone && t === S.out) { outDone = true; return perkChip(t, ready ? 'rm' : ''); } return perkChip(t); }).join('');
+    const after = ready ? (() => { const l = cur.slice(); l.splice(l.indexOf(S.out), 1); return l.map(t => perkChip(t)).join('') + perkChip(S.inn, 'add'); })() : '';
+    const out = t2.map(t => `<button class="${S.out === t ? 'on' : ''}" data-tip="${t}" onclick="vbChoose('${id}','out','${t}')">${TRAIT[t].icon} ${TRAIT[t].name}</button>`).join('');
+    const inn = vbTakeFor(id, S.out).map(t => `<button class="${S.inn === t.id ? 'on' : ''}" data-tip="${t.id}" onclick="vbChoose('${id}','inn','${t.id}')">${t.icon} ${t.name}</button>`).join('');
+    return `<div class="swaprow" data-hero="${id}"><strong>${h.name}</strong>
+      <div class="hasrow">${nowChips || '—'}</div>${ready ? `<div class="hasrow"><span class="arrow">▼</span>${after}</div>` : ''}
+      <h5>− ${S.out && isT3(S.out) ? 'III' : 'II / III'}</h5><div class="trg">${out}</div>
+      <h5>+ ${S.out && isT3(S.out) ? 'II' : 'I'}</h5><div class="trg">${inn}</div>
+      <div class="swtip">${vbTipDefault(S)}</div>
+      <button class="primary" ${ready ? '' : 'disabled'} onclick="vbSwap('${id}')">Swap${ready ? `: ${TRAIT[S.out].name} → ${TRAIT[S.inn].name}` : ''}</button></div>`;
   }).join('') + `<button onclick="vbDone()">Done</button>`;
 }
+{ const tipFor = e => { const el = e.target.closest && e.target.closest('#vb-panel [data-tip]'); if (!el) return; const row = el.closest('.swaprow'); const t = row && row.querySelector('.swtip'); if (t && TRAIT[el.dataset.tip]) t.innerHTML = perkTip(el.dataset.tip); };
+  const tipBack = e => { const row = e.target.closest && e.target.closest('#vb-panel .swaprow'); if (!row || !row.dataset.hero) return; const t = row.querySelector('.swtip'); if (t) t.innerHTML = vbTipDefault(vbSel[row.dataset.hero]); };
+  document.addEventListener('mouseover', tipFor); document.addEventListener('gpfocus', tipFor); document.addEventListener('mouseout', tipBack); }
 function vbChoose(id, k, t) { vbSel[id] = vbSel[id] || {}; if (k === 'out' && isT3(t) !== isT3(vbSel[id].out)) vbSel[id].inn = null; vbSel[id][k] = t; vbSwapUi(); }
 function vbSwap(id) {
   const rw = game.vb && game.vb.reward, S = vbSel[id]; if (!rw || !S || !S.out || !S.inn || rw.done[id]) return;
+  const gone = TRAIT[S.out], got = TRAIT[S.inn];
   const list = game.traits[id] || [], i = list.indexOf(S.out); if (i < 0 || !TRAIT[S.inn] || TRAIT[S.inn].kind !== 'good' || !(isT3(S.out) ? isT2(S.inn) : (isT2(S.out) && !TRAIT[S.inn].base))) return;
-  list.splice(i, 1, S.inn); rw.done[id] = `${TRAIT[S.out].name} → ${TRAIT[S.inn].name}`; delete vbSel[id]; writeSave(); sfx('heal'); vbSwapUi();
+  list.splice(i, 1, S.inn); rw.done[id] = `${gone.icon} ${gone.name} → ${got.icon} ${got.name}`; delete vbSel[id]; writeSave(); sfx('heal'); vbSwapUi();
 }
 function vbDone() { if (game.vb) game.vb.reward = null; game.vb = null; vbSel = {}; writeSave(); $('vb-court').classList.remove('won'); showScene('beach'); }
 
@@ -7826,8 +7876,8 @@ const GP = (() => {
   body.gp{cursor:none}`;
   document.head.appendChild(st);
   const hint = document.createElement('div'); hint.id = 'gp-hint'; document.body.appendChild(hint);
-  const HINTS_S = '<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>Start</b>Next';
-  const HINTS = '<b>◀▶▲▼</b>Move<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>LB/RB</b>Tabs<b>Start</b>Continue<b>Sel</b>Menu';
+  const HINTS_S = '<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>Start</b>Pause';
+  const HINTS = '<b>◀▶▲▼</b>Move<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>LB/RB</b>Tabs<b>Start</b>Pause<b>Sel</b>Guide';
 
   const S = { active: false, focus: null, cx: 0, cy: 0, prev: {}, held: {}, synth: false };
   const vis = el => { if (!el.isConnected) return false; const r = el.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || cs.pointerEvents === 'none') return false; return true; };
@@ -7835,6 +7885,7 @@ const GP = (() => {
 
   // which layer is on top right now
   function layer() {
+    if (shown('pause')) return { root: shown('pause'), modal: 'pause' };
     for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
     if (typeof dormMenuEl !== 'undefined' && dormMenuEl && dormMenuEl.isConnected) return { root: dormMenuEl, modal: 'rcmenu' };           // the dorm's swap menu floats outside the scene
     for (const id of ['guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
@@ -7846,18 +7897,20 @@ const GP = (() => {
   const NOFOCUS = '#menu-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has)';
   function candidates(L) {
     let list = [...L.root.querySelectorAll(SEL)].filter(e => e !== L.root && !e.disabled && !e.closest(NOFOCUS) && vis(e));
+    if (L.scene === 'vb') { const pn = document.getElementById('vb-panel'); if (pn && vis(pn)) { const inP = list.filter(e => pn.contains(e)); if (inP.length) list = inP; } }      // the volleyball result / perk-swap panel owns the pad while it is open
     if (L.scene === 'battle-scene') { const t = list.filter(e => e.classList.contains('targetable')); list = t.length ? t : list.filter(e => !e.classList.contains('combatant-card')); }
     return list.filter(e => !list.some(o => o !== e && e.contains(o)));       // containers are not targets, their buttons are
   }
   const ctr = e => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
   function setFocus(e) {
     if (S.focus && S.focus !== e) S.focus.classList.remove('gp-focus', 'gp-st');
-    S.focus = e; if (!e) return; e.classList.toggle('gp-st', getComputedStyle(e).position === 'static'); e.classList.add('gp-focus');       // only lift in-flow things; absolutely placed ones (doors, seats, map nodes) must not move [S.cx, S.cy] = ctr(e);
+    S.focus = e; if (!e) return; try { e.dispatchEvent(new CustomEvent('gpfocus', { bubbles: true })); } catch (_) {} e.classList.toggle('gp-st', getComputedStyle(e).position === 'static'); e.classList.add('gp-focus');       // only lift in-flow things; absolutely placed ones (doors, seats, map nodes) must not move [S.cx, S.cy] = ctr(e);
     try { e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (_) {}
   }
   function nearestTo(list, x, y) { let b = null, bd = 1e12; for (const e of list) { const [a, c] = ctr(e); const d = (a - x) ** 2 + (c - y) ** 2; if (d < bd) { bd = d; b = e; } } return b; }
   function defaultFocus(L, list) {
     if (!list.length) return null;
+    if (L.scene === 'party-select') { const mn = list.find(e => e.classList.contains('mnode') && e.classList.contains('on')); if (mn) return mn; }      // embark starts on the chosen quest
     const pri = list.find(e => e.id === 'btn0' || e.id === 'btn1' || e.id === 'btn2') || list.find(e => e.id === 'notice-btn' || e.classList.contains('primary')) || list.find(e => e.classList.contains('on') || e.classList.contains('sel'));
     const isBack = e => /^\W*(back|cancel|close|leave|return|exit)\b/i.test(e.textContent.trim()), pool = list.filter(e => !isBack(e)).length ? list.filter(e => !isBack(e)) : list;
     return pri || pool.slice().sort((a, b) => { const A = ctr(a), B = ctr(b); return (A[1] - B[1]) || (A[0] - B[0]); })[0];
@@ -7902,6 +7955,7 @@ const GP = (() => {
   const visBtn = re => [...document.querySelectorAll('button')].find(b => !b.disabled && vis(b) && !b.closest('#gp-hint') && re.test(b.textContent.trim()));
   function back(L) {
     if (L.skip) return L.root.click();
+    if (L.modal === 'pause') return $('pz-ask').classList.contains('on') ? pauseAskTitle(false) : pauseClose();
     if (L.modal === 'rcmenu') return closeDormMenu();
     if (L.modal === 'guide') return closeGuide();
     if (L.modal === 'pot-modal') return closePot();
@@ -7953,7 +8007,7 @@ const GP = (() => {
     const rep = k => { if (!down[k]) { S.held[k] = 0; return false; } if (!S.held[k]) { S.held[k] = now + 380; return true; } if (now >= S.held[k]) { S.held[k] = now + 120; return true; } return false; };
     const wake = !S.active && any; if (wake) { on(); for (const k of ['up', 'dn', 'lf', 'rt']) if (down[k]) S.held[k] = now + 380; }
     const L = layer(); const list = ensureFocus(L);
-    if (S.active && S.hk !== L.scene) { S.hk = L.scene; hint.innerHTML = L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Info / Party<b>LB/RB</b>Difficulty<b>Start</b>Begin<b>B</b>Town' : (innerWidth < 700 ? HINTS_S : HINTS); }
+    if (S.active && S.hk !== L.scene) { S.hk = L.scene; hint.innerHTML = L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Info / Party<b>LB/RB</b>Difficulty<b>Start</b>Pause<b>B</b>Town' : (innerWidth < 700 ? HINTS_S : HINTS); }
     if (L.root && L.root.id === 'dive' && typeof dv !== 'undefined' && dv && dv.running && !dv.over && !$('dv-choose').classList.contains('on') && !$('dv-end').classList.contains('on')) {      // Polar Dip: Start / Select pauses; while paused B resumes
       if (edge('START') || edge('SEL')) divePause(!$('dv-pausebox').classList.contains('on'));
       else if ($('dv-pausebox').classList.contains('on') && edge('B')) divePause(false);
@@ -7969,14 +8023,16 @@ const GP = (() => {
       if (L.skip) { if (!L.noClick && (edge('A') || edge('B') || edge('START'))) L.root.click(); }
       else {
         if (rep('up')) move(0, -1, L, list); if (rep('dn')) move(0, 1, L, list); if (rep('lf')) move(-1, 0, L, list); if (rep('rt')) move(1, 0, L, list);
-        if (edge('A')) press(S.focus);
+        if (edge('A')) { if (L.scene === 'party-select' && S.focus && S.focus.classList.contains('mnode')) { pickQuest(S.focus.dataset.q); const bq = $('btn-start-quest'); if (bq && !bq.disabled) bq.click(); else press(S.focus); } else press(S.focus); }      // embark: A on a quest = Begin Quest
         if (edge('B') && L.scene !== 'party-select') back(L);
         if (edge('X') && L.scene === 'battle-scene' && !$('btn-items').disabled) $('btn-items').click();
-        if (edge('Y') && S.focus) { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
+        if (edge('Y') && S.focus && L.scene !== 'party-select') { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
         if (L.modal === 'guide') { if (edge('LB')) guideStep(-1); if (edge('RB')) guideStep(1); }
         else if (L.scene === 'battle-scene' && edge('RB')) cycleSpeed();
         else if (L.scene === 'gear' && dormHero) { if (edge('LB')) dormStep(-1); if (edge('RB')) dormStep(1); }
-        if (edge('START')) { const m = $('btn-end-main') && vis($('btn-end-main')) ? $('btn-end-main') : [...L.root.querySelectorAll('button.primary')].find(e => !e.disabled && vis(e)); if (m) m.click(); }
+        if (edge('START') && L.modal === 'pause') pauseClose();
+        else if (edge('START') && pauseAllowed()) pauseToggle();
+        else if (edge('START')) { const m = $('btn-end-main') && vis($('btn-end-main')) ? $('btn-end-main') : [...L.root.querySelectorAll('button.primary')].find(e => !e.disabled && vis(e)); if (m) m.click(); }
         if (edge('SEL')) { if (L.modal === 'guide') closeGuide(); else openGuide(); }
         const ry = ax(3); if (Math.abs(ry) > .3) scrollNear(S.focus || L.root.querySelector('*') || document.body, ry * 18);
       }
