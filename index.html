@@ -980,6 +980,18 @@ body.calm .pot-back svg.tt{animation:none!important}
 .fsbox{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;container-type:size;background:#14101c}
 .fsbox .fscov{position:absolute;inset:0;width:auto;height:auto;margin:0;border-radius:0;aspect-ratio:auto;transform:none;max-height:none;border:0}
 .fs-chip{margin:6px 8px;text-align:center}
+.gold-chip{display:inline-flex;align-items:center;gap:.45em;font-weight:800;color:#ffd54f;font-size:1.05rem;white-space:nowrap}
+.gold-chip .gc-cost{font-style:normal;font-weight:700;font-size:.78em;color:#ff9aa8;background:rgba(255,120,140,.14);border-radius:8px;padding:.05em .5em}
+.gold-chip .gc-lock{filter:grayscale(.2)}
+.rc-i,.fs-i{position:absolute;right:6px;bottom:4px;z-index:4;background:rgba(10,8,20,.7);border:1px solid #4a5a78;border-radius:50%;width:1.6em;height:1.6em;padding:0;line-height:1.5em;font-size:.8rem;text-align:center;cursor:pointer;color:#81d4fa}
+.rc-i:hover,.fs-i:hover{background:#243050;color:#fff}
+.fs-i{right:4px;top:4px;bottom:auto}
+.dc-strip{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:0 0 -4px}
+.dc-strip .dcs{padding:3px;border-radius:50%;border:2px solid #2d2c42;background:#15131d;cursor:pointer;line-height:0}
+.dc-strip .dcs .mini-sprite{width:46px;height:46px;flex:0 0 46px;font-size:.45rem}
+.dc-strip .dcs.on{border-color:#ffd54f;box-shadow:0 0 12px rgba(255,213,79,.6)}
+.dc-strip .dcs:hover{border-color:#9ab}
+.dc-strip .arr{font-size:1.1rem;padding:.3em .7em}
 .rside{margin:8px 0;text-align:left}
 .rs-h{font:700 .78rem 'Segoe UI',sans-serif;letter-spacing:.12em;color:#c8b8e8;margin:2px 2px 8px;text-transform:uppercase}
 .rs-h small{display:block;font-weight:400;letter-spacing:0;text-transform:none;color:#8a8aab;margin-top:3px;font-size:.72rem;line-height:1.3}
@@ -1032,7 +1044,7 @@ body.fs .qmap{margin:0}
   .dorm-room .door{z-index:99}
   #gear.char #dorm-back{display:block;position:absolute;left:28px;bottom:18px;z-index:30;padding:10px 22px;font-size:.95rem;width:auto;max-width:none}
   #gear.char .dm-box,#gear.char .dm-side,#gear.char .dm-chip{display:none}
-  #gear.char .dorm-char{position:absolute;inset:0;display:grid;grid-template-columns:minmax(240px,24%) 1fr 1fr;gap:22px;padding:22px 34px 74px;box-sizing:border-box;background:radial-gradient(ellipse at 20% 30%,#2a2040,#15111f 70%);z-index:10;text-align:left;margin:0;max-width:none;overflow:hidden}
+  #gear.char .dorm-char{position:absolute;inset:0;display:grid;grid-template-columns:minmax(240px,24%) 1fr 1fr;grid-template-rows:auto minmax(0,1fr);gap:22px;padding:22px 34px 74px;box-sizing:border-box;background:radial-gradient(ellipse at 20% 30%,#2a2040,#15111f 70%);z-index:10;text-align:left;margin:0;max-width:none;overflow:hidden}
   #gear.char .dorm-art{display:flex;align-items:flex-end;justify-content:center;min-height:0}
   #gear.char .dorm-art .figure.dorm-big{height:min(86vh,860px);max-height:100%;width:100%}
   #gear.char .dc-col{min-height:0;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:#4a4468 transparent}
@@ -1090,15 +1102,15 @@ body.fs .qmap{margin:0}
   #shop .shop-row.rcase .w-ic{font-size:clamp(28px,3vw,58px);filter:drop-shadow(0 0 14px var(--rc,#9a7aff));animation:srOrb 3.4s ease-in-out infinite}
   #shop .shop-row.rcase.relic-common{--rc:#b8c8d8}#shop .shop-row.rcase.relic-rare{--rc:#7fb6ff}#shop .shop-row.rcase.relic-epic{--rc:#c58aff}#shop .shop-row.rcase.relic-legendary{--rc:#ffcf5a}
   #shop .shop-row.rcase .who{display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max(230px,16vw);z-index:30;background:rgba(18,12,10,.97);border:2px solid #7a5638;border-radius:8px;padding:.6vw .8vw;text-align:left;pointer-events:none}
-  #shop .shop-row.rcase:hover .who{display:block}
+  #shop .shop-row.rcase:hover .who,#shop .shop-row.rcase:has(.gp-focus) .who{display:block}      /* the pad shows the same tooltip as the mouse */
   #shop .shop-row.rcase .btns{width:78%;margin-top:auto;margin-bottom:6%}
   #shop .shop-row.rcase .btns button{width:100%;background:rgba(10,6,14,.8)}
   #shop .sold-out{position:absolute;left:30%;top:84%;z-index:12;background:rgba(10,6,4,.7);padding:.5em 1.2em;border-radius:10px}
   #shop .shop-side{position:absolute;top:auto;flex:none;right:1.2%;bottom:2.4%;width:clamp(230px,16.5vw,310px);z-index:14;margin:0;background:rgba(14,10,8,.92);border:2px solid #7a5638;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.55)}
   #shop .shop-side .sup-row{font-size:clamp(11px,.75vw,14px);padding:5px 8px}
   #shop .shop-side .sup-note{font-size:.62rem}
-  #shop .shop-back{display:block;margin-top:6px;padding:.4em 1em}
-  #shop .fs-chip{max-width:min(46vw,560px)}
+  #shop .shop-back{display:block;position:absolute;top:2%;right:1.4%;z-index:14;margin:0;padding:.5em 1.2em;background:rgba(10,8,20,.7);border:1px solid rgba(255,255,255,.2);border-radius:12px}
+  #shop .shop-gold{margin:0 0 6px;justify-content:center}
   #shop .fs-chip .hub-sub{max-width:none}
   body.dev #party-select #btn-quick{display:block}
   #party-select .em-roster .rs-h{flex:0 0 auto}
@@ -1564,17 +1576,16 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
     <div class="hub-hall">
       <div id="town-map">
         <div id="town-art"></div>
-        <button class="hub-btn bld b-shop" style="--x:4.4%;--y:30%;--w:23.8%;--h:35%" onclick="openShop()"><span class="lbl">🛒 Shop<small>Supplies and relics</small></span></button>
-        <button class="hub-btn bld b-spa" style="--x:31%;--y:22%;--w:20.5%;--h:36%" onclick="openSpa()"><span class="lbl">♨️ Spa<small>Remove a hero's flaws</small></span></button>
-        <button class="hub-btn bld b-dorm" style="--x:54%;--y:21%;--w:25%;--h:39%" onclick="openGear()"><span class="lbl">🛏️ Dorm<small>Heroes, relics and traits</small></span></button>
-        <button class="hub-btn bld b-train" style="--x:5%;--y:64%;--w:30%;--h:27%" onclick="openTrain()"><span class="lbl">🎯 Training Ground<small>Earn permanent perks</small></span></button>
-        <button class="hub-btn bld embark b-road" style="--x:76%;--y:34%;--w:19%;--h:26%" onclick="openParty()"><span class="lbl">⚔️ The Road<small>Embark: choose a party, then a quest</small></span></button>
-        <button class="hub-btn bld b-lake" id="btn-lake" style="--x:44%;--y:74%;--w:22%;--h:15%;display:none" onclick="openLake()"><span class="lbl">🧊 The Frozen Lake<small>Polar dip · Frost crystals</small></span></button>
-        <button class="hub-btn bld b-beach" id="btn-beach" style="--x:76%;--y:63%;--w:19%;--h:20%;display:none" onclick="openBeach()"><span class="lbl">🏖️ Go to the Beach<small>Gloomy shore · Volleyball</small></span></button>
+        <button class="hub-btn bld b-shop" style="--x:4.4%;--y:30%;--w:23.8%;--h:35%" onclick="openShop()"><span class="lbl">🛒 Shop</span></button>
+        <button class="hub-btn bld b-spa" style="--x:31%;--y:22%;--w:20.5%;--h:36%" onclick="openSpa()"><span class="lbl">♨️ Spa</span></button>
+        <button class="hub-btn bld b-dorm" style="--x:54%;--y:21%;--w:25%;--h:39%" onclick="openGear()"><span class="lbl">🛏️ Dorm</span></button>
+        <button class="hub-btn bld b-train" style="--x:5%;--y:64%;--w:30%;--h:27%" onclick="openTrain()"><span class="lbl">🎯 Training Ground</span></button>
+        <button class="hub-btn bld embark b-road" style="--x:76%;--y:34%;--w:19%;--h:26%" onclick="openParty()"><span class="lbl">⚔️ The Road</span></button>
+        <button class="hub-btn bld b-lake" id="btn-lake" style="--x:44%;--y:74%;--w:22%;--h:15%;display:none" onclick="openLake()"><span class="lbl">🧊 The Frozen Lake</span></button>
+        <button class="hub-btn bld b-beach" id="btn-beach" style="--x:76%;--y:63%;--w:19%;--h:20%;display:none" onclick="openBeach()"><span class="lbl">🏖️ Go to the Beach</span></button>
       </div>
       <div class="fs-ui" id="town-ui">
-        <div class="hub-title">Town</div>
-        <div class="hub-sub">Home of the guild · <span class="hub-gold" id="hub-gold">Gold: 0</span></div>
+        <div class="fs-chip gold-chip" id="hub-gold"></div>
         <div id="hub-msg"></div>
         <button id="hub-back" onclick="location.reload()">Back to Title</button>
       </div>
@@ -1667,7 +1678,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
         <div class="gate" id="party-gate"><svg class="gate-bg" viewBox="0 0 1600 560" preserveAspectRatio="xMidYMid slice" id="gate-bg"></svg><div class="slots" id="party-slots"></div></div>
       </section>
       <aside class="rside em-roster">
-        <div class="rs-h">Your guild<small>Click heroes to add them to the party (up to 4). Drag a party card to change places.</small></div>
+        <div class="rs-h">⚔️ Guild</div>
         <div class="rlist" id="roster-pick"></div>
         <button id="btn-quick" onclick="toQuickBattle()">⚡ Quick Battle ▶ (dev)</button>
       </aside>
@@ -1678,10 +1689,10 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 <div id="spa-select" class="scene fsr">
   <div class="hub-wrap">
     <div class="hub-hall">
-      <div class="fs-chip"><div class="hub-title">♨️ Spa</div><div class="hub-sub" id="spa-intro"></div></div>
+      <div class="fs-chip gold-chip" id="spa-intro"></div>
       <div class="fsbox" id="spa-box"><div class="hall-banner fscov left" id="spa-banner"></div></div>
       <div id="spa-flaws"></div>
-      <aside class="rside"><div class="rs-h">Who needs a massage?<small>Pick a hero to see their flaws.</small></div><div class="rlist" id="spa-list"></div></aside>
+      <aside class="rside"><div class="rs-h">♨️ Spa</div><div class="rlist" id="spa-list"></div></aside>
       <button class="narrow-back" onclick="showScene('hub')">Back to Town</button>
     </div>
   </div>
@@ -1709,9 +1720,9 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 <div id="gear" class="scene fsr">
   <div class="hub-wrap dorm-wrap">
     <div class="hub-hall">
-      <div class="fs-chip dm-chip"><div class="hub-title">🛏️ Dorm</div><div class="hub-sub" id="gear-sub"></div></div>
+      <div class="fs-chip gold-chip dm-chip" id="gear-sub"></div>
       <div class="fsbox dm-box" id="dorm-box"><div class="dorm-list dorm-room fscov left" id="dorm-list"></div></div>
-      <aside class="rside dm-side"><div class="rs-h">Guild roster<small>Click a hero for details. Drag a card onto a seat to change the party.</small></div><div id="dorm-roster" class="rlist"></div><div id="gear-msg" style="min-height:1.2em;font-size:.8rem;color:#81c784;margin:4px 0 0"></div></aside>
+      <aside class="rside dm-side"><div class="rs-h">🛏️ Dorm</div><div id="dorm-roster" class="rlist"></div><div id="gear-msg" style="min-height:1.2em;font-size:.8rem;color:#81c784;margin:4px 0 0"></div></aside>
       <div class="dorm-char" id="dorm-char" style="display:none"></div>
       <button id="dorm-back" onclick="dormBack()">Back to Town</button>
     </div>
@@ -1721,7 +1732,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 <div id="shop" class="scene fsr">
   <div class="hub-wrap shop-wrap">
     <div class="hub-hall">
-      <div class="fs-chip shop-chip"><div class="hub-title">🛒 Shop</div><div class="hub-sub" id="shop-sub"></div><button class="shop-back" onclick="showScene('hub')">◀ Back to Town</button></div>
+      <button class="shop-back" onclick="showScene('hub')">◀ Back to Town</button>
       <div class="fsbox shop-room" id="shop-room"><div class="fscov">
         <svg class="sr-svg sr-bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" id="sr-bg"></svg>
         <div class="sr-keeper" id="sr-keeper"></div>
@@ -1731,9 +1742,10 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
       <div class="shop-layout">
         <div class="shop-main">
           <div class="shelf"><div class="shelf-lbl">ROAD SUPPLIES</div><div class="shelf-row" id="shop-list"></div><div class="plank"></div></div>
-          <div class="shelf case"><div class="shelf-lbl">RELIC CASE <span>· restocks after every run</span></div><div class="shelf-row" id="shop-relics"></div><div class="plank"></div></div>
+          <div class="shelf case"><div class="shelf-lbl">RELIC CASE</div><div class="shelf-row" id="shop-relics"></div><div class="plank"></div></div>
         </div>
         <aside class="shop-side">
+          <div class="gold-chip shop-gold" id="shop-sub"></div>
           <div class="hub-section" style="margin-top:0">YOUR SUPPLIES</div>
           <div id="shop-supplies"></div>
           <button class="relic-bag-btn" onclick="openRelics('review')" id="btn-relic-bag">🎒 Relic Inventory</button>
@@ -1775,9 +1787,9 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 <div id="train-select" class="scene fsr">
   <div class="hub-wrap">
     <div class="hub-hall">
-      <div class="fs-chip"><div class="hub-title">🎯 Training Ground</div><div class="hub-sub" id="train-intro"></div></div>
+      <div class="fs-chip gold-chip" id="train-intro"></div>
       <div class="fsbox" id="train-box"><div class="hall-banner fscov left" id="train-banner"></div></div>
-      <aside class="rside"><div class="rs-h">Who will train?<small>Pick a hero, then a drill.</small></div><div class="rlist" id="train-list"></div></aside>
+      <aside class="rside"><div class="rs-h">🎯 Training</div><div class="rlist" id="train-list"></div></aside>
       <button class="narrow-back" onclick="showScene('hub')">Back to Town</button>
     </div>
   </div>
@@ -2993,7 +3005,7 @@ function optToggle(k) {
   else toggleFx(k);
 }
 let asfx = null;      // sound-effect bus (all effects and the wind go through it; music has its own slider)
-function setSfx(v) { FX.sfx = Math.max(0, Math.min(1, v)); saveFx(); if (asfx && actx) asfx.gain.setTargetAtTime(FX.sfx, actx.currentTime, 0.05); }
+function setSfx(v) { FX.sfx = Math.max(0, Math.min(1, v)); saveFx(); if (asfx && actx) asfx.gain.setTargetAtTime(FX.sfx, actx.currentTime, 0.05); document.querySelectorAll('#film video, #cutin video, #spa-cutin video').forEach(m => { m.volume = FX.sfx; }); }      // skill videos follow the sound-effects slider too
 function setVol(v) { FX.vol = Math.max(0, Math.min(1, v)); saveFx(); if (typeof musicVol === 'function') musicVol(); }
 const OPTIONS = [
   ['snd', '🔊 Sound', 'Sound effects. Off by default on phones.', () => !sndMuted],
@@ -3528,7 +3540,7 @@ async function skillFilm(u, key) {
 }
 function playFilm(a) {
   return new Promise(resolve => {
-    const host = $('film'), v = document.createElement('video'); v.src = a.url; v.playsInline = true; v.muted = sndMuted;          // the game's mute switch also mutes film sound
+    const host = $('film'), v = document.createElement('video'); v.src = a.url; v.playsInline = true; v.muted = sndMuted; v.volume = FX.sfx;          // the game's mute switch also mutes film sound
     let done = false;
     const end = () => { if (done) return; done = true; skips.delete(end); v.remove(); if (!host.children.length) host.classList.remove('show'); resolve(); };
     skips.add(end); v.onended = end; v.onerror = end;
@@ -3551,7 +3563,7 @@ function playClip(a, host = stage) {            // host = the overlay element to
     skips.add(end);
     host.appendChild(el); host.classList.add('show');
     if (vid) {
-      el.playsInline = true; el.onended = end; el.onerror = end;
+      el.playsInline = true; el.muted = sndMuted; el.volume = FX.sfx; el.onended = end; el.onerror = end;
       el.play().catch(() => { el.muted = true; el.play().catch(end); });   // retry muted if the browser blocks sound
       setTimeout(end, 20000);                                              // safety net
     } else setTimeout(end, ANIM.hold);
@@ -3634,7 +3646,7 @@ async function playOnFigure(u, key, kind, tier, onStart) {      // onStart fires
   await new Promise(res => {
     let done = false; const end = () => { if (done) return; done = true; skips.delete(end); res(); };
     skips.add(end);
-    if (vid) { m.playsInline = true; m.onended = end; m.onerror = end; m.play().catch(() => { m.muted = true; m.play().catch(end); }); setTimeout(end, 20000); }
+    if (vid) { m.playsInline = true; m.volume = FX.sfx; m.onended = end; m.onerror = end; m.play().catch(() => { m.muted = true; m.play().catch(end); }); setTimeout(end, 20000); }
     else setTimeout(end, Math.min(ANIM.hold + (zap ? 300 : 0), (key === 'damaged' ? ANIM.hitHold : ANIM.skillHold) + (zap ? 300 : 0)));
   });
   m.remove(); if (!el.querySelector('.dmg')) el.classList.remove('playing');
@@ -5478,7 +5490,7 @@ async function loadTownBg() {
 }
 
 function renderHub() {
-  $('hub-gold').textContent = `Gold: ${game.gold}`; $('btn-beach').style.display = beachOpen() ? '' : 'none'; $('btn-lake').style.display = lakeOpen() ? '' : 'none';
+  $('hub-gold').innerHTML = goldChip(); $('btn-beach').style.display = beachOpen() ? '' : 'none'; $('btn-lake').style.display = lakeOpen() ? '' : 'none';
   loadTownBg();
   $('hub-msg').textContent = hubNote; hubNote = '';
   showNotice();      // e.g. the result of the last quest
@@ -5563,7 +5575,7 @@ function renderParty(full) {
   const order = Array.from({ length: MAX_PARTY }, (_, k) => MAX_PARTY - 1 - k);      // shown back -> front, like the battlefield: the front line sits next to the enemy
   $('party-slots').innerHTML = `<div class="form-lab"><span>◀ BACK</span><b>Party ${picked.length}/${MAX_PARTY}</b><span>FRONT ▶</span></div><div class="form-row" id="form-row">` +
     order.map(i => { const id = picked[i], h = id && heroById(id);
-      return h ? `<div class="fslot has${formSel === i ? ' sel' : ''}" data-i="${i}"><span class="pos">${i + 1}</span><button class="x" data-rm="${id}" title="Remove">✕</button><div class="figure" data-art="${id}"><div class="ph">${h.tag}</div></div><div class="nm">${h.name.split(' ')[0]}</div></div>`
+      return h ? `<div class="fslot has${formSel === i ? ' sel' : ''}" data-i="${i}"><span class="pos">${i + 1}</span><button class="x" data-rm="${id}" title="Remove">✕</button><button class="info fs-i" title="Details" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();heroInfo('${id}')">ⓘ</button><div class="figure" data-art="${id}"><div class="ph">${h.tag}</div></div><div class="nm">${h.name.split(' ')[0]}</div></div>`
                : `<div class="fslot" data-i="${i}"><span class="pos">${i + 1}</span><div class="empty">empty</div></div>`; }).join('') + '</div>';
   fillHeroArt($('party-slots'));
   wireFormation();
@@ -5571,7 +5583,7 @@ function renderParty(full) {
     const h = heroById(id), i = picked.indexOf(id), n = i + 1;
     return rcard(id, { cls: 'click' + (n ? ' on' : '') + (!n && picked.length >= MAX_PARTY ? ' off' : ''), onclick: `togglePick('${id}')`, sub: `HP ${h.hp} · SPD ${h.spd}${n ? ' · ' + slotName(i, picked.length) : ''}`,
       title: `${h.skills.map(x => x.n).join(' · ')}  |  Weak: ${(h.weak || []).join(', ') || '-'}  |  Resists: ${(h.resist || []).join(', ') || '-'}`, badge: n || null, badgeTip: 'Line-up position (1 = front line)' });
-  }).join('');
+  }).map(h => h.replace(/<\/div>$/, h.includes('data-id="') ? `<button class="info rc-i" title="Details" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();heroInfo('${(h.match(/data-id="([^"]+)"/) || [])[1]}')">ⓘ</button></div>` : '</div>')).join('');
   renderQuests(full);
 }
 function wireFormation() {
@@ -5702,6 +5714,7 @@ function beginQuest() {
 let quest = null;      // { def, node, gold, party } while a quest runs. gold = the quest purse (not hub gold)
 let campMsg = '';
 let hubNote = '';
+const goldChip = cost => `<span>🪙</span><b>${game.gold}</b>${cost ? `<i class="gc-cost">−${cost}</i>` : ''}`;
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, Number(v) || 0));
 
 // The quest is checkpointed into game.quest at embark, after each win, on entering camp and after each purchase.
@@ -6291,7 +6304,7 @@ function openShop() { shopMsg = ''; if ($('sr-bubble')) $('sr-bubble').textConte
 const SHOP_SLOTS = [[2.8, 23.4], [16.2, 23.4], [71, 23.4], [84.4, 23.4], [2.8, 34.4], [16.2, 34.4], [71, 34.4], [84.4, 34.4]];      // road-supply tiles on the two shelves: [x, y] in % of the shop picture
 function renderShop() {
   buildShopRoom();
-  $('shop-sub').innerHTML = `Supplies for the road. Whatever is in your bag goes with the party. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('shop-sub').innerHTML = goldChip();
   $('shop-list').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map((it, k) => { const [x, y] = SHOP_SLOTS[k] || SHOP_SLOTS[SHOP_SLOTS.length - 1];
     return `<div class="shop-row ware" style="--x:${x};--y:${y};--w:12.8;--h:25.4"><div class="w-ic">${it.icon}</div>
     <div class="who"><strong>${it.name}</strong><br>${it.desc}<br>In your bag: <b>${game.items[it.id] || 0}</b></div>
@@ -6301,9 +6314,8 @@ function renderShop() {
     return `<div class="shop-row ware rcase relic-${r.rarity}" style="--x:${(40 + i * 240) / 16};--y:${690 / 9};--w:12.5;--h:${150 / 9}"><div class="w-ic">${r.icon}</div>
     <div class="who"><strong>${r.name}</strong> <span class="rar rar-${r.rarity}">${r.rarity}</span><br>${r.desc}</div>
     <div class="btns"><button onclick="buyRelic('${id}')" ${game.gold < r.price ? 'disabled' : ''}>Buy · ${r.price}g</button></div></div>`; }).join('')
-    : '<div class="dim sold-out">Sold out. New relics arrive after your next run.</div>';
-  $('shop-supplies').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}<small>${it.use === 'camp' ? 'Used at camp' : 'Used in battle'}</small></div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('')
-    + '<div class="dim sup-note">Everything in the bag goes with the party on the next quest.</div>';
+    : '<div class="dim sold-out">Sold out</div>';
+  $('shop-supplies').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}</div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('');
   $('btn-relic-bag').textContent = `🎒 Relic Inventory (${game.relics.length})`;
   if (shopMsg) { shopSay(shopMsg, true); shopMsg = ''; }
   else if (!$('sr-bubble').textContent) shopSay(shopGreet || SHOP_GREETS[0], false);
@@ -6363,9 +6375,12 @@ function setSkin(hid, name) {            // Dorm: which look this hero uses (arm
   writeSave(); fillPortraits(); if ($('battle-scene').classList.contains('show')) render();
   gearMsg = name ? `${heroById(hid).name} now wears the "${name}" look.` : `${heroById(hid).name} is back to the default look.`; renderGear();
 }
-function openGear() { gearSel = null; gearMsg = ''; dormHero = null; showScene('gear'); }
+function openGear() { gearSel = null; gearMsg = ''; dormHero = null; dormFrom = null; showScene('gear'); }
+let dormFrom = null;          // where the character page was opened from (null = the Dorm itself, 'party-select' = Embark), so Back returns there
+function heroInfo(id) { if (!heroById(id)) return; dormFrom = 'party-select'; showScene('gear'); dormOpen(id); }
+function dormStep(d) { const ids = game.roster.filter(heroById), i = ids.indexOf(dormHero); if (i < 0 || ids.length < 2) return; dormOpen(ids[(i + d + ids.length) % ids.length]); }
 function dormOpen(hid) { if (!heroById(hid)) return; dormHero = hid; gearMsg = ''; renderGear(); window.scrollTo(0, 0); }
-function dormBack() { if (dormHero) { dormHero = null; gearMsg = ''; renderGear(); } else showScene('hub'); }
+function dormBack() { if (dormHero && dormFrom) { const to = dormFrom; dormFrom = null; dormHero = null; gearMsg = ''; showScene(to); } else if (dormHero) { dormHero = null; gearMsg = ''; renderGear(); } else showScene('hub'); }
 function selectSlot(hid, i) {
   if (gearLocked()) return;
   const a = slotsOf(hid);
@@ -6493,8 +6508,8 @@ function renderDormRoom() {
   const card = (id, slot) => { const h = heroById(id), u = heroUnit(id);
     return `<div class="rc drag${slot >= 0 ? ' party' : ''}" data-id="${id}"${slot >= 0 ? ` data-slot="${slot}"` : ''}><div class="mini-sprite port-box" data-port="${id}">${h.tag}</div><div class="rc-t"><b>${h.name} ${elIcons(h)}</b><small>HP ${u.maxHp} · SPD ${u.spd}${slot >= 0 ? ' · ' + slotName(slot, n) : ''}</small></div>${slot >= 0 ? `<i class="rc-n" title="Line-up position (1 = front line)">${slot + 1}</i>` : ''}</div>`; };
   const bench = game.roster.filter(id => heroById(id) && !p.includes(id));
-  $('dorm-roster').innerHTML = `<div class="rr-h">YOUR PARTY · back → front (who Embark picks)</div>${p.map((_, k) => card(p[n - 1 - k], n - 1 - k)).join('')}`
-    + (bench.length ? `<div class="rr-h">ROSTER · drag a card onto a seat or a party card</div>${bench.map(id => card(id, -1)).join('')}` : '');
+  $('dorm-roster').innerHTML = `<div class="rr-h">PARTY</div>${p.map((_, k) => card(p[n - 1 - k], n - 1 - k)).join('')}`
+    + (bench.length ? `<div class="rr-h">ROSTER</div>${bench.map(id => card(id, -1)).join('')}` : '');
   $('dorm-roster').querySelectorAll('.rc').forEach(el => { el.onpointerdown = e => dormDrag(e, el, el.dataset.id, () => dormMenu(el.dataset.id, el)); });
 }
 function dormDrag(e, el, id, onClick) {
@@ -6531,10 +6546,10 @@ function dormMenu(id, anchor) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDormMenu(); });
 function renderGear() {
   const locked = gearLocked(), lockNote = '<span style="color:#ffb74d">A quest is in progress: relics are locked until it ends.</span> ';
-  $('gear-sub').innerHTML = (locked ? lockNote : '') + (dormHero ? '' : 'Your party lives here: click a hero for details, drag cards onto the seats to change who goes on quests. ') + `<span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('gear-sub').innerHTML = (locked ? '<span class="gc-lock" title="A quest is in progress: relics are locked until it ends">🔒</span>' : '') + goldChip();
   $('gear').classList.toggle('char', !!dormHero);
   $('dorm-box').style.display = dormHero ? 'none' : ''; document.querySelector('#gear .dm-side').style.display = dormHero ? 'none' : ''; $('dorm-char').style.display = dormHero ? '' : 'none'; closeDormMenu();
-  $('dorm-back').textContent = dormHero ? '◀ Back to the roster' : 'Back to Town';
+  $('dorm-back').textContent = dormHero ? (dormFrom ? '◀ Back' : '◀ Back to the roster') : 'Back to Town';
   if (!dormHero) {
     renderDormRoom();
   } else {
@@ -6547,7 +6562,8 @@ function renderGear() {
     const sk = u.skills.map(k => `<div class="dsk"><b>${k.n}</b>${k.el ? `<span class="el">${ICON[k.el]} ${ELEM_NAME[k.el]}</span>` : k.t === 'dmg' ? '<span class="el">physical</span>' : ''}<br>${skillWhat(u, k)}<div class="dim">${k.stealthMul || k.stealthCrit ? `🌫️ In stealth: ${k.stealthMul ? '×' + k.stealthMul + ' damage' : ''}${k.stealthMul && k.stealthCrit ? ', ' : ''}${k.stealthCrit ? '+' + k.stealthCrit + '% crit chance' : ''}<br>` : ''}${k.move === 'front' ? '🗡️ Ends at the front of the line<br>' : ''}cooldown ${k.cd}</div></div>`).join('');
     const group = kind => { const n = {}; tr.forEach(id => { if (TRAIT[id] && TRAIT[id].kind === kind) n[id] = (n[id] || 0) + 1; });
       return Object.keys(n).map(id => { const t = TRAIT[id]; return `<div class="tr-row ${kind}">${t.icon} <b>${t.name}</b>${n[id] > 1 ? ' ×' + n[id] : ''}: ${t.desc}${n[id] > 1 ? ' <span class="dim">(each)</span>' : ''}</div>`; }).join('') || '<div class="dim" style="font-size:.78rem">None</div>'; };
-    $('dorm-char').innerHTML = `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
+    const strip = `<div class="dc-strip"><button class="arr" onclick="dormStep(-1)" title="Previous hero">◀</button>${game.roster.filter(heroById).map(x => `<button class="dcs${x === dormHero ? ' on' : ''}" onclick="dormOpen('${x}')" title="${heroById(x).name}"><span class="mini-sprite port-box" data-port="${x}">${heroById(x).tag}</span></button>`).join('')}<button class="arr" onclick="dormStep(1)" title="Next hero">▶</button></div>`;
+    $('dorm-char').innerHTML = strip + `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
       <div class="dorm-info dc-col"><h3>${h.name} ${elIcons(h)}</h3>
         ${BIOS[dormHero] ? `<div class="dbio">${BIOS[dormHero].bio}<br><span class="likes">♥ Likes: ${BIOS[dormHero].like}</span> · <span class="hates">✖ Dislikes: ${BIOS[dormHero].hate}</span></div>` : ''}
         <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}${u.rel && u.rel.dodge ? ` · 🌀 Evade ${Math.round(u.rel.dodge * 100)}%` : ''}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
@@ -6607,7 +6623,7 @@ function bannerTrain() {
 function openTrain() { showScene('train-select'); }
 function renderTrainSelect() {
   bannerTrain();
-  $('train-intro').innerHTML = `Training costs ${TRAIN.cost} gold and earns a permanent perk (a hero can hold ${TRAITS.maxGood}). Weapon Drills give a random stat perk; Elemental Focus a random elemental perk. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('train-intro').innerHTML = goldChip(TRAIN.cost);
   $('train-list').innerHTML = game.roster.filter(id => heroById(id)).map(id => {
     const poor = game.gold < TRAIN.cost, maxed = traitCount(id, 'good') >= TRAITS.maxGood;
     const sub = maxed ? 'Peak form: no room for more perks' : poor ? `Costs ${TRAIN.cost} gold (not enough)` : `Perks ${traitCount(id, 'good')}/${TRAITS.maxGood} · ${TRAIN.cost} gold`;
@@ -6736,7 +6752,7 @@ let spaSel = null;           // the hero whose flaws are showing on the front de
 function spaPick(id) { spaSel = spaSel === id ? null : id; renderSpaSelect(); }
 function renderSpaSelect() {
   bannerSpa();
-  $('spa-intro').innerHTML = `Each massage costs ${SPA.cost} gold. Pick a flaw to treat: win the minigame and it is gone for good. <span class="hub-gold">Gold: ${game.gold}</span>`;
+  $('spa-intro').innerHTML = goldChip(SPA.cost);
   const flaws = id => [...new Set((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad'))];
   $('spa-list').innerHTML = game.roster.filter(id => heroById(id)).map(id => { const bad = flaws(id);
     return rcard(id, { cls: 'click' + (spaSel === id ? ' sel' : '') + (bad.length ? '' : ' off'), onclick: `spaPick('${id}')`, sub: bad.length ? `${bad.length} flaw${bad.length === 1 ? '' : 's'} to treat` : 'No flaws to treat', badge: bad.length || null }); }).join('');
@@ -7906,7 +7922,8 @@ const GP = (() => {
       const i = nodes.indexOf(f), d = rep('rt') ? 1 : rep('lf') ? -1 : 0;
       if (d && nodes.length) { const n = nodes[Math.max(0, Math.min(nodes.length - 1, i + d))]; if (n !== f) { pickQuest(n.dataset.q); const nn = document.querySelector('#qmap .mnode[data-q="' + n.dataset.q + '"]') || n; setFocus(nn); try { sfx('click'); } catch (_) {} } }
     }
-    if (edge('Y')) { const t = document.querySelector('#form-row .fslot.has') || document.querySelector('#form-row .fslot'); if (t) { setFocus(t); S.skipY = true; } }
+    if (edge('Y') && f && f.querySelector && f.querySelector('.info')) f.querySelector('.info').click();
+    else if (edge('Y')) { const t = document.querySelector('#form-row .fslot.has') || document.querySelector('#form-row .fslot'); if (t) { setFocus(t); S.skipY = true; } }
     if (edge('X')) { const t = document.querySelector('#roster-pick .rc'); if (t) setFocus(t); }
     if (edge('LB') && typeof pickTier === 'function') pickTier(game.tiers.pick - 1);
     if (edge('RB') && typeof pickTier === 'function') pickTier(game.tiers.pick + 1);
@@ -7936,7 +7953,7 @@ const GP = (() => {
     const rep = k => { if (!down[k]) { S.held[k] = 0; return false; } if (!S.held[k]) { S.held[k] = now + 380; return true; } if (now >= S.held[k]) { S.held[k] = now + 120; return true; } return false; };
     const wake = !S.active && any; if (wake) { on(); for (const k of ['up', 'dn', 'lf', 'rt']) if (down[k]) S.held[k] = now + 380; }
     const L = layer(); const list = ensureFocus(L);
-    if (S.active && S.hk !== L.scene) { S.hk = L.scene; hint.innerHTML = L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Party<b>LB/RB</b>Difficulty<b>Start</b>Begin<b>B</b>Town' : (innerWidth < 700 ? HINTS_S : HINTS); }
+    if (S.active && S.hk !== L.scene) { S.hk = L.scene; hint.innerHTML = L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Info / Party<b>LB/RB</b>Difficulty<b>Start</b>Begin<b>B</b>Town' : (innerWidth < 700 ? HINTS_S : HINTS); }
     if (L.root && L.root.id === 'dive' && typeof dv !== 'undefined' && dv && dv.running && !dv.over && !$('dv-choose').classList.contains('on') && !$('dv-end').classList.contains('on')) {      // Polar Dip: Start / Select pauses; while paused B resumes
       if (edge('START') || edge('SEL')) divePause(!$('dv-pausebox').classList.contains('on'));
       else if ($('dv-pausebox').classList.contains('on') && edge('B')) divePause(false);
@@ -7958,6 +7975,7 @@ const GP = (() => {
         if (edge('Y') && S.focus) { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
         if (L.modal === 'guide') { if (edge('LB')) guideStep(-1); if (edge('RB')) guideStep(1); }
         else if (L.scene === 'battle-scene' && edge('RB')) cycleSpeed();
+        else if (L.scene === 'gear' && dormHero) { if (edge('LB')) dormStep(-1); if (edge('RB')) dormStep(1); }
         if (edge('START')) { const m = $('btn-end-main') && vis($('btn-end-main')) ? $('btn-end-main') : [...L.root.querySelectorAll('button.primary')].find(e => !e.disabled && vis(e)); if (m) m.click(); }
         if (edge('SEL')) { if (L.modal === 'guide') closeGuide(); else openGuide(); }
         const ry = ax(3); if (Math.abs(ry) > .3) scrollNear(S.focus || L.root.querySelector('*') || document.body, ry * 18);
