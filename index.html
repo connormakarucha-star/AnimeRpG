@@ -36,6 +36,11 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .combatant-card.targetable{border-color:#ff5252}
 .combatant-card.targetable.team-p{border-color:#4fc3f7}
 .figure.hurt{animation:hurt .4s}
+.figure.hurtfig{animation:hurtShake .5s ease-out}
+.figure.strikefig{animation:strikeLunge .5s cubic-bezier(.3,0,.2,1)}
+.figure.brokenfig .spr{filter:saturate(.45) brightness(.82);rotate:-4deg;transform-origin:50% 100%}
+@keyframes hurtShake{0%{translate:0 0;filter:brightness(2.4)}15%{translate:-9px 0}30%{translate:7px -2px;filter:brightness(1.5)}50%{translate:-5px 0}70%{translate:3px 0}100%{translate:0 0}}
+@keyframes strikeLunge{0%{translate:0 0;scale:1}30%{translate:8% 0;scale:1.04 .94}55%{translate:-34% 0;scale:1.1}100%{translate:0 0;scale:1}}
 @keyframes hurt{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}100%{transform:none}}
 .figure{transition:filter .12s}
 /* stock effects drawn over ANY sprite, so each character only needs one 'damaged' picture */
@@ -106,7 +111,7 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 /* charm hearts, Tyr's fangs, guard shield */
 .vfx-flutter span{animation-name:vFlutter;animation-duration:1.5s}
 @keyframes vFlutter{0%{opacity:0;transform:translate(0,40%) scale(.5)}20%{opacity:.95}50%{transform:translate(-14%,-40%) scale(1) rotate(-10deg)}75%{transform:translate(12%,-85%) scale(1) rotate(10deg)}100%{opacity:0;transform:translate(-6%,-140%) scale(.9)}}
-.fangs-fx{position:absolute;left:50%;top:44%;width:92%;aspect-ratio:1.5;translate:-50% -50%;z-index:7;pointer-events:none;animation:fangsLife .85s linear forwards;filter:drop-shadow(0 2px 5px rgba(0,0,0,.7))}
+.fangs-fx{position:absolute;left:50%;top:44%;width:92%;aspect-ratio:1.5;translate:-50% -50%;z-index:7;pointer-events:none;animation:fangsLife .85s linear forwards;filter:drop-shadow(0 0 6px rgba(255,255,255,.55)) drop-shadow(0 2px 4px rgba(0,0,0,.8))}
 .fangs-fx svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .fangs-fx .up{animation:fangUp .85s cubic-bezier(.6,0,.9,.4) forwards}.fangs-fx .dn{animation:fangDn .85s cubic-bezier(.6,0,.9,.4) forwards}
 @keyframes fangUp{0%{transform:translateY(-70%)}22%{transform:translateY(0)}78%{transform:translateY(0)}100%{transform:translateY(-70%)}}
@@ -789,9 +794,7 @@ body.cb .float.e-fire{color:#e69f00}body.cb .float.e-ice{color:#56b4e9}body.cb .
 body.cb .float.heal{color:#56b4e9}body.cb .float.hurt{color:#e69f00}
 #weather{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;transition:opacity .8s}
 #weather.rain,#weather.mist,#weather.lantern{opacity:1}
-#weather.rain::before{content:"";position:absolute;inset:-20% 0 0;background:repeating-linear-gradient(105deg,transparent 0 14px,rgba(190,210,230,.16) 14px 15px,transparent 15px 30px);animation:rainfall .55s linear infinite}
 #weather.rain::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(20,30,50,.28),rgba(20,30,50,.1))}
-@keyframes rainfall{to{background-position:-60px 160px}}
 #weather.mist::before,#weather.mist::after{content:"";position:absolute;left:-30%;width:160%;height:45%;background:radial-gradient(ellipse at center,rgba(190,205,215,.2),transparent 65%);animation:mistdrift 26s ease-in-out infinite alternate}
 #weather.mist::before{top:30%}#weather.mist::after{top:55%;animation-duration:34s;animation-direction:alternate-reverse}
 @keyframes mistdrift{to{transform:translateX(18%)}}
@@ -1466,6 +1469,7 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 @keyframes vbhop{40%{transform:translateY(-16%)}}
 #vb-msg{text-align:center;font-size:.8rem;color:#c9d6dc;margin:8px 0;min-height:1.3em}
 #vb-panel .swaprow{border-top:1px solid #262638;padding-top:8px;margin-top:6px;text-align:left}
+#vb-panel .swplan{min-height:1.3em;margin-top:6px;font-size:.74rem;color:#ffd54f;text-align:center;font-weight:700}
 #vb-panel .trg{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
 #vb-panel .trg button{padding:4px 8px;font-size:.68rem}
 #vb-panel .trg button.on{border-color:#7fe3ff;background:#123040}
@@ -3539,7 +3543,20 @@ async function isLive(a) {        // true for a moving idle: any video, or a web
 }
 function markLive(m, a) { isLive(a).then(l => { if (l) m.classList.add('live'); }); }
 async function baseIdle(id) { const sk = skinOf(id); return (sk && await findAsset(`${ANIM.base}/${id}/armoured - ${sk}/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`); }
-async function findAsset(path) {            // checked once per file, then remembered
+/* Non-boss enemies have ONE picture: assets/enemies/<enemy id>.(png|webp|gif|mp4|webm). It stands in for idle, damaged, broken and every attack; the game moves and tints it for life.
+   Bosses keep full per-state folders (assets/<boss id>/armoured/idle ... skill3). Until a fodder enemy's file is moved over, its old <id>/armoured/idle is still used. */
+const oneSprite = id => { const e = ENEMIES.find(x => x.id === id); return !!e && !e.boss; };
+async function findAsset(path) {
+  if (!(path in animCache) && path.startsWith(ANIM.base + '/')) {
+    const q = path.slice(ANIM.base.length + 1).split('/');
+    if (q.length === 3 && oneSprite(q[0])) {
+      const a = q[2] === 'idle' ? (await findRaw(`${ANIM.base}/enemies/${q[0]}`)) || (q[1] === 'armoured' ? await findRaw(path) : null) : null;
+      return animCache[path] = a;
+    }
+  }
+  return findRaw(path);
+}
+async function findRaw(path) {            // checked once per file, then remembered
   if (path in animCache) return animCache[path];
   await manifestReady;
   if (path in animCache) return animCache[path];
@@ -3595,6 +3612,7 @@ async function playAnim(unit, key, state, host, onStart) {      // spa / trainin
 }
 
 /* ---- idle sprites + stage background (all optional art) ----
+   NON-BOSS ENEMIES: one picture each, assets/enemies/<enemy id>.(png|webp|gif|mp4|webm) (see oneSprite). The rest of this comment is for heroes and bosses.
    assets/<unit id>/<armoured|broken>/idle.(png|webp|gif|mp4|webm)   standing pose, per armour state (falls back to armoured/)
    assets/ui/battle_<quest id>_<fight number>.*, assets/ui/battle_<quest id>.*, assets/ui/battle_bg.*   stage background (first one found)
    assets/<unit id>/<armoured|broken>/damaged.*    ONE picture/clip for every hit AND every status tick; plays in place of the idle with the stock effect (fire, ice, shock...) drawn on top
@@ -3633,7 +3651,7 @@ function figureEl(u, team) {
     el.classList.toggle('has-art', !!a);
   }
   el.classList.toggle('flip', team === 'p' ? SPR.flipParty : SPR.flipEnemy);
-  el.classList.toggle('fallen', !!u.fell && u.hp <= 0); el.classList.toggle('vanish', !!u.vanish);
+  el.classList.toggle('brokenfig', team === 'e' && u.state !== 'armoured' && oneSprite(u.id)); el.classList.toggle('fallen', !!u.fell && u.hp <= 0); el.classList.toggle('vanish', !!u.vanish);
   return el;
 }
 function mountFigures(host, list, team) {
@@ -3650,6 +3668,9 @@ async function playOnFigure(u, key, kind, tier, onStart) {      // onStart fires
   if (kind) fx(u, kind, 800, tier);
   const zap = key === 'damaged' && kind === 'shock' && !FX.calm, ZAP_MS = 560;      // electrocution: the damaged picture flashes black and white, and the hit lasts a little longer
   const a = await firstAsset(u, key);
+  if (!a && el && el.isConnected && u.team === 'e' && oneSprite(u.id) && !FX.calm) {        // one-sprite enemy: the picture itself shakes (hit) or lunges (attack)
+    const c = key === 'damaged' ? 'hurtfig' : 'strikefig'; el.classList.remove('hurtfig', 'strikefig'); void el.offsetWidth; el.classList.add(c); setTimeout(() => el.classList.remove(c), 520);
+  }
   if (!a || !el || !el.isConnected) {
     if (zap && el && el.isConnected) { el.classList.remove('zapfig'); void el.offsetWidth; el.classList.add('zapfig'); setTimeout(() => el.classList.remove('zapfig'), ZAP_MS); }
     if (onStart) onStart(); await sleep((a ? 0 : ANIM.fallback || 0) + (zap ? 280 : 0)); return;
@@ -3782,11 +3803,13 @@ function burst(u, red) {                       // physical impact: quick comic b
 }
 function fangsFx(t) {                           // Tyr's Crimson Bite: a synthesized set of white fangs snaps shut on the target
   const el = figs.get(t); if (!el) return;
-  const tooth = (x, w, h, y, dir) => `<polygon points="${x},${y} ${x + w},${y} ${x + w / 2},${y + dir * h}" fill="#fbfbfb" stroke="#9aa0ad" stroke-width="1.2" stroke-linejoin="round"/>`;
-  const up = [[6, 15, 17], [23, 15, 12], [40, 18, 30], [58, 18, 30], [77, 15, 12], [94, 15, 17]].map(([x, w, h]) => tooth(x, w, h, 6, 1)).join('');       // the two long fangs sit in the middle
-  const dn = [[10, 14, 13], [28, 14, 10], [44, 14, 17], [58, 14, 17], [76, 14, 10], [94, 14, 13]].map(([x, w, h]) => tooth(x, w, h, 94, -1)).join('');
+  // plain white vampire teeth in the style of the stock silhouette: rounded incisors, long curved fangs, small side teeth. Only the left half is drawn; the right half is its mirror.
+  const P = d => `<path d="${d}" fill="#fff" stroke="#3a0d18" stroke-width="1.1" stroke-linejoin="round"/>`;
+  const upper = [P('M42 4 L42 21 Q42 31 51 31 Q60 31 60 21 L60 4Z'), P('M23 4 Q22 18 26 25 Q33 30 41 24 L41 4Z'), P('M7 4 C8 28 15 44 22 57 C24.5 40 25 20 24 4Z'), P('M-3 6 Q-4 19 1 25 Q6 23 7 11 L7 4Z')].join('');
+  const lower = [P('M49 4 L49 18 Q49 24 54.5 24 Q60 24 60 18 L60 4Z'), P('M37 4 Q36 15 39 20 Q44 24 49 19 L49 4Z'), P('M24 4 C24 24 28 36 31 47 C37 36 39 20 37 4Z'), P('M13 4 Q12 15 15 20 Q21 22 24 14 L24 4Z'), P('M4 4 Q3 12 6 16 Q11 17 13 11 L13 4Z')].join('');
+  const row = t => `<g>${t}</g><g transform="translate(120 0) scale(-1 1)">${t}</g>`;
   const k = document.createElement('div'); k.className = 'fangs-fx';
-  k.innerHTML = `<svg viewBox="0 0 120 100"><g class="up"><path d="M0 6Q60 -8 120 6L120 -6 0 -6Z" fill="#5a1220"/>${up}</g><g class="dn"><path d="M0 94Q60 108 120 94L120 106 0 106Z" fill="#5a1220"/>${dn}</g></svg>`;
+  k.innerHTML = `<svg viewBox="0 0 120 100"><g class="up">${row(upper)}</g><g class="dn"><g transform="translate(0 100) scale(1 -1)">${row(lower)}</g></g></svg>`;
   el.appendChild(k); setTimeout(() => k.remove(), 900);
 }
 function shieldFx(t, delay = 0) {                // a blue shield quickly forms over a protected unit
@@ -7844,20 +7867,21 @@ function vbSwapUi() {
       <h5>− ${S.out && isT3(S.out) ? 'III' : 'II / III'}</h5><div class="trg">${out}</div>
       <h5>+ ${S.out && isT3(S.out) ? 'II' : 'I'}</h5><div class="trg">${inn}</div>
       <div class="swtip">${vbTipDefault(S)}</div>
-      <button class="primary" ${ready ? '' : 'disabled'} onclick="vbSwap('${id}')">Swap${ready ? `: ${TRAIT[S.out].name} → ${TRAIT[S.inn].name}` : ''}</button></div>`;
-  }).join('') + `<button onclick="vbDone()">Done</button>`;
+      <div class="swplan ${ready ? 'on' : ''}">${ready ? `${TRAIT[S.out].icon} ${TRAIT[S.out].name} → ${TRAIT[S.inn].icon} ${TRAIT[S.inn].name}` : ''}</div></div>`;
+  }).join('') + (() => { const n = rw.heroes.filter(id => !rw.done[id] && vbSel[id] && vbSel[id].out && vbSel[id].inn).length; return `<button class="${n ? 'primary' : ''}" onclick="vbDone()">${n ? `✔ Done · ${n} swap${n > 1 ? 's' : ''}` : 'Done'}</button>`; })();
 }
 { const tipFor = e => { const el = e.target.closest && e.target.closest('#vb-panel [data-tip]'); if (!el) return; const row = el.closest('.swaprow'); const t = row && row.querySelector('.swtip'); if (t && TRAIT[el.dataset.tip]) t.innerHTML = perkTip(el.dataset.tip); };
   const tipBack = e => { const row = e.target.closest && e.target.closest('#vb-panel .swaprow'); if (!row || !row.dataset.hero) return; const t = row.querySelector('.swtip'); if (t) t.innerHTML = vbTipDefault(vbSel[row.dataset.hero]); };
   document.addEventListener('mouseover', tipFor); document.addEventListener('gpfocus', tipFor); document.addEventListener('mouseout', tipBack); }
 function vbChoose(id, k, t) { vbSel[id] = vbSel[id] || {}; if (k === 'out' && isT3(t) !== isT3(vbSel[id].out)) vbSel[id].inn = null; vbSel[id][k] = t; vbSwapUi(); }
-function vbSwap(id) {
+function vbSwap(id, quiet) {
   const rw = game.vb && game.vb.reward, S = vbSel[id]; if (!rw || !S || !S.out || !S.inn || rw.done[id]) return;
   const gone = TRAIT[S.out], got = TRAIT[S.inn];
   const list = game.traits[id] || [], i = list.indexOf(S.out); if (i < 0 || !TRAIT[S.inn] || TRAIT[S.inn].kind !== 'good' || !(isT3(S.out) ? isT2(S.inn) : (isT2(S.out) && !TRAIT[S.inn].base))) return;
-  list.splice(i, 1, S.inn); rw.done[id] = `${gone.icon} ${gone.name} → ${got.icon} ${got.name}`; delete vbSel[id]; writeSave(); sfx('heal'); vbSwapUi();
+  list.splice(i, 1, S.inn); rw.done[id] = `${gone.icon} ${gone.name} → ${got.icon} ${got.name}`; delete vbSel[id]; if (!quiet) { writeSave(); sfx('heal'); vbSwapUi(); }
 }
-function vbDone() { if (game.vb) game.vb.reward = null; game.vb = null; vbSel = {}; writeSave(); $('vb-court').classList.remove('won'); showScene('beach'); }
+function vbDone() { const rw = game.vb && game.vb.reward; if (rw) { rw.heroes.forEach(id => vbSwap(id, true)); if (rw.heroes.some(id => rw.done[id])) sfx('heal'); }
+  if (game.vb) game.vb.reward = null; game.vb = null; vbSel = {}; writeSave(); $('vb-court').classList.remove('won'); showScene('beach'); }
 
 // ======================= CONTROLLER SUPPORT (Gamepad API) =======================
 // Works with any standard-mapping pad (Xbox / PlayStation / Switch Pro / 8BitDo...), wired or Bluetooth, on PC and phones.
