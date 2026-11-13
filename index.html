@@ -1528,6 +1528,40 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 .float.e-fire{color:#ffa45c}.float.e-ice{color:#9fe6ff}.float.e-shock{color:#ffe65c}.float.e-poison{color:#b6f06a}.float.e-bleed{color:#ff6f8a}
 .float.hurt.e-fire{text-shadow:0 0 8px #ff7a2a,0 2px 3px #000}.float.hurt.e-ice{text-shadow:0 0 8px #5fd0ff,0 2px 3px #000}.float.hurt.e-shock{text-shadow:0 0 8px #ffe030,0 2px 3px #000}.float.hurt.e-poison{text-shadow:0 0 8px #8be03a,0 2px 3px #000}.float.hurt.e-bleed{text-shadow:0 0 8px #ff3a5a,0 2px 3px #000}
 .float.hurt.e-fire,.float.hurt.e-ice,.float.hurt.e-shock,.float.hurt.e-poison,.float.hurt.e-bleed{color:#ff6b6b}
+
+/* ---- final boss: two screens, a shrunken party, a huge boss ---- */
+#fb-hud{display:none}
+body.fbfight .combatant-card.fbboss .bar-container:has(.hp-fill),body.fbfight .combatant-card.fbboss .hpnum{display:none}
+@keyframes fbOut{to{opacity:0;transform:translateX(40px) scale(.9);filter:brightness(2)}}
+@keyframes fbIn{from{opacity:0;transform:translateX(-40px) scale(.9);filter:brightness(2)}}
+#enemy-cards.fbout{animation:fbOut .28s ease-in forwards}#enemy-cards.fbin{animation:fbIn .3s ease-out}
+body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform:translateX(-50%);z-index:6;gap:14px;align-items:center;background:rgba(0,0,0,.55);padding:3px 12px;border-radius:12px;font-size:.72rem;color:#cfd2e6}
+#fb-hud .fbh-oth{display:flex;gap:4px;align-items:center}#fb-hud .fbh-oth small{opacity:.7;margin-right:2px}
+#fb-hud i{display:inline-block;width:34px;height:7px;background:#2a2f3c;border-radius:4px;overflow:hidden}#fb-hud i b{display:block;height:100%;background:#4caf50}#fb-hud i.dn{opacity:.35}
+#fb-hud .fbh-brk{display:flex;gap:5px;align-items:center}#fb-hud .fbh-brk i{width:70px;height:8px}#fb-hud .fbh-brk i b{background:#ffb74d}#fb-hud .fbh-brk.on{color:#ff8a80;font-weight:700;letter-spacing:.1em}
+#battle-scene .battlefield.fb{transition:opacity .24s}#battle-scene .battlefield.fbfade{opacity:0}
+#battle-scene .battlefield.fbm{flex-direction:row-reverse}
+#battle-scene .battlefield.fbm #party-cards{flex-direction:row}
+#battle-scene .battlefield.fb .team-p{flex:.9}#battle-scene .battlefield.fb .team-e{flex:1.1}
+#battle-scene .battlefield.fb .team-p .figure{height:calc(var(--figH) * var(--fbP,.5))}
+#battle-scene .battlefield.fb .team-e .combatant-card{flex:0 0 100%;max-width:none}
+#battle-scene .battlefield.fb .team-e .figure{width:100%;height:calc(var(--figH) * var(--fbB,1))}
+#battle-scene .battlefield.fbpair .team-e .combatant-card{flex:0 0 64%}
+#battle-scene .battlefield.fbpair .team-e .combatant-card + .combatant-card{margin-left:-28%}
+#battle-scene .battlefield.fbpair.fbm .team-e #enemy-cards{flex-direction:row-reverse}
+#battle-scene .battlefield.fbpair.fbm .team-e .combatant-card + .combatant-card{margin-left:0;margin-right:-28%}
+.bgp-final .bgfx span{background:rgba(205,170,255,.85);box-shadow:0 0 14px 5px rgba(150,95,235,.55);width:var(--s);height:var(--s);border-radius:50%;opacity:0;animation:bgDrift ease-in-out infinite}
+.fb-shop{position:absolute;left:50%;bottom:6%;height:22%;z-index:30;pointer-events:none;translate:-50% 0;animation:fbShopIn .5s cubic-bezier(.2,.8,.3,1) both}.fb-shop.out{animation:fbShopOut .4s ease-in both}.fb-shop img{height:100%;display:block}
+.fb-shopph{height:100%;aspect-ratio:.7;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2.2rem;background:rgba(40,30,60,.7);border:2px dashed #b79cff;border-radius:10px;padding:0 10px}.fb-shopph small{font-size:.5rem;letter-spacing:.1em;color:#cbb2ff}
+@keyframes fbShopIn{from{translate:-50% 140%;opacity:0}to{translate:-50% 0;opacity:1}}@keyframes fbShopOut{to{translate:-50% 140%;opacity:0}}
+.fb-potion{position:absolute;z-index:31;font-size:1.8rem;pointer-events:none;translate:-50% -50%;filter:drop-shadow(0 0 8px #9aff9a)}
+.fb-bub{position:absolute;z-index:32;translate:-50% -100%;max-width:240px;background:#fffbe9;color:#222;border-radius:10px;padding:5px 10px;font-size:.8rem;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.6);pointer-events:none;animation:fbBub 2.6s ease-out forwards}.fb-bub.shop{background:#ffe9a8}.fb-bub.hero{background:#e8f6ff}
+@keyframes fbBub{0%{opacity:0;margin-top:8px}10%{opacity:1;margin-top:0}85%{opacity:1}100%{opacity:0}}
+#battle-scene .figure.fbpop{animation:fbPop .8s cubic-bezier(.2,.8,.3,1)}@keyframes fbPop{0%{scale:.2;filter:brightness(3)}60%{scale:1.12;filter:brightness(1.6)}100%{scale:1;filter:none}}
+#battle-scene .figure.fbglow{filter:drop-shadow(0 0 18px #9aff9a) brightness(1.3)}
+
+#battle-scene .figure.floaty{position:relative;top:calc(var(--figH) * var(--fbB,1) * -.1);animation:fbBob 3.4s ease-in-out infinite}
+@keyframes fbBob{0%,100%{top:calc(var(--figH) * var(--fbB,1) * -.10)}50%{top:calc(var(--figH) * var(--fbB,1) * -.135)}}
 </style>
 </head>
 <body>
@@ -1836,6 +1870,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
       <div class="row">
         <button onclick="showScene('party-select')">Back</button>
         <button class="primary" id="btn-dev-fight" onclick="startQuickBattle()">Fight!</button>
+        <button id="btn-dev-final" onclick="startFinalDev()" title="Two screens, two parties of 4, one shared boss (framework test)">☠️ Final Boss (8 heroes)</button>
       </div>
     </div>
   </div>
@@ -1878,6 +1913,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 
 <div id="game-container">
   <div id="order"></div>
+  <div id="fb-hud"></div>
   <div class="battlefield">
     <div class="team-column">
       <div class="column-header" style="color:#81d4fa">PLAYER PARTY</div>
@@ -2158,7 +2194,18 @@ const ENEMIES = [
     { n:'Frost Lance',    t:'dmg', r:'ranged', d:[22,25], el:'ice', brk:28, cd:0 },
     { n:'Scepter Strike', t:'dmg', r:'melee',  d:[21,24], brk:24, cd:1 },
     { n:'Glacial Prison', t:'dmg', r:'ranged', d:[19,22], el:'ice', brk:30, cd:3 },
-    { n:'Crown of Frost', t:'barrier', p:42, cd:4 } ] }
+    { n:'Crown of Frost', t:'barrier', p:42, cd:4 } ] },
+  // ---- THE FINAL BOSS: two bodies sharing one health pool (see FINAL / fbBuild). Dev-only for now; every number here is a placeholder. Left body = melee, right body = elemental magic. ----
+  { id:'e_final_l', boss:true, final:true, weak:[], resist:[], name:'The Reaper of Wings', short:'Reaper', tag:'REAPER', hp:1500, brk:240, spd:1, phases:[
+      { at:.66, msg:'The Reaper drags his scythe through the earth. The ground screams.', atk:1.08, addL:[{ n:'Grave Harvest', t:'dmg', r:'melee', d:[22,26], chip:true, brk:20, aoe:1, cd:3 }], addR:[{ n:'Storm of Wings', t:'dmg', r:'ranged', d:[13,16], el:'fire', el2:'shock', brk:26, aoe:1, shockOne:true, cd:3 }] },
+      { at:.33, msg:'The wings close around them both. "No more."', atk:1.1, barrier:30, addL:[{ n:"Reaper's Verdict", t:'dmg', r:'melee', d:[48,56], chip:true, brk:34, cd:3 }], addR:[{ n:'Final Hymn', t:'dmg', r:'ranged', d:[16,20], el:'fire', el2:'shock', brk:32, aoe:1, shockOne:true, cd:4 }] }], skills:[
+    { n:'Scythe Pierce', t:'dmg', r:'melee', d:[34,40], chip:true, brk:24, cd:0 },
+    { n:'Reaping Sweep', t:'dmg', r:'melee', d:[18,22], chip:true, brk:14, aoe:1, cd:1 },
+    { n:'Storm Reap',    t:'dmg', r:'melee', d:[28,34], el:'shock', brk:10, cd:3, needsBroken:true } ] },
+  { id:'e_final_r', boss:true, final:true, float:true, weak:[], resist:[], name:'The Seraph of Wings', short:'Seraph', tag:'SERAPH', hp:1500, brk:240, spd:1, phases:[], skills:[
+    { n:"Seraph's Judgement", t:'dmg', r:'ranged', d:[16,20], el:'fire', el2:'shock', brk:30, cd:0 },
+    { n:'Heaven\'s Wrath',    t:'dmg', r:'ranged', d:[10,13], el:'fire', el2:'shock', brk:22, aoe:1, shockOne:true, cd:1 },
+    { n:'Cleansing Flame',    t:'dmg', r:'ranged', d:[18,22], el:'fire', brk:34, cd:2 } ] }
 ];
 
 /* ============ QUEST DATA ============ */
@@ -3280,6 +3327,7 @@ function make(d, team, sc = { hp: 1, atk: 1 }) {
 }
 let party = [];   // the quest's hero units (HP and armour carry over between fights);      // array order = lineup position (index 0 = front)
 let enemies = [];  // fresh set built for every battle
+let FB = null;     // the final boss fight's state (see FINAL BOSS), null in every other fight
 
 let order = [];        // this round's turn order (by speed)
 let roundNo = 0;       // shown in the top bar
@@ -3571,9 +3619,9 @@ async function skillFilm(u, key) {
   const a = await firstAsset(u, key);
   return a && (a.ext === 'mp4' || a.ext === 'webm') ? a : null;
 }
-function playFilm(a) {
+function playFilm(a, flip) {
   return new Promise(resolve => {
-    const host = $('film'), v = document.createElement('video'); v.src = a.url; v.playsInline = true; v.muted = sndMuted; v.volume = FX.sfx;          // the game's mute switch also mutes film sound
+    const host = $('film'), v = document.createElement('video'); v.src = a.url; v.playsInline = true; v.muted = sndMuted; v.volume = FX.sfx; if (flip) v.style.transform = 'scaleX(-1)';          // the game's mute switch also mutes film sound (the final fight's right-hand screen mirrors skill films)
     let done = false;
     const end = () => { if (done) return; done = true; skips.delete(end); v.remove(); if (!host.children.length) host.classList.remove('show'); resolve(); };
     skips.add(end); v.onended = end; v.onerror = end;
@@ -3621,12 +3669,14 @@ async function playAnim(unit, key, state, host, onStart) {      // spa / trainin
 const SPR = { flipParty: false, flipEnemy: false };
 const SPR_SCALE = 0.85;      // every picture is drawn at this fraction of its figure box's height (1 = fill the box); same for idle, damaged and skills, in combat and in the dorm
 document.documentElement.style.setProperty('--sprH', (SPR_SCALE * 100) + '%');
+const sprFlip = u => (u.team === 'p' ? SPR.flipParty : SPR.flipEnemy) !== !!u.mir;      // the final fight's right-hand screen mirrors every figure
 const figs = new WeakMap();      // one persistent figure element per unit, so animated sprites keep playing between renders
 let spriteRenderQueued = false;
 function spriteFor(u) {
   const folder = stateFolder(u), down = !!u.fell && u.hp <= 0;
   const stand = artChain(u).map(st => `${ANIM.base}/${u.id}/${st}/idle`);
-  const paths = down ? [...[...new Set(['broken', ...artChain(u)])].map(st => `${ANIM.base}/${u.id}/${st}/damaged`), ...stand] : stand;
+  const brokenBoss = u.final && u.state !== 'armoured' && isAlive(u);
+  const paths = brokenBoss ? [`${ANIM.base}/${u.id}/armoured/damaged`, ...stand] : down ? [...[...new Set(['broken', ...artChain(u)])].map(st => `${ANIM.base}/${u.id}/${st}/damaged`), ...stand] : stand;
   for (const p of paths) {
     if (!(p in animCache)) {
       findAsset(p).then(() => { if (!spriteRenderQueued) { spriteRenderQueued = true; setTimeout(() => { spriteRenderQueued = false; render(); }, 30); } });
@@ -3650,7 +3700,7 @@ function figureEl(u, team) {
     }
     el.classList.toggle('has-art', !!a);
   }
-  el.classList.toggle('flip', team === 'p' ? SPR.flipParty : SPR.flipEnemy);
+  el.classList.toggle('flip', sprFlip(u)); el.classList.toggle('floaty', !!u.float);
   el.classList.toggle('brokenfig', team === 'e' && u.state !== 'armoured' && oneSprite(u.id)); el.classList.toggle('fallen', !!u.fell && u.hp <= 0); el.classList.toggle('vanish', !!u.vanish);
   return el;
 }
@@ -3788,8 +3838,9 @@ async function fall(t) {
   t.gone = true; sinkDead(t); render();                  // only now do the survivors close the gap (the fallen is invisible at the back of the line)
 }
 const STATUS_FX = { burn: 'fire', bleed: 'bleed', poison: 'poison', frozen: 'ice', shocked: 'shock', charmed: 'heart' };
+const FXS = { k: 1 };       // the final fight shrinks particles on the shrunken party
 function particle(kind, i, k = 1) {
-  const v = VFX[kind], sp = document.createElement('span'); sp.innerHTML = v.mk(i);
+  k *= FXS.k; const v = VFX[kind], sp = document.createElement('span'); sp.innerHTML = v.mk(i);
   sp.style.setProperty('--w', (v.w * k).toFixed(2) + 'vw'); sp.style.setProperty('--h', (v.h * k).toFixed(2) + 'vw');
   if (v.cls === 'burst' || kind === 'ice') sp.style.setProperty('--r', Math.round(rnd(-40, 40)) + 'deg');
   return sp;
@@ -3823,6 +3874,7 @@ function shieldFx(t, delay = 0) {                // a blue shield quickly forms 
   if (delay) setTimeout(mk, delay); else mk();
 }
 function tail(u, kind) {                         // the slow second half of an elemental hit, after the strike has landed
+  FXS.k = fbScale(u);
   const el = figs.get(u), v = VFX[kind]; if (!el || !v) return;
   const box = document.createElement('div'); box.className = 'vfx vfx-' + v.cls + ' vfx-tail' + (kind === 'snow' ? ' snow' : '');
   for (let i = 0; i < v.n; i++) {
@@ -3833,6 +3885,7 @@ function tail(u, kind) {                         // the slow second half of an e
 }
 const TAIL = { fire: 'smoke', shock: 'smoke', ice: 'snow' };
 function fx(u, kind, ms = 800, tier = false) {
+  FXS.k = fbScale(u);
   if (kind === 'slash') return burst(u);
   if (tier && kind === 'bleed') { burst(u, true); setTimeout(() => fx(u, 'bleed'), 220); return; }       // a cut: impact first, then the bleeding
   if (tier && TAIL[kind]) setTimeout(() => tail(u, TAIL[kind]), 520);
@@ -3848,6 +3901,7 @@ function fx(u, kind, ms = 800, tier = false) {
 const AURA_MS = 260;
 const auraFits = (u, s) => !!s.el && !(rangeOf(s) === 'melee' && (s.el === 'bleed' || s.el === 'poison'));      // weapon-like bleed / poison strikes stay plain
 function aura(u, kind, ms = AURA_MS) {               // quick charge-up flare on the caster, played BEFORE the strike; resolves when it is over
+  FXS.k = fbScale(u);
   const el = figs.get(u), v = VFX[kind]; if (!el || !v || !v.mk) return Promise.resolve();
   sfx('charge', kind);
   el.classList.add('aura-' + kind); setTimeout(() => el.classList.remove('aura-' + kind), ms);
@@ -3909,7 +3963,7 @@ async function projectile(u, t, kind) {            // ranged elemental skills: a
   const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI + 90;                 // flames / shards point where they're going
   const p = document.createElement('div'); p.className = 'proj'; p.innerHTML = v.mk(0); p.style.left = x1 + 'px'; p.style.top = y1 + 'px'; p.style.setProperty('--glow', v.glow);
   if (kind === 'poison' || kind === 'bleed') p.style.transform = 'translate(-50%,-50%)';
-  host.appendChild(p);
+  host.appendChild(p); if (FB) p.style.scale = fbScale(t);
   const rot = kind === 'poison' ? 0 : ang;
   const an = p.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scale(.7)` }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) rotate(${rot}deg) scale(1.3)` }], { duration: 240, easing: 'ease-in', fill: 'forwards' });
   await Promise.race([an.finished.catch(() => {}), sleep(380)]); p.remove();
@@ -4020,7 +4074,7 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
   dashClear();
   const el = figs.get(u), tf = figs.get(t); if (!el || !tf || !el.isConnected || !tf.isConnected) return null;
   const A = figBox(el), B = figBox(tf); if (!A.w || !B.w) return null;
-  const dir = Math.sign(B.cx - A.cx) || (u.team === 'p' ? 1 : -1), flip = u.team === 'p' ? SPR.flipParty : SPR.flipEnemy;
+  const dir = Math.sign(B.cx - A.cx) || (u.team === 'p' ? 1 : -1), flip = sprFlip(u), NEAR = DASH.near * fbScale(u);
   const mk = (cls) => { const d = document.createElement('div'); d.className = 'dashfx ' + cls + (flip ? ' flip' : ''); Object.assign(d.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
     ['a', 'b'].forEach(k => { const im = document.createElement('img'); im.className = k; im.src = art[k].url; im.draggable = false; d.appendChild(im); }); document.body.appendChild(d); return d; };
   const main = mk(''), ghosts = Array.from({ length: DASH.ghosts }, () => { const g = mk('ghost'); g.style.opacity = 0; return g; });
@@ -4030,7 +4084,7 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
   const tr = (dx, dy, sc) => `translate(${dx}px,${dy}px) scale(${sc})`;
   // the wind-up always happens at ONE fixed foreground spot (the middle of her side), whichever slot she stood in; as big as DASH.near allows while still fitting on screen
   const vh0 = document.documentElement.clientHeight, dy0 = Math.max(A.h * DASH.drop, vh0 * DASH.floor - A.bottom), dyEnd = B.bottom - A.bottom, im0 = main.querySelector('img.a'), asp = im0 && im0.naturalHeight ? im0.naturalWidth / im0.naturalHeight : 0.6, vw = document.documentElement.clientWidth;
-  const S0 = Math.max(1, Math.min(DASH.near, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE), (vw * 0.92) / (asp * A.h * SPR_SCALE)));
+  const S0 = Math.max(1, Math.min(NEAR, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE), (vw * 0.92) / (asp * A.h * SPR_SCALE)));
   const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, halfW = asp * A.h * SPR_SCALE * S0 / 2;
   const fx = Math.max(halfW + 8, Math.min(vw - halfW - 8, pr && pr.width ? pr.left + pr.width / 2 : A.cx)), fdx = fx - A.cx;
   const P0 = tr(0, 0, 1), P1 = tr(fdx, dy0, S0), P1c = tr(fdx, dy0 + A.h * 0.02, S0 * 0.97);                          // wind-up: grows toward the camera, then crouches
@@ -4079,14 +4133,14 @@ async function stageBegin(u, t, art, s) {
   dashClear();
   const el = figs.get(u); if (!el || !el.isConnected) return null;
   const A = figBox(el); if (!A.w) return null;
-  const K = STAND[u.id], vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = u.team === 'p' ? SPR.flipParty : SPR.flipEnemy;
+  const K = STAND[u.id], vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u);
   const d0 = document.createElement('div'); d0.className = 'dashfx' + (flip ? ' flip' : '');
   Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
   const im = document.createElement('img'); im.className = 'a'; im.src = art.a.url; im.draggable = false; d0.appendChild(im); document.body.appendChild(d0);
   if (im.decode) await im.decode().catch(() => {});
   const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
   const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx = pr && pr.width ? pr.left + pr.width / 2 : A.cx;
-  const H = vh * K.h, S0 = H / (A.h * SPR_SCALE), dy = vh * K.bottom - A.bottom, dir = flip ? -1 : 1;
+  const H = vh * K.h * fbScale(u), S0 = H / (A.h * SPR_SCALE), dy = vh * K.bottom - A.bottom, dir = flip ? -1 : 1;
   const tr = (x, y, sc) => `translate(${x}px,${y}px) scale(${sc})`, P0 = tr(0, 0, 1), P1 = tr(fx - A.cx, dy, S0), hx = fx + dir * K.hand.dx * H, hy = vh * K.bottom - K.hand.up * H;
   const anim = (node, frames, ms, ease) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards' });
   const svgNS = 'http://www.w3.org/2000/svg', mkSvg = () => { const v = document.createElementNS(svgNS, 'svg'); v.setAttribute('viewBox', `0 0 ${vw} ${vh}`); Object.assign(v.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: 72, pointerEvents: 'none', overflow: 'visible' }); v.setAttribute('fill', 'none'); v.setAttribute('stroke-linejoin', 'round'); v.setAttribute('stroke-linecap', 'round'); document.body.appendChild(v); d.parts.push(v); return v; };
@@ -4111,6 +4165,122 @@ async function stageBegin(u, t, art, s) {
       await sleep(dspd(120)); if (dashLive !== d) return;
       d.parts.slice(1).forEach(x => x.remove());
       showParty();                                   // the picture only reaches her knees, so it does not shrink back into the line-up: it stays put and fades out while the real figure and the party return
+      const a = d0.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(300), easing: 'ease-in', fill: 'forwards' }); if (el.isConnected) el.style.visibility = '';
+      await Promise.race([a.finished.catch(() => {}), sleep(dspd(300) + 120)]);
+      dashClear();
+    }
+  };
+}
+
+/* ---- the final bosses' close-ups (every sweep / AOE attack of e_final_l and e_final_r): the body swells up into the foreground, cropped by the bottom of the screen like Aneesah's cast.
+   Art (all optional): the skill's own picture assets/e_final_x/armoured/skill<N>.png, else the idle picture. Draw it facing LEFT; the right-hand screen mirrors it.
+   Numbers are all tuning knobs. Positions are fractions of the screen WIDTH as seen on the LEFT screen (boss on the right); the right screen mirrors them.
+   h = picture height (fraction of screen height), bottom = where its bottom edge sits (>1 = cropped by the screen edge).
+   scythe: x0 = where he looms, windX = wind-up (pulled back), reach = how far the blade tip is from his centre (in picture heights, toward the party) once extended, rake = how far he drags it back.
+   storm: x = where she hangs, hand = her raised hand (dx toward the party, up from the bottom, in picture heights), bolts = bolts per hero. */
+const BOSSTAGE = {
+  e_final_l: { kind: 'scythe', h: 1.12, bottom: 1.1, x0: .80, windX: .88, tilt: 7, sweepTilt: -10, reach: .5, rake: .1, windMs: 210, sweepMs: 250, rakeMs: 230 },
+  e_final_r: { kind: 'storm', h: 1.1, bottom: 1.12, x: .68, hand: { dx: .2, up: .8 }, bolts: 3, chargeMs: 260, strikeMs: 520 }
+};
+async function bossStageAssets(u, i) {
+  if (!u.final || !BOSSTAGE[u.id] || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  const a = (await firstAsset(u, 'skill' + (i + 1))) || (await firstAsset(u, 'idle'));
+  return a && a.ext !== 'mp4' && a.ext !== 'webm' ? { a } : null;
+}
+function jagPts(x1, y1, x2, y2, n, amp) {            // a jagged lightning line from one point to another
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len; let pts = '';
+  for (let k = 0; k <= n; k++) { const q = k / n, j = k === 0 || k === n ? 0 : (Math.random() - .5) * amp; pts += `${(x1 + dx * q + nx * j).toFixed(1)},${(y1 + dy * q + ny * j).toFixed(1)} `; }
+  return pts;
+}
+async function bossStageBegin(u, t, art, s) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = BOSSTAGE[u.id], vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u);
+  const d0 = document.createElement('div'); d0.className = 'dashfx' + (flip ? ' flip' : '');
+  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+  const im = document.createElement('img'); im.className = 'a'; im.src = art.a.url; im.draggable = false; d0.appendChild(im); document.body.appendChild(d0);
+  if (im.decode) await im.decode().catch(() => {});
+  const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden';
+  const X = f => flip ? vw * (1 - f) : vw * f, D = v => flip ? -v : v, U = x => flip ? vw - x : x;       // unmirrored fraction -> screen x; direction; screen x -> unmirrored x
+  const H = vh * K.h, S0 = H / (A.h * SPR_SCALE), dy = vh * K.bottom - A.bottom, bottomY = vh * K.bottom;
+  const T = (xu, sc, rot, lift = 0) => `translate(${X(xu / vw) - A.cx}px,${dy - lift}px) rotate(${D(rot || 0)}deg) scale(${sc})`;      // xu = unmirrored pixel x of the picture's centre
+  const anim = (node, frames, ms, ease, delay = 0) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards', delay: dspd(delay) });
+  const foes = (u.team === 'p' ? enemies : party).filter(isAlive).map(e => { const f = figs.get(e); return f && f.isConnected ? figBox(f) : null; }).filter(Boolean);
+  const mid = foes.length ? foes.reduce((a, B) => a + (B.bottom - B.h * .5), 0) / foes.length : vh * .6, uxs = foes.map(B => U(B.cx)), minU = Math.min(...uxs, vw * .3), maxU = Math.max(...uxs, vw * .4);
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const mkSvg = z => { const v = document.createElementNS(svgNS, 'svg'); v.setAttribute('viewBox', `0 0 ${vw} ${vh}`); Object.assign(v.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: z || 72, pointerEvents: 'none', overflow: 'visible' }); v.setAttribute('fill', 'none'); v.setAttribute('stroke-linecap', 'round'); v.setAttribute('stroke-linejoin', 'round'); document.body.appendChild(v); d.parts.push(v); return v; };
+  const flash = (col, a, ms) => { const f = document.createElement('div'); Object.assign(f.style, { position: 'fixed', inset: 0, background: col, opacity: 0, zIndex: 71, pointerEvents: 'none' }); document.body.appendChild(f); d.parts.push(f); f.animate([{ opacity: 0 }, { opacity: a, offset: .15 }, { opacity: 0 }], { duration: dspd(ms), fill: 'forwards' }); };
+  if (K.kind === 'scythe') {
+    const x0 = vw * K.x0, xw = vw * K.windX, reach = K.reach * H, x1 = Math.max(vw * .4, Math.min(x0 - vw * .12, minU - vw * .05 + reach));
+    const startX = xw - reach, endX = Math.max(8, minU - vw * .07), yHi = mid - vh * .36, yLo = mid + vh * .06;      // the blade's path: from high behind him, down through the party's chests, out past the last hero
+    const Mx = v => flip ? vw - v : v, curve = `M ${Mx(startX)} ${yHi} C ${Mx(startX - vw * .02)} ${mid + vh * .1}, ${Mx(endX + (startX - endX) * .35)} ${yLo + vh * .08}, ${Mx(endX)} ${mid + vh * .02}`;
+    const P = (xu, sc, rot, lift) => T(xu, sc, rot, lift), a0 = P(x0, S0, 0), aw = P(xw, S0 * 1.03, K.tilt, vh * .02), as = P(x1, S0 * .98, K.sweepTilt, 0), ar = P(Math.min(x0, x1 + vw * K.rake * 3), S0, K.tilt * .4, 0);
+    let cur = `translate(0px,0px) scale(1)`;
+    const move = async (to, ms, ease) => { const an = anim(d0, [{ transform: cur }, { transform: to }], ms, ease); cur = to; await Promise.race([an.finished.catch(() => {}), sleep(dspd(ms) + 120)]); };
+    return {
+      async run() {
+        await move(a0, 190, 'cubic-bezier(.2,.8,.3,1)');
+        sfx('charge', 'physical'); await move(aw, K.windMs, 'ease-in-out');                       // gather: pull the scythe back
+        sfx('whoosh', 'physical');
+        const svg = mkSvg(72); svg.innerHTML = `<path d="${curve}" stroke="#8d6bff" stroke-width="46" opacity=".28" style="filter:blur(8px)"/><path d="${curve}" stroke="#cdbdff" stroke-width="20" opacity=".7"/><path d="${curve}" stroke="#fff" stroke-width="7"/>`;
+        const ps = [...svg.querySelectorAll('path')], len = ps[0].getTotalLength();
+        ps.forEach((p, k) => { p.style.strokeDasharray = len; p.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: dspd(K.sweepMs), easing: 'cubic-bezier(.55,0,.4,1)', fill: 'forwards', delay: dspd(k * 22) }); });
+        svg.animate([{ opacity: 1 }, { opacity: 1, offset: .75 }, { opacity: 0 }], { duration: dspd(K.sweepMs + 330), fill: 'forwards' });
+        foes.forEach(B => { const ux = U(B.cx), q = Math.max(0, Math.min(1, (startX - ux) / Math.max(40, startX - endX))), sp = mkSvg(73), y = B.bottom - B.h * .5;      // a slash flash where the blade passes each hero
+          sp.innerHTML = `<circle cx="${B.cx}" cy="${y}" r="${vh * .07}" fill="#fff" opacity=".0"/><path d="M ${B.cx - vh * .09} ${y - vh * .06} L ${B.cx + vh * .09} ${y + vh * .06} M ${B.cx - vh * .07} ${y + vh * .05} L ${B.cx + vh * .07} ${y - vh * .05}" stroke="#fff" stroke-width="5"/>`;
+          sp.animate([{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 0 }], { duration: dspd(260), delay: dspd(K.sweepMs * Math.pow(q, 1.1)), fill: 'forwards' }); });
+        await move(as, K.sweepMs, 'cubic-bezier(.55,0,.4,1)');                                       // he swings through, the sprite riding the blade
+        flash('#cdbdff', .22, 260);
+      },
+      async follow() {                                                                              // the rake: he drags the scythe back toward himself
+        const back = mkSvg(72), c2 = `M ${Mx(endX)} ${mid + vh * .05} Q ${Mx((endX + startX) / 2)} ${yLo + vh * .1} ${Mx(xw - reach * .6)} ${mid + vh * .02}`;
+        back.innerHTML = `<path d="${c2}" stroke="#b9a6ff" stroke-width="9" opacity=".55"/><path d="${c2}" stroke="#fff" stroke-width="3" opacity=".8"/>`;
+        back.animate([{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 0 }], { duration: dspd(K.rakeMs + 160), fill: 'forwards' });
+        await move(ar, K.rakeMs, 'cubic-bezier(.3,.6,.3,1)');
+      },
+      async home() {
+        await sleep(dspd(110)); if (dashLive !== d) return;
+        const a = d0.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(300), easing: 'ease-in', fill: 'forwards' }); if (el.isConnected) el.style.visibility = '';
+        await Promise.race([a.finished.catch(() => {}), sleep(dspd(300) + 120)]);
+        dashClear();
+      }
+    };
+  }
+  // ---- storm: she hangs in the foreground and the sky comes down on everyone: bolts from every direction, fire flaring where they land
+  const xs = vw * K.x, hxU = xs - K.hand.dx * H, hy = bottomY - K.hand.up * H, hx = X(hxU / vw);
+  let cur = `translate(0px,0px) scale(1)`;
+  const move = async (to, ms, ease) => { const an = anim(d0, [{ transform: cur }, { transform: to }], ms, ease); cur = to; await Promise.race([an.finished.catch(() => {}), sleep(dspd(ms) + 120)]); };
+  return {
+    async run() {
+      await move(T(xs, S0, 0), 200, 'cubic-bezier(.2,.8,.3,1)');
+      sfx('charge', 'shock');
+      const g = mkSvg(72); g.innerHTML = `<circle cx="${hx}" cy="${hy}" r="${vh * .07}" fill="#ffb347" opacity=".35" style="filter:blur(10px)"/><circle cx="${hx}" cy="${hy}" r="${vh * .045}" fill="#9fd4ff" opacity=".55" style="filter:blur(6px)"/><circle cx="${hx}" cy="${hy}" r="${vh * .018}" fill="#fff"/>`;
+      g.style.transformOrigin = `${hx}px ${hy}px`; g.animate([{ opacity: 0, transform: 'scale(.3)' }, { opacity: 1, transform: 'scale(1.4)' }], { duration: dspd(K.chargeMs), fill: 'forwards', easing: 'ease-out' });
+      anim(d0, [{ transform: cur }, { transform: T(xs, S0 * 1.04, 0, vh * .015) }, { transform: cur }], K.chargeMs + 120, 'ease-in-out');
+      await sleep(dspd(K.chargeMs));
+      sfx('whoosh', 'shock'); flash('#fff', .5, 260);
+      const sky = mkSvg(72); let html = '', total = 0;
+      const cols = [['#2f7dff', '#9fd4ff', '#fff'], ['#ff8a2a', '#ffd27a', '#fff6da']];
+      foes.forEach(B => { const tx = B.cx, ty = B.bottom - B.h * .5;
+        for (let k = 0; k < K.bolts; k++) {
+          const r = Math.random(), ox = r < .55 ? Math.random() * vw : (r < .78 ? -20 : vw + 20), oy = r < .55 ? -30 : Math.random() * vh * .6, c = cols[(k + total) % 2], delay = Math.round(Math.random() * K.strikeMs * .8), w = k === 0 ? 1 : .65;
+          const pts = jagPts(ox, oy, tx + (Math.random() - .5) * B.w * .6, ty + (Math.random() - .5) * B.h * .4, 12, vh * .09);
+          html += `<g class="bt" data-d="${delay}"><polyline points="${pts}" stroke="${c[0]}" stroke-width="${26 * w}" opacity=".35"/><polyline points="${pts}" stroke="${c[1]}" stroke-width="${10 * w}" opacity=".9" style="filter:drop-shadow(0 0 9px ${c[0]})"/><polyline points="${pts}" stroke="${c[2]}" stroke-width="${4 * w}"/></g>`; total++;
+        }
+        html += `<g class="bt" data-d="${Math.round(K.strikeMs * .55)}"><circle cx="${tx}" cy="${ty}" r="${B.h * .34}" fill="#ff7a1a" opacity=".55" style="filter:blur(12px)"/><circle cx="${tx}" cy="${ty}" r="${B.h * .16}" fill="#ffd27a" opacity=".85" style="filter:blur(4px)"/></g>`;
+      });
+      for (let k = 0; k < 4; k++) { const ox = Math.random() * vw, c = cols[k % 2]; html += `<g class="bt" data-d="${Math.round(Math.random() * K.strikeMs * .8)}"><polyline points="${jagPts(ox, -30, ox + (Math.random() - .5) * vw * .2, mid + vh * .25, 12, vh * .09)}" stroke="${c[1]}" stroke-width="8" opacity=".8" style="filter:drop-shadow(0 0 8px ${c[0]})"/></g>`; }       // strays that hit the floor
+      sky.innerHTML = html;
+      sky.querySelectorAll('.bt').forEach(gx => { gx.style.opacity = 0; gx.animate([{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: .2, offset: .35 }, { opacity: .95, offset: .5 }, { opacity: 0 }], { duration: dspd(300), delay: dspd(+gx.dataset.d), fill: 'forwards' }); });
+      g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(K.strikeMs), fill: 'forwards' });
+      sfx('hit', 'shock', false, false, true);
+      await sleep(dspd(K.strikeMs * .75));
+      flash('#ffd9a0', .3, 240);
+    },
+    async follow() { await sleep(dspd(260)); },
+    async home() {
+      await sleep(dspd(130)); if (dashLive !== d) return;
       const a = d0.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(300), easing: 'ease-in', fill: 'forwards' }); if (el.isConnected) el.style.visibility = '';
       await Promise.race([a.finished.catch(() => {}), sleep(dspd(300) + 120)]);
       dashClear();
@@ -4225,6 +4395,7 @@ function bgShapes(id, R, far, mid, node) {
   return [F.join(''), M.join('')];
 }
 function buildBg(id, node, last) {
+  if (id === 'final') return fbBgEl();
   const T = BGT[id] || BGT._, R = seeded(id + ':' + node), [far, mid] = bgShapes(id, R, T.far, T.mid, node), k = last ? 1 : .55 + .1 * (node % 3);
   const d = document.createElement('div'); d.className = 'bgp bgp-' + T.fx;
   d.innerHTML = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
@@ -4324,7 +4495,7 @@ function barFx(u, sk) {
   if (!isAlive(u)) return none;
   const ward = sk && sk.t === 'barrier' && hero && sk.p ? sk.p : 0, B = u.barrier || 0, ghost = ward > 0 && !B;
   // telegraphed attacks on this hero, taken in turn: the barrier soaks each one's damage first, and shields the armour from that hit's break damage (as hit() does)
-  const hits = hero ? enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && !hasCharm(e) && e.intent.target === u && e.skills[e.intent.i].t === 'dmg').map(e => e.skills[e.intent.i]) : [];
+  const hits = hero && !FB ? enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && !hasCharm(e) && e.intent.target === u && e.skills[e.intent.i].t === 'dmg').map(e => e.skills[e.intent.i]) : [];
   const run = (high, b0) => { let b = b0, dmg = 0, brk = 0; hits.forEach(s => { const [a, z] = adjRange(s, u), d = high ? z : a, soak = Math.min(b, d), bi = (s.el || s.chip) ? (s.brk || 0) : 0; dmg += d - soak; brk += bi - Math.min(b, bi); b -= soak; }); return [dmg, brk]; };
   let [dLo, kLo] = run(false, B + ward), [dHi, kHi] = run(true, B + ward);
   if (ward && hits.length) {                         // a Ward only stops hits that land after the cast (see windowRange)
@@ -4358,6 +4529,7 @@ function card(u, team, i) {
   if (u.stealth > 0 && alive) c.push('stealth');
   if (blizz.on && alive && team === 'p' && u.chill >= 1) c.push('chilled');
   if (u.mod) c.push('elite', 'elite-' + u.mod);
+  if (u.final) c.push('fbboss');                 // the final boss's HP is hidden: only the break bar shows
   if (spot.length) c.push(spot.includes(u) ? 'spot' : 'bg');
   const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
   if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'charm' && team === 'e' && charmable(u)) || (sk.t === 'barrier' && team === 'p') || (sk.t === 'guard' && team === 'p' && u !== cur) || (sk.t === 'tonic' && team === 'p' && u.hp < u.maxHp))) c.push('targetable');
@@ -4368,7 +4540,7 @@ function card(u, team, i) {
     const m = matchup(sk, u), [lo, hi] = adjRange(sk, u), pm = posMod(sk, u);
     extra = `<span><span class="dmgprev">${lo === hi ? lo : lo + '–' + hi}</span>${pmTag(pm)}<span class="crit ${m || ''}">Crit ${critChance(sk, u)}%${m === 'weak' ? ' ▲weak' : m === 'resist' ? ' ▼resists' : ''}</span></span>`;
   } else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
-  const inc = team === 'p' && alive ? incoming(u) : 0;
+  const inc = team === 'p' && alive && !FB ? incoming(u) : 0;
   const incTxt = inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
   const bfx = barFx(u, sk);
   const mt = (u.weak && u.weak.length ? `<span class="mt" title="Weak to">⚠️${elemIcons(u.weak)}</span>` : '') + (u.resist && u.resist.length ? `<span class="mt" title="Resists">🛡️${elemIcons(u.resist)}</span>` : '');
@@ -4405,7 +4577,7 @@ async function flushTriggers() {
     const { u, i } = triggerQ.shift(), keep = [...spot];
     if (!isAlive(u)) continue;
     const key = 'skill' + (i + 1), film = await skillFilm(u, key);
-    if (film) { setSpot([]); await playFilm(film); } else { setSpot([u]); sfx('charge', 'fire'); await playAnim(u, key); }
+    if (film) { setSpot([]); await playFilm(film, u.mir); } else { setSpot([u]); sfx('charge', 'fire'); await playAnim(u, key); }
     setSpot(keep);
   }
 }
@@ -4501,6 +4673,7 @@ function renderBarHero(u) {
 function render() {
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
+  if (FB) fbHud();
   $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
   $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
   mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e');
@@ -4537,7 +4710,7 @@ let camZ = 1;
 function applyCamera() {
   const bf = document.querySelector('#battle-scene .battlefield'); if (!bf) return;
   let z = 1;
-  if (wide() && party.length && enemies.length) {
+  if (wide() && party.length && enemies.length && !FB) {
     const alive = party.filter(isAlive).length + enemies.filter(isAlive).length;
     if (alive > 0) {
       z = 1 + CAM.max * Math.max(0, Math.min(1, (8 - alive) / 6));
@@ -4774,6 +4947,7 @@ async function hit(u, t, s) {
       }
     } else {                                            // broken or super broken: status effects land
       if (s.el) applyStatus(t, s.el, u);
+      if (s.el2 && (!s.shockOne || (FB && FB.shockPick === t))) applyStatus(t, s.el2, u);       // a second element at once (the Seraph); an AOE only ever shocks one hero
       if (t.state === 'broken' && t.maxBreak2 > 0) {    // heroes only: layer 2 takes break damage too (enemies stay simply broken)
         t.break2 -= brk;
         log(brk ? `${t.name}'s damaged armour takes ${brk} break damage.` : `${t.name}'s barrier shields the damaged armour.`, 'log-status');
@@ -4811,12 +4985,13 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   // The order of a hit: 1) her skill picture replaces the idle  2) a short charge-up effect for elemental attacks  3) the attack connects (bolt flies / blow lands)  4) the target's damaged picture and hit effects (in hit()).
   // A video in the skill slot is a film: it plays alone, full screen, nobody moves, and the hit only happens once it ends (see skillFilm).
   const film = await skillFilm(u, 'skill' + (i + 1));
-  if (film) { setSpot([]); await playFilm(film); }
+  if (film) { setSpot([]); await playFilm(film, u.mir); }
   let begun; const started = new Promise(r => begun = r);
   const dashArt = !film && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
   if (dashArt && i === 1) dashArt.hide = true;
   const stageArt = !film && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
-  const dash = dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
+  const bossArt = !film && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
+  const dash = dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
   const clip = film || dash ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
   const back = dash ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
   if (!film && !dash) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
@@ -4837,6 +5012,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   }
   if (s.t === 'buff') { if (u.rel && u.rel.dragon) { u.wrathExtra = true; const b0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * .15)); if (u.hp > b0) floatText(u, '+' + (u.hp - b0), 'heal'); } sfx('charge', 'fire'); u.wrath = true; log(`${u.name} channels ${s.n}! Next turn her fists burn and she strikes again.`, 'log-player'); floatText(u, '🐉 WRATH', 'tag'); render(); return; }
   if (s.t === 'dmg') {
+    if (FB && s.shockOne) { const br = party.filter(x => isAlive(x) && x.state !== 'armoured'); FB.shockPick = br.length ? fbPick(br) : null; }
     const wasBleeding = !!(target && target.statuses && target.statuses.some(x => x.type === 'bleed')), wasArmoured = !!target && target.state !== 'broken' && target.state !== 'super';
     await Promise.all([clip, hit(u, target, s), dash ? dash.follow() : null]);
     if (s.resetOnKO && target && isAlive(u) && (!isAlive(target) || (wasArmoured && target.state === 'broken'))) { u.cd[i] = 0; log(`🗡️ ${u.name} is ready to strike again: ${s.n} is ready.`, 'log-player'); floatText(u, '🗡️ RESET', 'tag'); }
@@ -4964,6 +5140,7 @@ function resolveIntent(u) {
 const stunned = u => !!(u.statuses && u.statuses.some(x => x.stun));
 function intentText(u) {
   const it = u.intent; if (!it) return '';
+  if (FB && u.final) return stunned(u) || FB.stun > 0 ? '💤 stunned' : it.skip ? '' : u.skills[it.i].aoe ? '⚠️ The boss is winding up for a powerful attack!' : `▶ The boss targets ${it.target.short}`;       // the final fight hides what it will do
   if (stunned(u)) return '💤 stunned, skips its turn';
   if (it.skip) return '▶ waits';
   const s = u.skills[it.i];
@@ -5284,7 +5461,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
       log(`🐉 Dragon's Wrath! ${u.name} strikes again.`, 'log-player'); render();
       const w = wrathStrike(u, 0); setSpot([u, v]);
       const film2 = await skillFilm(u, 'skill1');
-      if (film2) { if (same) { await held(); keep.held = null; } setSpot([]); await playFilm(film2); setSpot([u, v]); }
+      if (film2) { if (same) { await held(); keep.held = null; } setSpot([]); await playFilm(film2, u.mir); setSpot([u, v]); }
       if (same && !film2 && act.i === 0 && held.hop) await held.hop();          // Skill 1 twice: step back, then the second punch
       let begun2; const started2 = new Promise(r => begun2 = r);
       const clip2 = film2 ? Promise.resolve() : playAnim(u, 'skill1', undefined, undefined, begun2);
@@ -5404,6 +5581,339 @@ async function battle() {
   }
 }
 
+/* ============ FINAL BOSS (dev-only framework) ============
+   Two fights at once on two screens: LEFT FRONT (party A faces right, boss body L on the right) and RIGHT FRONT (everything mirrored: party B faces left, boss body R on the left).
+   Under the hood it is the normal battle engine: each screen swaps the globals `party` / `enemies` to that screen's 4 heroes + 1 boss body, so targeting, skills, effects and the HUD all work unchanged.
+   The two boss bodies share HP, break bar, state, phase, statuses and barrier through property accessors (see fbBuild). Skills, cooldowns and speed are per body.
+   Break: when the shared bar empties both bodies are stunned (they show their damaged.png) for FINAL.stunRounds full rounds, then the bar refills.
+   Between rounds the shopkeeper revives whoever has been down longest (FINAL.reviveFrac of max HP, armour not fixed) or heals the hero with the lowest HP% (FINAL.healFrac).
+   Hidden second wind: if all 8 fall while the boss is under FINAL.secondWindAt of its HP, everyone gets up at full HP once. Winning WITHOUT it = good ending, WITH it = bad ending.
+   A defeat in a real run rolls the whole save back to the snapshot taken before the run (FB.snap). In dev mode nothing is saved, so it only reports.
+   Art (all optional): bosses are normal boss folders, assets/e_final_l/... and assets/e_final_r/... (armoured/idle, damaged, skill1-3, broken/idle). Draw them facing LEFT like any enemy: the right screen mirrors them. */
+const fbScale = u => FB && FB.active !== false && u.team === 'p' ? FINAL.partyScale : 1;       // the final fight shrinks the party, and with it the skill 2 close-ups
+const FINAL = { dummy: false, floor: 1.2, partyScale: 0.5, bossScale: 1.0, hp: 5000, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
+const FB_SIDES = ['LEFT FRONT', 'RIGHT FRONT'];
+const FB_SAY = {
+  revive: ['Up you get! On the house… this time.', 'Don\'t you dare die on my watch!', 'Drink up! I\'m not done selling to you yet!', 'One potion, one more round. Go!'],
+  heal: ['Catch!', 'You look awful. Drink this.', 'Doctor\'s orders! Well, mine.', 'Free sample! Don\'t tell anyone.'],
+  thanks: ['Thanks, shopkeeper!', 'I owe you one.', 'Bad timing, great aim.', 'Ugh… thank you.', 'Back in the fight!']
+};
+const fbAll = () => FB ? [...FB.units[0], ...FB.units[1]] : [];
+const fbPick = a => a[Math.floor(Math.random() * a.length)];
+function fbBossSvg(dim) {            // placeholder boss picture: a mass of wings and eyes (facing left, but it is symmetric)
+  const c = dim ? ['#2c2740', '#3b3552', '#4a4466'] : ['#2b1747', '#4a2a78', '#6a3fa3'];
+  let w = '';
+  for (const s of [-1, 1]) for (let k = 0; k < 6; k++) {
+    const a = s * (14 + k * 15), L = 330 - k * 16;
+    w += `<g transform="translate(210 330) rotate(${a})"><path d="M0 0C34 -70 46 -${L * .6} 6 -${L}C-30 -${L * .6} -24 -70 0 0Z" fill="${c[k % 3]}" stroke="#10061c" stroke-width="3"/></g>`;
+  }
+  const eyes = [[120, 150], [300, 150], [70, 250], [350, 250], [165, 200], [255, 200], [210, 120], [110, 330], [310, 330], [210, 230], [150, 420], [270, 420]];
+  const e = eyes.map(([x, y]) => dim ? `<path d="M${x - 14} ${y}Q${x} ${y + 7} ${x + 14} ${y}" stroke="#9a96b8" stroke-width="3" fill="none"/>`
+    : `<circle cx="${x}" cy="${y}" r="22" fill="#e8d27a" opacity=".14"/><ellipse cx="${x}" cy="${y}" rx="14" ry="9" fill="#f4ecc0"/><circle cx="${x}" cy="${y}" r="5" fill="#3a0f5a"/>`).join('');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-130 -60 680 640">${w}<ellipse cx="210" cy="400" rx="78" ry="118" fill="${dim ? '#241f35' : '#170a28'}" stroke="#10061c" stroke-width="3"/>${e}</svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+async function fbPlaceholderArt() {  // until real pictures exist, the bosses use the drawn placeholder
+  for (const id of ['e_final_l', 'e_final_r']) for (const [p, dim] of [['armoured/idle', 0], ['broken/idle', 1], ['armoured/damaged', 1]]) {
+    const path = `${ANIM.base}/${id}/${p}`; if (!(await findAsset(path))) animCache[path] = { url: fbBossSvg(dim), ext: 'png' };
+  }
+}
+function fbBgEl() {                  // placeholder stage: a vast purple mass of wings and eyes above a small clearing, thorned roses in the corners
+  let s = 7; const R = () => (s = (s * 16807) % 2147483647) / 2147483647, f = n => Math.round(n * 10) / 10, o = [];
+  const feather = 'M0 0C34 -90 46 -250 4 -420C-36 -250 -28 -90 0 0Z';
+  for (let i = 0; i < 46; i++) {
+    const side = i % 2 ? 1 : -1, x = 800 + side * (60 + R() * 700), y = 110 + R() * 420, a = side * (10 + R() * 85) + (R() - .5) * 20, sc = .35 + R() * .8, t = R();
+    o.push(`<g transform="translate(${f(x)} ${f(y)}) rotate(${f(a + 180)}) scale(${f(sc)})"><path d="${feather}" fill="${t < .33 ? '#2a1646' : t < .66 ? '#3b2160' : '#4f2c7e'}" stroke="#0c0618" stroke-width="5" opacity=".95"/></g>`);
+  }
+  for (let i = 0; i < 26; i++) { const x = 120 + R() * 1360, y = 70 + R() * 460, r = 7 + R() * 11; o.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 2.2)}" fill="#cbb2ff" opacity=".07"/><ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(r)}" ry="${f(r * .62)}" fill="#e9dcff" opacity=".85"/><circle cx="${f(x)}" cy="${f(y)}" r="${f(r * .36)}" fill="#2a0f4a"/>`); }
+  for (const side of [-1, 1]) {      // thorned roses in the bottom corners
+    const bx = side < 0 ? 0 : 1600;
+    for (let k = 0; k < 4; k++) { const y = 900 - k * 46, x = bx - side * (30 + k * 70 + R() * 40); o.push(`<path d="M${bx} ${y + 40}C${f(bx - side * 120)} ${y - 60} ${f(x)} ${y + 30} ${f(x - side * 90)} ${y - 30}" stroke="#2a1344" stroke-width="7" fill="none"/>`); }
+    for (let k = 0; k < 5; k++) { const x = bx - side * (50 + k * 90 + R() * 30), y = 830 - (k % 3) * 36 + R() * 30, r = 26 + R() * 18; o.push(`<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="#4b2a78" stroke="#1b0b30" stroke-width="3"/><path d="M${f(x - r * .6)} ${f(y)}Q${f(x)} ${f(y - r * .8)} ${f(x + r * .6)} ${f(y)}Q${f(x)} ${f(y + r * .5)} ${f(x - r * .3)} ${f(y - r * .1)}" stroke="#8f64d1" stroke-width="3" fill="none"/>`); }
+  }
+  const d = document.createElement('div'); d.className = 'bgp bgp-final';
+  d.innerHTML = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"><defs><linearGradient id="fbS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07030f"/><stop offset=".6" stop-color="#1a0e2e"/><stop offset="1" stop-color="#3a2358"/></linearGradient>
+    <radialGradient id="fbL" cx=".5" cy=".86" r=".5"><stop offset="0" stop-color="#b79cff" stop-opacity=".55"/><stop offset="1" stop-color="#b79cff" stop-opacity="0"/></radialGradient><filter id="fbB"><feGaussianBlur stdDeviation="22"/></filter></defs>
+    <rect width="1600" height="900" fill="url(#fbS)"/>${o.join('')}<rect width="1600" height="900" fill="url(#fbL)"/>
+    <ellipse cx="260" cy="790" rx="420" ry="60" fill="#8f7bc2" opacity=".22" filter="url(#fbB)"/><ellipse cx="1340" cy="800" rx="420" ry="60" fill="#8f7bc2" opacity=".2" filter="url(#fbB)"/>
+    <path d="M300 900Q330 780 800 770Q1270 780 1300 900Z" fill="#150a24"/><path d="M360 900Q420 800 800 792Q1180 800 1240 900Z" fill="#241540"/></svg><div class="bgv"></div>`;
+  const fl = document.createElement('div'); fl.className = 'bgfx';
+  for (let i = 0; i < 14; i++) { const sp = document.createElement('span'); sp.style.left = (R() * 100).toFixed(1) + '%'; sp.style.top = (30 + R() * 60).toFixed(0) + '%'; sp.style.setProperty('--s', (3 + R() * 7).toFixed(1) + 'px'); sp.style.animationDelay = (-R() * 9).toFixed(2) + 's'; sp.style.animationDuration = (7 + R() * 8).toFixed(2) + 's'; fl.appendChild(sp); }
+  d.appendChild(fl); return d;
+}
+function fbBuild(ids) {              // 8 heroes (first 4 = LEFT FRONT, last 4 = RIGHT FRONT) and the two boss bodies with one shared pool
+  const units = [[], []];
+  ids.slice(0, 8).forEach((id, i) => { const side = i < 4 ? 0 : 1, u = make(heroById(id), 'p'); applyRelics(u, (game.equip && game.equip[id]) || [], (game.traits && game.traits[id]) || []); u.side = side; u.rank = i % 4; u.mir = side === 1; u.downSeq = 0; units[side].push(u); });
+  const bosses = ['e_final_l', 'e_final_r'].map((id, side) => { const b = make(enemyById(id), 'e', { hp: 1, atk: FINAL.floor }); b.side = side; b.mir = side === 1; b.final = true; b.maxHp = b.hp = FINAL.hp; b.maxBreak = b.breakBar = FINAL.brk; b.maxBreak2 = b.break2 = 0; return b; });
+  if (FINAL.dummy) bosses.forEach(b => { b.maxHp = b.hp = 1e7; b.maxBreak = b.breakBar = 1e7; b.skills = b.skills.map(x => ({ ...x, d: [0, 0] })); b.phases = []; });      // balance bot: a punching bag that measures what the parties deal
+  const store = {};                  // one shared set of numbers behind both bodies
+  ['hp', 'maxHp', 'breakBar', 'maxBreak', 'break2', 'maxBreak2', 'state', 'phase', 'statuses', 'barrier', 'phaseMult', 'fell', 'vanish', 'gone'].forEach(k => { store[k] = bosses[0][k]; bosses.forEach(b => Object.defineProperty(b, k, { get: () => store[k], set: v => { store[k] = v; }, enumerable: true, configurable: true })); });
+  return { units, bosses };
+}
+const fbPair = () => !!FB && (FB.bosses[0].phase || 0) >= 2;
+async function fbShow(side, first) {  // flip to a screen: fade out, swap the party / boss, mirror the field, fade in
+  const bf = document.querySelector('#battle-scene .battlefield');
+  if (!first) { bf.classList.add('fbfade'); await sleep(240); }
+  FB.side = side; party = FB.units[side]; enemies = [FB.bosses[side]]; order = []; sel = null;
+  FB.bosses.forEach(b => { b.pside = null; b.mir = b.side === 1; });
+  if (fbPair()) { const g = FB.bosses[1 - side]; g.mir = side === 1; g.pside = side; enemies = [FB.bosses[side], g]; }         // phase 3: both wings stand on every screen
+  bf.classList.add('fb'); bf.classList.toggle('fbm', side === 1); bf.classList.toggle('fbpair', enemies.length === 2); document.body.classList.add('fbfight');
+  const h = document.querySelector('#battle-scene .team-column .column-header'); if (h) h.textContent = FB_SIDES[side];
+  $('enemy-head').textContent = enemies.length === 2 ? 'THE BOSS · BOTH WINGS' : `THE BOSS · ${side ? 'RIGHT' : 'LEFT'} WING`;
+  render();
+  if (!first) { banner(FB_SIDES[side], 'phase', `ROUND ${FB.round}`); await sleep(60); bf.classList.remove('fbfade'); await sleep(260); }
+}
+function fbHud() {
+  const h = $('fb-hud'); if (!h || !FB) return;
+  const o = 1 - FB.side, B = FB.bosses[0], pct = Math.max(0, Math.round(B.breakBar / B.maxBreak * 100));
+  const strip = FB.units[o].map(u => `<i class="${isAlive(u) ? '' : 'dn'}" title="${u.short}"><b style="width:${Math.max(0, Math.round(u.hp / u.maxHp * 100))}%"></b></i>`).join('');
+  const stun = FB.stun > 0 ? `<div class="fbh-brk on">💥 BROKEN ${'●'.repeat(Math.max(0, FB.stun - 1))}${'○'.repeat(Math.max(0, FINAL.stunRounds - Math.max(0, FB.stun - 1)))}</div>` : `<div class="fbh-brk"><i><b style="width:${pct}%"></b></i>🛡️</div>`;
+  h.innerHTML = `<div class="fbh-oth"><small>${o ? 'RIGHT' : 'LEFT'} ▸</small>${strip}</div>${stun}`;
+}
+function fbBubble(anchor, text, cls = '') {
+  const bf = document.querySelector('#battle-scene .battlefield'); if (!bf || !anchor || !anchor.isConnected) return;
+  const r = anchor.getBoundingClientRect(), b = bf.getBoundingClientRect(), d = document.createElement('div');
+  d.className = 'fb-bub ' + cls; d.textContent = text; d.style.left = (r.left + r.width / 2 - b.left) + 'px'; d.style.top = (r.top - b.top + r.height * .12) + 'px';
+  bf.appendChild(d); setTimeout(() => d.remove(), 2600);
+}
+function fbMarkDowns() { fbAll().forEach(u => { if (u.hp <= 0 && !u.downSeq) { u.downSeq = ++FB.seq; (FB.downEv = FB.downEv || []).push(FB.round); } else if (u.hp > 0) u.downSeq = 0; }); }
+function fbWatchBreak() {            // the shared bar just emptied: both bodies are stunned
+  const B = FB.bosses[0];
+  if (B.state !== 'armoured' && !FB.stunOn && isAlive(B)) {
+    FB.stunOn = true; FB.stun = FINAL.stunRounds + 1; FB.bosses.forEach(b => { b.intent = null; });
+    banner('💥 THE BOSS IS BROKEN', 'phase', 'both sides stunned'); log('<strong style="color:#ff5252">💥 The boss is BROKEN! Both sides are stunned!</strong>', 'log-status'); render();
+  }
+}
+async function fbPhases() {
+  const b = enemies[0]; if (!b || !isAlive(b)) return;
+  const other = FB.bosses[1 - b.side], L = phasesOf(b);
+  while ((b.phase || 0) < L.length && isAlive(b) && b.hp <= L[b.phase || 0].at * b.maxHp) {
+    const ph = L[b.phase || 0], mine = ph[b.side ? 'addR' : 'addL'], theirs = ph[b.side ? 'addL' : 'addR'];
+    await bossPhase(b, { ...ph, add: mine }); b.phase = (b.phase || 0) + 1;
+    if (ph.atk) other.skills = scaleSkills(other.skills, ph.atk);                       // the other body learns the phase too
+    if (theirs) { const add = scaleSkills(theirs, (other.atkSc || 1) * (other.phaseMult || 1)); other.skills = [...other.skills, ...add]; other.cd = [...other.cd, ...add.map(() => 0)]; }
+    if (ph.spd) other.spd += ph.spd;
+  }
+}
+async function fbSecondWind() {      // hidden: all 8 are down in the last phase, everyone rises at full HP, once
+  FB.usedRevive = true; log('<strong style="color:#ffd54f">✨ A last light rekindles… everyone rises!</strong>', 'log-heal');
+  banner('✨ SECOND WIND', 'phase', 'one more try'); flash('#ffe9a0', .5, 900);
+  FB.units.forEach(a => { a.forEach(u => { u.hp = u.maxHp; u.fell = false; u.vanish = false; u.gone = false; u.statuses = []; u.barrier = 0; u.downSeq = 0; }); a.sort((x, y) => x.rank - y.rank); });
+  sfx('heal'); render(); await sleep(1100);
+}
+async function fbCheckEnd() {        // true = the fight is over; 'again' = second wind, start the round over
+  if (over) return true;
+  const B = FB.bosses[0];
+  if (!isAlive(B)) { fbEnd(true); return true; }
+  if (!fbAll().some(isAlive)) {
+    if (!FB.usedRevive && B.hp <= FINAL.secondWindAt * B.maxHp) { await fbSecondWind(); return 'again'; }
+    fbEnd(false); return true;
+  }
+  return false;
+}
+function fbEnd(won) {
+  setSpot([]); over = true; actor = null; cur = null; waiting = null;
+  const main = $('btn-end-main'), bad = FB.usedRevive;
+  if (won) {
+    $('turn-indicator').innerText = bad ? 'Victory… (BAD ENDING)' : 'VICTORY · GOOD ENDING';
+    log(`<strong style="color:#4caf50">The final boss falls!</strong> ${bad ? '💀 You needed the second wind: BAD ENDING.' : '🌅 You never needed the second wind: GOOD ENDING.'}`, 'log-heal');
+    banner(bad ? '💀 BAD ENDING' : '🌅 GOOD ENDING', 'phase', 'the boss falls');
+    main.textContent = '⚡ Back to Quick Battle'; main.onclick = () => { fbCleanup(); showScene('dev-battle'); };
+  } else {
+    $('turn-indicator').innerText = 'Defeat';
+    log('<strong style="color:#ff5252">Everyone has fallen.</strong> In a real run the whole save would roll back to before the quest began (gold, items, perks, the second wind: all of it).', 'log-status');
+    if (!quest.dev) { try { game = JSON.parse(FB.snap); writeSave(); } catch (e) {} main.textContent = 'Return to Town'; main.onclick = () => { fbCleanup(); showScene('hub'); }; }
+    else { main.textContent = '⚡ Back to Quick Battle'; main.onclick = () => { fbCleanup(); showScene('dev-battle'); }; }
+  }
+  $('end-buttons').style.display = 'flex'; render();
+}
+function fbCleanup() {
+  if (!FB) return; FB = null; quest = null; party = []; enemies = []; order = [];
+  document.body.classList.remove('fbfight');
+  const bf = document.querySelector('#battle-scene .battlefield'); if (bf) { bf.classList.remove('fb', 'fbm', 'fbfade', 'fbpair'); bf.querySelectorAll('.fb-shop,.fb-bub,.fb-potion').forEach(x => x.remove()); }
+  const h = document.querySelector('#battle-scene .team-column .column-header'); if (h) h.textContent = 'PLAYER PARTY';
+}
+async function fbToss(t, revive) {   // the shopkeeper runs on, tosses a potion, they banter
+  const bf = document.querySelector('#battle-scene .battlefield'), arr = FB.units[t.side];
+  const art = await findAsset(`${ANIM.base}/ui/shopkeeper`), shop = document.createElement('div'); shop.className = 'fb-shop';
+  shop.innerHTML = art && ['png', 'webp', 'jpg'].includes(art.ext) ? `<img src="${art.url}" draggable="false">` : `<div class="fb-shopph">🧔<small>SHOPKEEPER</small></div>`;
+  bf.appendChild(shop); sfx('swing'); await sleep(520);
+  fbBubble(shop, fbPick(revive ? FB_SAY.revive : FB_SAY.heal), 'shop'); await sleep(950);
+  const dest = [...arr].sort((a, b) => a.rank - b.rank).indexOf(t), cards = $('party-cards').children, card = cards[Math.min(Math.max(revive ? dest : arr.indexOf(t), 0), cards.length - 1)];
+  const b0 = bf.getBoundingClientRect(), s0 = shop.getBoundingClientRect();
+  if (card) {
+    const c = card.getBoundingClientRect(), pot = document.createElement('div'); pot.className = 'fb-potion'; pot.textContent = '🧪';
+    const x0 = s0.left + s0.width * .6 - b0.left, y0 = s0.top + s0.height * .3 - b0.top, x1 = c.left + c.width / 2 - b0.left, y1 = c.top + c.height * .35 - b0.top;
+    pot.style.left = x0 + 'px'; pot.style.top = y0 + 'px'; bf.appendChild(pot);
+    const an = pot.animate([{ transform: 'translate(0,0) rotate(0)' }, { transform: `translate(${(x1 - x0) / 2}px,${Math.min(y1, y0) - y0 - 140}px) rotate(260deg)`, offset: .5 }, { transform: `translate(${x1 - x0}px,${y1 - y0}px) rotate(540deg)` }], { duration: dspd(620), easing: 'ease-in-out', fill: 'forwards' });
+    await Promise.race([an.finished.catch(() => {}), sleep(dspd(620) + 150)]); pot.remove();
+  }
+  const before = t.hp;
+  if (revive) { t.fell = false; t.vanish = false; t.gone = false; t.statuses = []; t.downSeq = 0; t.hp = Math.max(1, Math.ceil(t.maxHp * FINAL.reviveFrac)); arr.sort((a, b) => a.rank - b.rank); }
+  else t.hp = Math.min(t.maxHp, t.hp + Math.ceil(t.maxHp * FINAL.healFrac));
+  sfx('heal'); render(); floatText(t, '+' + (t.hp - before), 'heal'); if (revive) floatText(t, '✨ REVIVED', 'tag');
+  const fe = figs.get(t); if (fe) { fe.classList.add(revive ? 'fbpop' : 'fbglow'); setTimeout(() => fe.classList.remove('fbpop', 'fbglow'), 900); }
+  log(`🧪 The shopkeeper ${revive ? 'revives' : 'heals'} ${t.name}: +${t.hp - before} HP.`, 'log-heal');
+  await sleep(500); fbBubble(fe, fbPick(FB_SAY.thanks), 'hero'); await sleep(1500);
+  shop.classList.add('out'); await sleep(420); shop.remove();
+}
+async function fbShopkeeper() {      // end of every round: one potion, thrown at whoever needs it most (all 8 heroes are considered)
+  const all = fbAll(), down = all.filter(u => u.hp <= 0).sort((a, b) => (a.downSeq || 0) - (b.downSeq || 0));
+  let t, revive = false;
+  if (down.length) { revive = true; const first = down[0].downSeq || 0; t = fbPick(down.filter(u => (u.downSeq || 0) === first)); }
+  else { const hurt = all.filter(u => u.hp < u.maxHp); if (!hurt.length) return; const lo = Math.min(...hurt.map(u => u.hp / u.maxHp)); t = fbPick(hurt.filter(u => u.hp / u.maxHp - lo < 1e-9)); }
+  if (t.side !== FB.side) await fbShow(t.side);
+  await fbToss(t, revive);
+}
+async function fbRoundEnd() {
+  FB.hist.push({ round: FB.round, dealt: [...FB.dealt], brk: [...FB.brk], hp: FB.units.map(a => a.reduce((t, u) => t + Math.max(0, u.hp), 0)), maxHp: FB.units.map(a => a.reduce((t, u) => t + u.maxHp, 0)), stun: FB.stun });
+  fbAll().concat(FB.bosses).forEach(x => { if (x.barrier) x.barrier = x.holdBarrier ? x.barrier : x.rel && x.rel.keepBarrier ? Math.floor(x.barrier * x.rel.keepBarrier) : 0; });
+  if (FB.stun > 0 && --FB.stun === 0) {
+    const B = FB.bosses[0]; B.state = 'armoured'; B.breakBar = B.maxBreak; FB.stunOn = false;
+    banner('🛡️ ARMOUR REGROWN', 'phase', 'the boss recovers'); log('🛡️ The boss shakes off the stun: its armour regrows.', 'log-status');
+  }
+  render(); await fbShopkeeper();
+}
+/* ---- the rubber band: each boss body judges ITS OWN side's party against that side's share of the damage curve, just before it acts (all of it hidden from the player) ----
+   curve = cumulative share of the boss's HP that should be gone by the END of each round (9 rounds, 3 phases, front-loaded round 1, back-loaded inside each phase).
+   "ahead" is measured in rounds' worth of damage (+ break, weighted). Retribution = damage x (1 + gain x ahead), capped; sweep (AOE) chance climbs the same way, capped. Behind the curve nothing changes. */
+const FINAL_RB = { rounds: 12, curve: [.11, .17, .23, .333, .40, .46, .55, .667, .74, .81, .89, 1], phaseBase: [.7, .9, .8], phaseGain: [.4, .9, .9], p2Double: .5, split: .65, dualAoe: .25, p3Extra: .4, gain: 1.1, cap: 2.5, aoeBase: .2, aoeGain: .18, aoeCap: .7, brkW: .35, brokenZapChance: .35 };
+const fbCurve = r => r <= 0 ? 0 : FINAL_RB.curve[Math.min(r, FINAL_RB.curve.length) - 1];
+function fbPressure(side) {
+  const B = FB.bosses[0], r = FB.round, n = FINAL_RB.curve.length;
+  const aheadD = (FB.dealt[side] / B.maxHp - fbCurve(r) * .5) / (.5 / n);                  // rounds ahead on damage (this side owes half the curve)
+  const aheadB = (FB.brk[side] / B.maxBreak - (r / (n / 3)) * .5) / (.5 / 3);              // one full break per phase (n/3 rounds) is the pace: how many breaks' worth ahead
+  const A = Math.max(0, aheadD) + FINAL_RB.brkW * Math.max(0, aheadB);
+  const ph = Math.min(2, FB.bosses[0].phase || 0), pb = FINAL_RB.phaseBase[ph], pg = FINAL_RB.phaseGain[ph];     // phase 1 is gentle, phase 3 is not
+  return { A, mult: pb * Math.min(FINAL_RB.cap, 1 + FINAL_RB.gain * pg * A), aoeP: Math.min(FINAL_RB.aoeCap, (FINAL_RB.aoeBase + FINAL_RB.aoeGain * A) * (ph ? 1 : .6)), aheadD, aheadB };
+}
+function fbChoose(u, ahead) {          // the boss's pick: a sweep with the pressure's chance, else a single target; some skills need a broken victim
+  const P = fbPressure(u.pside != null ? u.pside : u.side), cdOk = i => u.cd[i] <= (ahead ? 1 : 0);
+  const broken = party.filter(x => isAlive(x) && x.state !== 'armoured');
+  const ok = u.skills.map((s, i) => i).filter(i => u.skills[i].t === 'dmg' && cdOk(i) && (!u.skills[i].needsBroken || (broken.length && Math.random() < FINAL_RB.brokenZapChance)));
+  const sweeps = ok.filter(i => u.skills[i].aoe), singles = ok.filter(i => !u.skills[i].aoe);
+  let i;
+  if (sweeps.length && (!singles.length || Math.random() < P.aoeP)) i = sweeps.reduce((a, b) => dmgRange(u.skills[b])[1] > dmgRange(u.skills[a])[1] ? b : a);     // the heaviest sweep that is ready
+  else if (singles.length) { const z = singles.filter(k => u.skills[k].needsBroken); i = z.length ? z[0] : singles[Math.floor(Math.random() * singles.length)]; }
+  else return { skip: true };
+  const sk = u.skills[i], tgt = sk.needsBroken ? fbPick(broken) : weightedHero();
+  return { i, target: tgt };
+}
+function fbPrepTurn(u, side = u.side, f = 1, keep = false) {   // just before it acts: read the pressure, scale this action's damage (f<1 when it acts twice), maybe turn a single strike into a sweep
+  const P = fbPressure(side); u.fbBase = u.skills; u.skills = scaleSkills(u.fbBase, P.mult * f);
+  const it = u.intent;
+  if (!keep && it && !it.skip && !u.skills[it.i].aoe) { const sw = u.skills.findIndex((x, k) => x.aoe && u.cd[k] <= 1); if (sw >= 0 && Math.random() < P.aoeP * .5) u.intent = { i: sw, target: weightedHero() }; }
+  FB.log = `${u.short}: ahead ${P.aheadD.toFixed(2)}r dmg / ${P.aheadB.toFixed(2)} brk -> x${P.mult.toFixed(2)}, sweep ${Math.round(P.aoeP * 100)}%`; FB.trace.push({ r: FB.round, side: side, f, A: +P.A.toFixed(2), mult: +P.mult.toFixed(2), aoeP: +P.aoeP.toFixed(2) });
+}
+function fbSecond(u, notIdx, last) {   // the follow-up: never the same skill; a single strike prefers the same victim (focus fire) or the weakest hero
+  let c; for (let k = 0; k < 8; k++) { c = fbChoose(u, false); if (c.skip || c.i !== notIdx) break; }
+  if (c.skip || c.i === notIdx) return { skip: true };
+  const sk = u.skills[c.i];
+  if (!sk.aoe && !sk.needsBroken) {
+    const al = party.filter(isAlive), weak = al.slice().sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0], r = Math.random();
+    c.target = last && isAlive(last) && r < .55 ? last : r < .85 ? weak : c.target;
+  }
+  return c;
+}
+const fbSwapAnim = async cls => { const col = $('enemy-cards'); if (!col) return; col.classList.add(cls); await sleep(cls === 'fbout' ? 290 : 330); col.classList.remove(cls); };
+async function fbJoin() {               // phase 3 begins mid-round: the other wing steps in beside this one
+  const host = enemies[0], g = FB.bosses[1 - host.side]; if (enemies.length === 2) return;
+  await fbSwapAnim('fbout'); g.mir = host.mir; g.pside = host.side; enemies = [host, g];
+  const bf = document.querySelector('#battle-scene .battlefield'); bf.classList.add('fbpair'); $('enemy-head').textContent = 'THE BOSS · BOTH WINGS';
+  render(); banner('BOTH WINGS', 'phase', 'they strike together'); fbSwapAnim('fbin');
+  enemies.forEach(e => { e.intent = isAlive(e) && FB.stun <= 0 ? fbChoose(e, true) : null; });
+}
+async function fbAct(u, f, keepCd) {     // one action of a combo: scaled, the other body's cooldowns ticked by hand (its statuses tick once a round, on its own turn)
+  actor = u; render(); fbPrepTurn(u, FB.side, f, true);
+  if (u !== enemies[0]) u.cd = u.cd.map(c => Math.max(0, c - 1));
+  await takeTurn(u, u !== enemies[0]); u.skills = u.fbBase; u.intent = null; actor = null; fbMarkDowns(); fbWatchBreak();
+}
+async function fbCombo() {              // phase 3: both wings attack this party in one beat. Singles first, a sweep last; two sweeps at once is rare (it is nearly a wipe)
+  const bs = enemies.filter(isAlive); if (bs.length < 2 || FB.stun > 0 || !party.some(isAlive)) return;
+  const sw = u => !!(u.intent && !u.intent.skip && u.skills[u.intent.i] && u.skills[u.intent.i].aoe);
+  if (sw(bs[0]) && sw(bs[1]) && Math.random() > FINAL_RB.dualAoe) {          // reroll one of them to a single strike
+    const v = bs[Math.random() < .5 ? 0 : 1], single = v.skills.map((x, i) => i).filter(i => v.skills[i].t === 'dmg' && !v.skills[i].aoe && !v.skills[i].needsBroken && v.cd[i] <= 1);
+    if (single.length) v.intent = { i: single[Math.floor(Math.random() * single.length)], target: weightedHero() };
+  }
+  const seq = [...bs].sort((x, y) => (sw(x) ? 1 : 0) - (sw(y) ? 1 : 0) || Math.random() - .5);
+  for (const u of seq) {
+    if (!isAlive(u) || FB.stun > 0 || over || !party.some(isAlive)) break;
+    await fbAct(u, FINAL_RB.split);
+  }
+  if (!over && FB.stun <= 0 && party.some(isAlive) && Math.random() < FINAL_RB.p3Extra) {       // chaos: one wing strikes again
+    const u = bs[Math.floor(Math.random() * bs.length)];
+    u.intent = fbSecond(u, -1, null); if (!u.intent.skip) { actor = u; render(); fbPrepTurn(u, FB.side, FINAL_RB.split, true); await takeTurn(u, true); u.skills = u.fbBase; fbMarkDowns(); fbWatchBreak(); }
+    u.intent = null; actor = null;
+  }
+}
+async function fbBossAct(u) {           // one boss turn: phase 2 sometimes strikes twice, phase 3 is joined by the other wing
+  if (!party.some(isAlive)) { u.intent = null; return; }              // that whole front is down: nothing to strike
+  const ph = FB.bosses[0].phase || 0, second = ph === 1 && Math.random() < FINAL_RB.p2Double ? 'double' : null;
+  const f = second ? FINAL_RB.split : 1, first = u.intent && !u.intent.skip ? u.intent : null;
+  fbPrepTurn(u, u.side, f); await takeTurn(u); u.skills = u.fbBase;
+  fbMarkDowns(); fbWatchBreak();
+  if (second && isAlive(u) && FB.stun <= 0 && !over && party.some(isAlive)) {
+    fbPrepTurn(u, u.side, f, true); u.intent = fbSecond(u, first ? first.i : -1, first && first.target);
+    if (!u.intent.skip) { actor = u; render(); await takeTurn(u, true); }
+    u.skills = u.fbBase; u.intent = null;
+  }
+  if (!isAlive(u)) u.fbBase = null;
+}
+async function fbBattle() {
+  dashClear(); await fbPlaceholderArt(); warmArt([...fbAll(), ...FB.bosses]);
+  log('The final battle begins: two fronts, one boss.');
+  let round = 1;
+  outer: while (true) {
+    FB.round = roundNo = round; log(`— Round ${round} —`, 'log-round');
+    for (const side of [0, 1]) {
+      if (!FB.units[side].some(isAlive)) continue;                      // that front has fallen: it waits for the shopkeeper
+      if (FB.side !== side) await fbShow(side, false);
+      order = [...party, ...enemies].filter(isAlive).sort((a, b) => b.spd - a.spd || Math.random() - 0.5);
+      enemies.forEach(e => { e.intent = isAlive(e) && FB.stun <= 0 ? fbChoose(e, true) : null; });
+      let comboDone = false;
+      for (const u of order) {
+        if (!isAlive(u)) continue;
+        actor = u; render();
+        if (u.team === 'e' && FB.stun > 0) { log(`${u.name} is stunned and cannot act.`, 'log-status'); floatText(u, '💤 STUNNED', 'tag'); await sleep(600); }
+        else {
+          const B = FB.bosses[0], hp0 = B.hp, br0 = B.state === 'armoured' ? B.breakBar : 0;
+          if (u.team === 'e') {
+            if (fbPair() && enemies.length === 1) await fbJoin();
+            if (enemies.length === 2) { if (!comboDone) { comboDone = true; await fbCombo(); } }
+            else await fbBossAct(u);
+          }
+          else {
+            await takeTurn(u); FB.dealt[u.side] += Math.max(0, hp0 - B.hp); FB.brk[u.side] += Math.max(0, br0 - (B.state === 'armoured' ? B.breakBar : 0)); }
+        }
+        actor = null; fbMarkDowns(); fbWatchBreak();
+        if (!over && fbAll().some(isAlive)) await fbPhases();
+        const r = await fbCheckEnd(); if (r === 'again') continue outer; if (r) return;
+      }
+    }
+    await fbRoundEnd();
+    const r = await fbCheckEnd(); if (r === 'again') continue; if (r) return;
+    round++;
+  }
+}
+function startFinal(ids) {
+  const { units, bosses } = fbBuild(ids);
+  FB = { units, bosses, side: 0, round: 0, stun: 0, stunOn: false, usedRevive: false, seq: 0, dealt: [0, 0], brk: [0, 0], trace: [], hist: [], snap: JSON.stringify(game) };
+  quest = { def: { id: 'final', name: 'The Final Stand', nodes: [{ name: 'The Final Boss', boss: true, enemies: [], gold: 0 }], relicDrop: 0, unlocks: null }, node: 0, gold: 0, dev: true, final: true, party: [...units[0], ...units[1]], items: {}, plan: null, tier: 0 };
+  Object.keys(ITEMS).forEach(id => { quest.items[id] = 99; });
+  document.documentElement.style.setProperty('--fbP', FINAL.partyScale); document.documentElement.style.setProperty('--fbB', FINAL.bossScale);
+  blizzStop(); party = units[0]; enemies = [bosses[0]]; order = []; actor = null; cur = null; sel = null; waiting = null; over = false; lastSummary = null;
+  { const sb = document.getElementById('btn-summary'); if (sb) sb.style.display = 'none'; }
+  $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = ''; $('end-buttons').style.display = 'none';
+  $('turn-indicator').innerText = 'Preparing...'; $('battle-sub').textContent = 'The Final Stand (developer test)';
+  showScene('battle-scene'); renderFx(); renderSnd();
+  fbPlaceholderArt().then(() => { loadStageBg(); return fbShow(0, true); }).then(() => { banner('THE FINAL STAND', 'phase', 'two fronts · one boss'); setTimeout(() => { if (FB && !over) fbBattle(); }, 1100); });
+}
+function startFinalDev() {           // dev: picked heroes first, then everyone else, wrapping round so there are always 8
+  const ids = HEROES.map(h => h.id), pool = [...picked, ...ids.filter(id => !picked.includes(id))], eight = [];
+  for (let i = 0; i < 8; i++) eight.push(pool[i % pool.length]);
+  startFinal(eight);
+}
+
 /* ============ HUB & PARTY SELECT ============ */
 const MAX_PARTY = 4;
 let picked = [];     // hero ids chosen for the quest, in lineup order (first = front line)
@@ -5414,6 +5924,7 @@ const FS_SCENES = ['hub', 'beach', 'vb', 'gear', 'spa-select', 'train-select', '
 function showScene(name) {
   if (name === 'quest-select') name = 'party-select';           // choosing the party and the quest is one screen now       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
   if (name !== 'battle-scene' && typeof talkClear === 'function') talkClear();
+  if (name !== 'battle-scene' && FB) fbCleanup();
   const rv = document.getElementById('tm-full'); if (rv) rv.className = '';
   ['hub', 'beach', 'beach-pick', 'vb', 'party-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle', 'lake', 'dive'].forEach(id => $(id).classList.toggle('show', id === name));
   if (name === 'hub') renderHub();
@@ -5863,7 +6374,7 @@ function renderDev() {
       <select onchange="devMod(${i}, this.value)"><option value="">no modifier</option>${ELITE_KEYS.map(k => `<option value="${k}"${f.mod === k ? ' selected' : ''}>${ELITE.mods[k].icon} ${ELITE.mods[k].name}</option>`).join('')}</select></div>
       <button onclick="devDrop(${i})">✕</button></div>`;
   }).join('');
-  $('dev-enemy-pick').innerHTML = ENEMIES.map(e => `<div class="pick" onclick="devAddFoe('${e.id}')"><div class="mini-sprite port-box" data-port="${e.id}">${e.tag}</div>
+  $('dev-enemy-pick').innerHTML = ENEMIES.filter(e => !e.final).map(e => `<div class="pick" onclick="devAddFoe('${e.id}')"><div class="mini-sprite port-box" data-port="${e.id}">${e.tag}</div>
     <div><strong>${e.name}</strong>${e.boss ? ' ★ BOSS' : ''}<div class="sk">HP ${e.hp} · armour ${e.brk} · ${e.skills.map(s => s.n).join(', ')}</div></div></div>`).join('');
   const bg = $('dev-bg'), keep = bg.value;
   if (!bg.options.length) bg.innerHTML = QUESTS.flatMap(q => q.nodes.map((n, i) => `<option value="${q.id}|${i + 1}">${q.name}: fight ${i + 1}${n.boss ? ' (boss)' : ''}</option>`)).join('');
