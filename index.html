@@ -1531,7 +1531,12 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 
 /* ---- final boss: two screens, a shrunken party, a huge boss ---- */
 #fb-hud{display:none}
-body.fbfight .combatant-card.fbboss .bar-container:has(.hp-fill),body.fbfight .combatant-card.fbboss .hpnum{display:none}
+#qmap .mnode.final .pin{filter:drop-shadow(0 0 10px #b06bff) drop-shadow(0 0 4px #ff6b8a)}
+#qmap .mnode.final .nm{color:#e5c9ff}
+#party-select .fin-row .fslot .pos{font-size:.55rem}
+body.fbfight:not(.dev) .combatant-card.fbboss .bar-container:has(.hp-fill),body.fbfight:not(.dev) .combatant-card.fbboss .hpnum{display:none}
+#battle-scene .figure.fbwake{animation:fbWake .9s ease-out}@keyframes fbWake{0%{filter:brightness(3.2) saturate(0);scale:.94}35%{filter:brightness(1.8);scale:1.08}100%{filter:none;scale:1}}
+.fb-guest{position:fixed;z-index:75;pointer-events:none;will-change:transform}.fb-guest img{display:block;height:100%;width:auto;filter:drop-shadow(0 0 22px rgba(255,236,150,.8))}
 @keyframes fbOut{to{opacity:0;transform:translateX(40px) scale(.9);filter:brightness(2)}}
 @keyframes fbIn{from{opacity:0;transform:translateX(-40px) scale(.9);filter:brightness(2)}}
 #enemy-cards.fbout{animation:fbOut .28s ease-in forwards}#enemy-cards.fbin{animation:fbIn .3s ease-out}
@@ -3560,7 +3565,12 @@ const tierCleared = id => (game && game.tiers && game.tiers.cleared && Number.is
 const questCleared = id => !!(game && game.cleared && game.cleared[id]);
 const groupOpen = g => !g.requires || devMode || g.requires.every(questCleared);
 const groupOf = id => QUEST_GROUPS.find(g => g.ids.includes(id));
-const questOpen = id => { const g = groupOf(id); return !g || groupOpen(g); };
+const finalOpen = () => devMode || questCleared('castle');           // the Final Stand appears on the map once the Ice Queen has fallen
+const questOpen = id => { if (id === 'final') return finalOpen(); const g = groupOf(id); return !g || groupOpen(g); };
+/* ---- THE FINAL STAND: not a normal quest (no nodes, gold or camps), so it lives beside QUESTS. Eight heroes in two parties of four fight the two-bodied boss on two screens (see the FINAL block). ---- */
+const FINAL_QUEST = { id: 'final', name: 'The Final Stand', icon: '🌌', desc: 'Beyond the last peak something waits, with two bodies and one life. Bring eight heroes in two parties of four and fight it on both fronts at once. If you fall, the world rolls back to the moment before you set out.' };
+const finalSlots = Array(8).fill(null);                  // slots 0-3 = LEFT FRONT (0 = front line), 4-7 = RIGHT FRONT
+let finalSel = -1;
 function tierUnlock() {          // every quest beaten on the current top difficulty opens the next one (returns true when it did)
   const t = game && game.tiers; if (!t || t.max >= MAX_TIER) return false;
   if (!QUESTS.every(q => tierCleared(q.id) >= t.max)) return false;
@@ -5591,7 +5601,7 @@ async function battle() {
    A defeat in a real run rolls the whole save back to the snapshot taken before the run (FB.snap). In dev mode nothing is saved, so it only reports.
    Art (all optional): bosses are normal boss folders, assets/e_final_l/... and assets/e_final_r/... (armoured/idle, damaged, skill1-3, broken/idle). Draw them facing LEFT like any enemy: the right screen mirrors them. */
 const fbScale = u => FB && FB.active !== false && u.team === 'p' ? FINAL.partyScale : 1;       // the final fight shrinks the party, and with it the skill 2 close-ups
-const FINAL = { dummy: false, floor: 1.2, partyScale: 0.5, bossScale: 1.0, hp: 4800, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
+const FINAL = { guestDmg: 600, guestBreaks: 3, dummy: false, floor: 1.2, partyScale: 0.5, bossScale: 1.0, hp: 4800, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
 const FB_SIDES = ['LEFT FRONT', 'RIGHT FRONT'];
 const FB_SAY = {
   revive: ['Up you get! On the house… this time.', 'Don\'t you dare die on my watch!', 'Drink up! I\'m not done selling to you yet!', 'One potion, one more round. Go!'],
@@ -5644,7 +5654,7 @@ function fbBgEl() {                  // placeholder stage: a vast purple mass of
 function fbBuild(ids) {              // 8 heroes (first 4 = LEFT FRONT, last 4 = RIGHT FRONT) and the two boss bodies with one shared pool
   const units = [[], []];
   ids.slice(0, 8).forEach((id, i) => { const side = i < 4 ? 0 : 1, u = make(heroById(id), 'p'); applyRelics(u, (game.equip && game.equip[id]) || [], (game.traits && game.traits[id]) || []); u.side = side; u.rank = i % 4; u.mir = side === 1; u.downSeq = 0; units[side].push(u); });
-  const bosses = ['e_final_l', 'e_final_r'].map((id, side) => { const b = make(enemyById(id), 'e', { hp: 1, atk: FINAL.floor }); b.side = side; b.mir = side === 1; b.final = true; b.maxHp = b.hp = FINAL.hp; b.maxBreak = b.breakBar = FINAL.brk; b.maxBreak2 = b.break2 = 0; return b; });
+  const bosses = ['e_final_l', 'e_final_r'].map((id, side) => { const b = make(enemyById(id), 'e', { hp: 1, atk: FINAL.floor }); b.side = side; b.mir = side === 1; b.final = true; b.maxHp = b.hp = FINAL.hp + FINAL.guestDmg * FINAL.guestBreaks; b.maxBreak = b.breakBar = FINAL.brk; b.maxBreak2 = b.break2 = 0; return b; });
   if (FINAL.dummy) bosses.forEach(b => { b.maxHp = b.hp = 1e7; b.maxBreak = b.breakBar = 1e7; b.skills = b.skills.map(x => ({ ...x, d: [0, 0] })); b.phases = []; });      // balance bot: a punching bag that measures what the parties deal
   const store = {};                  // one shared set of numbers behind both bodies
   ['hp', 'maxHp', 'breakBar', 'maxBreak', 'break2', 'maxBreak2', 'state', 'phase', 'statuses', 'barrier', 'phaseMult', 'fell', 'vanish', 'gone'].forEach(k => { store[k] = bosses[0][k]; bosses.forEach(b => Object.defineProperty(b, k, { get: () => store[k], set: v => { store[k] = v; }, enumerable: true, configurable: true })); });
@@ -5713,17 +5723,28 @@ async function fbCheckEnd() {        // true = the fight is over; 'again' = seco
 }
 function fbEnd(won) {
   setSpot([]); over = true; actor = null; cur = null; waiting = null;
-  const main = $('btn-end-main'), bad = FB.usedRevive;
+  const main = $('btn-end-main'), bad = FB.usedRevive, real = FB.real, back = () => { fbCleanup(); showScene(real ? 'hub' : 'dev-battle'); };
   if (won) {
     $('turn-indicator').innerText = bad ? 'Victory… (BAD ENDING)' : 'VICTORY · GOOD ENDING';
     log(`<strong style="color:#4caf50">The final boss falls!</strong> ${bad ? '💀 You needed the second wind: BAD ENDING.' : '🌅 You never needed the second wind: GOOD ENDING.'}`, 'log-heal');
     banner(bad ? '💀 BAD ENDING' : '🌅 GOOD ENDING', 'phase', 'the boss falls');
-    main.textContent = '⚡ Back to Quick Battle'; main.onclick = () => { fbCleanup(); showScene('dev-battle'); };
+    if (real) {
+      Object.keys(ITEMS).forEach(id => { game.items[id] = (game.items[id] || 0) + (quest.items[id] || 0); });           // unused supplies come home
+      game.cleared = game.cleared || {}; game.cleared.final = true;
+      const f = game.final = game.final || {}; f.wins = (f.wins || 0) + 1; f.ending = f.ending === 'good' || !bad ? 'good' : 'bad'; f.last = bad ? 'bad' : 'good';        // the best ending you have earned
+      game.notices.push({ type: 'ending', id: bad ? 'bad' : 'good' }); game.stats.won++;
+      hubNote = bad ? 'The Final Stand is won, but at a cost.' : 'The Final Stand is won!';
+      const ok = writeSave(); log(ok ? 'Progress saved.' : 'Could not save: browser storage is unavailable.', 'log-round');
+      main.textContent = 'Return to Town'; main.onclick = back;
+    } else { main.textContent = '⚡ Back to Quick Battle'; main.onclick = back; }
   } else {
     $('turn-indicator').innerText = 'Defeat';
-    log('<strong style="color:#ff5252">Everyone has fallen.</strong> In a real run the whole save would roll back to before the quest began (gold, items, perks, the second wind: all of it).', 'log-status');
-    if (!quest.dev) { try { game = JSON.parse(FB.snap); writeSave(); } catch (e) {} main.textContent = 'Return to Town'; main.onclick = () => { fbCleanup(); showScene('hub'); }; }
-    else { main.textContent = '⚡ Back to Quick Battle'; main.onclick = () => { fbCleanup(); showScene('dev-battle'); }; }
+    if (real) {
+      log('<strong style="color:#ff5252">Everyone has fallen.</strong> The world rolls back to the moment before you set out: gold, supplies and perks are exactly as they were.', 'log-status');
+      if (!devMode) { try { game = JSON.parse(FB.snap); } catch (e) {} writeSave(); } else Object.keys(ITEMS).forEach(id => { game.items[id] = 99; });
+      hubNote = 'The Final Stand failed. Time rolls back to before you set out: nothing was lost, nothing was kept.';
+      main.textContent = 'Return to Town'; main.onclick = back;
+    } else { log('<strong style="color:#ff5252">Everyone has fallen.</strong> In a real run the whole save would roll back to before the quest began.', 'log-status'); main.textContent = '⚡ Back to Quick Battle'; main.onclick = back; }
   }
   $('end-buttons').style.display = 'flex'; render();
 }
@@ -5765,12 +5786,58 @@ async function fbShopkeeper() {      // end of every round: one potion, thrown a
   if (t.side !== FB.side) await fbShow(t.side);
   await fbToss(t, revive);
 }
+const fbGuestSvg = () => 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 560"><defs><radialGradient id="h"><stop offset="0" stop-color="#fff8c8"/><stop offset="1" stop-color="#ffd54f" stop-opacity="0"/></radialGradient></defs><circle cx="150" cy="70" r="70" fill="url(#h)" opacity=".9"/><path d="M70 560 Q60 300 110 200 Q150 150 190 200 Q240 300 230 560Z" fill="#2c2a55" stroke="#ffe9a0" stroke-width="5"/><path d="M95 205 Q150 120 205 205 Q150 175 95 205Z" fill="#3b3977" stroke="#ffe9a0" stroke-width="4"/><ellipse cx="150" cy="170" rx="30" ry="36" fill="#f3dcc8"/><path d="M118 170 Q150 110 182 170 Q150 140 118 170Z" fill="#ffe9a0"/><path d="M200 260 L270 150" stroke="#ffe9a0" stroke-width="10" stroke-linecap="round"/><circle cx="272" cy="146" r="16" fill="#fff" stroke="#ffd54f" stroke-width="5"/></svg>`);
+async function fbGuest() {              // end of the break: a stranger drops in along the edge of the screen and calls down celestial lightning. Gone for good once the second wind is used
+  const B = FB.bosses[0]; if (!FINAL.guestDmg || FB.usedRevive || !isAlive(B) || over || FINAL.dummy) return;
+  const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = FB.side === 1, X = f => flip ? vw * (1 - f) : vw * f;
+  const art = await findAsset(`${ANIM.base}/ui/guest`), castArt = await findAsset(`${ANIM.base}/ui/guest_cast`), okImg = a => a && ['png', 'webp', 'jpg'].includes(a.ext);
+  const H = vh * 1.05, g = document.createElement('div'); g.className = 'fb-guest';
+  g.style.cssText = `height:${H}px;left:${X(.13) - H * .27}px;top:${vh * 1.04 - H}px;width:${H * .54}px`;
+  const im = document.createElement('img'); im.src = okImg(art) ? art.url : fbGuestSvg(); im.draggable = false; if (flip) im.style.transform = 'scaleX(-1)'; g.appendChild(im);
+  document.body.appendChild(g); const away = flip ? vw * .5 : -vw * .5;
+  g.animate([{ transform: `translateX(${away}px)`, opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }], { duration: dspd(380), easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
+  sfx('swing'); log('✨ A stranger drops in from the edge of the battle…', 'log-heal'); await sleep(dspd(520));
+  banner('✨ CELESTIAL LIGHTNING', 'phase', 'a stranger lends a hand');
+  if (okImg(castArt)) im.src = castArt.url;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`); svg.setAttribute('fill', 'none'); svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+  Object.assign(svg.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: 74, pointerEvents: 'none', overflow: 'visible' }); document.body.appendChild(svg);
+  const fe = figs.get(enemies[0]), bx = fe && fe.isConnected ? figBox(fe) : { cx: X(.8), bottom: vh * .8, h: vh * .5, w: vh * .4 }, tx = bx.cx, ty = bx.bottom - bx.h * .5;
+  const hx = X(.13) + (flip ? -1 : 1) * H * .26, hy = vh * 1.04 - H * .72;
+  svg.innerHTML = `<circle cx="${hx}" cy="${hy}" r="${vh * .05}" fill="#fff6c8" opacity=".9" style="filter:blur(8px)"/>`; svg.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1.3)' }], { duration: dspd(420), fill: 'forwards' }); svg.style.transformOrigin = `${hx}px ${hy}px`;
+  const dim = document.createElement('div'); Object.assign(dim.style, { position: 'fixed', inset: 0, background: 'rgba(8,6,28,.55)', zIndex: 73, pointerEvents: 'none', opacity: 0 }); document.body.appendChild(dim); dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: dspd(420), fill: 'forwards' });
+  await sleep(dspd(520));
+  sfx('hit', 'shock', false, false, true);
+  const bolt = (x1, y1, x2, y2, w, a) => { const pts = jagPts(x1, y1, x2, y2, 16, vh * .1); return `<polyline points="${pts}" stroke="#ffd54f" stroke-width="${w * 3}" opacity="${a * .45}" style="filter:blur(6px)"/><polyline points="${pts}" stroke="#fff3b0" stroke-width="${w * 1.5}" opacity="${a}" style="filter:drop-shadow(0 0 14px #ffd54f)"/><polyline points="${pts}" stroke="#fff" stroke-width="${w * .6}"/>`; };
+  let html = `<rect x="${tx - vh * .05}" y="0" width="${vh * .1}" height="${ty}" fill="#fff8d0" opacity=".55" style="filter:blur(10px)"/>` + bolt(tx - vh * .02, -20, tx, ty, 16, 1);
+  for (let k = 0; k < 6; k++) { const y0 = vh * (.1 + Math.random() * .45); html += bolt(tx + (Math.random() - .5) * 30, y0, tx + (Math.random() < .5 ? -1 : 1) * vh * (.12 + Math.random() * .28), y0 + vh * (.1 + Math.random() * .2), 6, .85); }
+  html += `<circle cx="${tx}" cy="${ty}" r="${bx.h * .5}" fill="#fff6c8" opacity=".85" style="filter:blur(14px)"/>`;
+  svg.innerHTML = html; svg.style.transformOrigin = ''; svg.animate([{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: .5, offset: .3 }, { opacity: 1, offset: .45 }, { opacity: 0 }], { duration: dspd(720), fill: 'forwards' });
+  const fl = document.createElement('div'); Object.assign(fl.style, { position: 'fixed', inset: 0, background: '#fff8d8', zIndex: 76, pointerEvents: 'none', opacity: 0 }); document.body.appendChild(fl); fl.animate([{ opacity: 0 }, { opacity: .85, offset: .1 }, { opacity: 0 }], { duration: dspd(520), fill: 'forwards' });
+  shake(3); setTimeout(() => shake(3), dspd(260));
+  const d = Math.min(B.hp, FINAL.guestDmg); B.hp -= d; render(); floatText(enemies[0], `✨ -${d}`, 'crit'); log(`✨ The stranger's celestial lightning strikes the boss for ${d}!`, 'log-player');
+  await fbPhases();
+  await sleep(dspd(700));
+  g.animate([{ transform: 'translateX(0)', opacity: 1 }, { transform: `translateX(${away}px)`, opacity: 0 }], { duration: dspd(380), easing: 'ease-in', fill: 'forwards' });
+  dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(380), fill: 'forwards' });
+  await sleep(dspd(420)); [g, svg, dim, fl].forEach(x => x.remove());
+}
+async function fbWake(B) {              // the break is over: a full bar, every ailment gone, a jolt to show the next round has begun
+  B.state = 'armoured'; B.breakBar = B.maxBreak; B.statuses = []; FB.stunOn = false;
+  render(); shake(3); sfx('hit', 'phys', false, false, true);
+  const w = document.createElement('div'); Object.assign(w.style, { position: 'fixed', inset: 0, zIndex: 71, pointerEvents: 'none', opacity: 0, background: 'radial-gradient(ellipse at 70% 55%,rgba(255,120,90,.55),rgba(60,10,30,.35) 55%,transparent 80%)' }); document.body.appendChild(w);
+  w.animate([{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 0 }], { duration: dspd(800), fill: 'forwards' });
+  enemies.forEach(e => { const f = figs.get(e); if (f) { f.classList.remove('fbwake'); void f.offsetWidth; f.classList.add('fbwake'); setTimeout(() => f.classList.remove('fbwake'), 1000); } });
+  banner('🛡️ THE BOSS AWAKENS', 'phase', 'armour regrown · ailments gone'); log('🛡️ The boss wakes: its armour regrows and every ailment falls away.', 'log-status');
+  await sleep(dspd(850)); w.remove();
+}
 async function fbRoundEnd() {
   FB.hist.push({ round: FB.round, dealt: [...FB.dealt], brk: [...FB.brk], hp: FB.units.map(a => a.reduce((t, u) => t + Math.max(0, u.hp), 0)), maxHp: FB.units.map(a => a.reduce((t, u) => t + u.maxHp, 0)), stun: FB.stun });
   fbAll().concat(FB.bosses).forEach(x => { if (x.barrier) x.barrier = x.holdBarrier ? x.barrier : x.rel && x.rel.keepBarrier ? Math.floor(x.barrier * x.rel.keepBarrier) : 0; });
-  if (FB.stun > 0 && --FB.stun === 0) {
-    const B = FB.bosses[0]; B.state = 'armoured'; B.breakBar = B.maxBreak; FB.stunOn = false;
-    banner('🛡️ ARMOUR REGROWN', 'phase', 'the boss recovers'); log('🛡️ The boss shakes off the stun: its armour regrows.', 'log-status');
+  if (FB.stun > 0 && --FB.stun === 0) {                 // the end of the break: the guest strikes, then the boss wakes with a full bar and no ailments
+    const B = FB.bosses[0];
+    await fbGuest();
+    if (!isAlive(B) || over) { render(); return; }
+    await fbWake(B);
   }
   render(); await fbShopkeeper();
 }
@@ -5897,16 +5964,18 @@ async function fbBattle() {
     round++;
   }
 }
-function startFinal(ids) {
+function startFinalReal(ids) { return startFinal(ids, true); }        // from the map: your real heroes, perks, relics and bag; a defeat rolls the save back
+function startFinal(ids, real) {
   const { units, bosses } = fbBuild(ids);
-  FB = { units, bosses, side: 0, round: 0, stun: 0, stunOn: false, usedRevive: false, seq: 0, dealt: [0, 0], brk: [0, 0], trace: [], hist: [], snap: JSON.stringify(game) };
+  FB = { real: !!real, units, bosses, side: 0, round: 0, stun: 0, stunOn: false, usedRevive: false, seq: 0, dealt: [0, 0], brk: [0, 0], trace: [], hist: [], snap: JSON.stringify(game) };
   quest = { def: { id: 'final', name: 'The Final Stand', nodes: [{ name: 'The Final Boss', boss: true, enemies: [], gold: 0 }], relicDrop: 0, unlocks: null }, node: 0, gold: 0, dev: true, final: true, party: [...units[0], ...units[1]], items: {}, plan: null, tier: 0 };
-  Object.keys(ITEMS).forEach(id => { quest.items[id] = 99; });
+  if (real) Object.keys(ITEMS).forEach(id => { quest.items[id] = game.items[id] || 0; game.items[id] = 0; });          // the bag goes with the party (the snapshot above still has it)
+  else Object.keys(ITEMS).forEach(id => { quest.items[id] = 99; });
   document.documentElement.style.setProperty('--fbP', FINAL.partyScale); document.documentElement.style.setProperty('--fbB', FINAL.bossScale);
   blizzStop(); party = units[0]; enemies = [bosses[0]]; order = []; actor = null; cur = null; sel = null; waiting = null; over = false; lastSummary = null;
   { const sb = document.getElementById('btn-summary'); if (sb) sb.style.display = 'none'; }
   $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = ''; $('end-buttons').style.display = 'none';
-  $('turn-indicator').innerText = 'Preparing...'; $('battle-sub').textContent = 'The Final Stand (developer test)';
+  $('turn-indicator').innerText = 'Preparing...'; $('battle-sub').textContent = real ? 'The Final Stand' : 'The Final Stand (developer test)';
   showScene('battle-scene'); renderFx(); renderSnd();
   fbPlaceholderArt().then(() => { loadStageBg(); return fbShow(0, true); }).then(() => { banner('THE FINAL STAND', 'phase', 'two fronts · one boss'); setTimeout(() => { if (FB && !over) fbBattle(); }, 1100); });
 }
@@ -6079,6 +6148,14 @@ function showNotice() {                      // pending pop-ups (saved, so they 
     $('notice-skills').textContent = tierText(T);
     return;
   }
+  if (n && n.type === 'ending') {
+    const good = n.id !== 'bad';
+    box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = good ? '🌅' : '💀'; $('notice-btn').textContent = 'The end… for now';
+    $('notice-title').textContent = good ? '🌅 THE GOOD ENDING' : '💀 THE BAD ENDING';
+    $('notice-text').textContent = good ? 'The two halves of the boss fall together, and the heroes never needed a second chance. (The ending scene is still to be written.)' : 'The boss falls, but it took a second wind to do it. Something was lost on the way. (The ending scene is still to be written.)';
+    $('notice-skills').textContent = good ? 'Earned without the hidden second wind.' : 'Beat it without the second wind to earn the good ending.';
+    return;
+  }
   if (n && n.type === 'beach') {
     box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🏖️'; $('notice-btn').textContent = 'To the beach!';
     $('notice-title').textContent = '🏖️ A path to the beach!';
@@ -6132,7 +6209,7 @@ function soon(place) { $('hub-msg').textContent = `${place} isn't open yet. Comi
 
 function openParty() {
   picked = game.lastParty.filter(id => game.roster.includes(id)).slice(0, MAX_PARTY);   // reselect last run's party
-  if (!QUESTS.some(q => q.id === pickedQuest && questOpen(q.id))) pickedQuest = QUESTS.find(q => questOpen(q.id)).id;     // default: the first available quest
+  if (!(pickedQuest === 'final' && finalOpen()) && !QUESTS.some(q => q.id === pickedQuest && questOpen(q.id))) pickedQuest = QUESTS.find(q => questOpen(q.id)).id;     // default: the first available quest
   showScene('party-select');
 }
 function togglePick(id) {
@@ -6146,6 +6223,7 @@ let formSel = -1;       // slot picked for a tap-swap
 function swapSlots(i, j) { if (i === j || i < 0 || j < 0 || i >= picked.length || j >= picked.length) return; [picked[i], picked[j]] = [picked[j], picked[i]]; }
 function renderParty(full) {
   if (!$('gate-bg').firstChild) $('gate-bg').innerHTML = GATE_SVG;
+  if (pickedQuest === 'final') return renderFinalParty(full);
   const order = Array.from({ length: MAX_PARTY }, (_, k) => MAX_PARTY - 1 - k);      // shown back -> front, like the battlefield: the front line sits next to the enemy
   $('party-slots').innerHTML = `<div class="form-lab"><span>◀ BACK</span><b>Party ${picked.length}/${MAX_PARTY}</b><span>FRONT ▶</span></div><div class="form-row" id="form-row">` +
     order.map(i => { const id = picked[i], h = id && heroById(id);
@@ -6158,6 +6236,37 @@ function renderParty(full) {
     return rcard(id, { cls: 'click' + (n ? ' on' : '') + (!n && picked.length >= MAX_PARTY ? ' off' : ''), onclick: `togglePick('${id}')`, sub: `HP ${h.hp} · SPD ${h.spd}${n ? ' · ' + slotName(i, picked.length) : ''}`,
       title: `${h.skills.map(x => x.n).join(' · ')}  |  Weak: ${(h.weak || []).join(', ') || '-'}  |  Resists: ${(h.resist || []).join(', ') || '-'}`, badge: n || null, badgeTip: 'Line-up position (1 = front line)' });
   }).map(h => h.replace(/<\/div>$/, h.includes('data-id="') ? `<button class="info rc-i" title="Details" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();heroInfo('${(h.match(/data-id="([^"]+)"/) || [])[1]}')">ⓘ</button></div>` : '</div>')).join('');
+  renderQuests(full);
+}
+/* ---- the Final Stand's two-party setup: tap a hero in the Guild to place them in the first free slot (tap again to remove); tap a slot, then another slot, to swap them ---- */
+function finalLoad() {                                         // remembered between visits; only heroes you still own
+  const sv = game.finalSlots; finalSlots.fill(null);
+  if (Array.isArray(sv)) sv.slice(0, 8).forEach((id, i) => { if (id && game.roster.includes(id) && !finalSlots.includes(id)) finalSlots[i] = id; });
+}
+function finalSave() { game.finalSlots = [...finalSlots]; writeSave(); }
+function toggleFinalPick(id) {
+  finalSel = -1; const i = finalSlots.indexOf(id);
+  if (i >= 0) finalSlots[i] = null; else { const k = finalSlots.indexOf(null); if (k >= 0) finalSlots[k] = id; }
+  finalSave(); renderParty();
+}
+function tapFinalSlot(i) {
+  if (finalSel < 0) { if (finalSlots[i]) finalSel = i; }
+  else { if (finalSel !== i) { [finalSlots[finalSel], finalSlots[i]] = [finalSlots[i], finalSlots[finalSel]]; finalSave(); try { sfx('click'); } catch (e) {} } finalSel = -1; }
+  renderParty();
+}
+function renderFinalParty(full) {
+  if (full) { finalLoad(); finalSel = -1; }
+  const rowHtml = (base, label) => { const n = finalSlots.slice(base, base + 4).filter(Boolean).length;
+    return `<div class="form-lab"><span>◀ BACK</span><b>${label} ${n}/4</b><span>FRONT ▶</span></div><div class="form-row fin-row">` + [3, 2, 1, 0].map(k => { const i = base + k, id = finalSlots[i], h = id && heroById(id);
+      return h ? `<div class="fslot has${finalSel === i ? ' sel' : ''}" data-i="${i}" onclick="tapFinalSlot(${i})"><span class="pos">${k + 1}</span><button class="x" title="Remove" onclick="event.stopPropagation();toggleFinalPick('${id}')">✕</button><button class="info fs-i" title="Details" onclick="event.stopPropagation();heroInfo('${id}')">ⓘ</button><div class="figure" data-art="${id}"><div class="ph">${h.tag}</div></div><div class="nm">${h.name.split(' ')[0]}</div></div>`
+        : `<div class="fslot${finalSel >= 0 ? ' over' : ''}" data-i="${i}" onclick="tapFinalSlot(${i})"><span class="pos">${k + 1}</span><div class="empty">empty</div></div>`; }).join('') + '</div>'; };
+  $('party-slots').innerHTML = rowHtml(0, 'LEFT FRONT') + rowHtml(4, 'RIGHT FRONT');
+  fillHeroArt($('party-slots'));
+  $('roster-pick').innerHTML = game.roster.filter(id => heroById(id)).map(id => {
+    const h = heroById(id), i = finalSlots.indexOf(id), full8 = !finalSlots.includes(null);
+    return rcard(id, { cls: 'click' + (i >= 0 ? ' on' : '') + (i < 0 && full8 ? ' off' : ''), onclick: `toggleFinalPick('${id}')`, sub: `HP ${h.hp} · SPD ${h.spd}${i >= 0 ? ' · ' + (i < 4 ? 'Left' : 'Right') + ' front' : ''}`,
+      title: `${h.skills.map(x => x.n).join(' · ')}`, badge: i >= 0 ? (i < 4 ? 'L' : 'R') + (i % 4 + 1) : null, badgeTip: 'Which front, and the line-up position (1 = front line)' });
+  }).join('');
   renderQuests(full);
 }
 function wireFormation() {
@@ -6198,9 +6307,9 @@ function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.q
    One painted world (MAP_SVG, or assets/ui/map_world.* if you draw one: same 16:9 frame, whole world visible) and a camera that zooms out as areas open:
    stage 1 = the Old Lands, stage 2 = + the Tidelands, stage 3 = the whole world with the Frostbound Peaks. Positions are % of the whole world picture.
    To move a quest button, change its [x, y] in MAP_NODES; to change what each stage shows, change MAP_CAMS ({x, y, w}: top-left corner and width, in % of the world). */
-const MAP_NODES = { ruins: [10, 86, '🏛️'], yokai: [22, 72, '⛩️'], crypt: [34, 86, '⚰️'], cove: [46, 76, '🐚'], lighthouse: [58, 88, '🗼'], beach: [70, 72, '🏖️'], pass: [58, 20, '⛰️'], valley: [74, 12, '🏔️'], castle: [90, 22, '🏰'] };
+const MAP_NODES = { ruins: [10, 86, '🏛️'], yokai: [22, 72, '⛩️'], crypt: [34, 86, '⚰️'], cove: [46, 76, '🐚'], lighthouse: [58, 88, '🗼'], beach: [70, 72, '🏖️'], pass: [58, 20, '⛰️'], valley: [74, 12, '🏔️'], castle: [90, 22, '🏰'], final: [93, 47, '🌌'] };
 const MAP_CAMS = { 1: { x: 2, y: 56, w: 44 }, 2: { x: 3, y: 28, w: 72 }, 3: { x: 0, y: 0, w: 100 } };
-const MAP_ROUTE = ['ruins', 'yokai', 'crypt', 'cove', 'lighthouse', 'beach', 'pass', 'valley', 'castle'];
+const MAP_ROUTE = ['ruins', 'yokai', 'crypt', 'cove', 'lighthouse', 'beach', 'pass', 'valley', 'castle', 'final'];
 const mapStage = () => frostOpen() ? 3 : coastOpen() ? 2 : 1;
 const mapSeenGet = () => { try { return Math.max(1, Math.min(3, +localStorage.getItem('animeRpgMapSeen') || 1)); } catch (e) { return 1; } };
 const mapSeenSet = n => { try { localStorage.setItem('animeRpgMapSeen', String(n)); } catch (e) {} };
@@ -6248,8 +6357,8 @@ function mapHint(stage) {
 function buildQuestMap() {
   const stage = mapStage(), seen = Math.min(mapSeenGet(), stage), open = id => questOpen(id);
   const fog = (grp, x, y, w, h) => groupOpen(QUEST_GROUPS[grp]) ? '' : `<div class="mfog" data-g="${QUEST_GROUPS[grp].id}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;background:radial-gradient(ellipse at 50% 50%,rgba(26,34,52,.97) 35%,rgba(26,34,52,.85) 62%,transparent 100%)"></div>`;
-  const nodes = MAP_ROUTE.filter(open).map(id => { const q = QUESTS.find(x => x.id === id), [x, y, ic] = MAP_NODES[id];
-    return `<button class="mnode${id === pickedQuest ? ' on' : ''}" data-q="${id}" style="--x:${x};--y:${y}" onpointerdown="if(event.button===0)pickQuest('${id}')" onclick="pickQuest('${id}')"><span class="pin">${ic}${questCleared(id) ? '<i class="ck">✔</i>' : ''}</span><span class="nm">${q.name}</span></button>`; }).join('');
+  const nodes = MAP_ROUTE.filter(open).map(id => { const q = id === 'final' ? FINAL_QUEST : QUESTS.find(x => x.id === id), [x, y, ic] = MAP_NODES[id];
+    return `<button class="mnode${id === pickedQuest ? ' on' : ''}${id === 'final' ? ' final' : ''}" data-q="${id}" style="--x:${x};--y:${y}" onpointerdown="if(event.button===0)pickQuest('${id}')" onclick="pickQuest('${id}')"><span class="pin">${ic}${questCleared(id) ? '<i class="ck">✔</i>' : ''}</span><span class="nm">${q.name}</span></button>`; }).join('');
   const nodeFogs = [];                       // fog sits over what is still locked, and lifts when it opens
   const html = `<div class="qmap nt" id="qmap"><div class="mworld"><div class="mart" id="mart">${`<svg class="mart" viewBox="0 0 1600 900" preserveAspectRatio="none" overflow="visible">${MAP_SVG}</svg>`}</div>
     ${fog(1, 40, 48, 62, 60)}${fog(2, 42, -8, 64, 52)}${nodes}</div><div class="qm-title">The Known World</div>${stage < 3 ? `<div class="qm-hint">${mapHint(stage)}</div>` : ''}</div>`;
@@ -6272,13 +6381,16 @@ function renderQuests(full) {
   const tiers = game.tiers, tbar = tiers.max > 0 ? `<div class="tierbar"><b>🔥 Difficulty</b>${TIERS.slice(0, tiers.max + 1).map((t, i) => `<button class="tierbtn${tiers.pick === i ? ' on' : ''}" onclick="pickTier(${i})">${i ? t.short : 'Normal'}</button>`).join('')}${tiers.max < MAX_TIER ? '<span class="tiernext">next: clear every quest on ' + (tiers.max ? TIERS[tiers.max].short : 'Normal') + '</span>' : ''}<div class="tierinfo">${tierText(T)}</div></div>` : '';
   if (full || !$('qmap')) buildQuestMap();
   document.querySelectorAll('#qmap .mnode').forEach(n => n.classList.toggle('on', n.dataset.q === pickedQuest));
-  const pq = QUESTS.find(q => q.id === pickedQuest);
+  const pq = pickedQuest === 'final' ? FINAL_QUEST : QUESTS.find(q => q.id === pickedQuest), isFinal = pq === FINAL_QUEST;
   const sup = Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 && !/s$/.test(it.name) ? 's' : ''}` : '').filter(Boolean).join(' · ');
-  $('quest-detail').innerHTML = (pq ? card(pq) : '<div class="dim">Pick a quest on the map.</div>') + tbar + `<div class="sup-line">${sup ? '🎒 Coming along: ' + sup : '🎒 No supplies in the bag. The Shop sells potions, rations and repair kits.'}</div>`;
-  $('btn-start-quest').disabled = !pickedQuest || !picked.length;
+  const fcard = () => { const n = finalSlots.filter(Boolean).length, done = game.cleared && game.cleared.final, e = game.final && game.final.ending; return `<div class="pick quest-pick on"><div><strong>🌌 ${pq.name}</strong><br>${pq.desc}<div class="sk">Two fronts · one boss · no gold, no camps · ${n}/8 heroes chosen${done ? ' · ✔ beaten' + (e === 'good' ? ' (good ending)' : e === 'bad' ? ' (bad ending)' : '') : ''}</div></div><div class="slot">✓</div></div>`; };
+  $('quest-detail').innerHTML = (pq ? (isFinal ? fcard() : card(pq)) : '<div class="dim">Pick a quest on the map.</div>') + (isFinal ? '' : tbar) + `<div class="sup-line">${sup ? '🎒 Coming along: ' + sup : '🎒 No supplies in the bag. The Shop sells potions, rations and repair kits.'}</div>`;
+  $('btn-start-quest').disabled = !pickedQuest || (isFinal ? finalSlots.includes(null) : !picked.length);
+  $('btn-start-quest').textContent = isFinal ? 'Begin the Final Stand ▶' : 'Begin Quest ▶';
 }
 function beginQuest() {
   if (!pickedQuest || !questOpen(pickedQuest)) return;
+  if (pickedQuest === 'final') { if (finalSlots.includes(null)) return; finalSave(); return startFinalReal([...finalSlots]); }
   if (!picked.length) return;
   game.lastParty = [...picked]; writeSave();
   startQuest([...picked], pickedQuest);
@@ -6307,7 +6419,7 @@ function returnItems(won) {
   });
   return carried ? (won ? ` ${kept} unused item${kept === 1 ? '' : 's'} came home.` : ` ${kept} of ${carried} carried item${carried === 1 ? '' : 's'} made it home.`) : '';
 }
-function saveQuest() { game.quest = snapshotQuest(); return writeSave(); }
+function saveQuest() { if (quest && quest.final) return true; game.quest = snapshotQuest(); return writeSave(); }       // (the Final Stand is never checkpointed: quitting mid-fight just means you were never there)
 function restoreQuest(s) {
   const def = s && QUESTS.find(q => q.id === s.id);
   if (!def || !Array.isArray(s.party) || !s.party.length || s.party.length > MAX_PARTY) return null;
@@ -6348,6 +6460,24 @@ function devFlaws() {              // every hero gets 3 fresh flaws (their perks
   if ($('hub').classList.contains('show')) renderHub();
 }
 const rollTraitOk = (hid, id) => { const t = TRAIT[id]; return t && (!t.el || heroElems(hid).includes(t.el)); };
+/* Dev mode starts with every hero fully optimised so the Final Stand can be tested at its intended power: Tier II/III perks (damage heroes stack damage, Seria/Aria/Jean stack protection),
+   two Tier III relics that fit their style, and the best Potential in every tier. Edit the tables to taste. */
+const DEV_EL = { fire: 'pyro', ice: 'cryo', shock: 'storm', poison: 'venomous', bleed: 'bloodletter' };
+const DEV_TANK = ['plated3', 'plated2', 'bracing3', 'bracing2', 'hardy3', 'hardy2', 'quick2', 'keen2', 'opportunist2', 'sharp2'];
+const DEV_SUP = ['hardy3', 'hardy2', 'steady3', 'steady2', 'quick3', 'quick2', 'plated2', 'bracing2', 'keen2', 'attuned2', 'catalyst2'];
+const DEV_RELICS = { seria: ['pauldron3', 'giants_heart3'], aria: ['bulwark_sigil3', 'hourglass3'], jean: ['satchel3', 'hourglass3'], aneesah: ['arcane_lens3', 'glass_ring3'] };
+const DEV_POT = { seria: ['health', 'counter', 'vow'], aria: ['eldmg', 'restore', 'aegis'], vesper: ['eldmg', 'sadistic', 'dance'], iris: ['break', 'masochist', 'dragon'], aneesah: ['eldmg', 'chain', 'eye'], tyr: ['eldmg', 'masochist', 'eternal'], irae: ['break', 'sadistic', 'shadow'], jean: ['eldmg', 'cleanser', 'formula'] };
+function devOptimize() {
+  game.traits = {}; game.equip = {}; game.pot = {};
+  HEROES.forEach(h => {
+    const id = h.id, el = heroElems(id)[0];
+    game.traits[id] = id === 'seria' ? DEV_TANK.slice() : (id === 'aria' || id === 'jean') ? DEV_SUP.slice() : ['keen3', 'keen3', 'keen2', 'keen2', 'opportunist3', 'opportunist2', 'sharp2', 'sharp2', 'quick2'].concat(el ? ['attuned2', 'catalyst2', DEV_EL[el] + '3'] : ['hardy2', 'keen2']);
+    game.equip[id] = DEV_RELICS[id] || (el ? ['glass_ring3', 'arcane_lens3'] : ['glass_ring3', 'breakers_mark3']);
+    const owned = [], active = {};
+    [1, 2, 3].forEach(t => { const all = potList(id, t); all.forEach(o => owned.push(o.id)); const want = DEV_POT[id] && all.find(o => o.id === id + '.' + DEV_POT[id][t - 1]); const pick = want || all[0]; if (pick) active[t] = pick.id; });
+    game.pot[id] = { owned, active };
+  });
+}
 function startDev() {
   devMode = true; document.body.classList.add('dev');
   game = newSave();
@@ -6360,7 +6490,7 @@ function startDev() {
   Object.defineProperty(game, 'gold', { get: () => 9999999, set: () => {}, enumerable: true, configurable: true });
   Object.defineProperty(game, 'crystals', { get: () => 9999999, set: () => {}, enumerable: true, configurable: true });
   game.dived = {}; game.roster.forEach(id => { game.dived[id] = true; });
-  devFlaws(); hubNote = 'Developer mode: everything is unlocked and nothing is saved.';
+  devOptimize(); hubNote = 'Developer mode: everything is unlocked, every hero is fully optimised (Tier III relics, Tier II/III perks, maxed Potentials) and nothing is saved.';
   startGame();
 }
 function toQuickBattle() { if (!picked.length) return; showScene('dev-battle'); }
