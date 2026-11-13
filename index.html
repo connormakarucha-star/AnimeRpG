@@ -5591,7 +5591,7 @@ async function battle() {
    A defeat in a real run rolls the whole save back to the snapshot taken before the run (FB.snap). In dev mode nothing is saved, so it only reports.
    Art (all optional): bosses are normal boss folders, assets/e_final_l/... and assets/e_final_r/... (armoured/idle, damaged, skill1-3, broken/idle). Draw them facing LEFT like any enemy: the right screen mirrors them. */
 const fbScale = u => FB && FB.active !== false && u.team === 'p' ? FINAL.partyScale : 1;       // the final fight shrinks the party, and with it the skill 2 close-ups
-const FINAL = { dummy: false, floor: 1.2, partyScale: 0.5, bossScale: 1.0, hp: 5000, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
+const FINAL = { dummy: false, floor: 1.2, partyScale: 0.5, bossScale: 1.0, hp: 4800, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
 const FB_SIDES = ['LEFT FRONT', 'RIGHT FRONT'];
 const FB_SAY = {
   revive: ['Up you get! On the house… this time.', 'Don\'t you dare die on my watch!', 'Drink up! I\'m not done selling to you yet!', 'One potion, one more round. Go!'],
@@ -5777,7 +5777,7 @@ async function fbRoundEnd() {
 /* ---- the rubber band: each boss body judges ITS OWN side's party against that side's share of the damage curve, just before it acts (all of it hidden from the player) ----
    curve = cumulative share of the boss's HP that should be gone by the END of each round (9 rounds, 3 phases, front-loaded round 1, back-loaded inside each phase).
    "ahead" is measured in rounds' worth of damage (+ break, weighted). Retribution = damage x (1 + gain x ahead), capped; sweep (AOE) chance climbs the same way, capped. Behind the curve nothing changes. */
-const FINAL_RB = { rounds: 12, curve: [.11, .17, .23, .333, .40, .46, .55, .667, .74, .81, .89, 1], phaseBase: [.7, .9, .8], phaseGain: [.4, .9, .9], p2Double: .5, split: .65, dualAoe: .25, p3Extra: .4, gain: 1.1, cap: 2.5, aoeBase: .2, aoeGain: .18, aoeCap: .7, brkW: .35, brokenZapChance: .35 };
+const FINAL_RB = { rounds: 12, curve: [.11, .17, .23, .333, .40, .46, .55, .667, .74, .81, .89, 1], phaseBase: [.8, 1.15, 1.05], phaseGain: [.4, .9, .9], p1Main: .9, p1Follow: .4, p2Double: 1, split: .65, dualAoe: .25, p3Extra: .4, gain: 1.1, cap: 2.5, aoeBase: .2, aoeGain: .18, aoeCap: .7, brkW: .35, brokenZapChance: .35 };
 const fbCurve = r => r <= 0 ? 0 : FINAL_RB.curve[Math.min(r, FINAL_RB.curve.length) - 1];
 function fbPressure(side) {
   const B = FB.bosses[0], r = FB.round, n = FINAL_RB.curve.length;
@@ -5805,13 +5805,15 @@ function fbPrepTurn(u, side = u.side, f = 1, keep = false) {   // just before it
   if (!keep && it && !it.skip && !u.skills[it.i].aoe) { const sw = u.skills.findIndex((x, k) => x.aoe && u.cd[k] <= 1); if (sw >= 0 && Math.random() < P.aoeP * .5) u.intent = { i: sw, target: weightedHero() }; }
   FB.log = `${u.short}: ahead ${P.aheadD.toFixed(2)}r dmg / ${P.aheadB.toFixed(2)} brk -> x${P.mult.toFixed(2)}, sweep ${Math.round(P.aoeP * 100)}%`; FB.trace.push({ r: FB.round, side: side, f, A: +P.A.toFixed(2), mult: +P.mult.toFixed(2), aoeP: +P.aoeP.toFixed(2) });
 }
-function fbSecond(u, notIdx, last) {   // the follow-up: never the same skill; a single strike prefers the same victim (focus fire) or the weakest hero
+function fbSecond(u, notIdx, last, spread) {   // the follow-up: never the same skill; a single strike prefers the same victim (focus fire) or the weakest hero
   let c; for (let k = 0; k < 8; k++) { c = fbChoose(u, false); if (c.skip || c.i !== notIdx) break; }
   if (c.skip || c.i === notIdx) return { skip: true };
   const sk = u.skills[c.i];
   if (!sk.aoe && !sk.needsBroken) {
     const al = party.filter(isAlive), weak = al.slice().sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0], r = Math.random();
-    c.target = last && isAlive(last) && r < .55 ? last : r < .85 ? weak : c.target;
+    const others = al.filter(x => x !== last);
+    if (spread && others.length) c.target = others[Math.floor(Math.random() * others.length)];        // phase 1: the follow-up always hits someone else, so one barrier cannot soak the whole turn
+    else c.target = last && isAlive(last) && r < .5 ? last : r < .8 && others.length ? others[Math.floor(Math.random() * others.length)] : r < .9 ? weak : c.target;
   }
   return c;
 }
@@ -5846,14 +5848,14 @@ async function fbCombo() {              // phase 3: both wings attack this party
     u.intent = null; actor = null;
   }
 }
-async function fbBossAct(u) {           // one boss turn: phase 2 sometimes strikes twice, phase 3 is joined by the other wing
+async function fbBossAct(u) {           // one boss turn: phase 1 = a main strike + a light follow-up on someone else; phase 2 = two real strikes; (phase 3 is the two-wing combo)
   if (!party.some(isAlive)) { u.intent = null; return; }              // that whole front is down: nothing to strike
-  const ph = FB.bosses[0].phase || 0, second = ph === 1 && Math.random() < FINAL_RB.p2Double ? 'double' : null;
-  const f = second ? FINAL_RB.split : 1, first = u.intent && !u.intent.skip ? u.intent : null;
-  fbPrepTurn(u, u.side, f); await takeTurn(u); u.skills = u.fbBase;
+  const ph = FB.bosses[0].phase || 0, second = ph === 0 || Math.random() < FINAL_RB.p2Double;
+  const f1 = ph === 0 ? FINAL_RB.p1Main : FINAL_RB.split, f2 = ph === 0 ? FINAL_RB.p1Follow : FINAL_RB.split, first = u.intent && !u.intent.skip ? u.intent : null;
+  fbPrepTurn(u, u.side, f1); await takeTurn(u); u.skills = u.fbBase;
   fbMarkDowns(); fbWatchBreak();
   if (second && isAlive(u) && FB.stun <= 0 && !over && party.some(isAlive)) {
-    fbPrepTurn(u, u.side, f, true); u.intent = fbSecond(u, first ? first.i : -1, first && first.target);
+    fbPrepTurn(u, u.side, f2, true); u.intent = fbSecond(u, first ? first.i : -1, first && first.target, ph === 0);
     if (!u.intent.skip) { actor = u; render(); await takeTurn(u, true); }
     u.skills = u.fbBase; u.intent = null;
   }
