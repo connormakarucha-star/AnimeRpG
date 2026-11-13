@@ -1130,7 +1130,7 @@ body.fs .qmap{margin:0}
   .pick .sk{font-size:.72rem}
   .pick .mini-sprite{width:64px;height:64px}
   .row{max-width:520px;margin:0 auto}
-  #spa-select > .hub-wrap > .hub-hall > button{max-width:520px;display:block;margin:0 auto}
+  #spa-select > .hub-wrap > .hub-hall > button:not(.narrow-back){max-width:520px;display:block;margin:0 auto}
 
   /* camp: fire on the left, supplies on the right */
   #camp .hub-hall{display:grid;grid-template-columns:1fr 1fr;column-gap:36px;align-items:start}
@@ -7757,7 +7757,8 @@ function vbDone() { if (game.vb) game.vb.reward = null; game.vb = null; vbSel = 
 const GP = (() => {
   const st = document.createElement('style');
   st.textContent = `
-  body.gp .gp-focus{outline:3px solid #ffd54f !important;outline-offset:2px;box-shadow:0 0 16px 2px rgba(255,213,79,.85) !important;position:relative;z-index:3}
+  body.gp .gp-focus{outline:3px solid #ffd54f !important;outline-offset:2px;box-shadow:0 0 16px 2px rgba(255,213,79,.85) !important}
+  body.gp .gp-focus.gp-st{position:relative;z-index:3}
   #gp-hint{display:none;position:fixed;left:50%;top:6px;transform:translateX(-50%);z-index:9999;background:rgba(10,10,16,.82);border:1px solid #444;border-radius:12px;padding:4px 10px;font-size:.62rem;color:#cfd2e6;pointer-events:none;white-space:nowrap;max-width:96vw;overflow:hidden}
   body.gp #gp-hint{display:block}
   #gp-hint b{display:inline-block;min-width:1.3em;text-align:center;border-radius:50%;background:#2d2d3d;color:#ffd54f;padding:0 3px;margin:0 2px 0 6px}
@@ -7774,12 +7775,13 @@ const GP = (() => {
   // which layer is on top right now
   function layer() {
     for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
+    if (typeof dormMenuEl !== 'undefined' && dormMenuEl && dormMenuEl.isConnected) return { root: dormMenuEl, modal: 'rcmenu' };           // the dorm's swap menu floats outside the scene
     for (const id of ['guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
     const t = document.getElementById('title'); if (t && !t.classList.contains('hide')) return { root: t };
     const sc = document.querySelector('.scene.show'); if (sc && sc.id === 'dive' && typeof diveLive !== 'undefined' && diveLive()) return { root: sc, skip: true, noClick: true };
     return { root: sc || document.body, scene: sc && sc.id };
   }
-  const SEL = 'button,[onclick],.pick,.fslot,select,input[type=range],input[type=checkbox]';
+  const SEL = 'button,[onclick],.pick,.fslot,.rc,.seat[data-id],select,input[type=range],input[type=checkbox]';
   const NOFOCUS = '#menu-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has)';
   function candidates(L) {
     let list = [...L.root.querySelectorAll(SEL)].filter(e => e !== L.root && !e.disabled && !e.closest(NOFOCUS) && vis(e));
@@ -7788,8 +7790,8 @@ const GP = (() => {
   }
   const ctr = e => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
   function setFocus(e) {
-    if (S.focus && S.focus !== e) S.focus.classList.remove('gp-focus');
-    S.focus = e; if (!e) return; e.classList.add('gp-focus'); [S.cx, S.cy] = ctr(e);
+    if (S.focus && S.focus !== e) S.focus.classList.remove('gp-focus', 'gp-st');
+    S.focus = e; if (!e) return; e.classList.toggle('gp-st', getComputedStyle(e).position === 'static'); e.classList.add('gp-focus');       // only lift in-flow things; absolutely placed ones (doors, seats, map nodes) must not move [S.cx, S.cy] = ctr(e);
     try { e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (_) {}
   }
   function nearestTo(list, x, y) { let b = null, bd = 1e12; for (const e of list) { const [a, c] = ctr(e); const d = (a - x) ** 2 + (c - y) ** 2; if (d < bd) { bd = d; b = e; } } return b; }
@@ -7830,7 +7832,7 @@ const GP = (() => {
   }
   function press(el) {
     if (!el) return;
-    if (el.classList.contains('fslot') && el.classList.contains('has')) {     // formation slot: tap-to-pick / tap-to-swap uses pointer events
+    if ((el.classList.contains('fslot') && el.classList.contains('has')) || (el.onpointerdown && !el.onclick && !el.matches('button'))) {      // tap-to-pick / dorm cards and seats use pointer events     // formation slot: tap-to-pick / tap-to-swap uses pointer events
       const [x, y] = ctr(el); S.synth = true;
       const o = { bubbles: true, clientX: x, clientY: y, button: 0, pointerId: 1, pointerType: 'mouse' };
       el.dispatchEvent(new PointerEvent('pointerdown', o)); document.dispatchEvent(new PointerEvent('pointerup', o)); S.synth = false;
@@ -7839,6 +7841,7 @@ const GP = (() => {
   const visBtn = re => [...document.querySelectorAll('button')].find(b => !b.disabled && vis(b) && !b.closest('#gp-hint') && re.test(b.textContent.trim()));
   function back(L) {
     if (L.skip) return L.root.click();
+    if (L.modal === 'rcmenu') return closeDormMenu();
     if (L.modal === 'guide') return closeGuide();
     if (L.modal === 'pot-modal') return closePot();
     if (L.modal === 'relic-modal') return closeRelics();
@@ -7897,6 +7900,8 @@ const GP = (() => {
   }
   addEventListener('gamepadconnected', () => { try { document.title = document.title; } catch (_) {} });
   requestAnimationFrame(frame);
+  S.cands = () => candidates(layer()); S.step = (dx, dy) => { const L = layer(), list = ensureFocus(L); move(dx, dy, L, list); return S.focus; }; S.start = () => { on(); const L = layer(); ensureFocus(L); return S.focus; };       // dev helpers for the controller tests
+  S.audit = () => { const L = layer(), c = new Set(candidates(L)); return [...L.root.querySelectorAll('*')].filter(e => vis(e) && !e.closest(NOFOCUS) && getComputedStyle(e).cursor === 'pointer' && !c.has(e) && ![...c].some(o => o.contains(e) || e.contains(o))).map(e => (e.tagName + '#' + e.id + '.' + String(e.className && e.className.baseVal !== undefined ? e.className.baseVal : e.className).replace(/ /g, '.')).slice(0, 80)); };    // dev helper: clickable things the pad cannot reach
   return S;
 })();
 </script>
