@@ -4234,8 +4234,8 @@ async function stageBegin(u, t, art, s) {
    Art:  assets/<id>/<armoured | broken | armoured - skin>/skill3.(png|webp)  +  skill3b  (pose A, pose B; a missing skill3 just starts on skill3b; a skill3 video is ignored once skill3b exists)
          assets/<id>/effects/<file>.png  shared by every look; a skin can carry its own in assets/<id>/armoured - <skin>/effects/<file>.png
    Knobs (per hero):  h = close-up height (fraction of screen height), bottom = where its bottom edge sits (1 = on the bottom of the screen: the poses have no legs, so keep it there), x = nudge sideways (fraction of screen width)
-         enter = how she gets there: 'idle' = her normal idle picture zooms up out of her slot toward the camera and hands over to skill3 (idleH = how tall the idle is at the hand-over, in close-up
-         heights; idleTop = the gap above her head in skill3, as a fraction of its height, so the two heads line up), or 'rise' = skill3 simply rises into place over the party area
+         enter = how she gets there (default 'rise'): 'rise' = skill3 rises into place over the party area from below the bottom edge, or 'idle' = her normal idle picture zooms up out of her slot toward the camera and hands over to skill3 (idleH = how tall the idle is at the hand-over, in close-up
+         heights; idleTop = the gap above her head in skill3, as a fraction of its height, so the two heads line up)
          fx = the effect pictures, each 'back' (behind her) or 'front' (in front of her); fxBox = where they sit relative to skill3b: dx/dy in picture heights, s = size (1 = same height as skill3b,
          which lines up 1:1 when the effect is drawn on the same canvas as skill3b)
          reveal = how the effects appear. kind 'path': a burn that runs along `path` (points as fractions of the effect picture, x from the left, y from the top, drawn facing right) from its first
@@ -4243,7 +4243,7 @@ async function stageBegin(u, t, art, s) {
    Dev mode: Alt+3 replays the first party member's sequence; Alt+Shift+3 replays it and freezes on the last frame for tuning (keys shown on screen). */
 const SEQ3 = {
   iris: {
-    h: 1.0, bottom: 1.0, x: .02, enter: 'idle', idleH: 1.5, idleTop: .1,
+    h: 1.0, bottom: 1.0, x: .02, enter: 'rise', idleH: 1.5, idleTop: .1,
     fx: [{ file: 'background', layer: 'back' }, { file: 'foreground', layer: 'front' }],
     fxBox: { dx: 0, dy: 0, s: 1 },
     reveal: { kind: 'path', ms: 650, spread: .4, feather: .1,
@@ -4253,6 +4253,7 @@ const SEQ3 = {
   }
 };
 let SEQ_CAL = {}; try { SEQ_CAL = JSON.parse(localStorage.getItem('seqCal') || '{}') || {}; } catch (e) { }
+try { if (localStorage.getItem('seqCalV') !== '2') { Object.values(SEQ_CAL).forEach(c => { if (c) { delete c.enter; delete c.idleH; } }); localStorage.setItem('seqCal', JSON.stringify(SEQ_CAL)); localStorage.setItem('seqCalV', '2'); } } catch (e) { }     // 'rise' became the default: forget the old Alt+E test choice once
 const seqK = id => { const K = SEQ3[id], c = SEQ_CAL[id] || {}; return K && { ...K, h: c.h ?? K.h, bottom: c.bottom ?? K.bottom, x: c.x ?? K.x, enter: c.enter ?? K.enter, idleH: c.idleH ?? K.idleH, fxBox: { dx: c.dx ?? K.fxBox.dx, dy: c.dy ?? K.fxBox.dy, s: c.s ?? K.fxBox.s } }; };
 async function findStill(path) {             // a still picture at this path, even when a video of the same name is the one on the manifest
   const a = await findAsset(path); if (!a) return null; if (a.ext !== 'mp4' && a.ext !== 'webm') return a;
@@ -4292,7 +4293,7 @@ async function seqBegin(u, art) {
   Object.assign(d0.style, box, { opacity: 0 });
   const mkImg = (a, cls) => { const im = document.createElement('img'); im.className = cls; im.src = a.url; im.draggable = false; return im; };
   const imA = art.a ? mkImg(art.a, 'a') : null, imB = mkImg(art.b, 'b');
-  const spr = K.enter === 'idle' && el.querySelector('.spr');           // the poses have no legs: the zoom out of her slot is done by her full-length idle picture
+  const spr = K.enter === 'idle' && el.querySelector('.spr');      // (rise is the default)           // the poses have no legs: the zoom out of her slot is done by her full-length idle picture
   let di = null;
   if (spr) { di = document.createElement('div'); di.className = 'dashfx' + (flip ? ' flip' : ''); Object.assign(di.style, box); const c = spr.cloneNode(true); c.className = 'idlefx';
     if (c.tagName === 'VIDEO') { c.muted = c.loop = c.playsInline = true; try { c.currentTime = spr.currentTime; } catch (e) { } c.play && c.play().catch(() => {}); } di.appendChild(c); document.body.appendChild(di); }
