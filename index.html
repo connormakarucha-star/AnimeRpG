@@ -444,6 +444,13 @@ body.dorm-dragging .dorm-room .seat[data-slot]{outline:2px dashed rgba(255,213,7
 .dskins{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}
 .skinbtn{padding:5px 12px;font-size:.8rem;border-radius:6px;border:1px solid #3a3a52;background:#16161f;color:#ddd;cursor:pointer}
 .skinbtn.on{border-color:#ffd54f;color:#ffd54f;background:#2a2410}
+.skinbtn.legend{border-color:#c9a227;background:linear-gradient(135deg,#2a2008,#3a2a0a 50%,#2a2008);color:#ffe08a;box-shadow:0 0 8px rgba(255,200,60,.25)}
+.skinbtn.legend.on{box-shadow:0 0 14px rgba(255,210,80,.7);color:#fff3c4}
+.skinbtn.legend.locked{filter:grayscale(.8) brightness(.7);cursor:not-allowed;box-shadow:none}
+.pot-legend{color:#ffd54f;font-size:.72rem;margin-left:6px}
+#notice.top{z-index:400}
+.notice-box .legend-art{height:190px;display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 0 14px rgba(255,200,60,.6))}
+.notice-box .legend-art img,.notice-box .legend-art video{height:100%;width:auto}
 /* developer mode */
 #dev-bar{display:none;position:fixed;right:6px;top:6px;z-index:120;background:#2a1020ee;border:1px solid #ff5c8a;border-radius:8px;padding:5px 8px;font-size:.68rem;gap:6px;flex-wrap:wrap;align-items:center;max-width:calc(100vw - 12px);box-sizing:border-box}
 body.dev:not(.in-battle) #dev-bar{display:flex}
@@ -1463,6 +1470,10 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 .dashfx img.b{display:none}.dashfx.swap img.a{display:none}.dashfx.swap img.b{display:block}
 .dashfx.flip img{transform:translateX(-50%) scaleX(-1)}
 .dashfx.ghost{z-index:69}
+.dashfx canvas.seqfx{position:absolute;pointer-events:none;max-width:none}
+.dashfx.flip canvas.seqfx{transform:scaleX(-1)}
+#seq-hint{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:9000;background:rgba(10,8,20,.88);color:#eee;border:1px solid #c9a227;border-radius:10px;padding:8px 12px;font-size:12px;max-width:94vw;text-align:center;line-height:1.5}
+#seq-hint code{color:#ffd54f;font-size:12px}
 /* wading: the lower part of the sprite is cut away at the waterline (no tinted block), and white ripples play around that line */
 .bspot.in-water .figure{clip-path:inset(-30% -40% var(--wl,24%) -40%)}
 .bspot .wave{position:absolute;left:-30%;right:-30%;bottom:var(--wl,24%);height:0;z-index:3;pointer-events:none}
@@ -1623,6 +1634,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
   <div id="notice-text" style="font-size:.85rem;line-height:1.5"></div>
   <div class="sk" id="notice-skills" style="font-size:.7rem;color:#9a9ab8"></div>
   <button class="primary" id="notice-btn" onclick="dismissNotice()">Welcome!</button>
+  <button id="notice-btn2" style="display:none" onclick="dismissNotice()">Later</button>
 </div></div>
 <div id="spa-cutin"></div>
 <div id="tm-full"><div id="tm-art"></div>
@@ -2757,7 +2769,8 @@ function potBuy(id) {
   const o = POT_OPTS[id]; if (!o || !potAwake(o.hero) || !potTierOpen(o.tier)) return;
   const st = potState(o.hero); if (st.owned.includes(id) || potCrystals() < o.cost) return;
   game.crystals -= o.cost; st.owned.push(id); if (!st.active[o.tier] && !gearLocked()) st.active[o.tier] = id;
-  writeSave(); renderPot();
+  if (o.tier === 3 && legendOwned(o.hero)) game.notices.unshift({ type: 'legend', id: o.hero });          // Tier III bought: the legendary look is earned
+  writeSave(); renderPot(); if (o.tier === 3) showNotice();
 }
 function potSet(id) {                         // make an owned option the active one of its tier (there is no switching off, only switching to another)
   const o = POT_OPTS[id]; if (!o || gearLocked() || !potAwake(o.hero)) return;
@@ -2902,7 +2915,7 @@ function renderPot() {
   $('pot-sub').textContent = lock ? 'A quest is in progress: options can be bought but not switched until it ends.' : `Buy an option once, then switch freely between quests. One option per tier is active. Specialty: ${ELEM_NAME[C.el]} · Weak to: ${ELEM_NAME[C.weak]}`;
   $('pot-list').innerHTML = [1, 2, 3].map(t => {
     const open = potTierOpen(t), q = QUESTS.find(x => x.id === POTENTIAL.unlock[t]);
-    return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}</div>` + potList(hid, t).map(o => {
+    return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}${t === 3 ? `<span class="pot-legend" title="Buying it unlocks ${h.name}'s Legendary look">${legendOwned(hid) ? '👑 Legendary look earned' : '👑 unlocks the Legendary look'}</span>` : ''}</div>` + potList(hid, t).map(o => {
       const owned = st.owned.includes(o.id), on = st.active[t] === o.id, afford = potCrystals() >= o.cost;
       return `<div class="pot-opt${on ? ' on' : ''}${open ? '' : ' locked'}${potPrev === o.id ? ' prev' : ''}" onclick="potPreview('${o.id}')">${potIcon(o)}<div class="pt"><b>${o.name}</b><br>${o.desc}</div>
         <div class="pb">${!open ? '' : owned ? (on ? '' : `<button onclick="event.stopPropagation();potSet('${o.id}')" ${lock ? 'disabled' : ''}>Equip</button>`) : `<button class="primary" onclick="event.stopPropagation();potBuy('${o.id}')" ${afford ? '' : 'disabled'}>❄️ ${o.cost}</button>`}</div></div>`; }).join('') + '</div>';
@@ -3604,12 +3617,17 @@ function tierUnlock() {          // every quest beaten on the current top diffic
 }
 const frostOpen = () => groupOpen(QUEST_GROUPS[2]);          // clearing all three Tidelands quests opens Act 3 and the winter gear skins
 const coastOpen = () => groupOpen(QUEST_GROUPS[1]);          // also what unlocks the hero skins
-const skinOf = id => { const sk = game && coastOpen() && game.skins && game.skins[id]; return sk && !(sk === 'winter gear' && !frostOpen()) ? sk : null; };
+/* LEGENDARY skin: assets/<hero>/armoured - legendary/ (same files as armoured/). Earned by buying that hero's Tier III Potential option (each hero has exactly one). */
+const LEGEND = 'legendary';
+const legendOwned = hid => { const C = POT_HERO[hid], st = game && game.pot && game.pot[hid]; return !!(C && st && Array.isArray(st.owned) && st.owned.includes(hid + '.' + C.t3)); };
+const skinLabel = n => n === LEGEND ? '👑 Legendary' : (n || 'Default');
+const skinOf = id => { const sk = game && coastOpen() && game.skins && game.skins[id]; return sk && !(sk === 'winter gear' && !frostOpen()) && !(sk === LEGEND && !legendOwned(id)) ? sk : null; };
 function skinsFor(id) {
   if (!coastOpen()) return [];                          // skins stay hidden until the Tidelands open
   const names = new Set(SKIN_HINTS[id] || []);
   if (manifest) Object.keys(manifest).forEach(k => { const m = k.match(/^([^/]+)\/armoured - ([^/]+)\//); if (m && m[1] === id) names.add(m[2]); });
-  return [...names].filter(n => n !== 'winter gear' || frostOpen());          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
+  if (legendOwned(id)) names.add(LEGEND);              // the legendary look is listed once earned, art or not (missing files fall back to armoured/)
+  return [...names].filter(n => (n !== 'winter gear' || frostOpen()) && (n !== LEGEND || legendOwned(id)));          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
 }
 function stateFolder(u) {                         // the art folder for a unit's current state
   const f = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
@@ -4104,7 +4122,7 @@ let dashLive = null;
 function dashClear() {
   showParty();
   if (!dashLive) return; const d = dashLive; dashLive = null;
-  d.parts.forEach(x => x.remove()); if (d.el) d.el.style.visibility = ''; if (d.tcard) { d.tcard.style.zIndex = ''; d.tcard.style.position = ''; }
+  if (d.stop) d.stop(); d.parts.forEach(x => x.remove()); if (d.el) d.el.style.visibility = ''; if (d.tcard) { d.tcard.style.zIndex = ''; d.tcard.style.position = ''; }
 }
 async function dashBegin(u, t, art) {            // returns { run, follow, home } or null (then the normal lunge is used)
   dashClear();
@@ -4207,6 +4225,194 @@ async function stageBegin(u, t, art, s) {
     }
   };
 }
+
+/* ===== SKILL 3 SPRITE SEQUENCES (they replace the skill 3 videos, one hero at a time) =====
+   A hero switches over the moment she has a skill3b picture. Then: her skill3 picture swells up into the foreground (the party steps out of view), swaps to skill3b with a flash and a jolt,
+   her effect pictures appear around her, it holds, and it all fades back into the line-up before the skill resolves. Plan for every hero: SKILL3_ANIMATIONS.md.
+   Art:  assets/<id>/<armoured | broken | armoured - skin>/skill3.(png|webp)  +  skill3b  (pose A, pose B; a missing skill3 just starts on skill3b; a skill3 video is ignored once skill3b exists)
+         assets/<id>/effects/<file>.png  shared by every look; a skin can carry its own in assets/<id>/armoured - <skin>/effects/<file>.png
+   Knobs (per hero):  h = close-up height (fraction of screen height), bottom = where its bottom edge sits (>1 = cut off by the screen), x = nudge sideways (fraction of screen width)
+         fx = the effect pictures, each 'back' (behind her) or 'front' (in front of her); fxBox = where they sit relative to skill3b: dx/dy in picture heights, s = size (1 = same height as skill3b,
+         which lines up 1:1 when the effect is drawn on the same canvas as skill3b)
+         reveal = how the effects appear. kind 'path': a burn that runs along `path` (points as fractions of the effect picture, x from the left, y from the top, drawn facing right) from its first
+         point to its last; spread = how much later parts far from the path catch (flame tips); feather = width of the burning edge. kind 'up': a plain bottom-to-top burn.
+   Dev mode: Alt+3 replays the first party member's sequence; Alt+Shift+3 replays it and freezes on the last frame for tuning (keys shown on screen). */
+const SEQ3 = {
+  iris: {
+    h: 1.0, bottom: 1.0, x: .02,
+    fx: [{ file: 'background', layer: 'back' }, { file: 'foreground', layer: 'front' }],
+    fxBox: { dx: 0, dy: 0, s: 1 },
+    reveal: { kind: 'path', ms: 650, spread: .4, feather: .1,
+      path: [[1.02, .86], [.86, .87], [.7, .88], [.5, .93], [.31, .91], [.19, .81], [.12, .66], [.14, .53], [.24, .44], [.39, .4], [.55, .41], [.7, .44], [.87, .47]] },
+    hot: [255, 228, 150], ember: [[255, 240, 170], [255, 170, 60], [230, 70, 20]], smoke: [62, 40, 36],
+    ms: { zoom: 220, holdA: 280, swap: 160, hold: 750, out: 340 }
+  }
+};
+let SEQ_CAL = {}; try { SEQ_CAL = JSON.parse(localStorage.getItem('seqCal') || '{}') || {}; } catch (e) { }
+const seqK = id => { const K = SEQ3[id], c = SEQ_CAL[id] || {}; return K && { ...K, h: c.h ?? K.h, bottom: c.bottom ?? K.bottom, x: c.x ?? K.x, fxBox: { dx: c.dx ?? K.fxBox.dx, dy: c.dy ?? K.fxBox.dy, s: c.s ?? K.fxBox.s } }; };
+async function findStill(path) {             // a still picture at this path, even when a video of the same name is the one on the manifest
+  const a = await findAsset(path); if (!a) return null; if (a.ext !== 'mp4' && a.ext !== 'webm') return a;
+  const k = path + '#still'; if (k in animCache) return animCache[k];
+  for (const ext of ['webp', 'png', 'jpg']) if (await probe(`${path}.${ext}`, ext)) return animCache[k] = { url: `${path}.${ext}`, ext };
+  return animCache[k] = null;
+}
+async function seqAssets(u, i) {
+  const K = seqK(u.id); if (i !== 2 || !K || u.team !== 'p' || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  let a = null, b = null;
+  for (const f of artChain(u)) { b = await findStill(`${ANIM.base}/${u.id}/${f}/skill3b`); if (b) { a = await findStill(`${ANIM.base}/${u.id}/${f}/skill3`); break; } }      // both poses from the same look
+  if (!b) return null;
+  const sf = stateFolder(u), fx = [];
+  for (const e of K.fx) { const x = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/${e.file}`)) || await findStill(`${ANIM.base}/${u.id}/effects/${e.file}`); if (x) fx.push({ ...e, a: x }); }
+  return { K, a, b, fx };
+}
+function seqField(R, ar) {                    // when each spot of an effect picture catches: 0 at the path's start ... 1 at its end (+ a little later the further it is from the path)
+  const key = R.kind + ar.toFixed(3) + JSON.stringify(R.path || '') + R.spread; R._f = R._f || {}; if (R._f[key]) return R._f[key];
+  const G = 128, T = new Float32Array(G * G), P = R.path || [], L = [0];
+  for (let i = 1; i < P.length; i++) L.push(L[i - 1] + Math.hypot((P[i][0] - P[i - 1][0]) * ar, P[i][1] - P[i - 1][1]));
+  const tot = L[L.length - 1] || 1; let max = 0;
+  for (let gy = 0; gy < G; gy++) for (let gx = 0; gx < G; gx++) {
+    const x = (gx + .5) / G, y = (gy + .5) / G; let t;
+    if (R.kind !== 'path' || P.length < 2) t = 1 - y;
+    else { let bd = 1e9, bs = 0; for (let i = 1; i < P.length; i++) { const ax = P[i - 1][0] * ar, ay = P[i - 1][1], vx = P[i][0] * ar - ax, vy = P[i][1] - ay, ll = vx * vx + vy * vy || 1e-9, q = Math.max(0, Math.min(1, ((x * ar - ax) * vx + (y - ay) * vy) / ll)), dd = Math.hypot(x * ar - ax - vx * q, y - ay - vy * q); if (dd < bd) { bd = dd; bs = (L[i - 1] + Math.sqrt(ll) * q) / tot; } } t = bs + R.spread * bd; }
+    T[gy * G + gx] = t; if (t > max) max = t;
+  }
+  return R._f[key] = { G, T, max };
+}
+async function seqBegin(u, art) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = art.K, vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u), dir = flip ? -1 : 1;
+  const d0 = document.createElement('div'); d0.className = 'dashfx seq3' + (flip ? ' flip' : '') + (art.a ? '' : ' swap');
+  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+  const mkImg = (a, cls) => { const im = document.createElement('img'); im.className = cls; im.src = a.url; im.draggable = false; return im; };
+  const imA = art.a ? mkImg(art.a, 'a') : null, imB = mkImg(art.b, 'b');
+  const layers = art.fx.map(f => ({ ...f, img: mkImg(f.a, 'src'), cv: document.createElement('canvas') }));
+  const back = layers.filter(l => l.layer === 'back'), front = layers.filter(l => l.layer !== 'back'), pt = document.createElement('canvas'), sm = document.createElement('canvas');
+  back.forEach(l => { l.cv.className = 'seqfx back'; d0.appendChild(l.cv); }); sm.className = 'seqfx sm'; if (layers.length) d0.appendChild(sm); if (imA) d0.appendChild(imA); d0.appendChild(imB);
+  front.forEach(l => { l.cv.className = 'seqfx front'; d0.appendChild(l.cv); }); pt.className = 'seqfx pt'; if (layers.length) d0.appendChild(pt);
+  document.body.appendChild(d0);
+  await Promise.all([imA, imB, ...layers.map(l => l.img)].filter(Boolean).map(im => im.decode ? im.decode().catch(() => {}) : 0));
+  const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
+  const ih = (imA || imB).offsetHeight || imB.offsetHeight || A.h * SPR_SCALE;
+  let raf = 0, live = true, P1 = '', S0 = 1;
+  d.stop = () => { live = false; cancelAnimationFrame(raf); };
+  // ---- placement (re-run live while tuning) ----
+  function place() {
+    const k = d.K || K, pc = $('party-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx0 = (pr && pr.width ? pr.left + pr.width / 2 : A.cx) + dir * k.x * vw;
+    S0 = vh * k.h * fbScale(u) / ih; P1 = `translate(${fx0 - A.cx}px,${vh * k.bottom - A.bottom}px) scale(${S0})`;
+    const fh = ih * k.fxBox.s, dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+    layers.forEach(l => { const ar = l.img.naturalWidth / l.img.naturalHeight || 1, w = fh * ar; l.ar = ar;
+      Object.assign(l.cv.style, { height: fh + 'px', width: w + 'px', left: `calc(50% + ${dir * k.fxBox.dx * ih - w / 2}px)`, bottom: (-k.fxBox.dy * ih) + 'px' });
+      const px = Math.min(1200, fh * S0 * dpr) / fh; l.cv.width = Math.round(w * px); l.cv.height = Math.round(fh * px); });
+    const l0 = layers[0]; if (l0) [pt, sm].forEach(c => { Object.assign(c.style, { height: l0.cv.style.height, width: l0.cv.style.width, left: l0.cv.style.left, bottom: l0.cv.style.bottom }); c.width = Math.round(l0.cv.width * .6); c.height = Math.round(l0.cv.height * .6); });
+    dirty = true;
+  }
+  let dirty = true;
+  place();
+  // ---- the burn ----
+  const R = K.reveal, feather = R.feather || .1, G = 128;
+  const maskC = document.createElement('canvas'), glowC = document.createElement('canvas'); maskC.width = maskC.height = glowC.width = glowC.height = G;
+  const mctx = maskC.getContext('2d'), gctx = glowC.getContext('2d'), mImg = mctx.createImageData(G, G), gImg = gctx.createImageData(G, G);
+  const solidOf = l => { if (l.solid) return l.solid; const s = new Uint8Array(G * G);           // where the effect picture has paint (embers only fly off the dragon itself)
+    try { const c = document.createElement('canvas'); c.width = c.height = G; const x = c.getContext('2d'); x.drawImage(l.img, 0, 0, G, G); const a = x.getImageData(0, 0, G, G).data; for (let i = 0; i < G * G; i++) s[i] = a[i * 4 + 3] > 40 ? 1 : 0; }
+    catch (e) { s.fill(1); }                                                                           // opened straight from disk the browser will not let us read the picture: embers come off the whole edge instead
+    return l.solid = s; };
+  const parts = []; let prog = -1, lastProg = -2, F0 = null, last = performance.now(), debug = false;
+  function frame(now) {
+    if (!live) return; const dt = Math.min(.05, (now - last) / 1000); last = now;
+    const ref = layers.find(l => l.layer === 'front') || layers[0]; if (!ref) return;
+    const F = seqField(R, ref.ar); F0 = F; const p = prog < 0 ? -1 : prog * (F.max + feather), full = prog >= 1, md = mImg.data, gd = gImg.data, hot = K.hot || [255, 228, 150], solid = solidOf(ref), front = [];
+    if (!full) for (let i = 0; i < G * G; i++) { const t = F.T[i], m = Math.max(0, Math.min(1, (p - t) / feather)), g = m > 0 ? Math.max(0, 1 - (p - t) / (feather * 2.4)) : 0;
+      md[i * 4] = md[i * 4 + 1] = md[i * 4 + 2] = 255; md[i * 4 + 3] = m * 255;
+      gd[i * 4] = hot[0]; gd[i * 4 + 1] = hot[1]; gd[i * 4 + 2] = hot[2]; gd[i * 4 + 3] = g * 235; if (g > .55 && solid[i]) front.push(i); }
+    if (!full) { mctx.putImageData(mImg, 0, 0); gctx.putImageData(gImg, 0, 0); }
+    const redraw = dirty || (prog >= 0 && prog !== lastProg); dirty = false; lastProg = prog;
+    if (redraw) for (const l of layers) { const c = l.cv.getContext('2d'); c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, l.cv.width, l.cv.height); if (prog < 0) continue;
+      c.drawImage(l.img, 0, 0, l.cv.width, l.cv.height);
+      if (!full) { c.globalCompositeOperation = 'destination-in'; c.drawImage(maskC, 0, 0, l.cv.width, l.cv.height); c.globalCompositeOperation = 'source-atop'; c.drawImage(glowC, 0, 0, l.cv.width, l.cv.height); c.globalCompositeOperation = 'source-over'; } }
+    // embers off the burning edge (and, once whole, off random parts of the dragon); smoke behind her
+    const spawn = (n, pick) => { for (let k = 0; k < n; k++) { const i = pick(); if (i < 0) return; const x = (i % G + Math.random()) / G, y = ((i / G | 0) + Math.random()) / G, sm = Math.random() < .28;
+      parts.push(sm ? { x, y, vx: (Math.random() - .5) * .05, vy: -.12 - Math.random() * .1, r: .02 + Math.random() * .02, gr: .06, life: 0, max: .9 + Math.random() * .6, sm: 1 }
+                    : { x, y, vx: (Math.random() - .5) * .18, vy: -.25 - Math.random() * .35, r: .003 + Math.random() * .006, life: 0, max: .45 + Math.random() * .5, sm: 0, ph: Math.random() * 6 }); } };
+    if (prog >= 0 && !full && front.length) spawn(7, () => front[Math.random() * front.length | 0]);
+    else if (full && Math.random() < .6) { const s = solid; spawn(1, () => { for (let t = 0; t < 30; t++) { const i = Math.random() * G * G | 0; if (s[i]) return i; } return -1; }); }
+    const pc = pt.getContext('2d'), bl = sm.getContext('2d'); pc.clearRect(0, 0, pt.width, pt.height); bl.clearRect(0, 0, sm.width, sm.height);
+    const W = pt.width, H = pt.height, Wb = sm.width, Hb = sm.height, EM = K.ember || [[255, 240, 170], [255, 170, 60], [230, 70, 20]], SM = K.smoke || [60, 40, 36];
+    for (let k = parts.length - 1; k >= 0; k--) { const q = parts[k]; q.life += dt; if (q.life > q.max) { parts.splice(k, 1); continue; }
+      const f = q.life / q.max; q.x += q.vx * dt + (q.sm ? 0 : Math.sin(q.life * 9 + q.ph) * .0015); q.y += q.vy * dt;
+      if (q.sm) { const r = (q.r + q.gr * f) * Hb, a = .32 * Math.sin(Math.PI * f); bl.globalCompositeOperation = 'source-over'; const g = bl.createRadialGradient(q.x * Wb, q.y * Hb, 0, q.x * Wb, q.y * Hb, r); g.addColorStop(0, `rgba(${SM},${a})`); g.addColorStop(1, `rgba(${SM},0)`); bl.fillStyle = g; bl.beginPath(); bl.arc(q.x * Wb, q.y * Hb, r, 0, 7); bl.fill(); }
+      else { const c = f < .35 ? EM[0] : f < .7 ? EM[1] : EM[2], a = 1 - f * f, r = q.r * H * (1 - f * .5); pc.globalCompositeOperation = 'lighter'; pc.fillStyle = `rgba(${c},${a})`; pc.shadowColor = `rgba(${EM[1]},${a})`; pc.shadowBlur = r * 3; pc.beginPath(); pc.arc(q.x * W, q.y * H, r, 0, 7); pc.fill(); } }
+    pc.shadowBlur = 0;
+    if (debug && R.path) { pc.globalCompositeOperation = 'source-over'; pc.strokeStyle = '#3cff5a'; pc.lineWidth = Math.max(2, W / 300); pc.beginPath(); R.path.forEach(([x, y], i) => i ? pc.lineTo(x * W, y * H) : pc.moveTo(x * W, y * H)); pc.stroke(); pc.fillStyle = '#3cff5a'; pc.beginPath(); pc.arc(R.path[0][0] * W, R.path[0][1] * H, W / 80, 0, 7); pc.fill(); }
+    raf = requestAnimationFrame(frame);
+  }
+  const anim = (node, frames, ms, ease) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards' });
+  const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
+  const T = K.ms;
+  return {
+    place, setDebug(v) { debug = v; }, get K() { return d.K || K; }, set K(v) { d.K = v; place(); d0.style.transform = P1; d0.getAnimations().forEach(a => a.cancel()); },
+    async run(opts = {}) {
+      if (layers.length) raf = requestAnimationFrame(frame);
+      sfx('whoosh'); await wait(anim(d0, [{ transform: 'none' }, { transform: P1 }], T.zoom, 'cubic-bezier(.2,.8,.3,1)'), T.zoom);
+      if (imA) {
+        await sleep(dspd(T.holdA));
+        d0.classList.add('swap'); sfx('swing'); shake(1);                                                                     // the jolt: pose B, a white flash, a little punch-in
+        imB.animate([{ filter: 'brightness(2.4) saturate(.4)' }, { filter: 'none' }], { duration: dspd(T.swap + 60), easing: 'ease-out' });
+        await wait(anim(d0, [{ transform: P1 }, { transform: P1 + ' scale(1.035)', offset: .35 }, { transform: P1 }], T.swap, 'ease-out'), T.swap);
+      }
+      if (layers.length) {
+        sfx('charge', 'fire');
+        const t0 = performance.now(), ms = dspd(R.ms);
+        await new Promise(res => { const step = now => { if (!live) return res(); prog = Math.min(1, (now - t0) / ms); if (prog < 1) requestAnimationFrame(step); else res(); }; prog = 0; requestAnimationFrame(step); });
+        layers.forEach(l => l.cv.animate([{ filter: 'brightness(1.25)' }, { filter: 'brightness(.95)' }, { filter: 'brightness(1.12)' }, { filter: 'brightness(1)' }], { duration: dspd(T.hold), iterations: 1 }));
+      }
+      if (opts.freeze) return;
+      await sleep(dspd(T.hold));
+    },
+    async home() {
+      if (dashLive !== d) return;
+      showParty(); if (el.isConnected) el.style.visibility = '';
+      layers.forEach(l => anim(l.cv, [{ opacity: 1, translate: '0 0' }, { opacity: 0, translate: '0 -3%' }], T.out * .8, 'ease-in'));
+      await wait(anim(d0, [{ opacity: 1 }, { opacity: 0 }], T.out, 'ease-in'), T.out);
+      dashClear();
+    }
+  };
+}
+// ---- dev mode: Alt+3 replays, Alt+Shift+3 replays and freezes on the last frame for tuning ----
+let seqDev = null;
+async function seqPreview(freeze) {
+  if (seqDev) { seqEnd(); return; }
+  const u = party.find(m => isAlive(m) && SEQ3[m.id]); if (!u) { banner('No hero with a skill 3 sequence in this party'); return; }
+  const art = await seqAssets(u, 2); if (!art) { banner(`No ${u.id}/armoured/skill3b picture found`); return; }
+  const q = await seqBegin(u, art); if (!q) return;
+  seqDev = { u, q, freeze };
+  await q.run({ freeze });
+  if (!freeze) { await q.home(); seqDev = null; return; }
+  q.setDebug(true); seqHint();
+}
+function seqEnd() { const s = seqDev; seqDev = null; const h = $('seq-hint'); if (h) h.remove(); if (s) s.q.home(); }
+function seqHint() {
+  const s = seqDev; if (!s) return; let h = $('seq-hint'); if (!h) { h = document.createElement('div'); h.id = 'seq-hint'; document.body.appendChild(h); }
+  const k = s.q.K, c = { h: k.h, bottom: k.bottom, x: k.x, dx: k.fxBox.dx, dy: k.fxBox.dy, s: k.fxBox.s };
+  h.innerHTML = `<b>${s.u.name} skill 3 tuning</b> · Alt+arrows move the effects · Alt+[ ] effect size · Alt+Shift+arrows move the close-up · Alt+Shift+[ ] close-up size · Alt+P path on/off · Alt+0 reset · Esc done<br><code>${s.u.id}: ${JSON.stringify(c)}</code> (remembered in this browser; send me these numbers to make them the default)`;
+}
+document.addEventListener('keydown', e => { if (seqDev && e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); seqEnd(); } }, true);      // Esc ends tuning without opening the pause menu
+document.addEventListener('keydown', e => {
+  if (!devMode || !e.altKey) return;
+  if (e.code === 'Digit3') { e.preventDefault(); seqPreview(e.shiftKey); return; }
+  const s = seqDev; if (!s || !s.freeze) return;
+  const id = s.u.id, c = SEQ_CAL[id] = SEQ_CAL[id] || {}, k = s.q.K, sh = e.shiftKey, key = e.key; let used = true;
+  const r2 = v => +v.toFixed(3);
+  if (key.startsWith('Arrow')) { const dx = key === 'ArrowLeft' ? -1 : key === 'ArrowRight' ? 1 : 0, dy = key === 'ArrowUp' ? -1 : key === 'ArrowDown' ? 1 : 0;
+    if (sh) { c.x = r2((c.x ?? k.x) + dx * .005); c.bottom = r2((c.bottom ?? k.bottom) + dy * .01); } else { c.dx = r2((c.dx ?? k.fxBox.dx) + dx * .005); c.dy = r2((c.dy ?? k.fxBox.dy) + dy * .005); } }
+  else if (key === '[' || key === '{' || key === ']' || key === '}') { const g = key === '[' || key === '{' ? -1 : 1; if (sh) c.h = r2((c.h ?? k.h) + g * .02); else c.s = r2((c.s ?? k.fxBox.s) + g * .01); }
+  else if (e.code === 'KeyP') { s.dbg = !(s.dbg ?? true); s.q.setDebug(s.dbg); }
+  else if (key === '0') delete SEQ_CAL[id];
+  else used = false;
+  if (!used) return; e.preventDefault(); try { localStorage.setItem('seqCal', JSON.stringify(SEQ_CAL)); } catch (_) { }
+  s.q.K = seqK(id); seqHint();
+});
 
 /* ---- the final bosses' close-ups (every sweep / AOE attack of e_final_l and e_final_r): the body swells up into the foreground, cropped by the bottom of the screen like Aneesah's cast.
    Art (all optional): the skill's own picture assets/e_final_x/armoured/skill<N>.png, else the idle picture. Draw it facing LEFT; the right-hand screen mirrors it.
@@ -5020,22 +5226,25 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
   // The order of a hit: 1) her skill picture replaces the idle  2) a short charge-up effect for elemental attacks  3) the attack connects (bolt flies / blow lands)  4) the target's damaged picture and hit effects (in hit()).
   // A video in the skill slot is a film: it plays alone, full screen, nobody moves, and the hit only happens once it ends (see skillFilm).
-  const film = await skillFilm(u, 'skill' + (i + 1));
+  const seq = await seqAssets(u, i);                                                        // skill 3 sprite sequence (skill3 + skill3b + effects): replaces the film once skill3b exists
+  const film = seq ? null : await skillFilm(u, 'skill' + (i + 1));
   if (film) { setSpot([]); await playFilm(film, u.mir); }
   let begun; const started = new Promise(r => begun = r);
-  const dashArt = !film && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
+  const dashArt = !film && !seq && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
   if (dashArt && i === 1) dashArt.hide = true;
-  const stageArt = !film && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
-  const bossArt = !film && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
+  const stageArt = !film && !seq && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
+  const bossArt = !film && !seq && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
   const dash = dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
-  const clip = film || dash ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
-  const back = dash ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
-  if (!film && !dash) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
-  if (!film && !dash && s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
-  if (!film && !dash && s.t === 'dmg' && !(s.el && rangeOf(s) === 'ranged')) sfx('swing');
+  const sq = seq ? await seqBegin(u, seq) : null;
+  const clip = film || dash || sq ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
+  const back = dash || sq ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
+  if (!film && !dash && !sq) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
+  if (!film && !dash && !sq && s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
+  if (!film && !dash && !sq && s.t === 'dmg' && !(s.el && rangeOf(s) === 'ranged')) sfx('swing');
   if (s.t === 'barrier' || s.t === 'barrierAll' || s.t === 'guard') sfx('ward');
   if (s.t === 'tonic') sfx('heal'); if (s.t === 'brew') sfx('charge', 'poison'); if (s.t === 'immortal') sfx('charge', 'fire');
   if (film) { if (target && (s.t === 'dmg' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]); }
+  else if (sq) { await sq.run(); await sq.home(); }
   else if (s.t === 'dmg') await (dash ? dash.run() : s.storm && target ? skyBolt(target, true) : s.aoe && target && s.el ? Promise.all((u.team === 'p' ? enemies : party).filter(isAlive).map(e => projectile(u, e, s.el))) : s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
@@ -6167,6 +6376,23 @@ function renderHub() {
 }
 function showNotice() {                      // pending pop-ups (saved, so they survive a reload until dismissed)
   const n = game.notices && game.notices[0], box = $('notice');
+  box.classList.remove('top'); $('notice-btn2').style.display = 'none'; $('notice-btn').onclick = dismissNotice;
+  if (n && n.type === 'legend' && heroById(n.id)) {          // a hero finished their Potential: the Legendary look
+    const h = heroById(n.id), sp = $('notice-sprite');
+    box.classList.add('show', 'top'); sp.className = 'mini-sprite port-box'; sp.style.fontSize = ''; sp.dataset.port = h.id; sp.textContent = h.tag;
+    $('notice-title').textContent = `👑 ${h.name.split(' ')[0]}'s Legendary look!`;
+    $('notice-text').textContent = `${h.name.split(' ')[0]} has reached the peak of her Potential.`;
+    $('notice-skills').textContent = '';
+    $('notice-btn').textContent = '👑 Wear it'; $('notice-btn').onclick = () => { const id = n.id; dismissNotice(); setSkin(id, LEGEND); };
+    $('notice-btn2').style.display = '';
+    findAsset(`${ANIM.base}/${h.id}/armoured - ${LEGEND}/idle`).then(a => {        // her legendary idle, big, if it has been drawn; else her portrait stays
+      if (!a || game.notices[0] !== n) return; const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
+      m.src = a.url; if (vid) { m.loop = m.muted = m.autoplay = m.playsInline = true; }
+      sp.className = 'legend-art'; delete sp.dataset.port; sp.innerHTML = ''; sp.appendChild(m);
+    });
+    fillPortraits();
+    return;
+  }
   if (n && n.type === 'tier' && n.id >= 1 && n.id <= MAX_TIER) {
     const T = tierDef(n.id);
     box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🔥'; $('notice-btn').textContent = 'Bring it on!';
@@ -7160,6 +7386,7 @@ function fillHeroArt(root) {       // puts the armoured idle picture (breathing,
     markLive(m, a); el.prepend(m); el.classList.add('has-art');
   }));
 }
+const legendTease = hid => !!POT_HERO[hid] && lakeOpen() && !legendOwned(hid);          // the locked Legendary button shows once Potential exists in the game (Act 3)
 function setSkin(hid, name) {            // Dorm: which look this hero uses (armoured state only); '' = the normal art
   if (!heroById(hid)) return;
   if (name && !skinsFor(hid).includes(name)) return;
@@ -7167,7 +7394,7 @@ function setSkin(hid, name) {            // Dorm: which look this hero uses (arm
   if (name) game.skins[hid] = name; else delete game.skins[hid];
   document.querySelectorAll('[data-port] .pimg').forEach(m => { const h = m.parentElement; m.remove(); if (h) h.classList.remove('has-port'); });
   writeSave(); fillPortraits(); if ($('battle-scene').classList.contains('show')) render();
-  gearMsg = name ? `${heroById(hid).name} now wears the "${name}" look.` : `${heroById(hid).name} is back to the default look.`; renderGear();
+  gearMsg = name ? `${heroById(hid).name} now wears the "${skinLabel(name)}" look.` : `${heroById(hid).name} is back to the default look.`; renderGear();
 }
 function openGear() { gearSel = null; gearMsg = ''; dormHero = null; dormFrom = null; showScene('gear'); }
 let dormFrom = null;          // where the character page was opened from (null = the Dorm itself, 'party-select' = Embark), so Back returns there
@@ -7361,7 +7588,7 @@ function renderGear() {
       <div class="dorm-info dc-col"><h3>${h.name} ${elIcons(h)}</h3>
         ${BIOS[dormHero] ? `<div class="dbio">${BIOS[dormHero].bio}<br><span class="likes">♥ Likes: ${BIOS[dormHero].like}</span> · <span class="hates">✖ Dislikes: ${BIOS[dormHero].hate}</span></div>` : ''}
         <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}${u.rel && u.rel.dodge ? ` · 🌀 Evade ${Math.round(u.rel.dodge * 100)}%` : ''}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
-        ${skinsFor(dormHero).length ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${n || 'Default'}</button>`).join('')}</div>` : ''}
+        ${skinsFor(dormHero).length || legendTease(dormHero) ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${n === LEGEND ? ' legend' : ''}${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${skinLabel(n)}</button>`).join('')}${legendTease(dormHero) ? `<button class="skinbtn legend locked" disabled title="Buy ${heroById(dormHero).name}'s Tier III Potential to unlock">🔒 👑 Legendary</button>` : ''}</div>` : ''}
         <div class="dh">RELICS</div><div class="rslots">${rs}</div>
         ${potSection(dormHero)}</div>
       <div class="dc-col"><div class="dh" style="margin-top:0">SKILLS</div>${sk}
