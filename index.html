@@ -1471,6 +1471,39 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 .dashfx.flip img{transform:translateX(-50%) scaleX(-1)}
 .dashfx.ghost{z-index:69}
 .bigbolt{position:fixed;inset:0;z-index:69;pointer-events:none}
+.slamfx{position:fixed;inset:0;z-index:69;pointer-events:none}
+.slamfx.front{z-index:72}
+.batcloud{position:absolute;border-radius:50%;background:radial-gradient(ellipse,rgba(18,3,10,.98),rgba(30,5,16,.96) 42%,rgba(60,8,26,.75) 56%,rgba(90,12,36,.3) 66%,transparent 72%)}
+.bat{position:absolute;pointer-events:none}.bat svg{width:100%;height:100%;display:block;fill:#140810;filter:drop-shadow(0 0 3px rgba(200,30,60,.7));animation:batFlap .16s ease-in-out infinite alternate;transform-origin:50% 40%}
+@keyframes batFlap{from{transform:scaleY(1)}to{transform:scaleY(.35)}}
+.darksteam{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(130,100,140,.85),rgba(80,55,95,.6) 42%,rgba(40,25,55,0) 70%)}
+.tosspot{position:fixed;z-index:73;pointer-events:none;line-height:1;filter:drop-shadow(0 0 8px #9aff9a)}.tosspot img{height:1.4em;display:block}
+.smokepuff{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 38%,rgba(225,220,235,.95),rgba(160,150,175,.8) 40%,rgba(110,100,125,.45) 62%,rgba(90,80,105,0) 72%);object-fit:contain}
+img.smokepuff{background:none;border-radius:0}
+.vcharm{position:absolute;left:50%;width:var(--cw);z-index:5;pointer-events:none;transform:translate(-50%,-50%) rotate(var(--rot));filter:drop-shadow(0 0 6px rgba(255,230,90,.75))}
+.vcharm img{width:100%;display:block}
+.vcharm:not(.art){height:calc(var(--cw) * 1.55);border-radius:3px;background:linear-gradient(#fff6c9,#f2d97a);border:2px solid #c0392b;box-shadow:inset 0 0 0 3px rgba(192,57,43,.25);display:flex;align-items:center;justify-content:center}
+.vcharm:not(.art) b{font-size:calc(var(--cw) * .7);line-height:1;filter:drop-shadow(0 0 3px #ffe94d)}
+.slamfx>*{position:absolute}
+.slamshadow{height:0;padding-bottom:12%;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),rgba(0,0,0,0) 70%);transform:translate(-50%,-50%)}
+.slamdust{border-radius:50%;background:radial-gradient(circle,rgba(205,190,170,.75),rgba(150,135,120,.35) 55%,rgba(120,110,100,0) 72%)}
+.slamflash{border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,236,190,.85) 25%,rgba(255,190,110,.35) 50%,transparent 70%);mix-blend-mode:screen}
+.slamring{border-radius:50%;border:3px solid rgba(255,235,200,.9);box-shadow:0 0 14px rgba(255,210,150,.8),inset 0 0 10px rgba(255,220,170,.6)}
+.slamring.r2{border-width:2px}
+.slamrock{background:linear-gradient(135deg,#8a7a68,#4a3e33);clip-path:polygon(20% 0,90% 15%,100% 70%,55% 100%,0 75%)}
+.slamcrack{transform-origin:0 0}
+.tauntmark{position:fixed;z-index:85;pointer-events:none;line-height:1;transform-origin:50% 100%}
+.tauntmark span{display:block;font-weight:900;font-family:Impact,'Arial Black',system-ui,sans-serif;color:#ff2b2b;-webkit-text-stroke:.05em #fff;text-shadow:0 0 .12em #ff0000,0 .05em .1em rgba(0,0,0,.6);font-size:1em}
+.tauntmark i{position:absolute;top:30%;width:.3em;height:.07em;border-radius:.04em;background:#ff4040;box-shadow:0 0 .1em #ff0000}
+.tauntmark i:nth-of-type(1){left:-.38em;transform:rotate(-30deg)}.tauntmark i:nth-of-type(2){right:-.38em;transform:rotate(30deg)}
+.tauntmark i:nth-of-type(3){left:-.42em;top:58%;transform:rotate(0)}.tauntmark i:nth-of-type(4){right:-.42em;top:58%;transform:rotate(0)}
+.icedome{position:fixed;z-index:76;pointer-events:none;filter:drop-shadow(0 0 10px rgba(120,200,255,.55))}
+.icedome svg,.icedome img{width:100%;height:100%;display:block;object-fit:fill}
+.icedome .rim{filter:drop-shadow(0 0 4px #bfe9ff)}
+.icedome .tw{transform-box:fill-box;transform-origin:center;animation:domeTw 1.1s ease-in-out infinite;opacity:0}
+@keyframes domeTw{0%,100%{opacity:0;scale:.3}50%{opacity:.95;scale:1}}
+.bookglow{position:fixed;z-index:77;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,255,.95),rgba(160,220,255,.7) 28%,rgba(80,170,255,.25) 55%,transparent 70%);mix-blend-mode:screen}
+.iceshard{position:fixed;z-index:77;pointer-events:none;width:30px;height:9px;clip-path:polygon(0 50%,35% 0,100% 50%,35% 100%);background:linear-gradient(90deg,rgba(160,220,255,0),#dff4ff 55%,#fff);filter:drop-shadow(0 0 6px #8fd3ff)}
 .bigbolt>div{position:absolute;background-repeat:no-repeat;filter:drop-shadow(0 0 14px rgba(150,170,255,.75))}
 .boltflash{position:fixed;inset:0;z-index:68;pointer-events:none;opacity:0;background:rgba(220,230,255,.85);mix-blend-mode:screen}
 .dashfx canvas.seqfx{position:absolute;pointer-events:none;max-width:none}
@@ -2086,7 +2119,7 @@ const HEROES = [
     unlockMsg:'Jean the plague doctor has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground. Her tonics heal, but nothing is free...', skills:[
     { n:'Scalpel Slice',   t:'dmg', r:'melee', d:[10,12], el:'bleed', brk:10, cd:0, phys:true },
     { n:'Tonic',           t:'tonic', heal:45, cd:0, cleanse:1 },
-    { n:'Untested Potions',t:'brew', cd:4 } ] },
+    { n:'Untested Potions',t:'brew', cd:4, cleanse:1 } ] },
   // Tyr, the vampire (reward for the Crypt). Crimson Bite: bonus damage and a heal if the target is already bleeding. Undying Night: once per battle, immortal for `dur` turns;
   // it fires by itself on lethal damage (the unit drops to 1 HP instead). Immortal = HP cannot fall below 1.
   { id:'tyr', weak:['fire'], resist:['bleed'], frontMod:-0.15, name:'Tyr', tag:'TYR', hp:130, brk:60, spd:11, locked:true, elems:['bleed'],
@@ -2101,6 +2134,13 @@ const HEROES = [
     { n:'Blizzard Nova',  t:'dmg', r:'ranged', d:[14,16], el:'ice', brk:18, cd:2, aoe:0.6, aoeBrk:0.6 },
     { n:'Absolute Zero',  t:'dmg', r:'ranged', d:[24,28], el:'ice', brk:28, cd:4, aoe:0.75, aoeBrk:0.75 } ] }
 ];
+/* PARKED HEROES: Siren and Frigid are out of the game for now (eight heroes, two per role: support Aria/Jean, tank Seria/Tyr, damage Irae/Iris, sub-damage/debuff Aneesah/Vesper).
+   RETIRE_ON = false brings them back exactly as they were: their data, skills, Potential and art keys are all still here. While parked they are taken out of HEROES, so nothing lists
+   them; their quests unlock no one; a save that had them keeps them aside in game.parked (back in the roster the moment the switch is off), their relics return to the bag and the
+   crystals spent on their Potential are refunded once (see parkRetired). */
+const RETIRE_ON = true, RETIRED = ['siren', 'frigid'];
+const HEROES_ALL = HEROES.slice();
+if (RETIRE_ON) for (let k = HEROES.length - 1; k >= 0; k--) if (RETIRED.includes(HEROES[k].id)) HEROES.splice(k, 1);
 const ENEMIES = [
   { id:'e_fire', role:'ranged', weak:['ice'], resist:['fire'],  name:'Fire Sentinel',    tag:'FIRE',   hp:90,  brk:35, spd:7,  skills:[
     { n:'Claw',        t:'dmg', r:'melee',  d:[11,13], cd:0 },
@@ -2181,6 +2221,12 @@ const ENEMIES = [
     { n:'Death Chill', t:'dmg', r:'ranged', d:[16,19], el:'ice',    brk:25, cd:3 },
     { n:'Grave Ward',  t:'barrier', p:30, cd:4 } ] },
   // ---- the night parade (yokai: fox-fire, wind, water and oni) ----
+  // ---- the quarantined village (Jean's quest): plague rats and their king. The Rat King borrows the Plague Rat's art until it has its own (ART_ALIAS) ----
+  { id:'e_ratking', boss:true, weak:['fire'], resist:['poison'], name:'The Rat King', short:'Rat King', tag:'RATKING', hp:280, brk:90, spd:9, phases:[{ at:.5, msg:'The Rat King shrieks, and the swarm pours out of the walls!', atk:1.15, summon:2 }], skills:[
+    { n:'Swarm Bite',    t:'dmg', r:'melee',  d:[15,18], el:'poison', brk:15, cd:0 },
+    { n:'Plague Spit',   t:'dmg', r:'ranged', d:[13,16], el:'poison', brk:22, cd:2 },
+    { n:'Gnaw Through',  t:'dmg', r:'melee',  d:[19,22], el:'bleed',  brk:25, cd:3 },
+    { n:'Burrow',        t:'barrier', p:26, cd:4 } ] },
   { id:'e_kappa', role:'front', weak:['shock'], resist:['ice'], name:'Kappa',            tag:'KAPPA',  hp:85,  brk:30, spd:6,  skills:[
     { n:'Webbed Swipe', t:'dmg', r:'melee',  d:[9,11],  cd:0 },
     { n:'Water Jet',    t:'dmg', r:'ranged', d:[10,12], el:'ice',   brk:12, cd:2 } ] },
@@ -2311,6 +2357,21 @@ const QUESTS = [{
     { name: 'Whispering Ossuary', enemies: ['e_wraith', 'e_ghoul', 'e_skel', 'e_warder'],  gold: 80, bg: 4, scale: { hp: 1.0, atk: 1.1 } },
     { name: 'The Bone Gallery', enemies: ['e_bloat', 'e_wraith', 'e_skel', 'e_warder'],    gold: 100, bg: 5, scale: { hp: 1.0, atk: 1.1 } },
     { name: "The Necromancer's Vault", enemies: ['e_skel', 'e_necro', 'e_ghoul'],          gold: 150, bg: 6, boss: true, scale: { hp: 1.0, atk: 1.1 } }
+  ]
+}, {
+  id: 'plague', name: 'The Quarantined Village',
+  relicDrop: 0.4,
+  desc: 'A walled-off village where the plague runs wild: rats in the granary, ghouls in the streets and something big in the sewers. Somebody in a beaked mask is still treating the sick.',
+  pool: ['e_rat', 'e_bloat', 'e_ghoul', 'e_kappa', 'e_wraith', 'e_lantern'],
+  camps: 1,
+  unlocks: 'jean',             // first boss win adds this hero to the roster
+  scale: { hp: 1.15, atk: 1.3 },
+  nodes: [
+    { name: 'Quarantine Gate',     enemies: ['e_rat', 'e_kappa', 'e_rat'],                 gold: 35 },
+    { name: 'Abandoned Market',    enemies: ['e_ghoul', 'e_rat', 'e_lantern'],             gold: 45 },
+    { name: 'The Sick Ward',       enemies: ['e_bloat', 'e_wraith', 'e_rat', 'e_ghoul'],   gold: 55, bg: 2 },
+    { name: 'Flooded Sewers',      enemies: ['e_kappa', 'e_bloat', 'e_wraith', 'e_lantern'], gold: 65, bg: 3, scale: { hp: 1.05, atk: 1.05 } },
+    { name: "The Rat King's Nest", enemies: ['e_rat', 'e_ratking', 'e_rat'], adds: ['e_rat', 'e_rat'], gold: 120, bg: 4, boss: true, scale: { hp: 1.1, atk: 1.05 } }
   ]
 }, {
   id: 'cove', name: "The Siren's Cove",
@@ -2727,7 +2788,7 @@ function potBuild(hid, tier, kind) {          // -> { id, hero, tier, kind, icon
     case 'eye': set('🌩️', 'Eye of the Storm', 'Tempest Unbound always fires 3 small bolts, and every bolt deals double damage to its target, friend or foe'); o.fx.eye = 1; o.mods.push({ kind: 'storm2' }); break;
     case 'call': set('🎶', "Siren's Call", 'Enthralling Song lasts one more attack, and charmed enemies take +25% damage'); o.fx.call = 1; break;
     case 'shadow': set('🌑', 'Shadow Step', 'After Smoke Bomb her next attack deals +60% and cannot miss'); o.fx.shadow = 1; break;
-    case 'formula': set('⚗️', 'Stable Formula', 'Untested Potions also cleanses one non-poison ailment from each ally when drunk'); o.fx.formula = 1; break;
+    case 'formula': set('⚗️', 'Stable Formula', 'Untested Potions cleanses one more non-poison ailment from each ally (two in all)'); o.fx.formula = 1; break;
     case 'eternal': set('🦇', 'Eternal Night', 'Undying Night lasts one more turn, and while it lasts her hits heal her for 60% of the damage dealt'); o.fx.eternal = 1; o.mods.push({ kind: 'dur', add: 1 }); break;
     case 'embrace': set('❄️', "Winter's Embrace", 'Once per battle, Absolute Zero also freezes every enemy (they skip their next turn)'); o.fx.embrace = 1; break;
     default: return null;
@@ -2920,7 +2981,7 @@ function renderPot() {
   $('pot-sub').textContent = lock ? 'A quest is in progress: options can be bought but not switched until it ends.' : `Buy an option once, then switch freely between quests. One option per tier is active. Specialty: ${ELEM_NAME[C.el]} · Weak to: ${ELEM_NAME[C.weak]}`;
   $('pot-list').innerHTML = [1, 2, 3].map(t => {
     const open = potTierOpen(t), q = QUESTS.find(x => x.id === POTENTIAL.unlock[t]);
-    return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}${t === 3 ? `<span class="pot-legend" title="Buying it unlocks ${h.name}'s Legendary look">${legendOwned(hid) ? '👑 Legendary look earned' : '👑 unlocks the Legendary look'}</span>` : ''}</div>` + potList(hid, t).map(o => {
+    return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}${t === 3 && LEGEND_ON ? `<span class="pot-legend" title="Buying it unlocks ${h.name}'s Legendary look">${legendOwned(hid) ? '👑 Legendary look earned' : '👑 unlocks the Legendary look'}</span>` : ''}</div>` + potList(hid, t).map(o => {
       const owned = st.owned.includes(o.id), on = st.active[t] === o.id, afford = potCrystals() >= o.cost;
       return `<div class="pot-opt${on ? ' on' : ''}${open ? '' : ' locked'}${potPrev === o.id ? ' prev' : ''}" onclick="potPreview('${o.id}')">${potIcon(o)}<div class="pt"><b>${o.name}</b><br>${o.desc}</div>
         <div class="pb">${!open ? '' : owned ? (on ? '' : `<button onclick="event.stopPropagation();potSet('${o.id}')" ${lock ? 'disabled' : ''}>Equip</button>`) : `<button class="primary" onclick="event.stopPropagation();potBuy('${o.id}')" ${afford ? '' : 'disabled'}>❄️ ${o.cost}</button>`}</div></div>`; }).join('') + '</div>';
@@ -3394,7 +3455,7 @@ let over = false;
 // so older saves get upgraded instead of breaking. Saves are per browser and per device.
 const START_GOLD = 0;     // gold a brand new game starts with: nothing, you live off the starting supplies and your first run's winnings
 const START_ITEMS = { potion: 6, ration: 4, kit: 3 };   // starting bag: enough to clear the first quest if played well (a bare run is still a gamble; perks and relics improve the odds)
-const SAVE = { key: 'animeRpgSave', version: 11, prefix: 'ARPG1:' };   // prefix marks the export format, not the save version
+const SAVE = { key: 'animeRpgSave', version: 12, prefix: 'ARPG1:' };   // prefix marks the export format, not the save version
 const migrations = {
   // Each entry upgrades a save FROM that version to the next one.
   1: s => { s.roster = HEROES.filter(h => !h.locked).map(h => h.id); s.lastParty = []; s.scene = 'hub'; s.version = 2; return s; },
@@ -3421,7 +3482,8 @@ const migrations = {
     s.version = 9; return s;
   },
   9: s => { s.relics = []; s.equip = {}; s.shop = { stock: rollStock([]) }; s.version = 10; return s; },     // relics: owned ids, worn per hero, and the shop's current stock
-  10: s => { delete s.relaxed; delete s.trained; s.traits = {}; s.version = 11; return s; },      // spa / training buffs became permanent hero traits
+  10: s => { delete s.relaxed; delete s.trained; s.traits = {}; s.version = 11; return s; },
+  11: s => { if (s.cleared && ['ruins', 'yokai', 'crypt'].every(id => s.cleared[id])) s.preJean = true; s.version = 12; return s; },     // the plague village (Jean) joined the Old Lands      // spa / training buffs became permanent hero traits
   // Example for later: 11: s => { s.newField = 0; s.version = 12; return s; },
   // When a new hero is added to HEROES, add a migration that pushes their id into s.roster (or unlock them in-game).
 };
@@ -3474,7 +3536,27 @@ function upgrade(s) {
     if (s.cleared && typeof s.cleared === 'object') Object.keys(s.cleared).forEach(id => { if (s.cleared[id] && t.cleared[id] === undefined) t.cleared[id] = 0; });
   }
   Object.keys(s.skins).forEach(id => { if (typeof s.skins[id] !== 'string' || !s.skins[id]) delete s.skins[id]; });
+  parkRetired(s);
   return sanitizeTraits(sanitizeGear(s));
+}
+function parkRetired(s) {                    // see RETIRE_ON: set parked heroes aside (or bring them back), once per save
+  s.parked = Array.isArray(s.parked) ? s.parked.filter(id => RETIRED.includes(id)) : [];
+  if (!RETIRE_ON) { s.parked.forEach(id => { if (!s.roster.includes(id)) s.roster.push(id); }); s.parked = []; return; }
+  const gone = [];
+  RETIRED.forEach(id => {
+    if (s.roster.includes(id)) { s.roster = s.roster.filter(x => x !== id); if (!s.parked.includes(id)) s.parked.push(id); gone.push(id); }
+    const st = s.pot && s.pot[id];
+    const C = POT_HERO[id], tierOf = o => { const k = String(o).split('.')[1]; return !C ? 0 : C.t1.includes(k) ? 1 : C.t2.includes(k) ? 2 : C.t3 === k ? 3 : 0; };          // (a parked hero's options aren't in POT_OPTS)
+    if (st && Array.isArray(st.owned) && st.owned.length) { const back = st.owned.reduce((n, o) => n + (POTENTIAL.cost[tierOf(o)] || 0), 0); s.crystals = (s.crystals || 0) + back; s.parkRefund = (s.parkRefund || 0) + back; }
+    if (s.pot) delete s.pot[id];
+    if (s.equip) delete s.equip[id];                                 // worn relics go back to the bag
+    if (s.skins) delete s.skins[id];
+    if (Array.isArray(s.lastParty)) s.lastParty = s.lastParty.filter(x => x !== id);
+    if (Array.isArray(s.finalSlots)) s.finalSlots = s.finalSlots.map(x => x === id ? null : x);
+    if (s.quest && Array.isArray(s.quest.party) && s.quest.party.some(m => m && m.id === id)) s.quest = null;       // a run with a parked hero can't continue
+  });
+  if (Array.isArray(s.notices)) s.notices = s.notices.filter(n => !(n && n.type === 'unlock' && RETIRED.includes(n.id)));
+  if (gone.length) { s.notices = s.notices || []; s.notices.unshift({ type: 'parked', ids: gone, crystals: s.parkRefund || 0 }); s.parkRefund = 0; }
 }
 function hasRawSave() { try { return localStorage.getItem(SAVE.key) !== null; } catch (e) { return false; } }
 function readSave() {
@@ -3587,9 +3669,10 @@ const manifestReady = (async () => {
    Skins are found from assets/manifest.json automatically; SKIN_HINTS lists them for when there is no manifest (local testing). The broken state is never skinned. */
 const SKIN_HINTS = { iris: ['swimsuit', 'winter gear'] };
 /* ---- quest groups: how the embark menu is laid out, and what opens the second group ---- */
+if (RETIRE_ON) QUESTS.forEach(q => { if (RETIRED.includes(q.unlocks)) q.unlocks = null; });          // a parked hero's quest unlocks no one
 const QUEST_GROUPS = [
-  { id: 'lands', icon: '⚔️', name: 'The Old Lands', blurb: 'Sentinels, yokai and the restless dead', ids: ['ruins', 'yokai', 'crypt'] },
-  { id: 'coast', icon: '🌊', name: 'The Tidelands', blurb: 'Storm, lighthouse and sunbaked shore', ids: ['cove', 'lighthouse', 'beach'], requires: ['ruins', 'yokai', 'crypt'] },
+  { id: 'lands', icon: '⚔️', name: 'The Old Lands', blurb: 'Sentinels, yokai, the restless dead and a plague village', ids: ['ruins', 'plague', 'yokai', 'crypt'] },
+  { id: 'coast', icon: '🌊', name: 'The Tidelands', blurb: 'Storm, lighthouse and sunbaked shore', ids: ['cove', 'lighthouse', 'beach'], requires: ['ruins', 'plague', 'yokai', 'crypt'] },
   { id: 'frost', icon: '❄️', name: 'The Frostbound Peaks', blurb: 'Blizzards, torches and a very cold queen', ids: ['pass', 'valley', 'castle'], requires: ['cove', 'lighthouse', 'beach'] }
 ];
 /* ---- NEW GAME+: the whole game again, harder, with every unlock kept ----
@@ -3607,7 +3690,7 @@ const tierDef = n => TIERS[Math.max(0, Math.min(MAX_TIER, n | 0))] || TIERS[0];
 const tierText = T => !T.hp ? 'The normal game.' : `Enemies +${Math.round((T.hp - 1) * 100)}% HP and +${Math.round((T.atk - 1) * 100)}% damage · +${Math.round((T.gold - 1) * 100)}% gold · more elites · better boss drops${T.lastStand ? ' · bosses make a last stand at 25% HP' : ''}`;
 const tierCleared = id => (game && game.tiers && game.tiers.cleared && Number.isInteger(game.tiers.cleared[id])) ? game.tiers.cleared[id] : -1;      // highest difficulty this quest was beaten on (-1 = never)
 const questCleared = id => !!(game && game.cleared && game.cleared[id]);
-const groupOpen = g => !g.requires || devMode || g.requires.every(questCleared);
+const groupOpen = g => !g.requires || devMode || g.requires.every(id => questCleared(id) || (id === 'plague' && game && game.preJean));      // saves that had opened the Tidelands before the village existed keep them open
 const groupOf = id => QUEST_GROUPS.find(g => g.ids.includes(id));
 const finalOpen = () => devMode || questCleared('castle');           // the Final Stand appears on the map once the Ice Queen has fallen
 const questOpen = id => { if (id === 'final') return finalOpen(); const g = groupOf(id); return !g || groupOpen(g); };
@@ -3622,9 +3705,10 @@ function tierUnlock() {          // every quest beaten on the current top diffic
 }
 const frostOpen = () => groupOpen(QUEST_GROUPS[2]);          // clearing all three Tidelands quests opens Act 3 and the winter gear skins
 const coastOpen = () => groupOpen(QUEST_GROUPS[1]);          // also what unlocks the hero skins
-/* LEGENDARY skin: assets/<hero>/armoured - legendary/ (same files as armoured/). Earned by buying that hero's Tier III Potential option (each hero has exactly one). */
-const LEGEND = 'legendary';
-const legendOwned = hid => { const C = POT_HERO[hid], st = game && game.pot && game.pot[hid]; return !!(C && st && Array.isArray(st.owned) && st.owned.includes(hid + '.' + C.t3)); };
+/* LEGENDARY skin (PARKED: LEGEND_ON = false hides every trace of it until it comes back): assets/<hero>/armoured - legendary/ (same files as armoured/).
+   Earned by buying that hero's Tier III Potential option (each hero has exactly one): a 👑 pop-up, a locked button in the Dorm, a tag on the Potential screen. */
+const LEGEND_ON = false, LEGEND = 'legendary';
+const legendOwned = hid => { if (!LEGEND_ON) return false; const C = POT_HERO[hid], st = game && game.pot && game.pot[hid]; return !!(C && st && Array.isArray(st.owned) && st.owned.includes(hid + '.' + C.t3)); };
 const skinLabel = n => n === LEGEND ? '👑 Legendary' : (n || 'Default');
 const skinOf = id => { const sk = game && coastOpen() && game.skins && game.skins[id]; return sk && !(sk === 'winter gear' && !frostOpen()) && !(sk === LEGEND && !legendOwned(id)) ? sk : null; };
 function skinsFor(id) {
@@ -3632,9 +3716,10 @@ function skinsFor(id) {
   const names = new Set(SKIN_HINTS[id] || []);
   if (manifest) Object.keys(manifest).forEach(k => { const m = k.match(/^([^/]+)\/armoured - ([^/]+)\//); if (m && m[1] === id) names.add(m[2]); });
   if (legendOwned(id)) names.add(LEGEND);              // the legendary look is listed once earned, art or not (missing files fall back to armoured/)
-  return [...names].filter(n => (n !== 'winter gear' || frostOpen()) && (n !== LEGEND || legendOwned(id)));          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
+  return [...names].filter(n => !STATE_SKINS.includes(n) && (n !== 'winter gear' || frostOpen()) && (n !== LEGEND || legendOwned(id)));          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
 }
 function stateFolder(u) {                         // the art folder for a unit's current state
+  if (u.immortalLook) return `armoured - ${IMMORTAL.look}`;                    // Tyr's immortal look (see IMMORTAL); missing pictures fall back along artChain
   const f = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
   const sk = f === 'armoured' && u.team === 'p' ? skinOf(u.id) : null;
   return sk ? `armoured - ${sk}` : f;
@@ -3653,7 +3738,13 @@ async function baseIdle(id) { const sk = skinOf(id); return (sk && await findAss
 /* Non-boss enemies have ONE picture: assets/enemies/<enemy id>.(png|webp|gif|mp4|webm). It stands in for idle, damaged, broken and every attack; the game moves and tints it for life.
    Bosses keep full per-state folders (assets/<boss id>/armoured/idle ... skill3). Until a fodder enemy's file is moved over, its old <id>/armoured/idle is still used. */
 const oneSprite = id => { const e = ENEMIES.find(x => x.id === id); return !!e && !e.boss; };
+const ART_ALIAS = { e_ratking: 'e_rat' };             // a new enemy wears another one's art until its own is drawn (its own files always win)
 async function findAsset(path) {
+  if (path.startsWith(ANIM.base + '/')) { const q = path.slice(ANIM.base.length + 1).split('/'), al = ART_ALIAS[q[0]];
+    if (al) { const own = await findAsset0(path); return own || findAsset0([ANIM.base, al, ...q.slice(1)].join('/')); } }
+  return findAsset0(path);
+}
+async function findAsset0(path) {
   if (!(path in animCache) && path.startsWith(ANIM.base + '/')) {
     const q = path.slice(ANIM.base.length + 1).split('/');
     if (q.length === 3 && oneSprite(q[0])) {
@@ -4127,7 +4218,7 @@ let dashLive = null;
 function dashClear() {
   showParty();
   if (!dashLive) return; const d = dashLive; dashLive = null;
-  if (d.stop) d.stop(); d.parts.forEach(x => x.remove()); if (d.el) d.el.style.visibility = ''; if (d.tcard) { d.tcard.style.zIndex = ''; d.tcard.style.position = ''; }
+  if (d.stop) d.stop(); d.parts.forEach(x => x.remove()); if (d.el) d.el.style.visibility = ''; if (d.raised) d.raised.forEach(c => { c.style.zIndex = ''; c.style.position = ''; }); if (d.tcard) { d.tcard.style.zIndex = ''; d.tcard.style.position = ''; }
 }
 async function dashBegin(u, t, art) {            // returns { run, follow, home } or null (then the normal lunge is used)
   dashClear();
@@ -4318,6 +4409,424 @@ async function stage3Begin(u, t, art) {
   };
 }
 
+/* ---- skill 3 as a close-up BEHIND the party, who stay in view (Aria's Aegis) ----
+   Her skill3 picture rises into place behind the party line (bottom edge on the bottom of the screen; the picture stops at her thighs), the party stays visible in front of her,
+   ice shards fly from her book to every ally and a frost barrier climbs up around each of them from the ground. She fades back into the line-up, her own barrier forms around her,
+   and the barriers melt away as the real ones (and the cleanse) land.
+   Art:  assets/<id>/<armoured | broken | skin>/skill3.png   (a skill3 video is ignored once a skill3 picture exists)
+         assets/<id>/effects/barrier.png  OPTIONAL: your own barrier picture, drawn around one standing figure (it is stretched to each ally's size). Without it the game draws an ice dome.
+   Knobs: h / bottom / x as for SEQ3; book = where the shards leave from (dx sideways, up = height above her bottom edge, both in close-up heights, facing right); dome = barrier size (w, h as
+          fractions of each ally's figure box); ms = timings. */
+const WARD3 = { aria: { key: 'skill3', h: 1.0, bottom: 1.0, x: 0, book: { dx: .24, up: .55 }, dome: { w: .62, h: .6 }, ice: ['#e9f8ff', '#9fdcff', '#4fb4ff'],
+  ms: { rise: 240, charge: 220, shards: 300, climb: 380, stagger: 80, hold: 480, out: 320, self: 300, melt: 420 } } };
+async function ward3Assets(u, i) {
+  const K = WARD3[u.id]; if (i !== 2 || !K || u.team !== 'p' || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  let a = null; for (const f of artChain(u)) { a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.key}`); if (a) break; }
+  if (!a) return null;
+  const sf = stateFolder(u), fx = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/barrier`)) || await findStill(`${ANIM.base}/${u.id}/effects/barrier`);
+  return { K, a, fx, ward: true };
+}
+let domeN = 0;
+function iceDome(B, K, art) {                  // one barrier around a figure box: an element that the caller animates
+  const h = B.h * K.dome.h * 1.55, w = Math.min(B.w * 1.05, h * K.dome.w * .75), d = document.createElement('div'), id = 'dm' + (++domeN), [c0, c1, c2] = K.ice;
+  d.className = 'icedome'; Object.assign(d.style, { left: (B.cx - w / 2) + 'px', top: (B.bottom - h * .97) + 'px', width: w + 'px', height: h + 'px' });
+  if (art) { d.innerHTML = `<img src="${art.url}" alt="">`; return d; }
+  let spikes = ''; for (let k = 0; k < 13; k++) { const x = 14 + k * 14.3 + (k % 2 ? 3 : -3), hh = 14 + (k * 37 % 19); spikes += `<path d="M${x - 6} 238 L${x} ${238 - hh} L${x + 6} 238Z" fill="url(#${id}g2)"/>`; }
+  let twinkle = ''; for (let k = 0; k < 6; k++) twinkle += `<path class="tw" style="animation-delay:${(k * .23).toFixed(2)}s" transform="translate(${30 + (k * 53) % 140} ${40 + (k * 71) % 150})" d="M0 -7 L1.6 -1.6 L7 0 L1.6 1.6 L0 7 L-1.6 1.6 L-7 0 L-1.6 -1.6Z" fill="#fff"/>`;
+  d.innerHTML = `<svg viewBox="0 0 200 240" preserveAspectRatio="none"><defs>
+      <radialGradient id="${id}g" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="${c1}" stop-opacity=".06"/><stop offset=".7" stop-color="${c1}" stop-opacity=".2"/><stop offset="1" stop-color="${c0}" stop-opacity=".55"/></radialGradient>
+      <linearGradient id="${id}g2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${c2}" stop-opacity=".9"/><stop offset="1" stop-color="${c0}"/></linearGradient>
+      <pattern id="${id}p" width="24" height="41.6" patternUnits="userSpaceOnUse"><path d="M12 0 L24 6.9 L24 20.8 L12 27.7 L0 20.8 L0 6.9Z M12 27.7 L12 41.6" fill="none" stroke="${c0}" stroke-width="1.1" opacity=".55"/></pattern>
+      <clipPath id="${id}c"><ellipse cx="100" cy="128" rx="94" ry="110"/></clipPath></defs>
+    <ellipse cx="100" cy="128" rx="94" ry="110" fill="url(#${id}g)"/>
+    <rect width="200" height="240" fill="url(#${id}p)" clip-path="url(#${id}c)" opacity=".7"/>
+    <path d="M30 70 Q60 30 100 22" stroke="#fff" stroke-width="5" fill="none" opacity=".55" stroke-linecap="round"/>
+    <ellipse class="rim" cx="100" cy="128" rx="94" ry="110" fill="none" stroke="${c0}" stroke-width="3.2"/>
+    ${spikes}${twinkle}</svg>`;
+  return d;
+}
+async function ward3Begin(u, art) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = art.K, vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u), dir = flip ? -1 : 1;
+  const d0 = document.createElement('div'); d0.className = 'dashfx' + (flip ? ' flip' : '');
+  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px', opacity: 0 });
+  const im = document.createElement('img'); im.className = 'a'; im.src = art.a.url; im.draggable = false; d0.appendChild(im); document.body.appendChild(d0);
+  if (im.decode) await im.decode().catch(() => {});
+  const d = dashLive = { parts: [d0], el, tcard: null, raised: [] }; el.style.visibility = 'hidden';
+  // the party stays in view, in FRONT of her: their cards are lifted above the close-up while it plays
+  party.forEach(m => { const f = figs.get(m), c = f && f.closest('.combatant-card'); if (c) { c.style.position = 'relative'; c.style.zIndex = 75; d.raised.push(c); } });
+  const pc = $('party-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx = (pr && pr.width ? pr.left + pr.width / 2 : A.cx) + dir * K.x * vw;
+  const H = vh * K.h * fbScale(u), ih = im.offsetHeight || A.h * SPR_SCALE, S0 = H / ih, P1y = vh * K.bottom - A.bottom;
+  const P1 = `translate(${fx - A.cx}px,${P1y}px) scale(${S0})`, from = `translate(${fx - A.cx}px,${P1y + H * .3}px) scale(${S0})`;
+  const bx = fx + dir * K.book.dx * H, by = vh * K.bottom - K.book.up * H;
+  const anim = (node, frames, ms, ease, extra) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards', ...(extra || {}) });
+  const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
+  const T = K.ms, domes = new Map();
+  const allies = () => party.filter(m => isAlive(m) && m !== u && figs.get(m) && figs.get(m).isConnected);
+  const raise = (m) => { const f = figs.get(m); if (!f || !f.isConnected) return null; const B = figBox(f); if (!B.w) return null; const dm = iceDome(B, K, art.fx); document.body.appendChild(dm); d.parts.push(dm); domes.set(m, dm); return dm; };
+  const climb = (dm, ms, delay) => { dm.animate([{ clipPath: 'inset(100% -10% 0 -10%)', opacity: .4 }, { clipPath: 'inset(0% -10% 0 -10%)', opacity: 1 }], { duration: dspd(ms), delay: dspd(delay || 0), easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'both' });
+    dm.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(2.2)', offset: .82 }, { filter: 'brightness(1)' }], { duration: dspd(ms + 160), delay: dspd(delay || 0), fill: 'both' }); };
+  return {
+    async run() {
+      sfx('whoosh');
+      await wait(anim(d0, [{ transform: from, opacity: 0 }, { transform: P1, opacity: 1 }], T.rise, 'cubic-bezier(.2,.8,.3,1)'), T.rise);
+      d0.style.transform = P1; d0.style.opacity = 1;
+      // the book flares
+      sfx('charge', 'ice');
+      const g = document.createElement('div'); g.className = 'bookglow'; Object.assign(g.style, { left: bx + 'px', top: by + 'px', width: (vh * .16) + 'px', height: (vh * .16) + 'px' }); document.body.appendChild(g); d.parts.push(g);
+      g.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.3)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: .6 }, { opacity: .85, transform: 'translate(-50%,-50%) scale(.9)' }], { duration: dspd(T.charge), fill: 'forwards' });
+      await sleep(dspd(T.charge));
+      // shards fly to every ally, and the barriers climb up around them
+      sfx('whoosh', 'ice');
+      const list = allies();
+      list.forEach((m, k) => { const f = figs.get(m), B = figBox(f), tx = B.cx, ty = B.bottom - B.h * .5;
+        for (let j = 0; j < 3; j++) { const s = document.createElement('div'); s.className = 'iceshard'; Object.assign(s.style, { left: bx + 'px', top: by + 'px' }); document.body.appendChild(s); d.parts.push(s);
+          const ox = (j - 1) * B.w * .25, oy = (j % 2 ? -1 : 1) * B.h * .12, ang = Math.atan2(ty + oy - by, tx + ox - bx) * 180 / Math.PI;
+          s.animate([{ transform: `translate(-50%,-50%) rotate(${ang}deg) scale(.4)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(calc(-50% + ${tx + ox - bx}px),calc(-50% + ${ty + oy - by}px)) rotate(${ang}deg) scale(1)`, opacity: 1, offset: .92 }, { transform: `translate(calc(-50% + ${tx + ox - bx}px),calc(-50% + ${ty + oy - by}px)) rotate(${ang}deg) scale(.2)`, opacity: 0 }],
+            { duration: dspd(T.shards), delay: dspd(k * T.stagger + j * 40), easing: 'cubic-bezier(.5,0,.8,.6)', fill: 'both' }); }
+        const dm = raise(m); if (dm) climb(dm, T.climb, k * T.stagger + T.shards * .75);
+      });
+      setTimeout(() => sfx('ward'), dspd(T.shards * .8));
+      g.animate([{ opacity: .85 }, { opacity: 0 }], { duration: dspd(T.shards + 200), fill: 'forwards' });
+      await sleep(dspd(T.shards * .75 + T.climb + Math.max(0, list.length - 1) * T.stagger + T.hold));
+    },
+    async home() {
+      if (dashLive !== d) return;
+      // she fades back into the line-up, and her own barrier forms around her
+      if (el.isConnected) el.style.visibility = '';
+      await wait(anim(d0, [{ opacity: 1 }, { opacity: 0 }], T.out, 'ease-in'), T.out);
+      d.raised.forEach(c => { c.style.zIndex = ''; c.style.position = ''; }); d.raised = [];
+      const me = isAlive(u) ? raise(u) : null; if (me) { climb(me, T.self); await sleep(dspd(T.self + 160)); }
+      // the barriers melt away as the real ones land
+      const all = [...domes.values()];
+      await Promise.all(all.map(dm => wait(dm.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(3%)' }], { duration: dspd(T.melt), easing: 'ease-in', fill: 'forwards' }), T.melt)));
+      dashClear();
+    }
+  };
+}
+
+/* ---- skill 3 as a leap and a slam (Seria's Defiant Slam). No close-up: she crouches in her slot and leaps up in an arc onto her target in her skill3 picture, slams down beside it
+   and switches to skill3b on contact (shake, flash, shockwave, dust, flying rocks, cracks in the ground), a red "!" shoots up over the target (the taunt), and she hops back to her slot.
+   Art:  assets/<id>/<armoured | broken | skin>/skill3.png (airborne) + skill3b.png (the slam). A skill3 video is ignored once both pictures exist.
+   Knobs: apex = how high the arc peaks above the taller of the two heads (fraction of screen height); gap = where she lands in front of the target (in target widths);
+          grow = extra size at the top of the arc (toward the camera); ms = timings; ghosts = afterimages trailing the leap. */
+const LEAP3 = { seria: { key: 'skill3', apex: .17, gap: .32, grow: 1.1, ghosts: 3, ms: { crouch: 130, leap: 440, stop: 80, mark: 650, home: 320 } } };
+async function leap3Assets(u, i) {
+  const K = LEAP3[u.id]; if (i !== 2 || !K || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  for (const f of artChain(u)) { const b = await findStill(`${ANIM.base}/${u.id}/${f}/${K.key}b`); if (b) { const a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.key}`); return a ? { K, a, b } : null; } }
+  return null;
+}
+async function leap3Begin(u, t, art) {
+  dashClear();
+  const el = figs.get(u), tf = figs.get(t); if (!el || !tf || !el.isConnected || !tf.isConnected) return null;
+  const A = figBox(el), B = figBox(tf); if (!A.w || !B.w) return null;
+  const K = art.K, dir = Math.sign(B.cx - A.cx) || (u.team === 'p' ? 1 : -1), flip = sprFlip(u), vh = document.documentElement.clientHeight, vw = document.documentElement.clientWidth;
+  const mk = (cls) => { const d = document.createElement('div'); d.className = 'dashfx ' + cls + (flip ? ' flip' : ''); Object.assign(d.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+    ['a', 'b'].forEach(k => { const im = document.createElement('img'); im.className = k; im.src = art[k].url; im.draggable = false; d.appendChild(im); }); document.body.appendChild(d); return d; };
+  const main = mk(''), ghosts = Array.from({ length: K.ghosts || 0 }, () => { const g = mk('ghost'); g.style.opacity = 0; return g; });
+  await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
+  const d = dashLive = { parts: [main, ...ghosts], el, tcard: null };
+  el.style.visibility = 'hidden';
+  const T = K.ms, sc1 = B.h / A.h, lx = B.cx - dir * B.w * K.gap - A.cx, ly = B.bottom - A.bottom;
+  const tr = (x, y, s, r = 0, sx = 1, sy = 1) => `translate(${x}px,${y}px) rotate(${r}deg) scale(${s * sx},${s * sy})`;
+  const peak = Math.min(A.bottom - A.h * SPR_SCALE, B.bottom - B.h * SPR_SCALE) - vh * K.apex;          // the top of her head at the top of the arc
+  const arc = [];                                                                                     // gravity: hangs near the top, then slams down fast
+  for (let k = 0; k <= 14; k++) { const p = k / 14, q = Math.pow(p, 1.35), s = 1 + (sc1 - 1) * p, lift = Math.sin(Math.PI * q);
+    const headNow = (A.bottom + ly * p) - A.h * SPR_SCALE * s, up = Math.max(0, headNow - peak) * lift;
+    arc.push({ transform: tr(lx * p, ly * p - up, s * (1 + (K.grow - 1) * lift), dir * (-9 + 15 * p)), offset: p }); }
+  const anim = (node, frames, ms, ease, extra) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards', ...(extra || {}) });
+  const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
+  const LAND = tr(lx, ly, sc1, 0);
+  const layer = () => { const v = document.createElement('div'); v.className = 'slamfx'; document.body.appendChild(v); d.parts.push(v); return v; };
+  const groundAt = (p) => ({ x: A.cx + lx * p, y: A.bottom + ly * p });
+  return {
+    async run() {
+      // crouch, a puff of dust, and up she goes
+      const aC = anim(main, [{ transform: tr(0, 0, 1) }, { transform: tr(0, 0, 1, 0, 1.05, .9) }], T.crouch, 'ease-out'); await wait(aC, T.crouch);
+      sfx('swing');
+      const fx = layer(), g0 = groundAt(0), sh = document.createElement('div'); sh.className = 'slamshadow'; fx.appendChild(sh);
+      Object.assign(sh.style, { left: g0.x + 'px', top: g0.y + 'px', width: (A.w * .8) + 'px' });
+      sh.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: .55 }, { transform: `translate(calc(-50% + ${lx * .6}px),calc(-50% + ${ly * .6}px)) scale(.45)`, opacity: .25, offset: .6 }, { transform: `translate(calc(-50% + ${lx}px),calc(-50% + ${ly}px)) scale(${sc1 * 1.1})`, opacity: .6 }], { duration: dspd(T.leap), fill: 'forwards', easing: 'linear' });
+      for (let k = 0; k < 5; k++) { const p = document.createElement('div'); p.className = 'slamdust'; fx.appendChild(p); const s = A.w * (.25 + Math.random() * .2);
+        Object.assign(p.style, { left: (g0.x + (k - 2) * A.w * .12) + 'px', top: g0.y + 'px', width: s + 'px', height: s + 'px' });
+        p.animate([{ transform: 'translate(-50%,-50%) scale(.3)', opacity: .7 }, { transform: `translate(calc(-50% + ${(k - 2) * A.w * .18}px),calc(-50% - ${A.h * .06}px)) scale(1.4)`, opacity: 0 }], { duration: dspd(420), easing: 'ease-out', fill: 'forwards' }); }
+      ghosts.forEach((g, i) => { g.style.opacity = ''; anim(g, arc.map(f => ({ ...f, opacity: f.offset < .08 || f.offset > .96 ? 0 : .3 - i * .08 })), T.leap, 'linear', { delay: dspd(38 * (i + 1)) }); });
+      sfx('whoosh');
+      const aArc = anim(main, arc, T.leap, 'linear'); aC.cancel(); await wait(aArc, T.leap);
+      // contact: the slam picture, a flash, a shockwave, dust, rocks and cracks
+      main.classList.add('swap'); main.style.transform = LAND; aArc.cancel();
+      shake(2); sfx('shatter');
+      const ix = B.cx - dir * B.w * .1, iy = B.bottom, fx2 = layer(), W = B.w * 2.6, sc = fbScale(t);
+      fx2.innerHTML = `<div class="slamflash" style="left:${ix}px;top:${iy - B.h * .3}px;width:${B.h * .9}px;height:${B.h * .9}px"></div>`
+        + `<div class="slamring" style="left:${ix}px;top:${iy}px;width:${W}px;height:${W * .22}px"></div><div class="slamring r2" style="left:${ix}px;top:${iy}px;width:${W * .8}px;height:${W * .18}px"></div>`;
+      let cracks = ''; for (let k = 0; k < 7; k++) { const a = (k / 6) * Math.PI, len = W * (.28 + (k * 37 % 10) / 40), x2 = Math.cos(a) * len, y2 = Math.sin(a) * len * .16; let pts = `0,0`; for (let j = 1; j <= 4; j++) pts += ` ${(x2 * j / 4 + (j < 4 ? (j % 2 ? 6 : -6) : 0)).toFixed(1)},${(y2 * j / 4 + (j < 4 ? (j % 2 ? -3 : 3) : 0)).toFixed(1)}`; cracks += `<polyline points="${pts}"/>`; }
+      fx2.insertAdjacentHTML('beforeend', `<svg class="slamcrack" style="left:${ix}px;top:${iy}px" width="1" height="1" overflow="visible"><g stroke="#1a120c" stroke-width="${3 * sc}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".85">${cracks}</g><g stroke="#ffd27a" stroke-width="${1.2 * sc}" fill="none" opacity=".75">${cracks}</g></svg>`);
+      fx2.querySelector('.slamflash').animate([{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(1.25)', opacity: 0 }], { duration: dspd(300), easing: 'ease-out', fill: 'forwards' });
+      fx2.querySelectorAll('.slamring').forEach((r, k) => r.animate([{ transform: 'translate(-50%,-50%) scale(.15)', opacity: .95 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 0 }], { duration: dspd(460 + k * 120), delay: dspd(k * 60), easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'both' }));
+      fx2.querySelector('.slamcrack').animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1)', offset: .15 }, { opacity: 1, offset: .7 }, { opacity: 0, transform: 'scale(1)' }], { duration: dspd(1100), fill: 'forwards' });
+      for (let k = 0; k < 10; k++) { const r = document.createElement('div'); r.className = 'slamrock'; fx2.appendChild(r); const s = (5 + Math.random() * 8) * sc, ang = Math.PI * (.08 + .84 * Math.random()), v = B.h * (.25 + Math.random() * .3), dx = -Math.cos(ang) * v * 1.2, up = Math.sin(ang) * v;
+        Object.assign(r.style, { left: ix + 'px', top: iy + 'px', width: s + 'px', height: s + 'px' });
+        r.animate([{ transform: 'translate(-50%,-50%) rotate(0deg)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx * .6}px),calc(-50% - ${up}px)) rotate(200deg)`, opacity: 1, offset: .45 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% - ${up * .2}px)) rotate(420deg)`, opacity: 0 }], { duration: dspd(560 + Math.random() * 200), easing: 'cubic-bezier(.2,.6,.6,1)', fill: 'forwards' }); }
+      for (let k = 0; k < 6; k++) { const p = document.createElement('div'); p.className = 'slamdust'; fx2.appendChild(p); const s = B.w * (.35 + Math.random() * .25);
+        Object.assign(p.style, { left: ix + 'px', top: iy + 'px', width: s + 'px', height: s + 'px' });
+        p.animate([{ transform: 'translate(-50%,-60%) scale(.3)', opacity: .8 }, { transform: `translate(calc(-50% + ${(k - 2.5) * B.w * .32}px),calc(-50% - ${B.h * .08}px)) scale(1.6)`, opacity: 0 }], { duration: dspd(620), easing: 'ease-out', fill: 'forwards' }); }
+      main.animate([{ transform: tr(lx, ly, sc1, 0, 1.06, .93) }, { transform: LAND }], { duration: dspd(160), easing: 'ease-out' });
+      await sleep(dspd(T.stop));                         // a beat of hit-stop, then the blow resolves
+    },
+    async follow() {                                     // the taunt: a red "!" shoots up over the target
+      const f = figs.get(t); if (!f || !f.isConnected) { await sleep(dspd(200)); return; }
+      const C = figBox(f), m = document.createElement('div'); m.className = 'tauntmark'; m.innerHTML = '<span>!</span><i></i><i></i><i></i><i></i>';
+      Object.assign(m.style, { left: C.cx + 'px', top: (C.bottom - C.h * SPR_SCALE) + 'px', fontSize: Math.max(46, C.h * .2) + 'px' }); document.body.appendChild(m); d.parts.push(m);
+      m.animate([{ transform: 'translate(-50%,0) scale(.2)', opacity: 0 }, { transform: 'translate(-50%,-85%) scale(1.35)', opacity: 1, offset: .35 }, { transform: 'translate(-50%,-70%) scale(1)', opacity: 1, offset: .5 }, { transform: 'translate(-50%,-72%) scale(1.04)', opacity: 1, offset: .85 }, { transform: 'translate(-50%,-90%) scale(1)', opacity: 0 }], { duration: dspd(T.mark + 300), easing: 'ease-out', fill: 'forwards' });
+      await sleep(dspd(T.mark));
+    },
+    async home() {                                       // a hop back to her slot
+      if (dashLive !== d) return;
+      const C = el.isConnected ? figBox(el) : A, hx = C.cx - A.cx, hy = C.bottom - A.bottom, hs = C.h / A.h, lift = vh * .07, hop = [];
+      main.classList.remove('swap');
+      for (let k = 0; k <= 8; k++) { const p = k / 8; hop.push({ transform: tr(lx + (hx - lx) * p, ly + (hy - ly) * p - lift * Math.sin(Math.PI * p), sc1 + (hs - sc1) * p, dir * 6 * Math.sin(Math.PI * p)), offset: p }); }
+      main.style.zIndex = 71;
+      await wait(anim(main, hop, T.home, 'cubic-bezier(.4,0,.3,1)'), T.home);
+      dashClear();
+    }
+  };
+}
+
+/* ---- skill 3 as a smoke slam and a backflip to the rear of the party (Irae's Smoke Bomb). No close-up.
+   In her slot she slams the bomb into the ground (skill3), smoke bursts up around her, and she backflips out of it (skill3b) in an arc to the back of the line, where she lands in stealth.
+   The rest of the party slides forward to fill her old place. Already at the back? She flips up and lands in the same spot.
+   Art:  assets/<id>/<armoured | broken | skin>/skill3.png (the slam) + skill3b.png (the backflip pose). Optional assets/<id>/effects/smoke.png replaces the drawn smoke puffs.
+   Knobs: spin = how far she turns over in the air (degrees; negative = backwards for a hero facing right); tilt0 = the angle she starts the flip at, to match how the backflip pose is drawn;
+          arc = how high the flip goes (fraction of screen height); ms = timings. */
+const FLIP3 = { irae: { key: 'skill3', spin: -360, tilt0: 0, arc: .16, ms: { slam: 240, smoke: 140, flip: 520, land: 120 } } };
+async function flip3Assets(u, i) {
+  const K = FLIP3[u.id]; if (i !== 2 || !K || u.team !== 'p' || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  for (const f of artChain(u)) { const b = await findStill(`${ANIM.base}/${u.id}/${f}/${K.key}b`); if (b) { const a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.key}`); if (!a) return null;
+    const sf = stateFolder(u), sm = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/smoke`)) || await findStill(`${ANIM.base}/${u.id}/effects/smoke`); return { K, a, b, smoke: sm }; } }
+  return null;
+}
+function smokeBurst(host, x, y, w, h, n, img, ms) {          // billowing smoke at a spot: n puffs that swell, drift and thin out
+  for (let k = 0; k < n; k++) { const p = document.createElement(img ? 'img' : 'div'); p.className = 'smokepuff'; if (img) p.src = img.url; host.appendChild(p);
+    const s = w * (.45 + Math.random() * .4), ox = (Math.random() - .5) * w * .9, oy = -Math.random() * h * .55, dx = (Math.random() - .5) * w * .5, dy = -h * (.08 + Math.random() * .18);
+    Object.assign(p.style, { left: (x + ox) + 'px', top: (y + oy) + 'px', width: s + 'px', height: s + 'px' });
+    p.animate([{ transform: 'translate(-50%,-50%) scale(.25) rotate(0deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1) rotate(25deg)', opacity: .95, offset: .18 }, { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(1.55) rotate(70deg)`, opacity: 0 }],
+      { duration: dspd(ms * (.8 + Math.random() * .4)), delay: dspd(k * 22), easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'both' }); }
+}
+async function flip3Begin(u, art) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = art.K, flip = sprFlip(u), vh = document.documentElement.clientHeight;
+  const main = document.createElement('div'); main.className = 'dashfx' + (flip ? ' flip' : ''); Object.assign(main.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+  ['a', 'b'].forEach(k => { const im = document.createElement('img'); im.className = k; im.src = art[k].url; im.draggable = false; main.appendChild(im); }); document.body.appendChild(main);
+  await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
+  const d = dashLive = { parts: [main], el, tcard: null }; el.style.visibility = 'hidden';
+  const T = K.ms, hc = A.h * SPR_SCALE / 2;
+  const tr = (x, y, s, r = 0, sx = 1, sy = 1) => `translate(${x}px,${y}px) translate(0,${-hc * s}px) rotate(${r}deg) translate(0,${hc * s}px) scale(${s * sx},${s * sy})`;      // turns about the middle of the picture, not her feet
+  const anim = (node, frames, ms, ease, extra) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards', ...(extra || {}) });
+  const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
+  const fx = document.createElement('div'); fx.className = 'slamfx front'; document.body.appendChild(fx); d.parts.push(fx);
+  return {
+    async run() {
+      // the slam: a little drop onto the bomb, a white pop, and smoke billows up
+      const a1 = anim(main, [{ transform: tr(0, 0, 1) }, { transform: tr(0, A.h * .015, 1, 0, 1.04, .93), offset: .7 }, { transform: tr(0, 0, 1) }], T.slam, 'ease-in'); await wait(a1, T.slam);
+      sfx('poof'); shake(1);
+      fx.insertAdjacentHTML('beforeend', `<div class="slamflash" style="left:${A.cx}px;top:${A.bottom - A.h * .08}px;width:${A.h * .5}px;height:${A.h * .5}px"></div>`);
+      fx.lastElementChild.animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(1.2)', opacity: 0 }], { duration: dspd(260), fill: 'forwards' });
+      smokeBurst(fx, A.cx, A.bottom - A.h * .12, A.h * .48, A.h * .75, 9, art.smoke, 1200);
+      await sleep(dspd(T.smoke));
+      // out of the smoke, backwards: she takes the rear slot and the others slide up
+      const before = new Map(party.filter(m => m !== u).map(m => { const c = figs.get(m) && figs.get(m).closest('.combatant-card'); return [m, c && c.getBoundingClientRect()]; }));
+      const moved = moveUnit(u, 'back'); if (moved) { render(); el.style.visibility = 'hidden';
+        party.forEach(m => { if (m === u) return; const c = figs.get(m) && figs.get(m).closest('.combatant-card'), r0 = before.get(m); if (!c || !r0) return; const r1 = c.getBoundingClientRect(), dx = r0.left - r1.left; if (Math.abs(dx) > 2) c.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }], { duration: dspd(T.flip * .8), easing: 'cubic-bezier(.3,.7,.4,1)' }); }); }
+      const C = el.isConnected ? figBox(el) : A, ex = C.cx - A.cx, ey = C.bottom - A.bottom, es = C.h / A.h, lift = vh * K.arc, frames = [];
+      main.classList.add('swap'); sfx('whoosh');
+      for (let k = 0; k <= 16; k++) { const p = k / 16, e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;          // the turn eases in and out; the arc is a plain jump
+        frames.push({ transform: tr(ex * p, ey * p - lift * Math.sin(Math.PI * p), 1 + (es - 1) * p, K.tilt0 + K.spin * e * (flip ? -1 : 1)), offset: p }); }
+      a1.cancel(); await wait(anim(main, frames, T.flip, 'linear'), T.flip);
+      main.animate([{ transform: tr(ex, ey, es, 0, 1.05, .92) }, { transform: tr(ex, ey, es) }], { duration: dspd(T.land), easing: 'ease-out' }); await sleep(dspd(T.land));
+    },
+    async home() { if (dashLive !== d) return; setTimeout(() => fx.remove(), dspd(900)); d.parts = d.parts.filter(x => x !== fx); dashClear(); }
+  };
+}
+
+/* ---- skill 3 as a weave through the enemy line (Vesper's Thunderstorm). No close-up.
+   She darts down the enemy line from the nearest foe to the furthest: BEHIND the 1st, 3rd, ... foe in her front-view picture (skill3a, or skill3) and IN FRONT of the 2nd, 4th, ... in her
+   back-view picture (skill3b), slapping a lightning charm on each one; the charms stay stuck on. Then she is back in her slot in skill3c, the charms crackle, and each one bursts as
+   that foe's hit lands. Works for any number of foes.
+   Art:  assets/<id>/<armoured | broken | skin>/skill3a.png (or skill3.png) front view, skill3b.png back view, skill3c.png (the trigger, in her slot; optional)
+         assets/<id>/effects/charm.png: the charm (without it, a paper talisman is drawn)
+   Knobs: behind / front = where she stands at a foe (dx in foe widths, away from her party; sc = size against the foe; up = raise, in foe heights); charm = its size (in foe figure widths)
+          and height on the foe (fraction of the figure box from the top); ms = timings; ghosts = afterimages. */
+const WEAVE3 = { vesper: { behind: { dx: .3, sc: .92, up: .03 }, front: { dx: -.2, sc: 1.04, up: 0 }, charm: { w: .26, at: .42 }, ghosts: 2,
+  ms: { dash: 150, stay: 190, back: 210, pose: 240, crackle: 320, zap: 240 } } };
+async function weave3Assets(u, i) {
+  const K = WEAVE3[u.id]; if (i !== 2 || !K || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  for (const f of artChain(u)) { const b = await findStill(`${ANIM.base}/${u.id}/${f}/skill3b`); if (!b) continue;
+    const a = await findStill(`${ANIM.base}/${u.id}/${f}/skill3a`) || await findStill(`${ANIM.base}/${u.id}/${f}/skill3`); if (!a) return null;
+    const c = await findStill(`${ANIM.base}/${u.id}/${f}/skill3c`), sf = stateFolder(u);
+    const charm = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/charm`)) || await findStill(`${ANIM.base}/${u.id}/effects/charm`);
+    return { K, a, b, c, charm }; }
+  return null;
+}
+async function weave3Begin(u, t, art) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = art.K, flip = sprFlip(u), T = K.ms, foes = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && figs.get(e) && figs.get(e).isConnected);
+  if (!foes.length) return null;
+  foes.sort((x, y) => Math.abs(figBox(figs.get(x)).cx - A.cx) - Math.abs(figBox(figs.get(y)).cx - A.cx));          // down the line: nearest first
+  const mk = (cls, keys) => { const d = document.createElement('div'); d.className = 'dashfx ' + cls + (flip ? ' flip' : ''); Object.assign(d.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+    keys.forEach(k => { const im = document.createElement('img'); im.className = k; im.src = art[k === 'c' ? 'c' : k].url; im.draggable = false; d.appendChild(im); }); document.body.appendChild(d); return d; };
+  const main = mk('', ['a', 'b']), ghosts = Array.from({ length: K.ghosts || 0 }, () => { const g = mk('ghost', ['a', 'b']); g.style.opacity = 0; return g; });
+  const pose = art.c ? mk('', ['c']) : null; if (pose) { pose.querySelector('img').className = 'a'; pose.style.opacity = 0; }
+  await Promise.all([...document.querySelectorAll('.dashfx img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
+  const d = dashLive = { parts: [main, ...ghosts, pose].filter(Boolean), el, tcard: null, raised: [] }; el.style.visibility = 'hidden';
+  const tr = (x, y, s) => `translate(${x}px,${y}px) scale(${s})`, anim = (node, frames, ms, ease, extra) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards', ...(extra || {}) });
+  const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
+  const charms = new Map(); let cur = tr(0, 0, 1);
+  const setPose = k => { main.classList.toggle('swap', k === 'b'); ghosts.forEach(g => g.classList.toggle('swap', k === 'b')); };
+  const lift = c => { if (!c || d.raised.includes(c)) return; c.style.position = 'relative'; c.style.zIndex = 80; d.raised.push(c); };
+  const drop = c => { if (!c) return; c.style.zIndex = ''; c.style.position = ''; d.raised = d.raised.filter(x => x !== c); };
+  const go = async (to, ms, ease) => { main.style.filter = 'blur(1px) brightness(1.1)';
+    ghosts.forEach((g, i) => { g.style.opacity = ''; anim(g, [{ transform: cur, opacity: 0 }, { opacity: .3 - i * .1, offset: .3 }, { transform: to, opacity: 0 }], ms + 40, ease, { delay: dspd(30 * (i + 1)) }); });
+    const an = anim(main, [{ transform: cur }, { transform: to }], ms, ease); cur = to; await wait(an, ms); main.style.filter = ''; };
+  function stick(e) {                      // the charm, stuck on the foe (inside its figure, so it moves and shakes with it)
+    const f = figs.get(e); if (!f) return; const fw = f.getBoundingClientRect().width, c = document.createElement('div'); c.className = 'vcharm' + (art.charm ? ' art' : '');
+    c.style.setProperty('--cw', Math.max(26, fw * K.charm.w) + 'px'); c.style.top = (K.charm.at * 100) + '%'; c.style.setProperty('--rot', ((Math.random() - .5) * 26).toFixed(1) + 'deg');
+    c.innerHTML = art.charm ? `<img src="${art.charm.url}" alt="">` : '<b>⚡</b>'; f.appendChild(c); charms.set(e, c);
+    c.animate([{ transform: 'translate(-50%,-50%) rotate(var(--rot)) scale(1.9)', opacity: 0, filter: 'brightness(2.5)' }, { transform: 'translate(-50%,-50%) rotate(var(--rot)) scale(.9)', opacity: 1, offset: .6 }, { transform: 'translate(-50%,-50%) rotate(var(--rot)) scale(1)', opacity: 1, filter: 'brightness(1)' }], { duration: dspd(220), easing: 'ease-out', fill: 'both' });
+  }
+  function zap(e) {                        // that foe's hit: its charm cracks with lightning and bursts
+    const c = charms.get(e); if (!c) return; charms.delete(e); const f = figs.get(e);
+    if (f && f.isConnected) { const B = figBox(f), host = document.createElement('div'); host.className = 'slamfx front'; document.body.appendChild(host);
+      const x = B.cx, y = B.bottom - B.h * (1 - K.charm.at); let bolts = '';
+      for (let k = 0; k < 4; k++) { const a = Math.random() * Math.PI * 2, L = B.h * (.18 + Math.random() * .16); let pts = `${x},${y}`; for (let j = 1; j <= 4; j++) pts += ` ${(x + Math.cos(a) * L * j / 4 + (Math.random() - .5) * 14).toFixed(1)},${(y + Math.sin(a) * L * j / 4 + (Math.random() - .5) * 14).toFixed(1)}`; bolts += `<polyline points="${pts}"/>`; }
+      host.innerHTML = `<svg width="100%" height="100%" style="position:absolute;inset:0;overflow:visible"><g fill="none" stroke-linejoin="round" stroke-linecap="round"><g stroke="#ffe94d" stroke-width="7" opacity=".45">${bolts}</g><g stroke="#fff" stroke-width="2.4">${bolts}</g></g></svg><div class="slamflash" style="left:${x}px;top:${y}px;width:${B.h * .5}px;height:${B.h * .5}px;background:radial-gradient(circle,#fff,rgba(255,240,120,.8) 25%,rgba(255,220,60,.3) 50%,transparent 70%)"></div>`;
+      host.animate([{ opacity: 1 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: dspd(T.zap + 120), fill: 'forwards' }); setTimeout(() => host.remove(), dspd(T.zap + 200)); }
+    c.animate([{ transform: 'translate(-50%,-50%) rotate(var(--rot)) scale(1)', opacity: 1, filter: 'brightness(1)' }, { transform: 'translate(-50%,-50%) rotate(var(--rot)) scale(1.5)', opacity: 1, filter: 'brightness(3)', offset: .35 }, { transform: 'translate(-50%,-50%) rotate(var(--rot)) scale(.3)', opacity: 0, filter: 'brightness(3)' }], { duration: dspd(T.zap), fill: 'forwards' });
+    setTimeout(() => c.remove(), dspd(T.zap + 40));
+  }
+  return {
+    async run() {
+      sfx('whoosh', 'shock');
+      for (let k = 0; k < foes.length; k++) {
+        const e = foes[k], f = figs.get(e); if (!f || !f.isConnected) continue;
+        const B = figBox(f), away = Math.sign(B.cx - A.cx) || 1, behind = k % 2 === 0, P = behind ? K.behind : K.front, card = f.closest('.combatant-card'), s = B.h / A.h * P.sc;
+        if (behind) lift(card);                                                   // the foe's card goes over her: she is behind it
+        setPose(behind ? 'a' : 'b');
+        await go(tr(B.cx + away * B.w * P.dx - A.cx, B.bottom - B.h * P.up - A.bottom, s), T.dash, 'cubic-bezier(.4,0,.2,1)');
+        d.raised.filter(c => c !== card).forEach(drop);                            // the one she just left drops back
+        sfx('swing'); stick(e);
+        await sleep(dspd(T.stay));
+      }
+      // back to her slot, and the trigger
+      setPose('a'); await go(tr(0, 0, 1), T.back, 'cubic-bezier(.4,0,.2,1)'); d.raised.slice().forEach(drop);
+      if (pose) { main.style.opacity = 0; ghosts.forEach(g => g.style.opacity = 0); anim(pose, [{ opacity: 0, filter: 'brightness(2)' }, { opacity: 1, filter: 'brightness(1)' }], 140, 'ease-out'); }
+      else { main.style.opacity = 0; el.style.visibility = ''; }
+      sfx('charge', 'shock'); await sleep(dspd(T.pose));
+      charms.forEach(c => c.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(2.6) drop-shadow(0 0 10px #ffe94d)' }, { filter: 'brightness(1.4) drop-shadow(0 0 6px #ffe94d)' }], { duration: dspd(T.crackle), fill: 'forwards', easing: 'steps(6)' }));
+      shake(1); await sleep(dspd(T.crackle));
+    },
+    async follow() { zap(t); await sleep(dspd(120)); },
+    zap,
+    async home() {
+      if (dashLive !== d) return;
+      charms.forEach((c, e) => zap(e));                                           // anything left (a foe that fell first) goes too
+      if (pose) await wait(anim(pose, [{ opacity: 1 }, { opacity: 0 }], 220, 'ease-in'), 220);
+      dashClear();
+    }
+  };
+}
+
+/* ---- Tyr: Undying Night is a passive (never cast by hand). On the first blow that would kill her, a swarm of bats engulfs her and she comes out of it in her
+   IMMORTAL look; when the immortality runs out (or the fight ends) dark steam puffs off her and she is herself again.
+   Art:  assets/tyr/armoured - immortal/  idle, damaged, skill1, skill2 (like any skin folder; anything missing falls back to her normal pictures). Never listed as a Dorm skin.
+   Knobs: IMMORTAL.bats = how many bats; ms = timings. */
+const IMMORTAL = { look: 'immortal', bats: 38, ms: { swarm: 520, hide: 260, burst: 520, steam: 900 } };
+const STATE_SKINS = [IMMORTAL.look];                   // folders that are looks a unit turns INTO, not skins you pick
+const BAT_PATH = 'M0 -2 C-3 -7 -9 -8 -14 -4 C-11 -3 -10 0 -12 3 C-8 1 -5 2 -3 4 C-2 2 -1 1 0 2 C1 1 2 2 3 4 C5 2 8 1 12 3 C10 0 11 -3 14 -4 C9 -8 3 -7 0 -2Z';
+async function batSwarm(u) {                           // the bats close in around her, she changes inside the swarm, they burst away
+  const el = figs.get(u); if (!el || !el.isConnected) { u.immortalLook = true; render(); return; }
+  const B = figBox(el), T = IMMORTAL.ms, cx = B.cx, cy = B.bottom - B.h * SPR_SCALE * .5, R = B.h * SPR_SCALE * .42, sc = fbScale(u);
+  const host = document.createElement('div'); host.className = 'slamfx front'; document.body.appendChild(host);
+  host.innerHTML = `<div class="batcloud" style="left:${cx}px;top:${cy}px;width:${R * 3.4}px;height:${R * 3.9}px"></div>`;
+  const cloud = host.firstChild; sfx('whoosh'); sfx('charge', 'fire');
+  cloud.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.4)' }, { opacity: .97, transform: 'translate(-50%,-50%) scale(1)', offset: .38 }, { opacity: .97, transform: 'translate(-50%,-50%) scale(1.05)' }], { duration: dspd(T.swarm + T.hide), fill: 'forwards' });      // fully closed well before she changes
+  const bats = [];
+  for (let k = 0; k < IMMORTAL.bats; k++) {
+    const b = document.createElement('div'); b.className = 'bat'; b.innerHTML = `<svg viewBox="-15 -9 30 15"><path d="${BAT_PATH}"/></svg>`; host.appendChild(b);
+    const s = (.8 + Math.random() * .9) * B.h * SPR_SCALE / 260, a0 = Math.random() * Math.PI * 2, from = R * (2.6 + Math.random() * 1.6), r1 = R * (.35 + Math.random() * .75), turns = (Math.random() < .5 ? -1 : 1) * (1.2 + Math.random());
+    Object.assign(b.style, { left: cx + 'px', top: cy + 'px', width: (38 * s) + 'px', height: (19 * s) + 'px', animationDelay: (-Math.random()).toFixed(2) + 's' });
+    const fr = []; for (let j = 0; j <= 10; j++) { const p = j / 10, a = a0 + turns * Math.PI * 2 * p, r = from + (r1 - from) * Math.min(1, p * 1.6), y = Math.sin(a) * r * .75; fr.push({ transform: `translate(calc(-50% + ${(Math.cos(a) * r).toFixed(1)}px),calc(-50% + ${y.toFixed(1)}px))`, opacity: p < .1 ? p * 10 : 1, offset: p }); }
+    b.animate(fr, { duration: dspd(T.swarm + T.hide), easing: 'linear', fill: 'forwards', delay: dspd(Math.random() * 80) });
+    bats.push({ b, a0, r1 });
+  }
+  await sleep(dspd(T.swarm));
+  u.immortalLook = true; render();                       // the change happens while she is hidden
+  const f2 = figs.get(u); if (f2) f2.animate([{ filter: 'brightness(2.2) saturate(1.6) hue-rotate(-20deg)' }, { filter: 'none' }], { duration: dspd(T.hide + T.burst), easing: 'ease-out' });
+  await sleep(dspd(T.hide));
+  sfx('ward');
+  bats.forEach(({ b, a0 }) => { const a = a0 + (Math.random() - .5), d = R * (4 + Math.random() * 3);
+    b.animate([{ transform: getComputedStyle(b).transform === 'none' ? 'translate(-50%,-50%)' : getComputedStyle(b).transform, opacity: 1 }, { transform: `translate(calc(-50% + ${(Math.cos(a) * d).toFixed(1)}px),calc(-50% + ${(Math.sin(a) * d * .6 - R * 1.5).toFixed(1)}px)) scale(.7)`, opacity: 0 }], { duration: dspd(T.burst), easing: 'cubic-bezier(.3,.6,.4,1)', fill: 'forwards' }); });
+  cloud.getAnimations().forEach(a => a.cancel());
+  cloud.animate([{ opacity: .92, transform: 'translate(-50%,-50%) scale(1.05)' }, { opacity: 0, transform: 'translate(-50%,-50%) scale(1.5)' }], { duration: dspd(T.burst), easing: 'ease-out', fill: 'forwards' });
+  setTimeout(() => host.remove(), dspd(T.burst) + 80);
+  await sleep(dspd(T.burst * .6));
+}
+function immortalEnd(u) {                              // the look fades off her as dark steam
+  if (!u.immortalLook) return; u.immortalLook = false;
+  const el = figs.get(u); render();
+  if (!el || !el.isConnected || FX.calm) return;
+  const B = figBox(el), host = document.createElement('div'); host.className = 'slamfx front'; document.body.appendChild(host); sfx('poof');
+  for (let k = 0; k < 14; k++) { const p = document.createElement('div'); p.className = 'darksteam'; host.appendChild(p); const s = B.w * (.45 + Math.random() * .4);
+    Object.assign(p.style, { left: (B.cx + (Math.random() - .5) * B.w * .7) + 'px', top: (B.bottom - B.h * SPR_SCALE * (.15 + Math.random() * .7)) + 'px', width: s + 'px', height: s + 'px' });
+    p.animate([{ transform: 'translate(-50%,-50%) scale(.3)', opacity: 0 }, { transform: 'translate(-50%,-60%) scale(.9)', opacity: .85, offset: .25 }, { transform: `translate(calc(-50% + ${(Math.random() - .5) * B.w * .4}px),calc(-50% - ${B.h * (.25 + Math.random() * .25)}px)) scale(1.6)`, opacity: 0 }], { duration: dspd(IMMORTAL.ms.steam * (.7 + Math.random() * .5)), delay: dspd(k * 35), easing: 'ease-out', fill: 'both' }); }
+  el.animate([{ filter: 'brightness(.4) saturate(0)' }, { filter: 'brightness(1.3)', offset: .4 }, { filter: 'none' }], { duration: dspd(600) });
+  setTimeout(() => host.remove(), dspd(IMMORTAL.ms.steam * 1.3) + 200);
+}
+
+/* ---- Jean: potions. Skills 2 and 3 share two pictures in her own slot (no close-up): skill2 = rummaging in her bag, skill2b = the toss. A potion arcs to every
+   ally the skill reaches (Tonic: the one she picked; Untested Potions: everyone), like the shopkeeper's throw in the Final Stand. If the only one is herself, she just
+   rummages: no toss, no potion. Art: assets/jean/<armoured | broken | skin>/skill2.png + skill2b.png; optional assets/jean/effects/potion.png (else a 🧪). */
+const TOSS = { jean: { search: 'skill2', toss: 'skill2b', hand: { dx: .22, up: .62 }, ms: { search: 480, wind: 120, fly: 560, stagger: 90, after: 160, self: 560 } } };
+async function tossAssets(u) {
+  const K = TOSS[u.id]; if (!K || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  for (const f of artChain(u)) { const a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.search}`); if (!a) continue; const b = await findStill(`${ANIM.base}/${u.id}/${f}/${K.toss}`);
+    const sf = stateFolder(u), pot = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/potion`)) || await findStill(`${ANIM.base}/${u.id}/effects/potion`);
+    return { K, a, b, pot }; }
+  return null;
+}
+async function tossBegin(u, art, targets) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = art.K, T = K.ms, flip = sprFlip(u), dir = flip ? -1 : 1, others = targets.filter(t => t && t !== u && isAlive(t) && figs.get(t) && figs.get(t).isConnected), toss = !!(art.b && others.length);
+  const main = document.createElement('div'); main.className = 'dashfx' + (flip ? ' flip' : '') + (toss ? '' : ''); Object.assign(main.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+  [['a', art.a], ['b', art.b]].forEach(([k, a]) => { if (!a) return; const im = document.createElement('img'); im.className = k; im.src = a.url; im.draggable = false; main.appendChild(im); }); document.body.appendChild(main);
+  await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
+  const d = dashLive = { parts: [main], el, tcard: null }; el.style.visibility = 'hidden';
+  return {
+    async run() {
+      sfx('swing');
+      main.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${dir * 2}px,1px)` }, { transform: `translate(${-dir * 2}px,0)` }, { transform: 'translate(0,0)' }], { duration: dspd(T.search * .5), iterations: 2 });      // rummaging
+      await sleep(dspd(toss ? T.search : T.self));
+      if (!toss) return;
+      main.classList.add('swap'); await sleep(dspd(T.wind)); sfx('whoosh');
+      const hx = A.cx + dir * K.hand.dx * A.h * SPR_SCALE, hy = A.bottom - K.hand.up * A.h * SPR_SCALE, flights = [];
+      others.forEach((t, k) => { const f = figs.get(t), C = f.getBoundingClientRect(), x1 = C.left + C.width / 2, y1 = C.top + C.height * .4, pot = document.createElement('div');
+        pot.className = 'tosspot'; pot.innerHTML = art.pot ? `<img src="${art.pot.url}" alt="">` : '🧪'; Object.assign(pot.style, { left: hx + 'px', top: hy + 'px', fontSize: Math.max(26, A.h * .09) + 'px' }); document.body.appendChild(pot); d.parts.push(pot);
+        const lift = Math.max(90, Math.abs(x1 - hx) * .35), an = pot.animate([{ transform: 'translate(-50%,-50%) rotate(0)', opacity: 1 }, { transform: `translate(calc(-50% + ${(x1 - hx) / 2}px),calc(-50% + ${Math.min(y1, hy) - hy - lift}px)) rotate(${dir * 260}deg)`, offset: .5 }, { transform: `translate(calc(-50% + ${x1 - hx}px),calc(-50% + ${y1 - hy}px)) rotate(${dir * 540}deg)`, opacity: 1 }],
+          { duration: dspd(T.fly), delay: dspd(k * T.stagger), easing: 'ease-in-out', fill: 'both' });
+        flights.push(Promise.race([an.finished.catch(() => {}), sleep(dspd(T.fly + k * T.stagger) + 150)]).then(() => { pot.remove(); f.classList.add('fbglow'); setTimeout(() => f.classList.remove('fbglow'), 700); sfx('heal'); })); });
+      await Promise.all(flights); await sleep(dspd(T.after));
+    },
+    async home() { if (dashLive !== d) return; main.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(120), fill: 'forwards' }); el.style.visibility = ''; await sleep(dspd(110)); dashClear(); }
+  };
+}
+
 /* ===== SKILL 3 SPRITE SEQUENCES (they replace the skill 3 videos, one hero at a time) =====
    A hero switches over the moment she has a skill3b picture. Then: her skill3 picture swells up into the foreground (the party steps out of view), swaps to skill3b with a flash and a jolt,
    her effect pictures appear around her, it holds, and it all fades back into the line-up before the skill resolves. Plan for every hero: SKILL3_ANIMATIONS.md.
@@ -4497,8 +5006,28 @@ let seqDev = null;
 let seqPick = 0;
 async function seqPreview(freeze) {
   if (seqDev) { seqEnd(); return; }
-  const list = party.filter(m => isAlive(m) && (SEQ3[m.id] || STAND3[m.id])); if (!list.length) { banner('No hero with a skill 3 sequence in this party'); return; }
+  const list = party.filter(m => isAlive(m) && (SEQ3[m.id] || STAND3[m.id] || WARD3[m.id] || LEAP3[m.id] || FLIP3[m.id] || WEAVE3[m.id])); if (!list.length) { banner('No hero with a skill 3 sequence in this party'); return; }
   const u = list[seqPick++ % list.length];
+  if (FLIP3[u.id]) {                     // smoke slam and backflip; she really does move to the back of the line (as the skill would), but gets no stealth
+    const art = await flip3Assets(u, 2); if (!art) { banner(`No ${u.id} skill3 + skill3b pictures found`); return; }
+    const q = await flip3Begin(u, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
+    await q.run(); await q.home(); render(); seqDev = null; return;
+  }
+  if (WEAVE3[u.id]) {                    // the weave and the charms, then every charm bursts; no damage
+    const t = enemies.find(isAlive), art = t && await weave3Assets(u, 2); if (!art) { banner(`No ${u.id} skill3a + skill3b pictures found`); return; }
+    const q = await weave3Begin(u, t, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
+    await q.run(); await q.follow(); for (const e of enemies.filter(isAlive)) { q.zap(e); await sleep(dspd(200)); } await q.home(); seqDev = null; return;
+  }
+  if (LEAP3[u.id]) {                     // leap and slam onto the first enemy, no damage
+    const t = enemies.find(isAlive), art = t && await leap3Assets(u, 2); if (!art) { banner(`No ${u.id} skill3 + skill3b pictures found`); return; }
+    const q = await leap3Begin(u, t, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
+    await q.run(); await q.follow(); await q.home(); seqDev = null; return;
+  }
+  if (WARD3[u.id]) {                     // close-up behind the party + barriers: no barriers are actually given
+    const art = await ward3Assets(u, 2); if (!art) { banner(`No ${u.id} skill3 picture found`); return; }
+    const q = await ward3Begin(u, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
+    await q.run(); await q.home(); seqDev = null; return;
+  }
   if (STAND3[u.id]) {                    // close-up + giant effect: plays on the first enemy, no damage
     const t = enemies.find(isAlive), art = t && await stage3Assets(u, 2); if (!art) { banner(`No ${u.id} skill2 + skill3 pictures found`); return; }
     const q = await stage3Begin(u, t, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
@@ -4667,6 +5196,7 @@ const BGT = {
   ruins: { sky: ['#1d1119', '#5a2f2c', '#d98a45'], far: '#3a2229', mid: '#24161c', ground: ['#3a2a2a', '#0f0a0e'], glow: '#ffb15c', fx: 'dust' },
   cove:  { sky: ['#050f18', '#0d3446', '#2f8793'], far: '#0a2a38', mid: '#071a24', ground: ['#0d2a36', '#03090d'], glow: '#7fe3ff', fx: 'rain' },
   crypt: { sky: ['#0a0810', '#1e1830', '#46405e'], far: '#1c1729', mid: '#120d1b', ground: ['#1e1c26', '#07060a'], glow: '#9be21b', fx: 'wisps' },
+  plague: { sky: ['#0d100a', '#2a3018', '#6a6a2e'], far: '#22261a', mid: '#151810', ground: ['#2a2c1c', '#0a0b06'], glow: '#c8e04a', fx: 'wisps' },
   lighthouse: { sky: ['#060a16', '#18274a', '#56739a'], far: '#0b1730', mid: '#070e1e', ground: ['#10203a', '#03060c'], glow: '#ffe7a0', fx: 'rain' },
   beach: { sky: ['#2b78ad', '#78c4d6', '#f8e6b4'], far: '#3d98ab', mid: '#d6bd86', ground: ['#ead49c', '#a28850'], glow: '#fff2bd', fx: 'dust' },
   yokai: { sky: ['#0b0a18', '#2a1630', '#8a3d4c'], far: '#1c1226', mid: '#120b19', ground: ['#2a1c26', '#08050a'], glow: '#ff7a5c', fx: 'petals' },
@@ -4820,7 +5350,7 @@ function chips(u) {              // one small tile per skill: icons, damage / ba
     else if (s.t === 'guard') { ic = '🛡️🤝'; val = '+' + s.p; }
     else if (s.t === 'tonic') { ic = '💉☠️'; val = '+' + s.heal + ' hp'; }
     else if (s.t === 'brew') { ic = '⚗️'; val = 'party'; }
-    else if (s.t === 'immortal') { ic = '🦇'; val = u.once && u.once[i] ? 'used' : 'once'; }
+    else if (s.t === 'immortal') { ic = '🦇'; val = u.once && u.once[i] ? 'used' : 'passive'; }
     else { ic = '🛡️' + (s.cleanse ? '✨' : ''); val = '+' + s.p + (s.t === 'barrierAll' ? (s.self ? ' team' : ' all') : ''); }
     return `<div class="sk2${cd > 0 ? ' cd' : ''}${on ? ' sel' : ''}" title="${s.n} · cooldown ${s.cd}${cd > 0 ? ' (' + cd + ' left)' : ''}"><div class="lbl"><span class="ic">${ic}</span><b>${val}</b></div>${cd > 0 ? `<span class="cdov">${cd}</span>` : ''}</div>`;
   }).join('') + '</div>';
@@ -4945,6 +5475,7 @@ async function flushTriggers() {
   while (triggerQ.length) {
     const { u, i } = triggerQ.shift(), keep = [...spot];
     if (!isAlive(u)) continue;
+    if (u.skills[i] && u.skills[i].t === 'immortal' && u.immortal > 0) { setSpot([u]); await batSwarm(u); setSpot(keep); continue; }      // Undying Night: the bats and the change
     const key = 'skill' + (i + 1), film = await skillFilm(u, key);
     if (film) { setSpot([]); await playFilm(film, u.mir); } else { setSpot([u]); sfx('charge', 'fire'); await playAnim(u, key); }
     setSpot(keep);
@@ -4976,10 +5507,10 @@ function settleDebts() {
   });
 }
 function addBarrier(t, p) { const b = t.barrier || 0; t.barrier = Math.max(b, p); return t.barrier - b; }        // barriers never stack: the biggest one stands
-function cleanse(t, n = 1) {                                                   // removes n random ailments (burn, bleed, poison, frozen, shocked)
+function cleanse(t, n = 1, skip) {                                             // removes n random ailments (burn, bleed, poison, frozen, shocked); skip = types it leaves alone
   const gone = [];
   for (let k = 0; k < n && t.statuses; k++) {                                   // borrowed health (a Tonic's poison debt) can never be cleansed away
-    const pool = t.statuses.map((x, i) => i).filter(i => !t.statuses[i].debt); if (!pool.length) break;
+    const pool = t.statuses.map((x, i) => i).filter(i => !t.statuses[i].debt && !(skip && skip.includes(t.statuses[i].type))); if (!pool.length) break;
     gone.push(t.statuses.splice(pool[Math.floor(Math.random() * pool.length)], 1)[0].type);
   }
   return gone;
@@ -4993,7 +5524,7 @@ function protectTarget(e, target) {
 function redirectIntents(from, to, only) {
   enemies.forEach(e => { if (isAlive(e) && e.intent && !e.intent.skip && e.skills[e.intent.i].t === 'dmg' && e.intent.target === from && (!only || e === only)) e.intent.target = to; });
 }
-const usable = (u, i) => u.cd[i] === 0 && !(u.skills[i].t === 'charm' && !(u.team === 'p' ? enemies : party).some(charmable)) && !(u.skills[i].once && u.once && u.once[i]) && !(u.skills[i].t === 'tonic' && !(u.team === 'p' ? party : enemies).some(a => isAlive(a) && a.hp < a.maxHp)) && !((u.skills[i].t === 'barrierAll' || u.skills[i].t === 'guard') && !wardTargets(u, u.skills[i]).length);   // a single ward can always go on the caster herself
+const usable = (u, i) => u.skills[i].t !== 'immortal' && u.cd[i] === 0 && !(u.skills[i].t === 'charm' && !(u.team === 'p' ? enemies : party).some(charmable)) && !(u.skills[i].once && u.once && u.once[i]) && !(u.skills[i].t === 'tonic' && !(u.team === 'p' ? party : enemies).some(a => isAlive(a) && a.hp < a.maxHp)) && !((u.skills[i].t === 'barrierAll' || u.skills[i].t === 'guard') && !wardTargets(u, u.skills[i]).length);   // a single ward can always go on the caster herself
 function skillDesc(s, u) {
   if (s.t === 'smoke') return `🌫️ FREE ACTION: step back + stealth for ${s.dur} turns: attacks bleed, ${Math.round(EVADE.stealth * 100)}% evasion, ends when hit`;
   const x = skillDesc0(s), more = [];
@@ -5015,9 +5546,9 @@ function skillDesc0(s) {
   if (s.t === 'barrier') return `+${s.p} 🛡️ barrier (ally or self)${s.cleanse ? ' ✨ cleanse 1' : ''}`;
   if (s.t === 'barrierAll') return `+${s.p} 🛡️ barrier (${s.self ? 'whole team' : 'all others'})${s.cleanse ? ' ✨ cleanse 1 each' : ''}`;
   if (s.t === 'guard') return `🤝 takes hits for an ally · +${s.p} 🛡️ on self`;
-  if (s.t === 'tonic') return `💉 heal ${s.heal} HP, ${Math.round(s.heal * TONIC.repay)} returns as ☠️ poison${s.cleanse ? ' · ✨ cleanse 1' : ''}`;
-  if (s.t === 'brew') return `⚗️ whole party +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} turns, then poisoned`;
-  if (s.t === 'immortal') return `🦇 immortal for ${s.dur} turns${s.heal ? ' + heals ' + Math.round(s.heal * 100) + '% HP' : ''} · once per battle, fires by itself on a killing blow`;
+  if (s.t === 'tonic') return `💉 heal ${s.heal} HP, ${Math.round(s.heal * TONIC.repay)} returns as ☠️ poison${s.cleanse ? ' · ✨ cleanse 1 (not poison)' : ''}`;
+  if (s.t === 'brew') return `⚗️ whole party +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} turns, then poisoned${s.cleanse ? ' · ✨ cleanse 1 each (not poison)' : ''}`;
+  if (s.t === 'immortal') return `🦇 PASSIVE: on a killing blow, immortal for ${s.dur} turns${s.heal ? ' + heals ' + Math.round(s.heal * 100) + '% HP' : ''} · once per battle`;
   if (s.t === 'buff') return '🐉 next turn: burning Iron Fist & Blazing Kick + a free strike';
   if (s.t === 'charm') return '💘 no damage · a broken foe\'s next attack hits its own friend';
   if (s.storm) return `${rangeText(s)} dmg${s.el ? ' ' + ICON[s.el] : ''} ${RICON[rangeOf(s)]} 🌩️ +1-3 strikes`;
@@ -5053,7 +5584,7 @@ function render() {
     const b = $('btn' + i);
     if (cur) {
       const s = effSkill(cur, i), cd = cur.cd[i], ok = usable(cur, i);
-      b.innerHTML = `<span class="lbl">${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${cd > 0 ? 'CD ' + cd : ok ? 'Ready' : 'No ally'}</small></span>${cd > 0 ? `<span class="cdov">${cd}</span>` : ''}`;
+      b.innerHTML = `<span class="lbl">${i + 1}. ${s.n}<br><small>${skillDesc(s)} · ${s.t === 'immortal' ? (cur.once && cur.once[i] ? 'Used' : 'Passive') : cd > 0 ? 'CD ' + cd : ok ? 'Ready' : 'No ally'}</small></span>${cd > 0 ? `<span class="cdov">${cd}</span>` : ''}`;
       b.classList.toggle('oncd', cd > 0);
       b.disabled = !waiting || !ok;
       b.classList.toggle('sel', sel === i);
@@ -5126,8 +5657,8 @@ function skillWhat0(u, s) {          // one-line description of a skill: damage,
                : s.t === 'buff' ? `🐉 Buff: on her next turn ${u.skills[0].n} and ${u.skills[1].n} burn (+75% damage, fire) and she also strikes a random enemy with ${u.skills[0].n}, then it wears off`
                : s.t === 'charm' ? `💘 Deals no damage. If the target's armour is broken it is charmed: its next attack hits a random friend of its own. Cleanse removes it. Armoured targets can't be charmed`
                : s.t === 'smoke' ? `🌫️ A free action (she still acts afterwards): steps back to the rear and turns stealthy for ${s.dur} of her turns: her attacks gain bleed (+${STEALTH.brk} break), and enemies are far less likely to target her. While hidden ${Math.round(EVADE.stealth * 100)}% of attacks against her miss, but any damage she takes ends it`
-               : s.t === 'tonic' ? `💉 Heals one ally for ${s.heal} HP, but ${Math.round(TONIC.repay * 100)}% of that (${Math.round(s.heal * TONIC.repay)}) comes back as ☠️ poison over the next turns, so the net gain is ${s.heal - Math.round(s.heal * TONIC.repay)} HP (anything still owed when the fight is won is dealt then, never below 1 HP). It ignores armour and works on armoured allies. It also cleanses 1 random ailment first (never the tonic poison itself). Borrowed health: a fresh tonic adds to any poison already there`
-               : s.t === 'brew' ? `⚗️ Everyone in the party (herself too) deals +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} of their turns, +${Math.round((BREW.mult + BREW.poisonBonus) * 100)}% while poisoned. When it wears off they take ${BREW.poison} poison (ignores armour). Elemental skills are not boosted (her scalpel counts as physical)`
+               : s.t === 'tonic' ? `💉 Heals one ally for ${s.heal} HP, but ${Math.round(TONIC.repay * 100)}% of that (${Math.round(s.heal * TONIC.repay)}) comes back as ☠️ poison over the next turns, so the net gain is ${s.heal - Math.round(s.heal * TONIC.repay)} HP (anything still owed when the fight is won is dealt then, never below 1 HP). It ignores armour and works on armoured allies. It also cleanses 1 random ailment first (never poison). Borrowed health: a fresh tonic adds to any poison already there`
+               : s.t === 'brew' ? `⚗️ Everyone in the party (herself too) deals +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} of their turns, +${Math.round((BREW.mult + BREW.poisonBonus) * 100)}% while poisoned. When it wears off they take ${BREW.poison} poison (ignores armour). Elemental skills are not boosted (her scalpel counts as physical)${s.cleanse ? `. It also cleanses ${s.cleanse} random ailment from everyone (never poison)` : ''}`
                : s.t === 'immortal' ? `🦇 Immortal: HP cannot fall below 1 for ${s.dur} turns. No cooldown, but only once per battle. If a blow would kill her first, it triggers by itself${s.heal ? ` and she mends ${Math.round(s.heal * 100)}% of her max HP (it also heals when cast by hand)` : ' and leaves her on 1 HP'}`
                : s.t === 'guard' ? `🤝 Body-block: until her next turn, every attack aimed at the chosen ally hits her instead, and she gains a ${s.p} 🛡️ barrier that also lasts until her next turn (barriers never stack)`
                : s.t === 'barrierAll' ? `🛡️ +${s.p} barrier to ${s.self ? 'the whole team, herself included' : 'every other ally'}${s.cleanse ? ', and cleanses ' + s.cleanse + ' random ailment from each' : ''}`
@@ -5355,15 +5886,21 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   // A video in the skill slot is a film: it plays alone, full screen, nobody moves, and the hit only happens once it ends (see skillFilm).
   const seq = await seqAssets(u, i);                                                        // skill 3 sprite sequence (skill3 + skill3b + effects): replaces the film once skill3b exists
   const st3 = !seq && s.t === 'dmg' && target ? await stage3Assets(u, i) : null;                // skill 3 close-up with a giant effect on the target (Aneesah): replaces the film once its pictures exist
-  const film = seq || st3 ? null : await skillFilm(u, 'skill' + (i + 1));
+  const w3 = !seq && !st3 && s.t === 'barrierAll' ? await ward3Assets(u, i) : null;            // skill 3 close-up behind the party with barriers around them (Aria)
+  const lp3 = !seq && !st3 && !w3 && s.t === 'dmg' && target ? await leap3Assets(u, i) : null;   // skill 3 leap-and-slam onto the target (Seria)
+  const fl3 = !seq && s.t === 'smoke' ? await flip3Assets(u, i) : null;                       // skill 3 smoke slam and backflip to the rear (Irae)
+  const wv3 = !seq && !st3 && !lp3 && s.t === 'dmg' && s.aoe && target ? await weave3Assets(u, i) : null;   // skill 3 weave through the enemy line with charms (Vesper)
+  const ts = !seq && (s.t === 'tonic' || s.t === 'brew') && TOSS[u.id] ? await tossAssets(u) : null;                    // Jean: rummage, then toss a potion to each ally it reaches
+  const film = seq || st3 || w3 || lp3 || fl3 || wv3 || ts ? null : await skillFilm(u, 'skill' + (i + 1));
   if (film) { setSpot([]); await playFilm(film, u.mir); }
   let begun; const started = new Promise(r => begun = r);
-  const dashArt = !film && !seq && !st3 && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
+  const dashArt = !film && !seq && !st3 && !lp3 && !wv3 && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
   if (dashArt && i === 1) dashArt.hide = true;
-  const stageArt = !film && !seq && !st3 && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
-  const bossArt = !film && !seq && !st3 && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
-  const dash = st3 ? await stage3Begin(u, target, st3) : dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
-  const sq = seq ? await seqBegin(u, seq) : null;
+  const stageArt = !film && !seq && !st3 && !lp3 && !wv3 && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
+  const bossArt = !film && !seq && !st3 && !lp3 && !wv3 && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
+  if (wv3) setSpot([]);                                                                      // she touches every foe: nobody is dimmed
+  const dash = st3 ? await stage3Begin(u, target, st3) : lp3 ? await leap3Begin(u, target, lp3) : wv3 ? await weave3Begin(u, target, wv3) : dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
+  const sq = seq ? await seqBegin(u, seq) : w3 ? await ward3Begin(u, w3) : fl3 ? await flip3Begin(u, fl3) : ts ? await tossBegin(u, ts, s.t === 'tonic' ? [target] : party.filter(isAlive)) : null;
   const clip = film || dash || sq ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
   const back = dash || sq ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
   if (!film && !dash && !sq) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
@@ -5377,7 +5914,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
     log(`🌫️ ${u.name} throws a ${s.n}! She slips back and vanishes into the smoke.`, 'log-player'); floatText(u, '🌫️ STEALTH', 'tag');
-    tail(u, 'smoke'); sfx('poof'); await sleep(200);
+    if (!sq) { tail(u, 'smoke'); sfx('poof'); await sleep(200); }
     moveUnit(u, 'back'); u.stealth = s.dur; u.stealthFresh = true; if (u.rel && u.rel.shadow) { u.shadow = true; floatText(u, '🌑 SHADOW', 'tag'); }
     enemies.forEach(e => { if (isAlive(e) && e.intent && e.intent.target === u && e.skills[e.intent.i].t === 'dmg' && Math.random() > STEALTH.weight) e.intent.target = weightedHero(); });      // anyone who was aiming at her picks again
     if (s.free) u.extraTurn = true;
@@ -5393,7 +5930,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
     if (s.aoe && isAlive(u)) {                                      // Thunderstorm: everyone else on the other side is caught in it too
       const others = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && e !== target);
       if (others.length) log(`🌩️ ${s.n} sweeps over ${others.map(e => e.name).join(', ')}!`, 'log-status');
-      for (const e of others) if (isAlive(e)) await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)), noDodge: true });
+      for (const e of others) if (isAlive(e)) { if (dash && dash.zap) dash.zap(e); await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)), noDodge: true }); }
     }
     if (u.rel && u.rel.chain && !s.aoe && !s.storm && !countering && isAlive(u) && u.team === 'p') {            // Potential: Chaining
       const others = enemies.filter(e => isAlive(e) && e !== target);
@@ -5443,7 +5980,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   }
   if (s.t === 'tonic') {                                       // Jean's Tonic: heal now, and the same amount returns as poison that ignores armour
     if (!target || !isAlive(target) || target.team !== u.team) { log(`${u.name} has no one to treat.`, 'log-round'); return; }
-    const clean = s.cleanse ? cleanse(target, s.cleanse) : []; if (clean.length) { log(`✨ ${target.name} is cleansed of ${clean.map(x => x.toUpperCase()).join(', ')}.`, 'log-heal'); floatText(target, '✨ CLEANSED', 'ward'); }
+    const clean = s.cleanse ? cleanse(target, s.cleanse, ['poison']) : []; if (clean.length) { log(`✨ ${target.name} is cleansed of ${clean.map(x => x.toUpperCase()).join(', ')}.`, 'log-heal'); floatText(target, '✨ CLEANSED', 'ward'); }
     const b0 = target.hp; target.hp = Math.min(target.maxHp, target.hp + s.heal); const got = target.hp - b0;
     log(`💉 ${u.name} uses ${s.n}: ${target.name} heals ${got} HP${got ? `, and ${Math.round(got * TONIC.repay)} comes back as poison` : ''}.`, 'log-heal');
     addPoison(target, Math.round(got * TONIC.repay)); render(); if (got) { floatText(target, '+' + got, 'heal'); setTimeout(() => floatText(target, '☠️ BORROWED', 'tag'), 250); }
@@ -5452,6 +5989,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   if (s.t === 'brew') {                                        // Untested Potions: everyone drinks (herself included)
     const who = party.filter(isAlive);
     who.forEach(a => { a.brew = { turns: BREW.dur, fresh: a === u }; floatText(a, '⚗️ BREWED', 'ward'); });
+    if (s.cleanse) who.forEach(a => { const g = cleanse(a, s.cleanse, ['poison']); if (g.length) { log(`✨ ${a.name} is cleansed of ${g.map(x => x.toUpperCase()).join(', ')}.`, 'log-heal'); setTimeout(() => floatText(a, '✨ CLEANSED', 'ward'), 200); } });      // like Aria's Aegis, but never poison
     if (u.rel && u.rel.formula) who.forEach(a => { const pool = (a.statuses || []).filter(x => x.type !== 'poison' && !x.debt); if (pool.length) { const g = pool[Math.floor(Math.random() * pool.length)]; a.statuses = a.statuses.filter(x => x !== g); log(`⚗️ Stable Formula cleanses ${a.name} of ${g.type.toUpperCase()}.`, 'log-heal'); floatText(a, '✨ CLEANSED', 'ward'); } });
     log(`⚗️ ${u.name} passes round her untested potions: ${who.map(a => a.name).join(', ')} hit harder for ${BREW.dur} turns (more while poisoned), then pay for it.`, 'log-status'); render(); return;
   }
@@ -5744,7 +6282,7 @@ async function checkPhases() {
 // Turn-based buffs count the unit's own turns, including turns lost to a stun (otherwise a stun-locked immortal unit would never die and the fight never ends).
 function tickBuffs(u) {
   if (u.dr) { if (u.dr.fresh) u.dr.fresh = false; else if (--u.dr.turns <= 0) { u.dr = null; log(`${u.name}'s defensive stance fades.`, 'log-round'); render(); } }
-  if (u.immortal > 0) { if (u.immortalFresh) u.immortalFresh = false; else if (--u.immortal <= 0) { log(`${u.name}'s immortality fades.`, 'log-round'); render(); } }
+  if (u.immortal > 0) { if (u.immortalFresh) u.immortalFresh = false; else if (--u.immortal <= 0) { log(`${u.name}'s immortality fades.`, 'log-round'); render(); immortalEnd(u); } }
   if (u.brew && isAlive(u)) {                  // Untested Potions: counts the hero's own turns; when it wears off the aftertaste is poison (ignores armour)
     if (u.brew.fresh) u.brew.fresh = false;
     else if (--u.brew.turns <= 0) { u.brew = null; log(`⚗️ ${u.name}'s potion wears off, and the aftertaste bites.`, 'log-status'); addPoison(u, BREW.poison); floatText(u, '☠️ POISONED', 'tag'); render(); }
@@ -5870,6 +6408,7 @@ function checkEnd() {
   const won = !enemies.some(isAlive), lost = !party.some(isAlive);
   if (!won && !lost) return false;
   setSpot([]); over = true; actor = null; cur = null; waiting = null; blizzStop();
+  party.forEach(u => { if (u.immortalLook) immortalEnd(u); });                 // Tyr's immortal look steams off when the fight ends
   const node = curNode(), last = !quest.bonus && quest.node === quest.def.nodes.length - 1;
   const main = $('btn-end-main');
   let saved;
@@ -6506,6 +7045,7 @@ function renderHub() {
 function showNotice() {                      // pending pop-ups (saved, so they survive a reload until dismissed)
   const n = game.notices && game.notices[0], box = $('notice');
   box.classList.remove('top'); $('notice-btn2').style.display = 'none'; $('notice-btn').onclick = dismissNotice;
+  if (n && n.type === 'legend' && !LEGEND_ON) { game.notices.shift(); return showNotice(); }          // parked feature: drop any old pop-up
   if (n && n.type === 'legend' && heroById(n.id)) {          // a hero finished their Potential: the Legendary look
     const h = heroById(n.id), sp = $('notice-sprite');
     box.classList.add('show', 'top'); sp.className = 'mini-sprite port-box'; sp.style.fontSize = ''; sp.dataset.port = h.id; sp.textContent = h.tag;
@@ -6520,6 +7060,14 @@ function showNotice() {                      // pending pop-ups (saved, so they 
       sp.className = 'legend-art'; delete sp.dataset.port; sp.innerHTML = ''; sp.appendChild(m);
     });
     fillPortraits();
+    return;
+  }
+  if (n && n.type === 'parked') {                       // Siren / Frigid were set aside (see RETIRE_ON)
+    const names = (n.ids || []).map(id => (HEROES_ALL.find(h => h.id === id) || { name: id }).name.split(' ')[0]).join(' and ');
+    box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🧳'; $('notice-btn').textContent = 'OK';
+    $('notice-title').textContent = `🧳 ${names} ${(n.ids || []).length > 1 ? 'have' : 'has'} left the guild`;
+    $('notice-text').textContent = `The guild is now eight heroes: two for every role. Their relics are back in your bag${n.crystals ? `, and the ${n.crystals} 💎 spent on their Potential has been refunded` : ''}.`;
+    $('notice-skills').textContent = '';
     return;
   }
   if (n && n.type === 'tier' && n.id >= 1 && n.id <= MAX_TIER) {
@@ -6689,9 +7237,9 @@ function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.q
    One painted world (MAP_SVG, or assets/ui/map_world.* if you draw one: same 16:9 frame, whole world visible) and a camera that zooms out as areas open:
    stage 1 = the Old Lands, stage 2 = + the Tidelands, stage 3 = the whole world with the Frostbound Peaks. Positions are % of the whole world picture.
    To move a quest button, change its [x, y] in MAP_NODES; to change what each stage shows, change MAP_CAMS ({x, y, w}: top-left corner and width, in % of the world). */
-const MAP_NODES = { ruins: [10, 86, '🏛️'], yokai: [22, 72, '⛩️'], crypt: [34, 86, '⚰️'], cove: [46, 76, '🐚'], lighthouse: [58, 88, '🗼'], beach: [70, 72, '🏖️'], pass: [58, 20, '⛰️'], valley: [74, 12, '🏔️'], castle: [90, 22, '🏰'], final: [93, 47, '🌌'] };
+const MAP_NODES = { plague: [23, 97, '🐀'], ruins: [10, 86, '🏛️'], yokai: [22, 72, '⛩️'], crypt: [34, 86, '⚰️'], cove: [46, 76, '🐚'], lighthouse: [58, 88, '🗼'], beach: [70, 72, '🏖️'], pass: [58, 20, '⛰️'], valley: [74, 12, '🏔️'], castle: [90, 22, '🏰'], final: [93, 47, '🌌'] };
 const MAP_CAMS = { 1: { x: 2, y: 56, w: 44 }, 2: { x: 3, y: 28, w: 72 }, 3: { x: 0, y: 0, w: 100 } };
-const MAP_ROUTE = ['ruins', 'yokai', 'crypt', 'cove', 'lighthouse', 'beach', 'pass', 'valley', 'castle', 'final'];
+const MAP_ROUTE = ['ruins', 'plague', 'yokai', 'crypt', 'cove', 'lighthouse', 'beach', 'pass', 'valley', 'castle', 'final'];
 const mapStage = () => frostOpen() ? 3 : coastOpen() ? 2 : 1;
 const mapSeenGet = () => { try { return Math.max(1, Math.min(3, +localStorage.getItem('animeRpgMapSeen') || 1)); } catch (e) { return 1; } };
 const mapSeenSet = n => { try { localStorage.setItem('animeRpgMapSeen', String(n)); } catch (e) {} };
@@ -6920,7 +7468,7 @@ async function startQuest(ids, questId) {
 function startNode() {
   const node = curNode(), total = quest.def.nodes.length;
   party = quest.party;                                               // same unit objects: HP/armour carry over
-  party.forEach((u, i) => { u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.dr = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.vowUsed = false; u.danceBuff = false; u.shadow = false; u.embraceUsed = false; u.wrathExtra = false; u.shell = null; u.rank = i; u.cd = u.skills.map(() => 0); });
+  party.forEach((u, i) => { u.immortalLook = false; u.statuses = []; u.barrier = (u.rel && u.rel.openBarrier) || 0; u.revived = false; u.fell = false; u.vanish = false; u.gone = false; u.wrath = false; u.wrathNow = false; u.stealth = 0; u.stealthFresh = false; u.guardedBy = null; u.taunt = null; u.holdBarrier = false; u.brew = null; u.dr = null; u.immortal = 0; u.immortalFresh = false; u.once = {}; u.vowUsed = false; u.danceBuff = false; u.shadow = false; u.embraceUsed = false; u.wrathExtra = false; u.shell = null; u.rank = i; u.cd = u.skills.map(() => 0); });
   const qs = quest.def.scale || {}, ns = (quest.bonus ? quest.def.nodes[quest.node] : node).scale || {};            // quest-wide difficulty x this node's own scaling
   const ids = quest.bonus ? quest.bonus.ids : (quest.plan && quest.plan.nodes[quest.node] || node.enemies), mods = quest.bonus ? quest.bonus.mods : (quest.devMods || (RAND.on && quest.plan && quest.plan.mods && quest.plan.mods[quest.node]));
   const T = tierDef(quest.tier);
@@ -7262,7 +7810,7 @@ const EVENTS = [
       return out;
     }, extra: d => d.r.q },
   // Very rare: only when Jean has not joined yet. A healing potion buys her trust; she then joins the roster back at the hub.
-  { id: 'doctor', art: 'jean', icon: '🩺', title: 'The Plague Doctor', weight: 0.35, only: () => !game.roster.includes('jean'),
+  { id: 'doctor', art: 'jean', icon: '🩺', title: 'The Plague Doctor', weight: 0.35, only: () => false,           // retired: Jean now joins by clearing The Quarantined Village
     text: 'A figure in a long coat and a bird-beaked mask is crouched over a rack of clinking vials, muttering. "Hm? Customers? Everyone I treat complains about the side effects, you know. But the results! The results are undeniable." They eye your pack. "A genuine healing potion, now. I have been wanting to study one."',
     choices(q) {
       const has = evPotions() > 0, here = game.roster.includes('jean');
@@ -7515,7 +8063,7 @@ function fillHeroArt(root) {       // puts the armoured idle picture (breathing,
     markLive(m, a); el.prepend(m); el.classList.add('has-art');
   }));
 }
-const legendTease = hid => !!POT_HERO[hid] && lakeOpen() && !legendOwned(hid);          // the locked Legendary button shows once Potential exists in the game (Act 3)
+const legendTease = hid => LEGEND_ON && !!POT_HERO[hid] && lakeOpen() && !legendOwned(hid);          // the locked Legendary button shows once Potential exists in the game (Act 3)
 function setSkin(hid, name) {            // Dorm: which look this hero uses (armoured state only); '' = the normal art
   if (!heroById(hid)) return;
   if (name && !skinsFor(hid).includes(name)) return;
@@ -8244,6 +8792,7 @@ const CAMP_PAIRS = {         // special exchanges for particular pairs: key is t
   'seria+siren':  [['Siren, no singing near the shield.', 'It is a beautiful shield, though.']]
 };
 const TAUNTS = {
+  e_ratking:  { start: ['Squee-hee! More meat for the nest!', 'The plague provides, the plague provides!'], phase: ['CHILDREN! FEAST!', 'You cannot kill a thousand of me!'] },
   e_warlord:  { start: ['None pass. None have. None will.', 'My legion marches on.'], phase: ['RISE! ALL OF YOU!', 'You will join the ranks.'] },
   e_matron:   { start: ['Hush now. Hush. Sleep.', 'Come closer, little ones...'], phase: ['NO MORE LULLABIES!', 'Why won\'t you sleep?!'], charm: ['Sleepwalk for me, dear.', 'Wake and hurt them.'] },
   e_icequeen: { start: ['You dare enter my court?', 'Kneel, and perhaps I will be merciful.'], phase: ['This court will be YOUR grave.', 'Enough. Winter takes everything.'] },             // enemy id -> moment -> lines. Moments: start (fight opens), phase (boss changes phase), charm (it charms a hero)
@@ -8261,6 +8810,7 @@ const QUEST_INTRO = {
   ruins: 'The Sentinel Ruins stand silent... but not empty.',
   yokai: 'Lanterns drift through the dark. The Night Parade has begun.',
   crypt: 'Cold air seeps from the crypt doors. Something below is awake.',
+  plague: 'The quarantine wall still stands. Behind it, something squeaks in the thousands, and a lamp burns in the apothecary window.',
   cove: 'A song drifts over the water, sweet and wrong.',
   lighthouse: 'The beacon is dark and the storm is circling. Climb.',
   beach: 'The sand is warm and the shore is far too quiet.'
