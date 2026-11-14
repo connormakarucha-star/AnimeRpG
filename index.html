@@ -1471,6 +1471,8 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 .dashfx.flip img{transform:translateX(-50%) scaleX(-1)}
 .dashfx.ghost{z-index:69}
 .dashfx canvas.seqfx{position:absolute;pointer-events:none;max-width:none}
+.dashfx .idlefx{position:absolute;left:50%;bottom:0;height:var(--sprH,85%);width:auto;max-width:none;transform:translateX(-50%);object-fit:contain}
+.dashfx.flip .idlefx{transform:translateX(-50%) scaleX(-1)}
 .dashfx.flip canvas.seqfx{transform:scaleX(-1)}
 #seq-hint{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:9000;background:rgba(10,8,20,.88);color:#eee;border:1px solid #c9a227;border-radius:10px;padding:8px 12px;font-size:12px;max-width:94vw;text-align:center;line-height:1.5}
 #seq-hint code{color:#ffd54f;font-size:12px}
@@ -4231,7 +4233,9 @@ async function stageBegin(u, t, art, s) {
    her effect pictures appear around her, it holds, and it all fades back into the line-up before the skill resolves. Plan for every hero: SKILL3_ANIMATIONS.md.
    Art:  assets/<id>/<armoured | broken | armoured - skin>/skill3.(png|webp)  +  skill3b  (pose A, pose B; a missing skill3 just starts on skill3b; a skill3 video is ignored once skill3b exists)
          assets/<id>/effects/<file>.png  shared by every look; a skin can carry its own in assets/<id>/armoured - <skin>/effects/<file>.png
-   Knobs (per hero):  h = close-up height (fraction of screen height), bottom = where its bottom edge sits (>1 = cut off by the screen), x = nudge sideways (fraction of screen width)
+   Knobs (per hero):  h = close-up height (fraction of screen height), bottom = where its bottom edge sits (1 = on the bottom of the screen: the poses have no legs, so keep it there), x = nudge sideways (fraction of screen width)
+         enter = how she gets there: 'idle' = her normal idle picture zooms up out of her slot toward the camera and hands over to skill3 (idleH = how tall the idle is at the hand-over, in close-up
+         heights; idleTop = the gap above her head in skill3, as a fraction of its height, so the two heads line up), or 'rise' = skill3 simply rises into place over the party area
          fx = the effect pictures, each 'back' (behind her) or 'front' (in front of her); fxBox = where they sit relative to skill3b: dx/dy in picture heights, s = size (1 = same height as skill3b,
          which lines up 1:1 when the effect is drawn on the same canvas as skill3b)
          reveal = how the effects appear. kind 'path': a burn that runs along `path` (points as fractions of the effect picture, x from the left, y from the top, drawn facing right) from its first
@@ -4239,17 +4243,17 @@ async function stageBegin(u, t, art, s) {
    Dev mode: Alt+3 replays the first party member's sequence; Alt+Shift+3 replays it and freezes on the last frame for tuning (keys shown on screen). */
 const SEQ3 = {
   iris: {
-    h: 1.0, bottom: 1.0, x: .02,
+    h: 1.0, bottom: 1.0, x: .02, enter: 'idle', idleH: 1.5, idleTop: .1,
     fx: [{ file: 'background', layer: 'back' }, { file: 'foreground', layer: 'front' }],
     fxBox: { dx: 0, dy: 0, s: 1 },
     reveal: { kind: 'path', ms: 650, spread: .4, feather: .1,
       path: [[1.02, .86], [.86, .87], [.7, .88], [.5, .93], [.31, .91], [.19, .81], [.12, .66], [.14, .53], [.24, .44], [.39, .4], [.55, .41], [.7, .44], [.87, .47]] },
     hot: [255, 228, 150], ember: [[255, 240, 170], [255, 170, 60], [230, 70, 20]], smoke: [62, 40, 36],
-    ms: { zoom: 220, holdA: 280, swap: 160, hold: 750, out: 340 }
+    ms: { zoom: 300, rise: 220, holdA: 280, swap: 160, hold: 750, out: 340 }
   }
 };
 let SEQ_CAL = {}; try { SEQ_CAL = JSON.parse(localStorage.getItem('seqCal') || '{}') || {}; } catch (e) { }
-const seqK = id => { const K = SEQ3[id], c = SEQ_CAL[id] || {}; return K && { ...K, h: c.h ?? K.h, bottom: c.bottom ?? K.bottom, x: c.x ?? K.x, fxBox: { dx: c.dx ?? K.fxBox.dx, dy: c.dy ?? K.fxBox.dy, s: c.s ?? K.fxBox.s } }; };
+const seqK = id => { const K = SEQ3[id], c = SEQ_CAL[id] || {}; return K && { ...K, h: c.h ?? K.h, bottom: c.bottom ?? K.bottom, x: c.x ?? K.x, enter: c.enter ?? K.enter, idleH: c.idleH ?? K.idleH, fxBox: { dx: c.dx ?? K.fxBox.dx, dy: c.dy ?? K.fxBox.dy, s: c.s ?? K.fxBox.s } }; };
 async function findStill(path) {             // a still picture at this path, even when a video of the same name is the one on the manifest
   const a = await findAsset(path); if (!a) return null; if (a.ext !== 'mp4' && a.ext !== 'webm') return a;
   const k = path + '#still'; if (k in animCache) return animCache[k];
@@ -4284,23 +4288,28 @@ async function seqBegin(u, art) {
   const A = figBox(el); if (!A.w) return null;
   const K = art.K, vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u), dir = flip ? -1 : 1;
   const d0 = document.createElement('div'); d0.className = 'dashfx seq3' + (flip ? ' flip' : '') + (art.a ? '' : ' swap');
-  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+  const box = { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' };
+  Object.assign(d0.style, box, { opacity: 0 });
   const mkImg = (a, cls) => { const im = document.createElement('img'); im.className = cls; im.src = a.url; im.draggable = false; return im; };
   const imA = art.a ? mkImg(art.a, 'a') : null, imB = mkImg(art.b, 'b');
+  const spr = K.enter === 'idle' && el.querySelector('.spr');           // the poses have no legs: the zoom out of her slot is done by her full-length idle picture
+  let di = null;
+  if (spr) { di = document.createElement('div'); di.className = 'dashfx' + (flip ? ' flip' : ''); Object.assign(di.style, box); const c = spr.cloneNode(true); c.className = 'idlefx';
+    if (c.tagName === 'VIDEO') { c.muted = c.loop = c.playsInline = true; try { c.currentTime = spr.currentTime; } catch (e) { } c.play && c.play().catch(() => {}); } di.appendChild(c); document.body.appendChild(di); }
   const layers = art.fx.map(f => ({ ...f, img: mkImg(f.a, 'src'), cv: document.createElement('canvas') }));
   const back = layers.filter(l => l.layer === 'back'), front = layers.filter(l => l.layer !== 'back'), pt = document.createElement('canvas'), sm = document.createElement('canvas');
   back.forEach(l => { l.cv.className = 'seqfx back'; d0.appendChild(l.cv); }); sm.className = 'seqfx sm'; if (layers.length) d0.appendChild(sm); if (imA) d0.appendChild(imA); d0.appendChild(imB);
   front.forEach(l => { l.cv.className = 'seqfx front'; d0.appendChild(l.cv); }); pt.className = 'seqfx pt'; if (layers.length) d0.appendChild(pt);
   document.body.appendChild(d0);
   await Promise.all([imA, imB, ...layers.map(l => l.img)].filter(Boolean).map(im => im.decode ? im.decode().catch(() => {}) : 0));
-  const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
+  const d = dashLive = { parts: [d0, di].filter(Boolean), el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
   const ih = (imA || imB).offsetHeight || imB.offsetHeight || A.h * SPR_SCALE;
-  let raf = 0, live = true, P1 = '', S0 = 1;
+  let raf = 0, live = true, P1 = '', S0 = 1, fx0 = A.cx, P1y = 0;
   d.stop = () => { live = false; cancelAnimationFrame(raf); };
   // ---- placement (re-run live while tuning) ----
   function place() {
-    const k = d.K || K, pc = $('party-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx0 = (pr && pr.width ? pr.left + pr.width / 2 : A.cx) + dir * k.x * vw;
-    S0 = vh * k.h * fbScale(u) / ih; P1 = `translate(${fx0 - A.cx}px,${vh * k.bottom - A.bottom}px) scale(${S0})`;
+    const k = d.K || K, pc = $('party-cards'), pr = pc ? pc.getBoundingClientRect() : null; fx0 = (pr && pr.width ? pr.left + pr.width / 2 : A.cx) + dir * k.x * vw;
+    S0 = vh * k.h * fbScale(u) / ih; P1y = vh * k.bottom - A.bottom; P1 = `translate(${fx0 - A.cx}px,${P1y}px) scale(${S0})`;
     const fh = ih * k.fxBox.s, dpr = Math.min(window.devicePixelRatio || 1, 1.25);
     layers.forEach(l => { const ar = l.img.naturalWidth / l.img.naturalHeight || 1, w = fh * ar; l.ar = ar;
       Object.assign(l.cv.style, { height: fh + 'px', width: w + 'px', left: `calc(50% + ${dir * k.fxBox.dx * ih - w / 2}px)`, bottom: (-k.fxBox.dy * ih) + 'px' });
@@ -4354,7 +4363,20 @@ async function seqBegin(u, art) {
     place, setDebug(v) { debug = v; }, get K() { return d.K || K; }, set K(v) { d.K = v; place(); d0.style.transform = P1; d0.getAnimations().forEach(a => a.cancel()); },
     async run(opts = {}) {
       if (layers.length) raf = requestAnimationFrame(frame);
-      sfx('whoosh'); await wait(anim(d0, [{ transform: 'none' }, { transform: P1 }], T.zoom, 'cubic-bezier(.2,.8,.3,1)'), T.zoom);
+      sfx('whoosh');
+      const k = d.K || K, H = vh * k.h * fbScale(u);
+      if (di) {          // 1) her idle (feet and all) zooms up out of her slot toward the camera; as it reaches close-up size the legless skill3 fades in over it, bottom edge on the bottom of the screen
+        const ii = di.firstChild, ihI = ii.offsetHeight || A.h * SPR_SCALE, HI = H * (k.idleH || 1.5), top = vh * k.bottom - H + (k.idleTop ?? .1) * H;
+        const PI = `translate(${fx0 - A.cx}px,${top + HI - A.bottom}px) scale(${HI / ihI})`;
+        d0.style.transform = P1;
+        const a1 = anim(di, [{ transform: 'none', opacity: 1 }, { opacity: 1, offset: .62 }, { transform: PI, opacity: 0 }], T.zoom, 'cubic-bezier(.3,.6,.35,1)');
+        anim(d0, [{ opacity: 0 }, { opacity: 0, offset: .5 }, { opacity: 1 }], T.zoom, 'linear');
+        await wait(a1, T.zoom); di.remove();
+      } else {           // 2) skill3 rises into place over the party area from below the bottom edge
+        const from = `translate(${fx0 - A.cx}px,${P1y + H * .3}px) scale(${S0})`;
+        await wait(anim(d0, [{ transform: from, opacity: 0 }, { transform: P1, opacity: 1 }], T.rise || 220, 'cubic-bezier(.2,.8,.3,1)'), T.rise || 220);
+      }
+      d0.style.transform = P1; d0.style.opacity = 1;
       if (imA) {
         await sleep(dspd(T.holdA));
         d0.classList.add('swap'); sfx('swing'); shake(1);                                                                     // the jolt: pose B, a white flash, a little punch-in
@@ -4394,13 +4416,20 @@ async function seqPreview(freeze) {
 function seqEnd() { const s = seqDev; seqDev = null; const h = $('seq-hint'); if (h) h.remove(); if (s) s.q.home(); }
 function seqHint() {
   const s = seqDev; if (!s) return; let h = $('seq-hint'); if (!h) { h = document.createElement('div'); h.id = 'seq-hint'; document.body.appendChild(h); }
-  const k = s.q.K, c = { h: k.h, bottom: k.bottom, x: k.x, dx: k.fxBox.dx, dy: k.fxBox.dy, s: k.fxBox.s };
-  h.innerHTML = `<b>${s.u.name} skill 3 tuning</b> · Alt+arrows move the effects · Alt+[ ] effect size · Alt+Shift+arrows move the close-up · Alt+Shift+[ ] close-up size · Alt+P path on/off · Alt+0 reset · Esc done<br><code>${s.u.id}: ${JSON.stringify(c)}</code> (remembered in this browser; send me these numbers to make them the default)`;
+  const k = s.q.K, c = { h: k.h, bottom: k.bottom, x: k.x, dx: k.fxBox.dx, dy: k.fxBox.dy, s: k.fxBox.s, enter: k.enter, idleH: k.idleH };
+  h.innerHTML = `<b>${s.u.name} skill 3 tuning</b> · Alt+arrows move the effects · Alt+[ ] effect size · Alt+Shift+arrows move the close-up · Alt+Shift+[ ] close-up size · Alt+P path on/off · Alt+E entrance (idle zoom / rise) · Alt+- / Alt+= idle size · Alt+0 reset · Esc done<br><code>${s.u.id}: ${JSON.stringify(c)}</code> (remembered in this browser; send me these numbers to make them the default)`;
 }
 document.addEventListener('keydown', e => { if (seqDev && e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); seqEnd(); } }, true);      // Esc ends tuning without opening the pause menu
 document.addEventListener('keydown', e => {
   if (!devMode || !e.altKey) return;
   if (e.code === 'Digit3') { e.preventDefault(); seqPreview(e.shiftKey); return; }
+  if (e.code === 'KeyE' || e.code === 'Minus' || e.code === 'Equal') {          // Alt+E: entrance idle zoom <-> rise · Alt+- / Alt+= : idle size at the hand-over (then Alt+3 to see it)
+    const u0 = (seqDev && seqDev.u) || party.find(m => SEQ3[m.id]); if (!u0) return; e.preventDefault();
+    const c = SEQ_CAL[u0.id] = SEQ_CAL[u0.id] || {}, k = seqK(u0.id);
+    if (e.code === 'KeyE') c.enter = k.enter === 'rise' ? 'idle' : 'rise'; else c.idleH = +((k.idleH || 1.5) + (e.code === 'Minus' ? -.05 : .05)).toFixed(2);
+    try { localStorage.setItem('seqCal', JSON.stringify(SEQ_CAL)); } catch (_) { }
+    banner(seqK(u0.id).enter === 'rise' ? 'Skill 3 entrance: rise into place' : `Skill 3 entrance: idle zoom (idle size ${seqK(u0.id).idleH})`); if (seqDev) seqHint(); return;
+  }
   const s = seqDev; if (!s || !s.freeze) return;
   const id = s.u.id, c = SEQ_CAL[id] = SEQ_CAL[id] || {}, k = s.q.K, sh = e.shiftKey, key = e.key; let used = true;
   const r2 = v => +v.toFixed(3);
