@@ -293,6 +293,7 @@ body.calm .seat .sp{animation:none}
 .campfire .fire.can{cursor:pointer}.campfire .fire.can:hover{transform:translate(-50%,-50%) scale(1.12)}.campfire .fire.no{filter:drop-shadow(0 0 14px rgba(255,140,40,.5)) saturate(.7)}
 .campfire .fire{pointer-events:auto}
 .fire-tip{position:absolute;left:50%;top:72%;transform:translateX(-50%);z-index:120;white-space:nowrap;font-size:max(.62rem,2.3cqw);color:#ffd9a0;background:rgba(20,12,10,.7);border:1px solid rgba(255,170,90,.35);border-radius:10px;padding:.15em .6em;pointer-events:none}.fire-tip.dim{color:#9a8a80}
+.campfire .seat::after{content:'';position:absolute;left:50%;bottom:-3%;width:78%;height:9%;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent 70%);z-index:-1;pointer-events:none}
 .campfire .camper{pointer-events:auto;cursor:pointer}.campfire .camper:hover .sf{filter:brightness(1.18)}.campfire .camper.sel .sf{filter:drop-shadow(0 0 6px #ffd54f)}
 .campfire .seat-lbl .hmr{font-size:1.15em;filter:drop-shadow(0 0 4px #ff9a4a);animation:hmrTap 1.4s ease-in-out infinite;display:inline-block}
 @keyframes hmrTap{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(18deg)}}
@@ -1186,6 +1187,7 @@ body.fs .qmap{margin:0}
   #camp .campfire{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);width:min(94vw,calc(80vh * 1.6));max-width:none;margin:0;border-radius:0;background:none;z-index:2}
   #camp #camp-panel{position:absolute;right:1.4vw;top:12vh;width:clamp(250px,17.5vw,300px);max-height:80vh;overflow:auto;z-index:6;background:rgba(14,10,22,.72);border:1px solid rgba(255,190,120,.3);border-radius:14px;padding:12px 14px;backdrop-filter:blur(3px)}
   #camp #camp-msg:empty{display:none}
+  #camp .seat-lbl{text-shadow:0 1px 3px #000,0 0 7px #000;color:#fff}
   #camp #camp-panel .shop-row{font-size:.74rem;padding:8px 9px}#camp #camp-panel .shop-row button{font-size:.72rem;padding:6px 8px}
   #camp #camp-panel .shop-row{flex-wrap:wrap}#camp #camp-panel .shop-row .mini-sprite{width:40px;height:40px;flex:none}#camp #camp-panel .shop-row .who{flex:1 1 120px;min-width:0}#camp #camp-panel .shop-row button{flex:1 1 100%}
   .seat .seat-lbl{font-size:.78rem}
@@ -6696,38 +6698,40 @@ function campPines(seed, y0, hmin, hmax, col, n, snow) {
   return o;
 }
 function campBgHtml(theme) {
-  const W = 1600, H = 900, sv = c => `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${c}</svg>`;
+  const W = 1600, H = 900, GY = 468, sv = c => `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${c}</svg>`;
+  let r = 5; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  const tufts = (col, n, y0, y1, h) => { let o = ''; for (let i = 0; i < n; i++) { const x = rnd() * W, y = y0 + rnd() * (y1 - y0), k = h * (.6 + rnd() * .8); o += `<path d="M${x - 5} ${y} L${x - 3} ${y - k} L${x} ${y - k * .5} L${x + 3} ${y - k * 1.1} L${x + 5} ${y}Z" fill="${col}"/>`; } return o; };
+  const patch = (c1, c2) => `<ellipse cx="800" cy="640" rx="560" ry="170" fill="${c1}"/><ellipse cx="800" cy="650" rx="360" ry="105" fill="${c2}"/>`;     // the clearing the party sits on
+  const BIG = (col, snow) => campTent(800, GY + 18, 3.6, col, snow);       // the one tent, bigger than the whole party put together
   if (theme === 'beach') {
-    let waves = ''; for (let i = 0; i < 9; i++) waves += `<path d="M0 ${392 + i * 18} Q200 ${384 + i * 18} 400 ${392 + i * 18} T800 ${392 + i * 18} T1200 ${392 + i * 18} T1600 ${392 + i * 18}" fill="none" stroke="rgba(190,215,230,${.22 - i * .018})" stroke-width="2"/>`;
-    const rocks = `<path d="M60 560 Q90 500 150 520 Q190 540 200 570Z" fill="#2c3340"/><path d="M1380 600 Q1420 530 1500 555 Q1540 580 1560 610Z" fill="#262c38"/>`;
-    return sv(`<defs><linearGradient id="bsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2036"/><stop offset=".55" stop-color="#4a4768"/><stop offset="1" stop-color="#8a7c8a"/></linearGradient><linearGradient id="bsea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a5368"/><stop offset="1" stop-color="#24384a"/></linearGradient><linearGradient id="bsd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b6258"/><stop offset="1" stop-color="#3a342f"/></linearGradient></defs>`
-      + `<rect width="${W}" height="${H}" fill="url(#bsk)"/><circle cx="1180" cy="190" r="54" fill="#e8e4ee" opacity=".85"/><circle cx="1180" cy="190" r="110" fill="rgba(230,225,245,.12)"/>`
-      + `<rect y="380" width="${W}" height="190" fill="url(#bsea)"/>${waves}<path d="M1120 400 L1240 400 L1215 470 L1145 470Z" fill="rgba(240,235,250,.14)"/>`
-      + `<path d="M0 540 Q400 500 800 530 T1600 520 V${H} H0Z" fill="url(#bsd)"/><path d="M0 560 Q400 520 800 550 T1600 540" fill="none" stroke="rgba(230,240,245,.35)" stroke-width="5"/>`
-      + rocks
-      + campTent(250, 640, 1.25, '#6d7a5a') + campTent(430, 600, .85, '#7a5a4a') + campTent(1360, 650, 1.3, '#5a6a7a') + campTent(1180, 595, .8, '#7a6a4a'))
-      + `<div class="cb-fx"><div class="fog" style="top:36%"></div><div class="fog f2" style="top:52%"></div><div class="fog" style="top:74%;opacity:.7"></div><div class="fireglow"></div></div>`;
+    let waves = ''; for (let i = 0; i < 8; i++) waves += `<path d="M0 ${330 + i * 16} Q200 ${322 + i * 16} 400 ${330 + i * 16} T800 ${330 + i * 16} T1200 ${330 + i * 16} T1600 ${330 + i * 16}" fill="none" stroke="rgba(190,215,230,${.24 - i * .02})" stroke-width="2"/>`;
+    let pebbles = ''; for (let i = 0; i < 50; i++) pebbles += `<ellipse cx="${rnd() * W}" cy="${GY + 30 + rnd() * 400}" rx="${2 + rnd() * 4}" ry="${1.5 + rnd() * 2}" fill="rgba(70,60,50,.45)"/>`;
+    return sv(`<defs><linearGradient id="bsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2036"/><stop offset=".6" stop-color="#4a4768"/><stop offset="1" stop-color="#8a7c8a"/></linearGradient><linearGradient id="bsea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a5368"/><stop offset="1" stop-color="#24384a"/></linearGradient><linearGradient id="bsd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a7d68"/><stop offset="1" stop-color="#4a4034"/></linearGradient></defs>`
+      + `<rect width="${W}" height="${H}" fill="url(#bsk)"/><circle cx="1240" cy="150" r="50" fill="#e8e4ee" opacity=".85"/><circle cx="1240" cy="150" r="105" fill="rgba(230,225,245,.12)"/>`
+      + `<rect y="300" width="${W}" height="190" fill="url(#bsea)"/>${waves}`
+      + `<path d="M0 ${GY - 14} Q400 ${GY - 30} 800 ${GY - 16} T1600 ${GY - 22} V${H} H0Z" fill="url(#bsd)"/><path d="M0 ${GY - 14} Q400 ${GY - 30} 800 ${GY - 16} T1600 ${GY - 22}" fill="none" stroke="rgba(235,245,250,.55)" stroke-width="6"/>`
+      + pebbles + patch('rgba(60,48,36,.22)', 'rgba(50,38,28,.3)') + BIG('#6d7a5a')
+      + `<path d="M120 ${GY + 20} Q150 ${GY - 30} 220 ${GY - 10} Q250 ${GY} 260 ${GY + 24}Z" fill="#2c3340"/><path d="M1400 ${GY + 30} Q1440 ${GY - 20} 1510 ${GY} Q1550 ${GY + 14} 1560 ${GY + 34}Z" fill="#262c38"/>`)
+      + `<div class="cb-fx"><div class="fog" style="top:30%"></div><div class="fog f2" style="top:44%"></div><div class="fog" style="top:80%;opacity:.55"></div><div class="fireglow"></div></div>`;
   }
   if (theme === 'snow') {
-    const cliffL = `<path d="M0 0 H330 L300 120 L360 260 L300 420 L380 560 L330 900 H0Z" fill="#36425a"/><path d="M0 0 H230 L210 120 L260 260 L200 430 L270 560 L240 900 H0Z" fill="#46556e"/><path d="M0 0 H330 L290 60 L240 40 L190 90 L120 60 L60 110 L0 80Z" fill="#eaf3ff"/>`;
-    const cliffR = `<path d="M1600 0 H1280 L1310 140 L1250 280 L1320 430 L1260 580 L1300 900 H1600Z" fill="#323e56"/><path d="M1600 0 H1400 L1420 120 L1370 270 L1430 440 L1380 580 L1410 900 H1600Z" fill="#46556e"/><path d="M1600 0 H1300 L1330 70 L1390 50 L1440 100 L1500 60 L1560 110 L1600 90Z" fill="#eaf3ff"/>`;
-    return sv(`<defs><linearGradient id="ssk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1530"/><stop offset=".5" stop-color="#27406a"/><stop offset="1" stop-color="#7f9cc0"/></linearGradient><linearGradient id="sgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdcee"/><stop offset="1" stop-color="#7f93b0"/></linearGradient><linearGradient id="aur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(90,255,190,0)"/><stop offset=".4" stop-color="rgba(90,255,190,.35)"/><stop offset=".7" stop-color="rgba(150,120,255,.3)"/><stop offset="1" stop-color="rgba(150,120,255,0)"/></linearGradient></defs>`
+    const cliffL = `<path d="M0 0 H330 L300 120 L360 260 L300 420 L380 ${GY + 20} L0 ${GY + 60}Z" fill="#36425a"/><path d="M0 0 H230 L210 120 L260 260 L200 400 L250 ${GY + 30} L0 ${GY + 60}Z" fill="#46556e"/><path d="M0 0 H330 L290 60 L240 40 L190 90 L120 60 L60 110 L0 80Z" fill="#eaf3ff"/>`;
+    const cliffR = `<path d="M1600 0 H1280 L1310 140 L1250 280 L1320 400 L1230 ${GY + 20} L1600 ${GY + 60}Z" fill="#323e56"/><path d="M1600 0 H1400 L1420 120 L1370 270 L1430 400 L1380 ${GY + 30} L1600 ${GY + 60}Z" fill="#46556e"/><path d="M1600 0 H1300 L1330 70 L1390 50 L1440 100 L1500 60 L1560 110 L1600 90Z" fill="#eaf3ff"/>`;
+    let drifts = ''; for (let i = 0; i < 26; i++) drifts += `<ellipse cx="${rnd() * W}" cy="${GY + 40 + rnd() * 390}" rx="${30 + rnd() * 70}" ry="${5 + rnd() * 9}" fill="rgba(255,255,255,${.25 + rnd() * .3})"/>`;
+    return sv(`<defs><linearGradient id="ssk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1530"/><stop offset=".55" stop-color="#27406a"/><stop offset="1" stop-color="#7f9cc0"/></linearGradient><linearGradient id="sgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4eefb"/><stop offset="1" stop-color="#8fa3c0"/></linearGradient><linearGradient id="aur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(90,255,190,0)"/><stop offset=".4" stop-color="rgba(90,255,190,.35)"/><stop offset=".7" stop-color="rgba(150,120,255,.3)"/><stop offset="1" stop-color="rgba(150,120,255,0)"/></linearGradient></defs>`
       + `<rect width="${W}" height="${H}" fill="url(#ssk)"/><path d="M250 40 Q600 190 900 70 T1450 120 L1450 200 Q1100 280 800 170 T250 150Z" fill="url(#aur)" opacity=".8"/>`
-      + `<path d="M380 470 L520 300 L610 400 L760 240 L930 430 L1060 330 L1220 470Z" fill="#5a7396"/><path d="M760 240 L690 330 L740 320 L780 360 L820 320 L860 340Z" fill="#eaf3ff"/><path d="M520 300 L470 370 L520 355 L560 380Z" fill="#eaf3ff"/>`
-      + campPines(7, 560, 90, 150, '#25384f', 16, true) + cliffL + cliffR
-      + `<path d="M0 560 Q400 520 800 545 T1600 535 V${H} H0Z" fill="url(#sgd)"/><path d="M0 600 Q500 570 900 590 T1600 580" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="6"/>`
-      + campPines(23, 690, 150, 230, '#1d3040', 9, true)
-      + campTent(300, 690, 1.3, '#a05a3a', true) + campTent(480, 640, .85, '#3a6a8a', true) + campTent(1300, 700, 1.35, '#8a4a5a', true) + campTent(1125, 636, .8, '#5a7a4a', true))
+      + `<path d="M300 ${GY} L480 260 L580 360 L740 190 L930 380 L1060 290 L1300 ${GY}Z" fill="#5a7396"/><path d="M740 190 L670 290 L720 280 L760 320 L810 280 L850 300Z" fill="#eaf3ff"/><path d="M480 260 L430 330 L480 315 L520 340Z" fill="#eaf3ff"/>`
+      + campPines(7, GY + 6, 90, 150, '#25384f', 16, true) + cliffL + cliffR
+      + `<path d="M0 ${GY} Q400 ${GY - 22} 800 ${GY - 6} T1600 ${GY - 14} V${H} H0Z" fill="url(#sgd)"/>` + drifts + patch('rgba(255,255,255,.12)', 'rgba(255,200,140,.12)') + BIG('#a05a3a', true))
       + `<div class="cb-fx"><div class="snow"></div><div class="snow s2"></div><div class="fireglow"></div></div>`;
   }
   // forest
-  let stars = ''; for (let i = 0; i < 46; i++) stars += `<circle cx="${(i * 197) % W}" cy="${(i * 83) % 260 + 10}" r="${i % 5 ? 1.2 : 2}" fill="#fff" opacity="${.35 + (i % 4) * .15}"/>`;
-  return sv(`<defs><linearGradient id="fsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b1a"/><stop offset="1" stop-color="#1c3a3a"/></linearGradient><linearGradient id="fgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a4228"/><stop offset="1" stop-color="#121e12"/></linearGradient></defs>`
-    + `<rect width="${W}" height="${H}" fill="url(#fsk)"/>${stars}<circle cx="260" cy="120" r="46" fill="#f2efd8" opacity=".9"/><circle cx="260" cy="120" r="100" fill="rgba(240,240,200,.1)"/>`
-    + campPines(3, 520, 200, 330, '#10241f', 14) + campPines(11, 600, 230, 380, '#0c1a17', 11)
-    + `<path d="M0 560 Q400 520 800 550 T1600 540 V${H} H0Z" fill="url(#fgd)"/>`
-    + campTent(260, 650, 1.3, '#7a6a3a') + campTent(450, 610, .85, '#5a7a5a') + campTent(1330, 660, 1.35, '#8a5a3a') + campTent(1140, 606, .8, '#4a6a7a')
-    + `<path d="M0 760 Q300 720 600 760 T1200 750 T1600 770 V${H} H0Z" fill="#0d1a0d"/>` + campPines(41, 900, 260, 360, '#07100d', 7))
+  let stars = ''; for (let i = 0; i < 46; i++) stars += `<circle cx="${(i * 197) % W}" cy="${(i * 83) % 230 + 10}" r="${i % 5 ? 1.2 : 2}" fill="#fff" opacity="${.35 + (i % 4) * .15}"/>`;
+  return sv(`<defs><linearGradient id="fsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b1a"/><stop offset="1" stop-color="#1c3a3a"/></linearGradient><linearGradient id="fgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a5a30"/><stop offset="1" stop-color="#162416"/></linearGradient></defs>`
+    + `<rect width="${W}" height="${H}" fill="url(#fsk)"/>${stars}<circle cx="260" cy="110" r="46" fill="#f2efd8" opacity=".9"/><circle cx="260" cy="110" r="100" fill="rgba(240,240,200,.1)"/>`
+    + campPines(3, GY - 10, 220, 340, '#10241f', 14) + campPines(11, GY + 6, 200, 300, '#0c1a17', 11)
+    + `<path d="M0 ${GY} Q400 ${GY - 22} 800 ${GY - 6} T1600 ${GY - 14} V${H} H0Z" fill="url(#fgd)"/>`
+    + tufts('#2a4524', 90, GY + 20, 880, 14) + patch('rgba(120,90,50,.28)', 'rgba(90,64,36,.4)') + tufts('#4a7a3a', 40, GY + 120, 800, 12) + BIG('#7a6a3a'))
     + `<div class="cb-fx"><div class="fireglow"></div>${[...Array(14)].map((_, i) => `<i class="fly" style="left:${8 + i * 6.5}%;top:${52 + (i * 13) % 34}%;animation-delay:-${(i * 1.3) % 7}s;animation-duration:${5 + i % 4}s"></i>`).join('')}</div>`;
 }
 const CAMP_THEME = { lands: 'forest', coast: 'beach', frost: 'snow' };
