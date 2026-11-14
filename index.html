@@ -37,10 +37,8 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .combatant-card.targetable.team-p{border-color:#4fc3f7}
 .figure.hurt{animation:hurt .4s}
 .figure.hurtfig{animation:hurtShake .5s ease-out}
-.figure.strikefig{animation:strikeLunge .5s cubic-bezier(.3,0,.2,1)}
 .figure.brokenfig .spr{filter:saturate(.45) brightness(.82);rotate:-4deg;transform-origin:50% 100%}
 @keyframes hurtShake{0%{translate:0 0;filter:brightness(2.4)}15%{translate:-9px 0}30%{translate:7px -2px;filter:brightness(1.5)}50%{translate:-5px 0}70%{translate:3px 0}100%{translate:0 0}}
-@keyframes strikeLunge{0%{translate:0 0;scale:1}30%{translate:8% 0;scale:1.04 .94}55%{translate:-34% 0;scale:1.1}100%{translate:0 0;scale:1}}
 @keyframes hurt{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}100%{transform:none}}
 .figure{transition:filter .12s}
 /* stock effects drawn over ANY sprite, so each character only needs one 'damaged' picture */
@@ -385,6 +383,20 @@ body.dorm-dragging .dorm-room .seat[data-slot]{outline:2px dashed rgba(255,213,7
 @keyframes stovePulse{0%,100%{opacity:.62;scale:.94}50%{opacity:1;scale:1.06}}
 #dvi-seats .seat{--sh:27}
 #camp-msg{min-height:1.2em;font-size:.72rem;color:#81c784;margin:4px 0 8px}
+#camp-bg{display:none;position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0f18 center/cover no-repeat}
+#camp-bg svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#camp-bg.has-art svg,#camp-bg.has-art .cb-fx{display:none}
+#camp-bg .cb-fx{position:absolute;inset:0;pointer-events:none}
+#camp-bg .fog{position:absolute;left:-30%;width:160%;height:26%;background:radial-gradient(ellipse at 50% 50%,rgba(210,225,235,.38),rgba(210,225,235,0) 68%);filter:blur(10px);animation:fogDrift 38s linear infinite alternate}
+#camp-bg .fog.f2{animation-duration:55s;animation-direction:alternate-reverse;opacity:.8}
+@keyframes fogDrift{from{transform:translateX(-8%)}to{transform:translateX(8%)}}
+#camp-bg .snow{position:absolute;inset:-10% 0 0 0;background-image:radial-gradient(circle,#fff 0 1.6px,transparent 2.4px),radial-gradient(circle,#dfeeff 0 1.1px,transparent 1.9px);background-size:170px 170px,110px 110px;background-position:0 0,40px 60px;opacity:.75;animation:snowFall 14s linear infinite}
+#camp-bg .snow.s2{background-size:260px 260px,190px 190px;opacity:.5;animation-duration:22s;animation-delay:-6s}
+@keyframes snowFall{from{transform:translateY(-110px)}to{transform:translateY(60px)}}
+#camp-bg .fly{position:absolute;width:5px;height:5px;border-radius:50%;background:#d8ff9a;box-shadow:0 0 8px 3px rgba(200,255,120,.6);animation:flyDrift 7s ease-in-out infinite alternate}
+@keyframes flyDrift{from{transform:translate(0,0);opacity:.2}50%{opacity:1}to{transform:translate(30px,-26px);opacity:.3}}
+#camp-bg .fireglow{position:absolute;left:50%;top:62%;width:70%;height:70%;transform:translate(-50%,-50%);background:radial-gradient(ellipse,rgba(255,150,60,.34),rgba(255,120,40,.12) 40%,transparent 68%);animation:glowPulse 2.4s ease-in-out infinite alternate}
+@keyframes glowPulse{from{opacity:.75}to{opacity:1}}
 .camp-gold{color:#ffd54f;font-weight:bold}
 .broken-tag{color:#ff5252;font-weight:bold}
 .gear-heroes{display:flex;flex-direction:column;gap:8px;margin:8px 0;text-align:left}
@@ -1163,10 +1175,19 @@ body.fs .qmap{margin:0}
   #spa-select > .hub-wrap > .hub-hall > button:not(.narrow-back){max-width:520px;display:block;margin:0 auto}
 
   /* camp: fire on the left, supplies on the right */
-  #camp .hub-hall{display:grid;grid-template-columns:1fr 1fr;column-gap:36px;align-items:start}
-  #camp .hub-title,#camp #camp-sub{grid-column:1/-1}
-  #camp .campfire{grid-column:1;grid-row:3 / span 5;max-width:640px;margin:0 auto;width:100%}
-  #camp #camp-msg,#camp .hub-section,#camp #camp-shop,#camp #btn-next{grid-column:2}
+  /* camp: the whole screen is the campsite; the fire + four campers sit centred, supplies float over the right edge */
+  body.in-camp{padding:0;background:#0b0914}
+  #camp.show{position:fixed;inset:0;z-index:20;display:block;overflow:hidden}
+  #camp-bg{display:block}
+  #camp .hub-wrap{max-width:none;padding:0;position:absolute;inset:0}
+  #camp .hub-hall{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;position:absolute;inset:0}
+  #camp .hub-title{position:absolute;top:2.2vh;left:50%;transform:translateX(-50%);margin:0;z-index:5;font-size:clamp(24px,3.4vw,54px);text-shadow:0 2px 10px #000,0 0 18px rgba(255,150,60,.5)}
+  #camp #camp-sub{position:absolute;top:2.6vh;left:1.4vw;margin:0;z-index:5;background:rgba(10,8,20,.6);padding:.35em .9em;border-radius:14px;max-width:26vw;font-size:clamp(11px,.95vw,15px)}
+  #camp .campfire{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);width:min(94vw,calc(80vh * 1.6));max-width:none;margin:0;border-radius:0;background:none;z-index:2}
+  #camp #camp-panel{position:absolute;right:1.4vw;top:12vh;width:clamp(250px,17.5vw,300px);max-height:80vh;overflow:auto;z-index:6;background:rgba(14,10,22,.72);border:1px solid rgba(255,190,120,.3);border-radius:14px;padding:12px 14px;backdrop-filter:blur(3px)}
+  #camp #camp-msg:empty{display:none}
+  #camp #camp-panel .shop-row{font-size:.74rem;padding:8px 9px}#camp #camp-panel .shop-row button{font-size:.72rem;padding:6px 8px}
+  #camp #camp-panel .shop-row{flex-wrap:wrap}#camp #camp-panel .shop-row .mini-sprite{width:40px;height:40px;flex:none}#camp #camp-panel .shop-row .who{flex:1 1 120px;min-width:0}#camp #camp-panel .shop-row button{flex:1 1 100%}
   .seat .seat-lbl{font-size:.78rem}
   .fire{font-size:3.6rem}
   .shop-row{font-size:.82rem;padding:10px 12px}
@@ -1882,15 +1903,18 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
 </div>
 <div id="dev-bar"><b>🛠<span class="lbl"> DEV MODE · nothing is saved</span></b><button onclick="openParty()" title="Quick Battle">⚡<span class="lbl"> Quick Battle</span></button><button onclick="devFlaws()" title="Refill flaws">🔁<span class="lbl"> Refill flaws</span></button><button onclick="location.reload()" title="Exit">⏏<span class="lbl"> Exit</span></button></div>
 <div id="camp" class="scene">
+  <div id="camp-bg"></div>
   <div class="hub-wrap">
     <div class="hub-hall">
       <div class="hub-title">Camp</div>
       <div class="hub-sub" id="camp-sub"></div>
       <div class="campfire" id="campfire"></div>
+      <div id="camp-panel">
       <div id="camp-msg"></div>
       <div class="hub-section">CAMP SUPPLIES <span class="camp-gold" id="camp-gold" style="float:right"></span></div>
       <div id="camp-shop"></div>
       <button class="hub-btn embark" id="btn-next" onclick="nextFight()" style="width:100%;margin-top:8px">Next Fight</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3728,8 +3752,8 @@ async function playOnFigure(u, key, kind, tier, onStart) {      // onStart fires
   if (kind) fx(u, kind, 800, tier);
   const zap = key === 'damaged' && kind === 'shock' && !FX.calm, ZAP_MS = 560;      // electrocution: the damaged picture flashes black and white, and the hit lasts a little longer
   const a = await firstAsset(u, key);
-  if (!a && el && el.isConnected && u.team === 'e' && oneSprite(u.id) && !FX.calm) {        // one-sprite enemy: the picture itself shakes (hit) or lunges (attack)
-    const c = key === 'damaged' ? 'hurtfig' : 'strikefig'; el.classList.remove('hurtfig', 'strikefig'); void el.offsetWidth; el.classList.add(c); setTimeout(() => el.classList.remove(c), 520);
+  if (!a && el && el.isConnected && u.team === 'e' && oneSprite(u.id) && !FX.calm && key === 'damaged') {        // one-sprite enemy: the picture itself shakes when hit
+    el.classList.remove('hurtfig'); void el.offsetWidth; el.classList.add('hurtfig'); setTimeout(() => el.classList.remove('hurtfig'), 520);
   }
   if (!a || !el || !el.isConnected) {
     if (zap && el && el.isConnected) { el.classList.remove('zapfig'); void el.offsetWidth; el.classList.add('zapfig'); setTimeout(() => el.classList.remove('zapfig'), ZAP_MS); }
@@ -5389,6 +5413,7 @@ function tickBuffs(u) {
 async function takeTurn(u, bonus = false) {      // bonus: an extra action inside the same turn (no cooldown / ailment / buff ticks)
   if (!bonus && u.holdBarrier) { u.holdBarrier = false; u.barrier = 0; }                  // Shield Wall's barrier ends with the guard
   if (!bonus) party.forEach(x => { if (x.guardedBy === u) x.guardedBy = null; });     // Shield Wall ends when its caster's next turn begins
+  if (bonus) { setSpot([]); say(''); }          // the previous attack's spotlight would leave everyone but the old target blurred
   let keep = null;
   const hadWrath = !bonus && !!u.wrath; u.wrathNow = hadWrath;     // set on an earlier turn: this turn it pays off, then wears off
   if (!bonus) u.cd = u.cd.map(c => Math.max(0, c - 1));
@@ -5601,7 +5626,7 @@ async function battle() {
    A defeat in a real run rolls the whole save back to the snapshot taken before the run (FB.snap). In dev mode nothing is saved, so it only reports.
    Art (all optional): bosses are normal boss folders, assets/e_final_l/... and assets/e_final_r/... (armoured/idle, damaged, skill1-3, broken/idle). Draw them facing LEFT like any enemy: the right screen mirrors them. */
 const fbScale = u => FB && FB.active !== false && u.team === 'p' ? FINAL.partyScale : 1;       // the final fight shrinks the party, and with it the skill 2 close-ups
-const FINAL = { guestDmg: 600, guestBreaks: 3, dummy: false, floor: 1.35, partyScale: 0.5, bossScale: 1.0, hp: 4800, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
+const FINAL = { guestDmg: 600, guestBreaks: 3, dummy: false, floor: 1.35, partyScale: 0.5, bossScale: 1.0, hp: 5460, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
 const FB_SIDES = ['LEFT FRONT', 'RIGHT FRONT'];
 const FB_SAY = {
   revive: ['Up you get! On the house… this time.', 'Don\'t you dare die on my watch!', 'Drink up! I\'m not done selling to you yet!', 'One potion, one more round. Go!'],
@@ -5792,8 +5817,8 @@ async function fbGuest() {              // end of the break: a stranger drops in
   const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = FB.side === 1, X = f => flip ? vw * (1 - f) : vw * f;
   const art = await findAsset(`${ANIM.base}/ui/guest`), castArt = await findAsset(`${ANIM.base}/ui/guest_cast`), okImg = a => a && ['png', 'webp', 'jpg'].includes(a.ext);
   const H = vh * 1.05, g = document.createElement('div'); g.className = 'fb-guest';
-  g.style.cssText = `height:${H}px;left:${X(.13) - H * .27}px;top:${vh * 1.04 - H}px;width:${H * .54}px`;
-  const im = document.createElement('img'); im.src = okImg(art) ? art.url : fbGuestSvg(); im.draggable = false; if (flip) im.style.transform = 'scaleX(-1)'; g.appendChild(im);
+  g.style.cssText = `height:${H}px;left:${X(.2)}px;top:${vh * 1.04 - H}px;width:0`;      // her picture is centred on this x, whatever its width, so it never gets clipped
+  const im = document.createElement('img'); im.src = okImg(art) ? art.url : fbGuestSvg(); im.draggable = false; im.style.cssText = `position:absolute;left:0;top:0;transform:translateX(-50%)${flip ? ' scaleX(-1)' : ''}`; g.appendChild(im);
   document.body.appendChild(g); const away = flip ? vw * .5 : -vw * .5;
   g.animate([{ transform: `translateX(${away}px)`, opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }], { duration: dspd(380), easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
   sfx('swing'); log('✨ A stranger drops in from the edge of the battle…', 'log-heal'); await sleep(dspd(520));
@@ -5802,7 +5827,7 @@ async function fbGuest() {              // end of the break: a stranger drops in
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', `0 0 ${vw} ${vh}`); svg.setAttribute('fill', 'none'); svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
   Object.assign(svg.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: 74, pointerEvents: 'none', overflow: 'visible' }); document.body.appendChild(svg);
   const fe = figs.get(enemies[0]), bx = fe && fe.isConnected ? figBox(fe) : { cx: X(.8), bottom: vh * .8, h: vh * .5, w: vh * .4 }, tx = bx.cx, ty = bx.bottom - bx.h * .5;
-  const hx = X(.13) + (flip ? -1 : 1) * H * .26, hy = vh * 1.04 - H * .72;
+  const hx = X(.2) + (flip ? -1 : 1) * H * .26, hy = vh * 1.04 - H * .72;
   svg.innerHTML = `<circle cx="${hx}" cy="${hy}" r="${vh * .05}" fill="#fff6c8" opacity=".9" style="filter:blur(8px)"/>`; svg.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1.3)' }], { duration: dspd(420), fill: 'forwards' }); svg.style.transformOrigin = `${hx}px ${hy}px`;
   const dim = document.createElement('div'); Object.assign(dim.style, { position: 'fixed', inset: 0, background: 'rgba(8,6,28,.55)', zIndex: 73, pointerEvents: 'none', opacity: 0 }); document.body.appendChild(dim); dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: dspd(420), fill: 'forwards' });
   await sleep(dspd(520));
@@ -6015,7 +6040,7 @@ function showScene(name) {
   if (name !== 'battle-scene') blizzStop();
   sceneFade(); try { musicSet(areaFor(name)); weatherSet(name); } catch (e) {}
   document.body.classList.toggle('in-battle', name === 'battle-scene');
-  document.body.classList.toggle('in-town', name === 'hub' || name === 'beach');
+  document.body.classList.toggle('in-town', name === 'hub' || name === 'beach'); document.body.classList.toggle('in-camp', name === 'camp');
   document.body.classList.toggle('fs', FS_SCENES.includes(name));
   window.scrollTo(0, 0);
 }
@@ -6652,7 +6677,68 @@ function campPotion(i) {
   q.items.potion--; const before = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.round(it.heal * (1 + ((u.rel && u.rel.potion) || 0))));
   sfx('heal'); campMsg = `${u.short} drinks a ${it.name}: +${u.hp - before} HP.`; saveQuest(); renderCamp();
 }
+// ---- camp backdrops: code-drawn per region (forest / foggy beach / snowy cliffs); drop assets/ui/camp_<theme>.png to replace one ----
+function campTent(x, y, s, col, snow) {
+  return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="4" rx="78" ry="9" fill="rgba(0,0,0,.35)"/>`
+    + `<path d="M-72 0 L0 -96 L72 0Z" fill="${col}"/><path d="M0 -96 L72 0 L22 0Z" fill="rgba(0,0,0,.22)"/>`
+    + `<path d="M-17 0 L0 -50 L17 0Z" fill="#2b1a10"/><path d="M-11 0 L0 -34 L11 0Z" fill="rgba(255,170,80,.4)"/>`
+    + `<path d="M-72 0 L0 -96 L72 0" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="3"/><path d="M0 -96 V-112" stroke="#3a2a1a" stroke-width="4"/>`
+    + `<path d="M0 -112 L16 -106 L0 -100Z" fill="#c0392b"/>`
+    + (snow ? `<path d="M-30 -58 L0 -96 L30 -58 Q20 -52 10 -58 Q0 -50 -10 -58 Q-20 -52 -30 -58Z" fill="#f2f8ff"/>` : '') + `</g>`;
+}
+function campPines(seed, y0, hmin, hmax, col, n, snow) {
+  let r = seed, o = ''; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < n; i++) {
+    const x = (i + rnd() * .8) * 1600 / n, h = hmin + rnd() * (hmax - hmin), w = h * .42, y = y0 + rnd() * 18;
+    o += `<path d="M${x - w} ${y} L${x} ${y - h} L${x + w} ${y}Z" fill="${col}"/><path d="M${x - w * .8} ${y - h * .38} L${x} ${y - h * 1.02} L${x + w * .8} ${y - h * .38}Z" fill="${col}"/>`
+      + `<rect x="${x - 4}" y="${y}" width="8" height="${h * .12}" fill="#1a120d"/>` + (snow ? `<path d="M${x - w * .3} ${y - h * .72} L${x} ${y - h * 1.02} L${x + w * .3} ${y - h * .72}Z" fill="#eaf3ff"/>` : '');
+  }
+  return o;
+}
+function campBgHtml(theme) {
+  const W = 1600, H = 900, sv = c => `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">${c}</svg>`;
+  if (theme === 'beach') {
+    let waves = ''; for (let i = 0; i < 9; i++) waves += `<path d="M0 ${392 + i * 18} Q200 ${384 + i * 18} 400 ${392 + i * 18} T800 ${392 + i * 18} T1200 ${392 + i * 18} T1600 ${392 + i * 18}" fill="none" stroke="rgba(190,215,230,${.22 - i * .018})" stroke-width="2"/>`;
+    const rocks = `<path d="M60 560 Q90 500 150 520 Q190 540 200 570Z" fill="#2c3340"/><path d="M1380 600 Q1420 530 1500 555 Q1540 580 1560 610Z" fill="#262c38"/>`;
+    return sv(`<defs><linearGradient id="bsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2036"/><stop offset=".55" stop-color="#4a4768"/><stop offset="1" stop-color="#8a7c8a"/></linearGradient><linearGradient id="bsea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a5368"/><stop offset="1" stop-color="#24384a"/></linearGradient><linearGradient id="bsd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b6258"/><stop offset="1" stop-color="#3a342f"/></linearGradient></defs>`
+      + `<rect width="${W}" height="${H}" fill="url(#bsk)"/><circle cx="1180" cy="190" r="54" fill="#e8e4ee" opacity=".85"/><circle cx="1180" cy="190" r="110" fill="rgba(230,225,245,.12)"/>`
+      + `<rect y="380" width="${W}" height="190" fill="url(#bsea)"/>${waves}<path d="M1120 400 L1240 400 L1215 470 L1145 470Z" fill="rgba(240,235,250,.14)"/>`
+      + `<path d="M0 540 Q400 500 800 530 T1600 520 V${H} H0Z" fill="url(#bsd)"/><path d="M0 560 Q400 520 800 550 T1600 540" fill="none" stroke="rgba(230,240,245,.35)" stroke-width="5"/>`
+      + rocks
+      + campTent(250, 640, 1.25, '#6d7a5a') + campTent(430, 600, .85, '#7a5a4a') + campTent(1360, 650, 1.3, '#5a6a7a') + campTent(1180, 595, .8, '#7a6a4a'))
+      + `<div class="cb-fx"><div class="fog" style="top:36%"></div><div class="fog f2" style="top:52%"></div><div class="fog" style="top:74%;opacity:.7"></div><div class="fireglow"></div></div>`;
+  }
+  if (theme === 'snow') {
+    const cliffL = `<path d="M0 0 H330 L300 120 L360 260 L300 420 L380 560 L330 900 H0Z" fill="#36425a"/><path d="M0 0 H230 L210 120 L260 260 L200 430 L270 560 L240 900 H0Z" fill="#46556e"/><path d="M0 0 H330 L290 60 L240 40 L190 90 L120 60 L60 110 L0 80Z" fill="#eaf3ff"/>`;
+    const cliffR = `<path d="M1600 0 H1280 L1310 140 L1250 280 L1320 430 L1260 580 L1300 900 H1600Z" fill="#323e56"/><path d="M1600 0 H1400 L1420 120 L1370 270 L1430 440 L1380 580 L1410 900 H1600Z" fill="#46556e"/><path d="M1600 0 H1300 L1330 70 L1390 50 L1440 100 L1500 60 L1560 110 L1600 90Z" fill="#eaf3ff"/>`;
+    return sv(`<defs><linearGradient id="ssk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1530"/><stop offset=".5" stop-color="#27406a"/><stop offset="1" stop-color="#7f9cc0"/></linearGradient><linearGradient id="sgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdcee"/><stop offset="1" stop-color="#7f93b0"/></linearGradient><linearGradient id="aur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(90,255,190,0)"/><stop offset=".4" stop-color="rgba(90,255,190,.35)"/><stop offset=".7" stop-color="rgba(150,120,255,.3)"/><stop offset="1" stop-color="rgba(150,120,255,0)"/></linearGradient></defs>`
+      + `<rect width="${W}" height="${H}" fill="url(#ssk)"/><path d="M250 40 Q600 190 900 70 T1450 120 L1450 200 Q1100 280 800 170 T250 150Z" fill="url(#aur)" opacity=".8"/>`
+      + `<path d="M380 470 L520 300 L610 400 L760 240 L930 430 L1060 330 L1220 470Z" fill="#5a7396"/><path d="M760 240 L690 330 L740 320 L780 360 L820 320 L860 340Z" fill="#eaf3ff"/><path d="M520 300 L470 370 L520 355 L560 380Z" fill="#eaf3ff"/>`
+      + campPines(7, 560, 90, 150, '#25384f', 16, true) + cliffL + cliffR
+      + `<path d="M0 560 Q400 520 800 545 T1600 535 V${H} H0Z" fill="url(#sgd)"/><path d="M0 600 Q500 570 900 590 T1600 580" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="6"/>`
+      + campPines(23, 690, 150, 230, '#1d3040', 9, true)
+      + campTent(300, 690, 1.3, '#a05a3a', true) + campTent(480, 640, .85, '#3a6a8a', true) + campTent(1300, 700, 1.35, '#8a4a5a', true) + campTent(1125, 636, .8, '#5a7a4a', true))
+      + `<div class="cb-fx"><div class="snow"></div><div class="snow s2"></div><div class="fireglow"></div></div>`;
+  }
+  // forest
+  let stars = ''; for (let i = 0; i < 46; i++) stars += `<circle cx="${(i * 197) % W}" cy="${(i * 83) % 260 + 10}" r="${i % 5 ? 1.2 : 2}" fill="#fff" opacity="${.35 + (i % 4) * .15}"/>`;
+  return sv(`<defs><linearGradient id="fsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b1a"/><stop offset="1" stop-color="#1c3a3a"/></linearGradient><linearGradient id="fgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a4228"/><stop offset="1" stop-color="#121e12"/></linearGradient></defs>`
+    + `<rect width="${W}" height="${H}" fill="url(#fsk)"/>${stars}<circle cx="260" cy="120" r="46" fill="#f2efd8" opacity=".9"/><circle cx="260" cy="120" r="100" fill="rgba(240,240,200,.1)"/>`
+    + campPines(3, 520, 200, 330, '#10241f', 14) + campPines(11, 600, 230, 380, '#0c1a17', 11)
+    + `<path d="M0 560 Q400 520 800 550 T1600 540 V${H} H0Z" fill="url(#fgd)"/>`
+    + campTent(260, 650, 1.3, '#7a6a3a') + campTent(450, 610, .85, '#5a7a5a') + campTent(1330, 660, 1.35, '#8a5a3a') + campTent(1140, 606, .8, '#4a6a7a')
+    + `<path d="M0 760 Q300 720 600 760 T1200 750 T1600 770 V${H} H0Z" fill="#0d1a0d"/>` + campPines(41, 900, 260, 360, '#07100d', 7))
+    + `<div class="cb-fx"><div class="fireglow"></div>${[...Array(14)].map((_, i) => `<i class="fly" style="left:${8 + i * 6.5}%;top:${52 + (i * 13) % 34}%;animation-delay:-${(i * 1.3) % 7}s;animation-duration:${5 + i % 4}s"></i>`).join('')}</div>`;
+}
+const CAMP_THEME = { lands: 'forest', coast: 'beach', frost: 'snow' };
+function campBackdrop() {
+  const bg = $('camp-bg'), g = quest && quest.def && groupOf(quest.def.id), theme = CAMP_THEME[g && g.id] || 'forest';
+  if (bg.dataset.theme === theme) return;
+  bg.dataset.theme = theme; bg.className = ''; bg.style.backgroundImage = ''; bg.innerHTML = campBgHtml(theme);
+  findAsset(`assets/ui/camp_${theme}`).then(a => { if (a && bg.dataset.theme === theme) { bg.style.backgroundImage = `url("${a.url}")`; bg.classList.add('has-art'); } });
+}
 function renderCamp() {
+  campBackdrop();
   const q = quest, next = q.def.nodes[q.node], n = q.party.length;
   $('camp-sub').textContent = `${q.def.name} · Cleared ${q.node} of ${q.def.nodes.length} battles · Eat rations to heal, use repair kits on armour`;
   $('camp-gold').textContent = `Gold: ${q.gold}`;
