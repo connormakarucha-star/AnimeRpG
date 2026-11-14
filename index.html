@@ -1470,6 +1470,9 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 .dashfx img.b{display:none}.dashfx.swap img.a{display:none}.dashfx.swap img.b{display:block}
 .dashfx.flip img{transform:translateX(-50%) scaleX(-1)}
 .dashfx.ghost{z-index:69}
+.bigbolt{position:fixed;inset:0;z-index:69;pointer-events:none}
+.bigbolt>div{position:absolute;background-repeat:no-repeat;filter:drop-shadow(0 0 14px rgba(150,170,255,.75))}
+.boltflash{position:fixed;inset:0;z-index:68;pointer-events:none;opacity:0;background:rgba(220,230,255,.85);mix-blend-mode:screen}
 .dashfx canvas.seqfx{position:absolute;pointer-events:none;max-width:none}
 .dashfx .idlefx{position:absolute;left:50%;bottom:0;height:var(--sprH,85%);width:auto;max-width:none;transform:translateX(-50%);object-fit:contain}
 .dashfx.flip .idlefx{transform:translateX(-50%) scaleX(-1)}
@@ -4228,6 +4231,93 @@ async function stageBegin(u, t, art, s) {
   };
 }
 
+/* ---- skill 3 as a close-up with a giant effect on the target (Aneesah's Tempest Unbound) ----
+   She swells up into the foreground in her skill 2 picture (same spot and size as her skill 2), charges, then switches to her skill 3 picture (arm raised, drawn `tall` times as tall as
+   the skill 2 picture in the same place, same bottom edge) as the giant bolt crashes down from the top of the screen onto her target with a flashing screen. The big hit lands, she fades
+   back into the line-up, and then the storm's 1-3 follow-up strikes come down as usual.
+   Art:  assets/<id>/<armoured | broken | skin>/skill2.png (start) + skill3.png (strike; a skill3 video is ignored once a skill3 picture exists)
+         assets/<id>/effects/<bolt>.png: the bolt, drawn as one picture with the impact near the bottom. Its upper part (above `split`) is stretched to reach the top of the screen; the impact
+         part below it keeps its shape. w = the picture's width (fraction of screen height); foot = how far down the picture the impact sits (it lands on the target's feet). */
+const STAND3 = { aneesah: { from: 'skill2', key: 'skill3', tall: 1.2, dx: 0, bolt: 'bolt', w: .55, foot: .86, split: .5, ms: { charge: 230, hold: 380, fade: 240 } } };
+async function stage3Assets(u, i) {
+  const K = STAND3[u.id]; if (i !== 2 || !K || !STAND[u.id] || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
+  let a = null, b = null;
+  for (const f of artChain(u)) { b = await findStill(`${ANIM.base}/${u.id}/${f}/${K.key}`); if (b) { a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.from}`); break; } }
+  if (!a || !b) return null;
+  const sf = stateFolder(u), bolt = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/${K.bolt}`)) || await findStill(`${ANIM.base}/${u.id}/effects/${K.bolt}`);
+  return { K, a, b, bolt };
+}
+async function stage3Begin(u, t, art) {
+  dashClear();
+  const el = figs.get(u); if (!el || !el.isConnected) return null;
+  const A = figBox(el); if (!A.w) return null;
+  const K = art.K, KS = STAND[u.id], vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u), dir = flip ? -1 : 1;
+  const d0 = document.createElement('div'); d0.className = 'dashfx' + (flip ? ' flip' : '');
+  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+  const mk = (a, cls) => { const im = document.createElement('img'); im.className = cls; im.src = a.url; im.draggable = false; d0.appendChild(im); return im; };
+  const imA = mk(art.a, 'a'), imB = mk(art.b, 'b');
+  imB.style.height = `calc(var(--sprH,85%) * ${K.tall || 1.2})`; if (K.dx) imB.style.marginLeft = (dir * K.dx * A.h) + 'px';
+  let boltImg = null; if (art.bolt) { boltImg = new Image(); boltImg.src = art.bolt.url; }
+  document.body.appendChild(d0);
+  await Promise.all([imA, imB, boltImg].filter(Boolean).map(im => im.decode ? im.decode().catch(() => {}) : 0));
+  const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
+  const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx = pr && pr.width ? pr.left + pr.width / 2 : A.cx;
+  const H = vh * KS.h * fbScale(u), S0 = H / (A.h * SPR_SCALE), dy = vh * KS.bottom - A.bottom;
+  const P0 = 'translate(0px,0px) scale(1)', P1 = `translate(${fx - A.cx}px,${dy}px) scale(${S0})`, hx = fx + dir * KS.hand.dx * H, hy = vh * KS.bottom - KS.hand.up * H;
+  const anim = (node, frames, ms, ease) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards' });
+  const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
+  const T = K.ms || {}; let boltEl = null;
+  function bigBolt() {                       // the picture, with its upper part stretched from the top of the screen down to the impact, which sits on the target's feet
+    const f = figs.get(t); if (!f || !f.isConnected) return null;
+    const B = figBox(f), W = vh * (K.w || .55) * fbScale(t), foot = K.foot ?? .86, split = K.split ?? .62, baseTop = B.bottom - (foot - split) * W, left = B.cx - W / 2;
+    const box = document.createElement('div'); box.className = 'bigbolt';
+    if (boltImg) {
+      const url = `url("${art.bolt.url}")`, sh = document.createElement('div'), base = document.createElement('div');
+      Object.assign(sh.style, { left: left + 'px', top: '0px', width: W + 'px', height: (baseTop + 2) + 'px', backgroundImage: url, backgroundSize: `${W}px ${(baseTop + 2) / split}px`, backgroundPosition: '0 0' });
+      Object.assign(base.style, { left: left + 'px', top: baseTop + 'px', width: W + 'px', height: ((1 - split) * W) + 'px', backgroundImage: url, backgroundSize: `${W}px ${W}px`, backgroundPosition: `0 ${-split * W}px` });
+      box.append(sh, base);
+    } else {                                 // no bolt picture yet: a drawn one
+      const n = 14, x2 = B.cx, y2 = B.bottom - B.h * .1; let pts = ''; for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * 70; pts += `${(x2 + j).toFixed(1)},${(-10 + (y2 + 10) * k).toFixed(1)} `; }
+      box.innerHTML = `<svg viewBox="0 0 ${vw} ${vh}" style="position:absolute;left:0;top:0;width:${vw}px;height:${vh}px;overflow:visible" fill="none" stroke-linejoin="round" stroke-linecap="round"><polyline points="${pts}" stroke="#5b7dff" stroke-width="60" opacity=".3"/><polyline points="${pts}" stroke="#a9c6ff" stroke-width="22" opacity=".85"/><polyline points="${pts}" stroke="#fff" stroke-width="9"/><ellipse cx="${x2}" cy="${y2}" rx="${vh * .16}" ry="${vh * .04}" fill="#cfe0ff" opacity=".6"/></svg>`;
+    }
+    document.body.appendChild(box); d.parts.push(box); return box;
+  }
+  return {
+    async run() {
+      await wait(anim(d0, [{ transform: P0 }, { transform: P1 }], 190, 'cubic-bezier(.2,.8,.3,1)'), 190);
+      sfx('charge', 'shock');
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); g.setAttribute('viewBox', `0 0 ${vw} ${vh}`);
+      Object.assign(g.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: 72, pointerEvents: 'none', overflow: 'visible' }); document.body.appendChild(g); d.parts.push(g);
+      g.innerHTML = `<circle cx="${hx}" cy="${hy}" r="${vh * .05}" fill="#7cc4ff" opacity=".35" style="filter:blur(6px)"/><circle cx="${hx}" cy="${hy}" r="${vh * .02}" fill="#fff"/>`; g.style.transformOrigin = `${hx}px ${hy}px`;
+      g.animate([{ opacity: 0, transform: 'scale(.3)' }, { opacity: 1, transform: 'scale(1)' }], { duration: dspd(150), fill: 'forwards' });
+      await sleep(dspd(T.charge || 230));
+      // the strike: arm up, the bolt crashes down, the screen flashes
+      d0.classList.add('swap'); g.remove(); sfx('whoosh', 'shock');
+      const fl = document.createElement('div'); fl.className = 'boltflash'; const f = figs.get(t), B = f && f.isConnected ? figBox(f) : null;
+      if (B) fl.style.background = `radial-gradient(circle at ${B.cx}px ${B.bottom - B.h * .3}px, rgba(255,255,255,.95), rgba(190,210,255,.75) 35%, rgba(120,140,255,.45) 75%)`;
+      document.body.appendChild(fl); d.parts.push(fl);
+      fl.animate([{ opacity: 0 }, { opacity: .95, offset: .12 }, { opacity: .2, offset: .3 }, { opacity: .75, offset: .45 }, { opacity: .1, offset: .7 }, { opacity: 0 }], { duration: dspd(520), fill: 'forwards' });
+      boltEl = bigBolt();
+      if (boltEl) boltEl.animate([{ opacity: 0, filter: 'brightness(2.2)' }, { opacity: 1, filter: 'brightness(1.8)', offset: .3 }, { opacity: .55, filter: 'brightness(1.1)', offset: .5 }, { opacity: 1, filter: 'brightness(1.4)', offset: .7 }, { opacity: 1, filter: 'brightness(1)' }], { duration: dspd(300), fill: 'forwards' });
+      imB.animate([{ filter: 'brightness(1.9)' }, { filter: 'none' }], { duration: dspd(260), easing: 'ease-out' });
+      shake(2);
+      await sleep(dspd(110));                   // the big hit lands while the bolt is still on screen
+    },
+    async follow() {
+      await sleep(dspd(T.hold || 380));
+      if (boltEl) await wait(anim(boltEl, [{ opacity: 1 }, { opacity: 0 }], T.fade || 240, 'ease-in'), T.fade || 240);
+    },
+    async home() {
+      if (dashLive !== d) return;
+      d.parts.slice(1).forEach(x => x.remove());
+      showParty();
+      const a = d0.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(300), easing: 'ease-in', fill: 'forwards' }); if (el.isConnected) el.style.visibility = '';
+      await Promise.race([a.finished.catch(() => {}), sleep(dspd(300) + 120)]);
+      dashClear();
+    }
+  };
+}
+
 /* ===== SKILL 3 SPRITE SEQUENCES (they replace the skill 3 videos, one hero at a time) =====
    A hero switches over the moment she has a skill3b picture. Then: her skill3 picture swells up into the foreground (the party steps out of view), swaps to skill3b with a flash and a jolt,
    her effect pictures appear around her, it holds, and it all fades back into the line-up before the skill resolves. Plan for every hero: SKILL3_ANIMATIONS.md.
@@ -4404,9 +4494,16 @@ async function seqBegin(u, art) {
 }
 // ---- dev mode: Alt+3 replays, Alt+Shift+3 replays and freezes on the last frame for tuning ----
 let seqDev = null;
+let seqPick = 0;
 async function seqPreview(freeze) {
   if (seqDev) { seqEnd(); return; }
-  const u = party.find(m => isAlive(m) && SEQ3[m.id]); if (!u) { banner('No hero with a skill 3 sequence in this party'); return; }
+  const list = party.filter(m => isAlive(m) && (SEQ3[m.id] || STAND3[m.id])); if (!list.length) { banner('No hero with a skill 3 sequence in this party'); return; }
+  const u = list[seqPick++ % list.length];
+  if (STAND3[u.id]) {                    // close-up + giant effect: plays on the first enemy, no damage
+    const t = enemies.find(isAlive), art = t && await stage3Assets(u, 2); if (!art) { banner(`No ${u.id} skill2 + skill3 pictures found`); return; }
+    const q = await stage3Begin(u, t, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
+    await q.run(); await q.follow(); await q.home(); seqDev = null; return;
+  }
   const art = await seqAssets(u, 2); if (!art) { banner(`No ${u.id}/armoured/skill3b picture found`); return; }
   const q = await seqBegin(u, art); if (!q) return;
   seqDev = { u, q, freeze };
@@ -5257,14 +5354,15 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   // The order of a hit: 1) her skill picture replaces the idle  2) a short charge-up effect for elemental attacks  3) the attack connects (bolt flies / blow lands)  4) the target's damaged picture and hit effects (in hit()).
   // A video in the skill slot is a film: it plays alone, full screen, nobody moves, and the hit only happens once it ends (see skillFilm).
   const seq = await seqAssets(u, i);                                                        // skill 3 sprite sequence (skill3 + skill3b + effects): replaces the film once skill3b exists
-  const film = seq ? null : await skillFilm(u, 'skill' + (i + 1));
+  const st3 = !seq && s.t === 'dmg' && target ? await stage3Assets(u, i) : null;                // skill 3 close-up with a giant effect on the target (Aneesah): replaces the film once its pictures exist
+  const film = seq || st3 ? null : await skillFilm(u, 'skill' + (i + 1));
   if (film) { setSpot([]); await playFilm(film, u.mir); }
   let begun; const started = new Promise(r => begun = r);
-  const dashArt = !film && !seq && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
+  const dashArt = !film && !seq && !st3 && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
   if (dashArt && i === 1) dashArt.hide = true;
-  const stageArt = !film && !seq && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
-  const bossArt = !film && !seq && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
-  const dash = dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
+  const stageArt = !film && !seq && !st3 && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
+  const bossArt = !film && !seq && !st3 && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
+  const dash = st3 ? await stage3Begin(u, target, st3) : dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
   const sq = seq ? await seqBegin(u, seq) : null;
   const clip = film || dash || sq ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
   const back = dash || sq ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
@@ -5315,6 +5413,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
       log(`🔰 ${u.name} braces: she takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} turns.`, 'log-heal'); floatText(u, `🔰 −${Math.round(s.dr.mult * 100)}%`, 'ward'); render();
     }
     if (s.storm) {                                                  // the storm answers: 1-3 small bolts. Odd = a random foe, even = a random friend (the caster too)
+      if (dash) await dash.home();                                  // a close-up caster is back in the line before the follow-up strikes come down
       const eye = !!(u.rel && u.rel.eye), n = eye ? 3 : 1 + Math.floor(Math.random() * 3), foes = u.team === 'p' ? enemies : party, friends = u.team === 'p' ? party : enemies, spark = { ...(eye ? scaleDmg(u.skills[0], 2) : u.skills[0]), noDodge: true };
       log(`🌩️ The storm answers with ${n} more strike${n > 1 ? 's' : ''}!`, 'log-status');
       for (let k = 1; k <= n; k++) {
