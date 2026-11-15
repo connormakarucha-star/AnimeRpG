@@ -1589,7 +1589,10 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 #dia{display:none}
 @media (min-width:900px){
 body.ui-dia #battle-scene #bar{display:none!important}
-body.ui-bar.ui-dia #battle-scene .battlefield{--figH:clamp(150px,calc(100vh - 300px),900px);padding-bottom:18px}
+body.ui-bar.ui-dia #battle-scene .battlefield{--figH:clamp(140px,calc((100vh - 300px) * var(--diaFig,.84)),780px);padding-bottom:18px;gap:var(--diaSide,4vw)}      /* the diamond frees the bottom: fighters a bit smaller (--diaFig) with room around them */
+body.ui-dia #battle-scene .cards{gap:var(--diaGap,2.2vw)}      /* space between fighters on the same side */
+body.ui-dia #battle-scene .combatant-card{flex-basis:calc(25% - 1.7vw)}
+body.ui-dia #battle-scene .combatant-card .stats-info{margin-left:-1vw;margin-right:-1vw}      /* name plates may spill into the gaps so long names fit */
 body.ui-dia #dia{display:block;position:fixed;left:0;top:0;width:0;height:0;z-index:31;pointer-events:none;visibility:hidden;--W:11rem;--H:3.5rem;--dx:6.75rem;--dy:3.875rem}      /* in rem: the diamond grows with the Text size option */
 body.ui-dia.bar-on #dia,body.ui-dia.bar-off #dia{visibility:visible}
 #dia .dia-k{position:absolute;left:0;top:0}
@@ -1654,10 +1657,31 @@ body.ui-dia #battle-scene #dia #inv.flip{left:auto;right:calc(var(--dx) + var(--
 body.calm #dia .dt,body.calm #dia .dsh,body.calm #dia .dia-k,body.calm #dia .dia-core{animation:none!important}
 }
 @media (min-width:900px) and (max-height:800px){
-  body.ui-bar.ui-dia #battle-scene .battlefield{--figH:clamp(140px,calc(100vh - 270px),860px);padding-bottom:14px}
+  body.ui-bar.ui-dia #battle-scene .battlefield{--figH:clamp(130px,calc((100vh - 270px) * var(--diaFig,.84)),740px);padding-bottom:14px}
   body.ui-dia #dia{--W:10.25rem;--H:3.125rem;--dx:6.25rem;--dy:3.5rem}
   #dia .dt .nm{font-size:.86rem}
 }
+
+/* the beach in the storm (Act 2): rain, lightning, the lighthouse lamp, the sea strike */
+.bstorm{display:none;position:absolute;inset:0;z-index:120;pointer-events:none}
+.bstorm>*{position:absolute;inset:0;width:100%;height:100%}
+.bstorm .bs-flash{background:#dfe9ff;mix-blend-mode:screen;opacity:0}
+.bstorm .bs-bolt{-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.bstorm .bs-bolt path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.lh{position:absolute;width:0;height:0;z-index:1;pointer-events:none}
+.lh-beam{position:absolute;left:0;top:calc(var(--wide) / -2);width:var(--len);height:var(--wide);transform-origin:0 50%;background:linear-gradient(90deg,rgba(255,244,200,.85),rgba(255,236,170,.35) 45%,rgba(255,236,170,0));clip-path:polygon(0 44%,100% 0,100% 100%,0 56%);filter:blur(1.5px);mix-blend-mode:screen}
+.lh-glow{position:absolute;left:0;top:0;width:2.4cqw;height:2.4cqw;border-radius:50%;background:radial-gradient(circle,#fffbe8 0,#ffe9a8 30%,rgba(255,225,140,.35) 55%,rgba(255,225,140,0) 72%);transform:translate(-50%,-50%);mix-blend-mode:screen}
+.sea-hit{position:absolute;z-index:60;width:0;height:0;pointer-events:none}
+.sea-hit b{position:absolute;left:-5cqw;top:-2.5cqw;width:10cqw;height:5cqw;border-radius:50%;background:radial-gradient(ellipse,#fff 0,#dfe9ff 25%,rgba(150,190,255,.5) 50%,rgba(150,190,255,0) 72%);animation:seaFlash 1s ease-out both;mix-blend-mode:screen}
+.sea-hit i{position:absolute;left:-1cqw;top:-.4cqw;width:2cqw;height:.8cqw;border-radius:50%;border:max(1px,.18cqw) solid rgba(230,240,255,.9);animation:seaRing 1.3s ease-out both}
+.sea-hit i+i{animation-delay:.25s}
+@keyframes seaFlash{0%{opacity:0;transform:scale(.4)}8%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4)}}
+@keyframes seaRing{0%{opacity:1;transform:scale(.5)}100%{opacity:0;transform:scale(7)}}
+.bsay{position:absolute;left:50%;bottom:102%;transform:translateX(-50%);z-index:9;white-space:nowrap;background:#fff;color:#1a1a24;font-weight:800;font-size:clamp(10px,1.05cqw,18px);padding:.3em .7em;border-radius:1em;box-shadow:0 2px 8px rgba(0,0,0,.5);animation:bsayIn .25s cubic-bezier(.3,1.6,.5,1) both}
+.bsay::after{content:'';position:absolute;left:50%;top:100%;margin-left:-.4em;border:.4em solid transparent;border-top-color:#fff}
+@keyframes bsayIn{0%{transform:translateX(-50%) scale(.5);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
+/* Act 3, no sunny painting yet: the Act 2 picture warmed and brightened */
+.bmap.sunfix::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(150,205,255,.42),rgba(255,236,170,.32) 55%,rgba(255,214,140,.3));mix-blend-mode:screen}
 
 /* ===== Widescreen battle: characters first, minimal chrome ===== */
 #action-line,#active-panel,#btn-log,#log-close{display:none}
@@ -5569,6 +5593,12 @@ document.addEventListener('keydown', e => {
   if (!devMode || !e.altKey) return;
   if (e.code === 'Digit3') { e.preventDefault(); seqPreview(e.shiftKey); return; }
   if (e.code === 'KeyW' && ($('shop').classList.contains('show') || $('hub').classList.contains('show'))) { e.preventDefault(); const L = ['day', 'coast', 'frost']; owForce = L[(L.indexOf(owAct()) + 1) % 3]; shopWxSync(); if ($('hub').classList.contains('show')) { townArt = null; loadTownBg(); townWxSync(); } banner('🛠 Outside: ' + { day: 'Act 1 · sunny', coast: 'Act 2 · rain', frost: 'Act 3 · snow' }[owForce], 'phase'); return; }
+  if ((e.code === 'KeyW' || e.code === 'KeyL') && ($('beach').classList.contains('show') || $('vb').classList.contains('show'))) {      // the beach: Alt+W storm <-> sun, Alt+L a strike in the shallows
+    e.preventDefault();
+    if (e.code === 'KeyW') { owForce = beachSunny() ? 'coast' : 'frost'; weatherSet(); if ($('beach').classList.contains('show')) renderBeach(); else loadBeachBg('vb-court', 'vb-art', 'volleyball', sunny => beachSVG(true, sunny)); beachWxSync(); banner('🛠 Beach: ' + (beachSunny() ? 'Act 3 · sunny' : 'Act 2 · storm')); }
+    else if (!beachSunny()) { beachWxSync(); if (!seaStrike(true)) banner('🛠 Nobody is standing in the water'); }
+    return;
+  }
   if (e.code === 'KeyK' && FB && !over) { e.preventDefault(); FB.bosses[0].hp = 1; render(); banner('🛠 Boss at 1 HP', 'phase', 'one hit to see the finale'); return; }
   if (e.code === 'KeyE' || e.code === 'Minus' || e.code === 'Equal') {          // Alt+E: entrance idle zoom <-> rise · Alt+- / Alt+= : idle size at the hand-over (then Alt+3 to see it)
     const u0 = (seqDev && seqDev.u) || party.find(m => SEQ3[m.id]); if (!u0) return; e.preventDefault();
@@ -6138,10 +6168,11 @@ function render() {
    Mouse: click a tile, then a target; right-click or Esc backs out. Keys: 1 2 3 skills, 4 items, 5 shift.
    Pad: press the skill's button, then ◀ ▶ to a target and A; B backs out. A skill with no target (team barriers, Thunderstorm...) casts at once with
    the mouse; on a pad everyone it reaches lights up and A (or the same button again) casts it, so a stray press never wastes the turn.
-   Knobs: at = the core's height on the hero (fraction of the figure from its top); shift = how far the core sits from the hero's centre toward the enemies (in hero widths);
-   short = a hero shorter than this (px, e.g. the shrunken party in the final fight) gets the diamond above the head instead, with the tag on top;
+   It stands BESIDE the hero (the side facing the enemies), never over them; if that side has no room it goes on the other side, and it is always kept on screen.
+   Knobs: at = the core's height on the hero (fraction of the figure from its top); gap = space between the hero and the diamond (px);
+   short = a hero shorter than this (px) gets the diamond above the head instead, with the tag on top (0 = never);
    top = keep clear of the turn-order strip (px); edge = margin from the screen edges (px). Sizes (--W --H --dx --dy) are in the CSS. */
-const DIA = { at: .64, shift: .15, short: 400, top: 128, edge: 14 };
+const DIA = { at: .5, gap: 10, short: 0, top: 128, edge: 14 };
 const diaOn = () => FX.ui === 'dia' && wide();
 const noTarget = s => !!s && (['barrierAll', 'buff', 'smoke', 'brew', 'immortal'].includes(s.t) || !!s.all);
 function hitsAll(u, s, x) {             // who an untargeted skill reaches (for the glow before a pad confirms it)
@@ -6240,9 +6271,13 @@ function placeDia() {                    // beside the hero, on the side facing 
   const A = figBox(el); if (!A.w) return;
   const t0 = $('dia-0'), tR = $('dia-items'); if (!t0 || !tR) return;
   const W = t0.offsetWidth || 176, H = t0.offsetHeight || 56, dx = tR.offsetLeft + W / 2, dy = t0.offsetTop + H / 2;      // measured, so the Text size option scales it all
-  const up = A.h < DIA.short, halfW = dx + W / 2 + 6 + 40, below = dy + H / 2 + 14 + (up ? 0 : 70), above = dy + H / 2 + (up ? 14 + 70 : 0);
-  let x = A.cx + A.w * DIA.shift * (cur.team === 'p' ? 1 : -1), y = up ? A.bottom - A.h - dy - H / 2 - 10 : A.bottom - A.h + A.h * DIA.at;
-  x = Math.max(halfW + DIA.edge, Math.min(innerWidth - halfW - DIA.edge, x));
+  const sh = $('dia-shift'), t1 = $('dia-1'), lExt = -Math.min(t1 ? t1.offsetLeft : -dx - W / 2, sh ? sh.offsetLeft : 0), rExt = tR.offsetLeft + W;      // how far the diamond reaches left / right of its core
+  const up = A.h < DIA.short, below = dy + H / 2 + 14 + (up ? 0 : 70), above = dy + H / 2 + (up ? 14 + 70 : 0), fwd = cur.team === 'p' ? 1 : -1;
+  const card = el.closest('.combatant-card'), cr = card ? card.getBoundingClientRect() : null, hw = cr && cr.width ? Math.min(A.w, cr.width) / 2 : A.w / 2;      // the figure box can be wider than the fighter's own slot: hug the slot
+  const right = A.cx + hw + DIA.gap + lExt, left = A.cx - hw - DIA.gap - rExt;            // core x with the diamond just right / just left of the hero
+  const fitsR = right + rExt <= innerWidth - DIA.edge, fitsL = left - lExt >= DIA.edge;
+  let x = up ? A.cx : fwd > 0 ? (fitsR || !fitsL ? right : left) : (fitsL || !fitsR ? left : right), y = up ? A.bottom - A.h - dy - H / 2 - 10 : A.bottom - A.h + A.h * DIA.at;
+  x = Math.max(lExt + DIA.edge, Math.min(innerWidth - rExt - DIA.edge, x));
   y = Math.max(DIA.top + above, Math.min(innerHeight - below - DIA.edge, y));
   d.classList.toggle('up', up);
   x = Math.round(x); y = Math.round(y);
@@ -9250,7 +9285,7 @@ function shopSay(text, ok) {
   shopNextAt = Date.now() + ms + SHOP_SAY.quietMin + Math.random() * (SHOP_SAY.quietMax - SHOP_SAY.quietMin);
 }
 setInterval(() => {
-  try { shopWxSync(); townWxSync(); } catch (e) { }
+  try { shopWxSync(); townWxSync(); beachWxSync(); } catch (e) { }
   const sh = $('shop'); if (!sh || !sh.classList.contains('show') || document.hidden || Date.now() < shopNextAt) return;
   const b = $('sr-bubble'), pool = SHOP_GREETS.filter(g => g !== b.textContent); shopSay(pool[Math.floor(Math.random() * pool.length)], false);
 }, 1000);
@@ -10110,7 +10145,7 @@ function closeSummary() { $('summary').classList.remove('show'); }
 function weatherFor(name) {
   name = name || (document.querySelector('.scene.show') || {}).id;
   if (name === 'hub') return 'lantern';
-  if (name === 'beach' || name === 'beach-pick') return 'mist';
+  if (name === 'beach' || name === 'beach-pick') return typeof beachSunny === 'function' && beachSunny() ? '' : 'mist';      // Act 3: the fog has lifted
   if (name === 'battle-scene') { const q = quest && quest.def && quest.def.id; return q === 'lighthouse' ? 'rain' : (q === 'cove' || q === 'beach') ? 'mist' : ''; }
   return '';
 }
@@ -10470,37 +10505,47 @@ window.addEventListener('blur', () => { dvKeys = {}; });
 const VB = { cost: 150, winPts: 3, lives: 3, perfect: 110, good: 270 };
 const beachOpen = () => QUEST_GROUPS[1].ids.some(questCleared);          // any Tidelands quest opens the beach (the player will have Tier II perks by then)
 let beachArt = null, vbArt = null, beachHeroes = [];
-function beachSVG(court) {
+const BEACH_LOOK = {        // the drawn beach: Act 2 grey storm shore, Act 3 clear sunny beach
+  grey: { s: ['#11161f', '#37424f', '#7b8892'], sea: ['#2e424d', '#15252d'], sand: ['#6f6858', '#37332b'], sun: ['#dfe5e6', .5], cloud: '#1b222c', cloudOp: [.35, .3], wave: '#9fb6c0', wet: '#4a463c', dot: '#26231d', rock: ['#2c261e', '#2a251d', '#1b2026', '#171c21'], lh: ['#232c35', '#2c3641', '#1d252d'], bird: '#0f141a', mist: true },
+  sun:  { s: ['#2d7fc0', '#6fc0e6', '#cfeef6'], sea: ['#2fa3bd', '#16708c'], sand: ['#f0d9a2', '#c4a468'], sun: ['#fff7d0', .95], cloud: '#ffffff', cloudOp: [.25, .25], wave: '#e9fbff', wet: '#d6bc84', dot: '#b39567', rock: ['#9a8158', '#8f7650', '#6f6a62', '#67625a'], lh: ['#e8ecef', '#c8382f', '#5d6168'], bird: '#2b3a48', mist: false }
+};
+function beachSVG(court, sunny) {
+  const P = BEACH_LOOK[sunny ? 'sun' : 'grey'];
   let seed = 7; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647, f = n => Math.round(n * 10) / 10, o = [], add = s => o.push(s);
   add(`<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>
-    <linearGradient id="bSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#11161f"/><stop offset=".6" stop-color="#37424f"/><stop offset="1" stop-color="#7b8892"/></linearGradient>
-    <linearGradient id="bSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e424d"/><stop offset="1" stop-color="#15252d"/></linearGradient>
-    <linearGradient id="bSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f6858"/><stop offset="1" stop-color="#37332b"/></linearGradient>
-    <radialGradient id="bSun"><stop offset="0" stop-color="#dfe5e6" stop-opacity=".5"/><stop offset="1" stop-color="#dfe5e6" stop-opacity="0"/></radialGradient>
+    <linearGradient id="bSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.s[0]}"/><stop offset=".6" stop-color="${P.s[1]}"/><stop offset="1" stop-color="${P.s[2]}"/></linearGradient>
+    <linearGradient id="bSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.sea[0]}"/><stop offset="1" stop-color="${P.sea[1]}"/></linearGradient>
+    <linearGradient id="bSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.sand[0]}"/><stop offset="1" stop-color="${P.sand[1]}"/></linearGradient>
+    <radialGradient id="bSun"><stop offset="0" stop-color="${P.sun[0]}" stop-opacity="${P.sun[1]}"/><stop offset="1" stop-color="${P.sun[0]}" stop-opacity="0"/></radialGradient>
     <linearGradient id="bMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#aab6bd" stop-opacity="0"/><stop offset=".5" stop-color="#aab6bd" stop-opacity=".28"/><stop offset="1" stop-color="#aab6bd" stop-opacity="0"/></linearGradient>
     <filter id="bBlur"><feGaussianBlur stdDeviation="16"/></filter></defs>`);
-  add(`<rect width="1600" height="420" fill="url(#bSky)"/>${mikeSvg(1600, 900, 420, 'day', court ? 'vb' : 'beach')}<circle cx="1130" cy="250" r="190" fill="url(#bSun)"/>`);
-  for (let i = 0; i < 9; i++) add(`<ellipse cx="${f(R() * 1700 - 50)}" cy="${f(40 + R() * 280)}" rx="${f(160 + R() * 240)}" ry="${f(26 + R() * 40)}" fill="#1b222c" opacity="${f(.35 + R() * .3)}" filter="url(#bBlur)"/>`);
+  add(`<rect width="1600" height="420" fill="url(#bSky)"/>${mikeSvg(1600, 900, 420, 'day', court ? 'vb' : 'beach')}<circle cx="1130" cy="250" r="190" fill="url(#bSun)"/>${sunny ? '<circle cx="1130" cy="250" r="62" fill="#fffbe6"/>' : ''}`);
+  for (let i = 0; i < 9; i++) add(`<ellipse cx="${f(R() * 1700 - 50)}" cy="${f(40 + R() * 280)}" rx="${f(160 + R() * 240)}" ry="${f(26 + R() * 40)}" fill="${P.cloud}" opacity="${f(P.cloudOp[0] + R() * P.cloudOp[1])}" filter="url(#bBlur)"/>`);
   add(`<rect y="395" width="1600" height="330" fill="url(#bSea)"/>`);
-  for (let i = 0; i < 26; i++) { const y = 410 + R() * 280, x = R() * 1600, w = 50 + R() * 140; add(`<path d="M${f(x)},${f(y)} q${f(w / 4)},-5 ${f(w / 2)},0 t${f(w / 2)},0" fill="none" stroke="#9fb6c0" stroke-width="2" opacity="${f(.1 + R() * .2)}"/>`); }
-  add(`<rect y="388" width="1600" height="40" fill="url(#bMist)"/>`);
-  add(`<path d="M1320,402 L1336,402 L1344,300 L1312,300Z" fill="#232c35"/><rect x="1306" y="288" width="44" height="14" fill="#2c3641"/><path d="M1300,288 L1328,262 L1356,288Z" fill="#232c35"/><path d="M1290,404 Q1330,380 1372,404Z" fill="#1d252d"/>`);
-  for (let i = 0; i < 5; i++) { const x = 300 + R() * 700, y = 150 + R() * 120; add(`<path d="M${f(x)},${f(y)} q8,-8 16,0 q8,-8 16,0" fill="none" stroke="#0f141a" stroke-width="2.4" opacity=".7"/>`); }
+  for (let i = 0; i < 26; i++) { const y = 410 + R() * 280, x = R() * 1600, w = 50 + R() * 140; add(`<path d="M${f(x)},${f(y)} q${f(w / 4)},-5 ${f(w / 2)},0 t${f(w / 2)},0" fill="none" stroke="${P.wave}" stroke-width="2" opacity="${f(.1 + R() * .2)}"/>`); }
+  if (P.mist) add(`<rect y="388" width="1600" height="40" fill="url(#bMist)"/>`);
+  add(`<path d="M1320,402 L1336,402 L1344,300 L1312,300Z" fill="${P.lh[0]}"/>${sunny ? '<path d="M1315.5,340 L1340.5,340 L1342,322 L1314,322Z" fill="#c8382f"/>' : ''}<rect x="1306" y="288" width="44" height="14" fill="${P.lh[1]}"/><path d="M1300,288 L1328,262 L1356,288Z" fill="${P.lh[0]}"/><path d="M1290,404 Q1330,380 1372,404Z" fill="${P.lh[2]}"/>`);
+  for (let i = 0; i < 5; i++) { const x = 300 + R() * 700, y = 150 + R() * 120; add(`<path d="M${f(x)},${f(y)} q8,-8 16,0 q8,-8 16,0" fill="none" stroke="${P.bird}" stroke-width="2.4" opacity=".7"/>`); }
   add(`<g transform="translate(0,${court ? -130 : 0})">`);
   add(`<path d="M0,650 C260,715 640,640 1040,700 S1500,676 1600,716 L1600,1100 L0,1100Z" fill="url(#bSand)"/>`);
-  add(`<path d="M0,650 C260,715 640,640 1040,700 S1500,676 1600,716 L1600,740 C1500,700 1300,722 1040,724 S260,742 0,676Z" fill="#4a463c" opacity=".7"/>`);
+  add(`<path d="M0,650 C260,715 640,640 1040,700 S1500,676 1600,716 L1600,740 C1500,700 1300,722 1040,724 S260,742 0,676Z" fill="${P.wet}" opacity=".7"/>`);
   add(`<path d="M0,650 C260,715 640,640 1040,700 S1500,676 1600,716" fill="none" stroke="#d3dde1" stroke-width="5" opacity=".34"/><path d="M0,668 C260,731 640,658 1040,716 S1500,694 1600,734" fill="none" stroke="#d3dde1" stroke-width="3" opacity=".2"/>`);
-  for (let i = 0; i < 55; i++) add(`<ellipse cx="${f(R() * 1600)}" cy="${f(760 + R() * 130)}" rx="${f(4 + R() * 9)}" ry="${f(1.5 + R() * 2)}" fill="#26231d" opacity="${f(.15 + R() * .25)}"/>`);
-  add(`<path d="M120,790 q60,-30 150,-12 q-60,22 -150,12Z" fill="#2c261e"/><path d="M180,776 q10,-22 26,-30 l6,4 q-12,10 -18,28Z" fill="#2c261e"/><path d="M1180,822 q50,-26 120,-8 q-50,18 -120,8Z" fill="#2a251d"/>`);
-  add(`<path d="M20,742 q22,-44 70,-34 q40,6 50,36Z" fill="#1b2026"/><path d="M1480,640 q30,-32 80,-22 q30,8 40,28Z" fill="#171c21"/>`);
+  for (let i = 0; i < 55; i++) add(`<ellipse cx="${f(R() * 1600)}" cy="${f(760 + R() * 130)}" rx="${f(4 + R() * 9)}" ry="${f(1.5 + R() * 2)}" fill="${P.dot}" opacity="${f(.15 + R() * .25)}"/>`);
+  add(`<path d="M120,790 q60,-30 150,-12 q-60,22 -150,12Z" fill="${P.rock[0]}"/><path d="M180,776 q10,-22 26,-30 l6,4 q-12,10 -18,28Z" fill="${P.rock[0]}"/><path d="M1180,822 q50,-26 120,-8 q-50,18 -120,8Z" fill="${P.rock[1]}"/>`);
+  add(`<path d="M20,742 q22,-44 70,-34 q40,6 50,36Z" fill="${P.rock[2]}"/><path d="M1480,640 q30,-32 80,-22 q30,8 40,28Z" fill="${P.rock[3]}"/>`);
   add('</g>');
-  add(`<rect y="880" width="1600" height="20" fill="#000" opacity=".25"/></svg>`);
+  add(`<rect y="880" width="1600" height="20" fill="#000" opacity="${sunny ? .08 : .25}"/></svg>`);
   return o.join('').replace(/\bb(Sky|Sea|Sand|Sun|Mist|Blur)\b/g, (court ? 'c' : 'b') + '$1');      // each picture gets its own gradient ids (two copies would clash)
 }
-async function loadBeachBg(mapId, artId, key, svgFn) {
-  const el = $(artId); if (!el.firstChild) el.innerHTML = svgFn();
-  const a = await findAsset(`${ANIM.base}/ui/${key}`);
-  if (a && ['png', 'jpg', 'webp'].includes(a.ext)) { const m = $(mapId); m.style.backgroundImage = `url("${a.url}")`; m.style.backgroundSize = 'cover'; m.classList.add('has-art'); mikePaint(m, a.url, mapId === 'vb-court' ? 'vb' : 'beach'); }
+async function loadBeachBg(mapId, artId, key, svgFn) {        // svgFn(sunny); Act 3 uses <key>_act3 when it exists, else the Act 2 picture warmed up (.sunfix)
+  const el = $(artId), m = $(mapId), sunny = beachSunny(), look = sunny ? 'sun' : 'grey';
+  if (el.dataset.look !== look || !el.firstChild) { el.dataset.look = look; el.innerHTML = svgFn(sunny); }
+  const pic = a => a && ['png', 'jpg', 'webp'].includes(a.ext), a3 = sunny ? await findAsset(`${ANIM.base}/ui/${key}_act3`) : null, a = pic(a3) ? a3 : await findAsset(`${ANIM.base}/ui/${key}`);
+  if (beachSunny() !== sunny) return;
+  m.classList.toggle('sunfix', sunny && !pic(a3) && pic(a));
+  if (pic(a)) { if (m.dataset.bg !== a.url) { m.dataset.bg = a.url; m.style.backgroundImage = `url("${a.url}")`; m.style.backgroundSize = 'cover'; mikePaint(m, a.url, mapId === 'vb-court' ? 'vb' : 'beach'); } m.classList.add('has-art'); }
+  else { m.classList.remove('has-art'); m.style.backgroundImage = ''; delete m.dataset.bg; }
+  setTimeout(() => { try { beachWxSync(); } catch (_) { } }, 30);
 }
 async function beachIdle(id) {         // always the swimsuit idle (armoured - swimsuit), never whatever skin is worn; else the normal idle
   return (await findAsset(`${ANIM.base}/${id}/armoured - swimsuit/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`);
@@ -10521,7 +10566,8 @@ function bFig(id, flip) {
 function openBeach() { if (!beachOpen()) return; showScene('beach'); }
 function renderBeach() {
   $('beach-gold').textContent = `Gold: ${game.gold}`;
-  loadBeachBg('beach-map', 'beach-art', 'beach', beachSVG);
+  { const t = $('beach-gold').parentNode.firstChild; if (t && t.nodeType === 3) t.nodeValue = beachSunny() ? 'The Sunlit Shore' : 'The Grey Shore'; }      // the name follows the weather
+  loadBeachBg('beach-map', 'beach-art', 'beach', sunny => beachSVG(false, sunny));
   const box = $('beach-figs'); box.innerHTML = '';
   const pool = game.roster.filter(id => heroById(id)).sort(() => Math.random() - .5).slice(0, 4);
   // positions: x% of the picture, feet at y% ; water = sea over the lower part of the sprite
@@ -10533,6 +10579,128 @@ function renderBeach() {
     box.appendChild(d);
   });
 }
+
+/* ============ THE BEACH IN THE STORM (Act 2) / IN THE SUN (Act 3) ============
+   While Act 3 is still locked the beach and the volleyball court sit under the Act 2 storm: rain with splashes on the sand, lightning that lights the scene
+   (sometimes a bolt in the sky, kept to the sky of a painted picture), thunder, the sound of rain, and on the beach the lighthouse lamp turning, its two beams
+   sweeping round. Now and then (BEACH_WX.sea) a bolt comes down in the shallows instead, right by the heroes standing in the water: both get the shock
+   treatment from battle (black-and-white flicker, sparks) and yelp. Once Act 3 is open it's a clear sunny beach: no storm, no fog, no lamp, no strikes.
+   Art: assets/ui/beach_act3 and volleyball_act3 (png/jpg/webp) are the sunny pictures; until they exist the Act 2 picture is shown warmed and brightened.
+   Knobs: BEACH_WX: drops / slant / storm (ms between lightning) / bolt (chance of a visible bolt) / sea (chance a strike hits the shallows, beach only)
+   / seaCd (ms at least between two sea strikes) / lamp {x, y}: where the lighthouse lamp is (fraction of the picture; drawn = the code-drawn beach,
+   art = your painting) / beam {len, wide, period ms per turn}.
+   Dev: Alt+W on the beach or the court flips storm / sun · Alt+L strikes the shallows now · Alt+click on the beach puts the lamp there (saved; the
+   numbers to paste into BEACH_WX.lamp.art show in the banner). */
+const BEACH_WX = { drops: 300, slant: .26, storm: [6000, 15000], ground: [.7, .98], bolt: .6, sea: .08, seaCd: 45000,
+  lamp: { drawn: { x: .83, y: .325 }, art: { x: .83, y: .325 } }, beam: { len: .36, wide: .05, period: 9000 } };
+try { const c = JSON.parse(localStorage.getItem('beachLamp') || 'null'); if (c && c.x >= 0 && c.y >= 0) BEACH_WX.lamp.art = c; } catch (_) { }
+const beachSunny = () => owForce ? owForce !== 'coast' : !!(game && frostOpen());
+function makeStorm(host, mapEl) {            // rain, flash and bolt layers over one scene (the town keeps its own copy)
+  const w = document.createElement('div'); w.className = 'bstorm';
+  w.innerHTML = `<canvas class="bs-rain"></canvas><svg class="bs-bolt" viewBox="0 0 1600 900" preserveAspectRatio="none"></svg><div class="bs-flash"></div>`; host.appendChild(w);
+  const S = { on: false, raf: 0, timer: 0, drops: [], splash: [], last: 0, w, c: w.children[0], b: w.children[1], f: w.children[2], onStrike: null };
+  const frame = now => {
+    if (!S.on) return; const c = S.c, W = c.clientWidth, H = c.clientHeight; if (!W || !H) { S.raf = requestAnimationFrame(frame); return; }
+    if (c.width !== W || c.height !== H) { c.width = W; c.height = H; S.drops = []; }
+    const g = c.getContext('2d'), dt = Math.min(.05, (now - S.last) / 1000), K = BEACH_WX, sl = K.slant; S.last = now;
+    const n = Math.round(K.drops * W * H / (1600 * 900)), gy = () => (K.ground[0] + Math.random() * (K.ground[1] - K.ground[0])) * H;
+    while (S.drops.length < n) { const near = Math.random() < .35; S.drops.push({ x: Math.random() * W * 1.25, y: Math.random() * H, l: (near ? .055 : .028) * H * (.7 + Math.random() * .6), v: (near ? 1.9 : 1.25) * H * (.85 + Math.random() * .3), a: near ? .5 + Math.random() * .25 : .22 + Math.random() * .18, w: near ? 1.6 : 1, near, gy: gy() }); }
+    g.clearRect(0, 0, W, H); g.lineCap = 'round';
+    for (const d of S.drops) {
+      d.y += d.v * dt; d.x -= d.v * sl * dt;
+      if ((d.near && d.y > d.gy) || d.y - d.l > H) { if (d.near && S.splash.length < 90) S.splash.push({ x: d.x, y: d.gy, t: 0 }); d.y = -d.l - Math.random() * H * .3; d.x = Math.random() * W * 1.3; if (d.near) d.gy = gy(); }
+      g.strokeStyle = `rgba(205,220,240,${d.a})`; g.lineWidth = d.w; g.beginPath(); g.moveTo(d.x, d.y); g.lineTo(d.x + d.l * sl, d.y - d.l); g.stroke();
+    }
+    g.lineWidth = 1; S.splash = S.splash.filter(s => (s.t += dt) < .28);
+    for (const s of S.splash) { const k = s.t / .28, r = 2 + k * H * .012; g.strokeStyle = `rgba(215,228,245,${(.55 * (1 - k)).toFixed(3)})`; g.beginPath(); g.ellipse(s.x, s.y, r, r * .32, 0, 0, 6.283); g.stroke(); }
+    S.raf = requestAnimationFrame(frame);
+  };
+  const path = (x, y, y2, j = 46) => { let d = `M${x.toFixed(0)} ${y.toFixed(0)}`; while (y < y2) { y += 18 + Math.random() * 26; x += (Math.random() - .5) * j; d += ` L${x.toFixed(0)} ${Math.min(y, y2).toFixed(0)}`; } return d; };
+  S.flash = (k = 1) => { if (FX.flash) S.f.animate([{ opacity: 0 }, { opacity: .55 * k, offset: .06 }, { opacity: .1 * k, offset: .18 }, { opacity: .42 * k, offset: .3 }, { opacity: 0 }], { duration: 750 + 250 * (k - 1), easing: 'ease-out' }); };
+  S.bolt = (x0, yEnd, ground) => {                       // ground: a bolt that reaches the sea (not masked to the sky), thicker, with a forked tip
+    const main = path(x0, -10, yEnd, ground ? 60 : 46), br = path(x0 + (Math.random() - .5) * 60, yEnd * (.3 + Math.random() * .3), yEnd * (.75 + Math.random() * .2));
+    S.b.style.webkitMaskImage = S.b.style.maskImage = ground ? 'none' : S.mask || 'none';
+    S.b.innerHTML = [main, br].map((d, i) => `<path d="${d}" stroke="#bcd4ff" stroke-width="${(i ? 5 : 9) * (ground ? 1.6 : 1)}" opacity=".45" style="filter:blur(3px)"/><path d="${d}" stroke="#fff" stroke-width="${(i ? 1.6 : 2.8) * (ground ? 1.5 : 1)}"/>`).join('');
+    S.b.animate([{ opacity: 0 }, { opacity: 1, offset: .05 }, { opacity: .2, offset: .2 }, { opacity: 1, offset: .32 }, { opacity: 0 }], { duration: ground ? 900 : 650, easing: 'ease-out', fill: 'forwards' });
+  };
+  const strike = () => {
+    if (!S.on) return;
+    if (!(S.onStrike && S.onStrike())) {                  // the scene may take this strike for itself (the sea strike on the beach)
+      S.flash(); if (FX.flash && Math.random() < BEACH_WX.bolt) S.bolt(160 + Math.random() * 1280, (mapEl.classList.contains('has-art') ? .24 + Math.random() * .14 : .12 + Math.random() * .1) * 900, false);
+      setTimeout(() => { if (S.on) thunder(.7 + Math.random() * .4); }, 800 + Math.random() * 1800);
+    }
+    S.timer = setTimeout(strike, BEACH_WX.storm[0] + Math.random() * (BEACH_WX.storm[1] - BEACH_WX.storm[0]));
+  };
+  S.start = () => {
+    if (S.on) return; S.on = true; w.style.display = 'block'; S.drops = []; S.splash = []; S.last = performance.now(); S.mask = '';
+    if (mapEl.classList.contains('has-art')) { const u = (mapEl.style.backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1]; if (u) skyMap(u).then(sk => { if (sk && sk.mask) S.mask = `url("${sk.mask}")`; }); }
+    if (!FX.calm) S.raf = requestAnimationFrame(frame);
+    clearTimeout(S.timer); S.timer = setTimeout(strike, 2500 + Math.random() * 4000);
+  };
+  S.stop = () => { if (!S.on) return; S.on = false; cancelAnimationFrame(S.raf); clearTimeout(S.timer); w.style.display = ''; S.b.innerHTML = ''; try { S.c.getContext('2d').clearRect(0, 0, S.c.width, S.c.height); } catch (_) { } };
+  return S;
+}
+let beachStorm = null, vbStorm = null, beachSeaAt = 0, lhRaf = 0;
+function beachWxSync() {
+  const sun = beachSunny(), bOn = $('beach').classList.contains('show') && !sun && !document.hidden, vOn = $('vb').classList.contains('show') && !sun && !document.hidden;
+  if (bOn && !beachStorm) { beachStorm = makeStorm($('beach-map'), $('beach-map')); beachStorm.onStrike = () => Math.random() < BEACH_WX.sea && seaStrike(); }
+  if (vOn && !vbStorm) vbStorm = makeStorm($('vb-court'), $('vb-court'));
+  if (beachStorm) bOn ? beachStorm.start() : beachStorm.stop();
+  if (vbStorm) vOn ? vbStorm.start() : vbStorm.stop();
+  lighthouse(bOn);
+  if (bOn || vOn) { if (sndMuted) rainStop('out'); else rainStart('out'); }
+  else if (!(typeof townWx !== 'undefined' && townWx.on)) rainStop('out');
+}
+function lighthouse(on) {                    // the lamp on the lighthouse: a glow, and two beams turning round (seen from the side: they swing across, the lamp flares as one faces us)
+  const map = $('beach-map'); let L = map.querySelector('.lh');
+  if (!on) { if (L) L.style.display = 'none'; cancelAnimationFrame(lhRaf); lhRaf = 0; return; }
+  if (!L) { L = document.createElement('div'); L.className = 'lh'; L.innerHTML = '<i class="lh-beam"></i><i class="lh-beam"></i><b class="lh-glow"></b>'; map.appendChild(L); }
+  const p = BEACH_WX.lamp[map.classList.contains('has-art') ? 'art' : 'drawn'];
+  L.style.display = ''; L.style.left = p.x * 100 + '%'; L.style.top = p.y * 100 + '%';
+  L.style.setProperty('--len', BEACH_WX.beam.len * 100 + 'cqw'); L.style.setProperty('--wide', BEACH_WX.beam.wide * 100 + 'cqw');
+  if (lhRaf) return;
+  const [b1, b2] = L.querySelectorAll('.lh-beam'), gl = L.querySelector('.lh-glow');
+  const step = now => {
+    if (!L.isConnected || L.style.display === 'none') { lhRaf = 0; return; }
+    const th = FX.calm ? Math.PI * .15 : now / BEACH_WX.beam.period * Math.PI * 2;
+    [[b1, th], [b2, th + Math.PI]].forEach(([b, a]) => { const c = Math.cos(a), s = Math.sin(a); b.style.transform = `scaleX(${c.toFixed(3)})`; b.style.opacity = ((.2 + .6 * Math.abs(c)) * (s > 0 ? 1 : .55)).toFixed(3); });
+    const f = Math.pow(Math.max(0, Math.sin(th)), 14) + Math.pow(Math.max(0, Math.sin(th + Math.PI)), 14);
+    gl.style.transform = `translate(-50%,-50%) scale(${(1 + 2.2 * f).toFixed(3)})`; gl.style.opacity = (.7 + .3 * f).toFixed(3);
+    lhRaf = requestAnimationFrame(step);
+  };
+  lhRaf = requestAnimationFrame(step);
+}
+function seaStrike(force) {                  // a bolt into the shallows right by the heroes in the water: they get shocked
+  const S = beachStorm; if (!S || !S.on) return false;
+  const wet = [...document.querySelectorAll('#beach-figs .bspot.in-water')];
+  if (!wet.length || (!force && Date.now() - beachSeaAt < BEACH_WX.seaCd)) return false;
+  beachSeaAt = Date.now();
+  const map = $('beach-map').getBoundingClientRect(), xs = wet.map(s => { const r = s.getBoundingClientRect(); return [(r.left + r.width / 2 - map.left) / map.width, (r.bottom - map.top) / map.height]; });
+  const fx0 = xs.reduce((a, p) => a + p[0], 0) / xs.length + (Math.random() - .5) * .04, fy = Math.min(...xs.map(p => p[1])) - .035;
+  S.flash(1.5); S.bolt(fx0 * 1600 + (Math.random() - .5) * 120, fy * 900, true);
+  // where it hits: a white-hot splash and a ring on the water
+  const hit = document.createElement('div'); hit.className = 'sea-hit'; hit.style.left = fx0 * 100 + '%'; hit.style.top = fy * 100 + '%'; hit.innerHTML = '<i></i><i></i><b></b>'; $('beach-map').appendChild(hit); setTimeout(() => hit.remove(), 1600);
+  thunder(1.4); try { sfx('hit', 'shock', true); } catch (_) { }
+  setTimeout(() => { try { sfx('hit', 'shock'); } catch (_) { } }, 260);
+  wet.forEach((s, k) => setTimeout(() => shockBeachFig(s), 90 + k * 70));
+  return true;
+}
+function shockBeachFig(spot) {               // the battle shock look on a beach figure: black-and-white flicker (three pulses), shock tint and sparks, and a yelp
+  const f = spot.querySelector('.figure'); if (!f) return;
+  for (let k = 0; k < 3; k++) setTimeout(() => { f.classList.remove('zapfig'); void f.offsetWidth; f.classList.add('zapfig'); }, k * 600);
+  setTimeout(() => f.classList.remove('zapfig'), 1800);
+  f.classList.add('tint-shock'); setTimeout(() => f.classList.remove('tint-shock'), 1900);
+  const v = VFX.shock, box = document.createElement('div'); box.className = 'vfx vfx-' + v.cls;
+  for (let i = 0; i < v.n + 3; i++) { const sp = particle('shock', i); sp.style.left = (10 + Math.random() * 70) + '%'; sp.style.top = (12 + Math.random() * 55) + '%'; sp.style.animationDelay = (i * 90) + 'ms'; box.appendChild(sp); }
+  f.appendChild(box); setTimeout(() => box.remove(), 1900);
+  const lines = (typeof TALK_LINES !== 'undefined' && TALK_LINES.shocked) || ['Bzzzt!'], say = document.createElement('div');
+  say.className = 'bsay'; say.textContent = lines[Math.floor(Math.random() * lines.length)]; spot.appendChild(say); setTimeout(() => say.remove(), 2600);
+}
+$('beach-map').addEventListener('click', e => {           // dev: Alt+click puts the lighthouse lamp there (for your painted beach)
+  if (!devMode || !e.altKey) return; const r = $('beach-map').getBoundingClientRect(), p = { x: +((e.clientX - r.left) / r.width).toFixed(3), y: +((e.clientY - r.top) / r.height).toFixed(3) };
+  BEACH_WX.lamp[$('beach-map').classList.contains('has-art') ? 'art' : 'drawn'] = p; if ($('beach-map').classList.contains('has-art')) try { localStorage.setItem('beachLamp', JSON.stringify(p)); } catch (_) { }
+  lighthouse(true); banner(`🛠 Lamp at x ${p.x}, y ${p.y}`, 'phase', 'paste into BEACH_WX.lamp.art to keep it');
+});
 
 /* ---- picking two heroes ---- */
 let vbPick = [];
@@ -10687,7 +10855,7 @@ function startVb() {
   if (vbPick.length !== 2 || game.gold < VB.cost || !vbPick.some(id => t2List(id).length)) return;
   game.gold -= VB.cost; writeSave();                                   // paid up front, win or lose
   const team = vbPick.slice(), others = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2);
-  showScene('vb'); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true));
+  showScene('vb'); loadBeachBg('vb-court', 'vb-art', 'volleyball', sunny => beachSVG(true, sunny));
   $('vb-court').classList.remove('won'); $('vb-panel').style.display = 'none'; $('vb-pause').classList.remove('on');
   vb = { team, me: 0, foe: 0, speed: 1, dead: false, wait: null, bp: [vbHX.A, 22] };
   vb.sp = vbBuild(team, others); vbPosBall(vbHX.A, 22);
@@ -10707,7 +10875,7 @@ document.addEventListener('keydown', e => {
 let vbSel = {};
 const t1Choices = hid => Object.values(TRAIT).filter(t => t.kind === 'good' && !t.base && (!t.el || heroElems(hid).includes(t.el)));
 const vbTakeFor = (hid, out) => isT3(out) ? t1Choices(hid).map(t => TRAIT[t.id + '2']).filter(Boolean) : t1Choices(hid);      // Tier III -> any Tier II, Tier II -> any Tier I
-function vbClaim() { showScene('vb'); $('vb-court').classList.add('won'); $('vb-msg').textContent = ''; vbSwapUi(); loadBeachBg('vb-court', 'vb-art', 'volleyball', () => beachSVG(true)); const rw = game.vb && game.vb.reward; if (rw) { vbSwapBackdrop(rw.heroes); } }
+function vbClaim() { showScene('vb'); $('vb-court').classList.add('won'); $('vb-msg').textContent = ''; vbSwapUi(); loadBeachBg('vb-court', 'vb-art', 'volleyball', sunny => beachSVG(true, sunny)); const rw = game.vb && game.vb.reward; if (rw) { vbSwapBackdrop(rw.heroes); } }
 function vbSwapBackdrop(team) { const foes = HEROES.filter(h => !team.includes(h.id)).map(h => h.id).sort(() => Math.random() - .5).slice(0, 2); vbBuild(team, foes); }
 const perkChip = (t, cls = '') => `<span class="pchip${TRAIT[t].tier === 3 ? ' t3' : TRAIT[t].tier === 2 ? ' t2' : ''}${cls ? ' ' + cls : ''}" data-tip="${t}">${TRAIT[t].icon} ${TRAIT[t].name}</span>`;
 const perkTip = t => `<b>${TRAIT[t].icon} ${TRAIT[t].name}</b>${TRAIT[t].tier === 3 ? ' (Tier III)' : TRAIT[t].tier === 2 ? ' (Tier II)' : ' (Tier I)'}: ${TRAIT[t].desc}`;
