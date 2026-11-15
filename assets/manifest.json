@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-15 13:21",
+  "generated": "2026-11-15 13:38",
   "files": {
     "aneesah/armoured - swimsuit/damaged": "png",
     "aneesah/armoured - swimsuit/idle": "png",
@@ -89,6 +89,7 @@
     "enemies/e_venom": "png",
     "enemies/e_warder": "png",
     "enemies/e_wraith": "png",
+    "guidingangel/guide": "png",
     "irae/armoured - swimsuit/damaged": "png",
     "irae/armoured - swimsuit/idle": "png",
     "irae/armoured - swimsuit/skill1": "png",
@@ -209,6 +210,7 @@
     "ui/assistantsweeping": "png",
     "ui/bigmike": "png",
     "ui/guest": "png",
+    "ui/guide": "png",
     "ui/irae_camp": "png",
     "ui/iris_camp": "png",
     "ui/jean_camp": "png",
