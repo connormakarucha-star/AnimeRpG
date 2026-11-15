@@ -1477,7 +1477,9 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
 .bat{position:absolute;pointer-events:none}.bat svg{width:100%;height:100%;display:block;fill:#140810;filter:drop-shadow(0 0 3px rgba(200,30,60,.7));animation:batFlap .16s ease-in-out infinite alternate;transform-origin:50% 40%}
 @keyframes batFlap{from{transform:scaleY(1)}to{transform:scaleY(.35)}}
 .darksteam{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(130,100,140,.85),rgba(80,55,95,.6) 42%,rgba(40,25,55,0) 70%)}
-.tosspot{position:fixed;z-index:73;pointer-events:none;line-height:1;filter:drop-shadow(0 0 8px #9aff9a)}.tosspot img{height:1.4em;display:block}
+.log-entry.log-dev{color:#ffd54f;font-size:.85em;opacity:.9}
+.potsplash{position:fixed;z-index:73;pointer-events:none;border-radius:50%;border:3px solid #9aff9a;background:radial-gradient(circle,rgba(154,255,154,.45),rgba(154,255,154,0) 70%);box-shadow:0 0 18px #6dff8a}
+.tosspot{position:fixed;z-index:73;pointer-events:none;line-height:1;filter:drop-shadow(0 0 8px #9aff9a)}.tosspot img,.tosspot svg{height:1.4em;width:auto;display:block}.tosspot svg{width:1.08em}
 .smokepuff{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 38%,rgba(225,220,235,.95),rgba(160,150,175,.8) 40%,rgba(110,100,125,.45) 62%,rgba(90,80,105,0) 72%);object-fit:contain}
 img.smokepuff{background:none;border-radius:0}
 .vcharm{position:absolute;left:50%;width:var(--cw);z-index:5;pointer-events:none;transform:translate(-50%,-50%) rotate(var(--rot));filter:drop-shadow(0 0 6px rgba(255,230,90,.75))}
@@ -4234,11 +4236,11 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
   const tr = (dx, dy, sc) => `translate(${dx}px,${dy}px) scale(${sc})`;
   // the wind-up always happens at ONE fixed foreground spot (the middle of her side), whichever slot she stood in; as big as DASH.near allows while still fitting on screen
   const vh0 = document.documentElement.clientHeight, dy0 = Math.max(A.h * DASH.drop, vh0 * DASH.floor - A.bottom), dyEnd = B.bottom - A.bottom, im0 = main.querySelector('img.a'), asp = im0 && im0.naturalHeight ? im0.naturalWidth / im0.naturalHeight : 0.6, vw = document.documentElement.clientWidth;
-  const S0 = Math.max(1, Math.min(NEAR, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE), (vw * 0.92) / (asp * A.h * SPR_SCALE)));
+  const S0 = bossCapS(A.h, Math.max(1, Math.min(NEAR, (A.bottom + dy0 - 12) / (A.h * SPR_SCALE), (vw * 0.92) / (asp * A.h * SPR_SCALE))));
   const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, halfW = asp * A.h * SPR_SCALE * S0 / 2;
   const fx = Math.max(halfW + 8, Math.min(vw - halfW - 8, pr && pr.width ? pr.left + pr.width / 2 : A.cx)), fdx = fx - A.cx;
   const P0 = tr(0, 0, 1), P1 = tr(fdx, dy0, S0), P1c = tr(fdx, dy0 + A.h * 0.02, S0 * 0.97);                          // wind-up: grows toward the camera, then crouches
-  const sc1 = B.h / A.h;                                                                                           // at the target she is its own size
+  const sc1 = depthSc(A, B, t);                                                                                    // at the target she is its own size (never bigger than the final boss)
   const P2 = tr(B.cx - dir * B.w * DASH.arriveGap - A.cx, dyEnd, sc1);                                              // impact point: just in front of the target
   const P3 = tr(B.cx + dir * B.w * DASH.passBy - A.cx, dyEnd - B.h * 0.05, sc1 * DASH.passScale);                    // past it, a little further away
   const anim = (node, frames, ms, ease, delay = 0, fill = 'forwards') => node.animate(frames, { duration: dspd(ms), easing: ease, fill, delay: dspd(delay) });
@@ -4290,8 +4292,8 @@ async function stageBegin(u, t, art, s) {
   if (im.decode) await im.decode().catch(() => {});
   const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
   const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx = pr && pr.width ? pr.left + pr.width / 2 : A.cx;
-  const H = vh * K.h * fbScale(u), S0 = H / (A.h * SPR_SCALE), dy = vh * K.bottom - A.bottom, dir = flip ? -1 : 1;
-  const tr = (x, y, sc) => `translate(${x}px,${y}px) scale(${sc})`, P0 = tr(0, 0, 1), P1 = tr(fx - A.cx, dy, S0), hx = fx + dir * K.hand.dx * H, hy = vh * K.bottom - K.hand.up * H;
+  const { H, by } = closeCap(vh, K.h, K.bottom, u), S0 = H / (A.h * SPR_SCALE), dy = by - A.bottom, dir = flip ? -1 : 1;
+  const tr = (x, y, sc) => `translate(${x}px,${y}px) scale(${sc})`, P0 = tr(0, 0, 1), P1 = tr(fx - A.cx, dy, S0), hx = fx + dir * K.hand.dx * H, hy = by - K.hand.up * H;
   const anim = (node, frames, ms, ease) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards' });
   const svgNS = 'http://www.w3.org/2000/svg', mkSvg = () => { const v = document.createElementNS(svgNS, 'svg'); v.setAttribute('viewBox', `0 0 ${vw} ${vh}`); Object.assign(v.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: 72, pointerEvents: 'none', overflow: 'visible' }); v.setAttribute('fill', 'none'); v.setAttribute('stroke-linejoin', 'round'); v.setAttribute('stroke-linecap', 'round'); document.body.appendChild(v); d.parts.push(v); return v; };
   const foes = s && s.aoe ? (u.team === 'p' ? enemies : party).filter(isAlive) : [t];
@@ -4353,8 +4355,8 @@ async function stage3Begin(u, t, art) {
   await Promise.all([imA, imB, boltImg].filter(Boolean).map(im => im.decode ? im.decode().catch(() => {}) : 0));
   const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden'; hidePartyFor(u);
   const pc = $(u.team === 'p' ? 'party-cards' : 'enemy-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx = pr && pr.width ? pr.left + pr.width / 2 : A.cx;
-  const H = vh * KS.h * fbScale(u), S0 = H / (A.h * SPR_SCALE), dy = vh * KS.bottom - A.bottom;
-  const P0 = 'translate(0px,0px) scale(1)', P1 = `translate(${fx - A.cx}px,${dy}px) scale(${S0})`, hx = fx + dir * KS.hand.dx * H, hy = vh * KS.bottom - KS.hand.up * H;
+  const { H, by } = closeCap(vh, KS.h, KS.bottom, u, K.tall || 1.2), S0 = H / (A.h * SPR_SCALE), dy = by - A.bottom;
+  const P0 = 'translate(0px,0px) scale(1)', P1 = `translate(${fx - A.cx}px,${dy}px) scale(${S0})`, hx = fx + dir * KS.hand.dx * H, hy = by - KS.hand.up * H;
   const anim = (node, frames, ms, ease) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards' });
   const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
   const T = K.ms || {}; let boltEl = null;
@@ -4409,20 +4411,19 @@ async function stage3Begin(u, t, art) {
   };
 }
 
-/* ---- skill 3 as a close-up BEHIND the party, who stay in view (Aria's Aegis) ----
-   Her skill3 picture rises into place behind the party line (bottom edge on the bottom of the screen; the picture stops at her thighs), the party stays visible in front of her,
-   ice shards fly from her book to every ally and a frost barrier climbs up around each of them from the ground. She fades back into the line-up, her own barrier forms around her,
-   and the barriers melt away as the real ones (and the cleanse) land.
-   Art:  assets/<id>/<armoured | broken | skin>/skill3.png   (a skill3 video is ignored once a skill3 picture exists)
+/* ---- skill 3 cast IN FORMATION (Aria's Aegis) ----
+   No close-up and no zoom: she stays in her slot in the line-up and plays her skill 2 picture there (the same one her skill 2 uses), her book flares,
+   ice shards fly from it to every ally, and a frost barrier climbs up around each of them, and around her too. The barriers melt away as the real ones (and the cleanse) land.
+   Art:  assets/<id>/<armoured | broken | skin>/skill2.png  (reused; without it she casts in her normal picture)
          assets/<id>/effects/barrier.png  OPTIONAL: your own barrier picture, drawn around one standing figure (it is stretched to each ally's size). Without it the game draws an ice dome.
-   Knobs: h / bottom / x as for SEQ3; book = where the shards leave from (dx sideways, up = height above her bottom edge, both in close-up heights, facing right); dome = barrier size (w, h as
-          fractions of each ally's figure box); ms = timings. */
-const WARD3 = { aria: { key: 'skill3', h: 1.0, bottom: 1.0, x: 0, book: { dx: .24, up: .55 }, dome: { w: .62, h: .6 }, ice: ['#e9f8ff', '#9fdcff', '#4fb4ff'],
-  ms: { rise: 240, charge: 220, shards: 300, climb: 380, stagger: 80, hold: 480, out: 320, self: 300, melt: 420 } } };
+   Knobs: key = which of her pictures she casts in; book = where the shards leave from (dx sideways, up = height above her feet, both in picture heights, facing right);
+          dome = barrier size (w, h as fractions of each figure box); ms = timings. */
+const WARD3 = { aria: { key: 'skill2', book: { dx: .2, up: .58 }, dome: { w: .62, h: .6 }, ice: ['#e9f8ff', '#9fdcff', '#4fb4ff'],
+  ms: { charge: 260, shards: 300, climb: 380, stagger: 80, hold: 520, melt: 420 } } };
 async function ward3Assets(u, i) {
   const K = WARD3[u.id]; if (i !== 2 || !K || u.team !== 'p' || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
-  let a = null; for (const f of artChain(u)) { a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.key}`); if (a) break; }
-  if (!a) return null;
+  const a = await firstAsset(u, K.key);
+  if (!a) artNote(`${u.name}: no ${K.key} picture found in assets/${u.id}/${artChain(u).join(' or ')}/ (on the manifest?) - she casts in her normal picture.`);
   const sf = stateFolder(u), fx = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/barrier`)) || await findStill(`${ANIM.base}/${u.id}/effects/barrier`);
   return { K, a, fx, ward: true };
 }
@@ -4449,57 +4450,47 @@ async function ward3Begin(u, art) {
   dashClear();
   const el = figs.get(u); if (!el || !el.isConnected) return null;
   const A = figBox(el); if (!A.w) return null;
-  const K = art.K, vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u), dir = flip ? -1 : 1;
-  const d0 = document.createElement('div'); d0.className = 'dashfx' + (flip ? ' flip' : '');
-  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px', opacity: 0 });
-  const im = document.createElement('img'); im.className = 'a'; im.src = art.a.url; im.draggable = false; d0.appendChild(im); document.body.appendChild(d0);
-  if (im.decode) await im.decode().catch(() => {});
-  const d = dashLive = { parts: [d0], el, tcard: null, raised: [] }; el.style.visibility = 'hidden';
-  // the party stays in view, in FRONT of her: their cards are lifted above the close-up while it plays
-  party.forEach(m => { const f = figs.get(m), c = f && f.closest('.combatant-card'); if (c) { c.style.position = 'relative'; c.style.zIndex = 75; d.raised.push(c); } });
-  const pc = $('party-cards'), pr = pc ? pc.getBoundingClientRect() : null, fx = (pr && pr.width ? pr.left + pr.width / 2 : A.cx) + dir * K.x * vw;
-  const H = vh * K.h * fbScale(u), ih = im.offsetHeight || A.h * SPR_SCALE, S0 = H / ih, P1y = vh * K.bottom - A.bottom;
-  const P1 = `translate(${fx - A.cx}px,${P1y}px) scale(${S0})`, from = `translate(${fx - A.cx}px,${P1y + H * .3}px) scale(${S0})`;
-  const bx = fx + dir * K.book.dx * H, by = vh * K.bottom - K.book.up * H;
-  const anim = (node, frames, ms, ease, extra) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards', ...(extra || {}) });
+  const K = art.K, flip = sprFlip(u), dir = flip ? -1 : 1, T = K.ms, domes = new Map();
+  const d = dashLive = { parts: [], el, tcard: null };
+  // her skill 2 picture, in her own slot (like any skill picture), held for the whole cast
+  let pic = null;
+  if (art.a) {
+    const vid = art.a.ext === 'mp4' || art.a.ext === 'webm'; pic = document.createElement(vid ? 'video' : 'img'); pic.className = 'dmg'; pic.src = art.a.url; pic.draggable = false;
+    if (vid) { pic.muted = true; pic.loop = true; pic.playsInline = true; } else if (pic.decode) await pic.decode().catch(() => {});
+  }
+  const ph = A.h * SPR_SCALE, bx = A.cx + dir * K.book.dx * ph, by = A.bottom - K.book.up * ph;
   const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
-  const T = K.ms, domes = new Map();
-  const allies = () => party.filter(m => isAlive(m) && m !== u && figs.get(m) && figs.get(m).isConnected);
   const raise = (m) => { const f = figs.get(m); if (!f || !f.isConnected) return null; const B = figBox(f); if (!B.w) return null; const dm = iceDome(B, K, art.fx); document.body.appendChild(dm); d.parts.push(dm); domes.set(m, dm); return dm; };
   const climb = (dm, ms, delay) => { dm.animate([{ clipPath: 'inset(100% -10% 0 -10%)', opacity: .4 }, { clipPath: 'inset(0% -10% 0 -10%)', opacity: 1 }], { duration: dspd(ms), delay: dspd(delay || 0), easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'both' });
     dm.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(2.2)', offset: .82 }, { filter: 'brightness(1)' }], { duration: dspd(ms + 160), delay: dspd(delay || 0), fill: 'both' }); };
+  const drop = () => { if (pic) { pic.remove(); if (!el.querySelector('.dmg')) el.classList.remove('playing'); } };
+  d.stop = drop;
   return {
     async run() {
-      sfx('whoosh');
-      await wait(anim(d0, [{ transform: from, opacity: 0 }, { transform: P1, opacity: 1 }], T.rise, 'cubic-bezier(.2,.8,.3,1)'), T.rise);
-      d0.style.transform = P1; d0.style.opacity = 1;
+      if (pic && el.isConnected) { el.appendChild(pic); el.classList.add('playing'); if (pic.play) pic.play().catch(() => {}); }
       // the book flares
       sfx('charge', 'ice');
-      const g = document.createElement('div'); g.className = 'bookglow'; Object.assign(g.style, { left: bx + 'px', top: by + 'px', width: (vh * .16) + 'px', height: (vh * .16) + 'px' }); document.body.appendChild(g); d.parts.push(g);
+      const g = document.createElement('div'); g.className = 'bookglow'; const gs = Math.max(60, ph * .26); Object.assign(g.style, { left: bx + 'px', top: by + 'px', width: gs + 'px', height: gs + 'px' }); document.body.appendChild(g); d.parts.push(g);
       g.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.3)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)', offset: .6 }, { opacity: .85, transform: 'translate(-50%,-50%) scale(.9)' }], { duration: dspd(T.charge), fill: 'forwards' });
       await sleep(dspd(T.charge));
-      // shards fly to every ally, and the barriers climb up around them
+      // her own barrier climbs first; shards fly to every ally and theirs climb up around them
       sfx('whoosh', 'ice');
-      const list = allies();
+      const me = isAlive(u) ? raise(u) : null; if (me) climb(me, T.climb, 0);
+      const list = party.filter(m => isAlive(m) && m !== u && figs.get(m) && figs.get(m).isConnected);
       list.forEach((m, k) => { const f = figs.get(m), B = figBox(f), tx = B.cx, ty = B.bottom - B.h * .5;
-        for (let j = 0; j < 3; j++) { const s = document.createElement('div'); s.className = 'iceshard'; Object.assign(s.style, { left: bx + 'px', top: by + 'px' }); document.body.appendChild(s); d.parts.push(s);
+        for (let j = 0; j < 3; j++) { const sh = document.createElement('div'); sh.className = 'iceshard'; Object.assign(sh.style, { left: bx + 'px', top: by + 'px' }); document.body.appendChild(sh); d.parts.push(sh);
           const ox = (j - 1) * B.w * .25, oy = (j % 2 ? -1 : 1) * B.h * .12, ang = Math.atan2(ty + oy - by, tx + ox - bx) * 180 / Math.PI;
-          s.animate([{ transform: `translate(-50%,-50%) rotate(${ang}deg) scale(.4)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(calc(-50% + ${tx + ox - bx}px),calc(-50% + ${ty + oy - by}px)) rotate(${ang}deg) scale(1)`, opacity: 1, offset: .92 }, { transform: `translate(calc(-50% + ${tx + ox - bx}px),calc(-50% + ${ty + oy - by}px)) rotate(${ang}deg) scale(.2)`, opacity: 0 }],
+          sh.animate([{ transform: `translate(-50%,-50%) rotate(${ang}deg) scale(.4)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(calc(-50% + ${tx + ox - bx}px),calc(-50% + ${ty + oy - by}px)) rotate(${ang}deg) scale(1)`, opacity: 1, offset: .92 }, { transform: `translate(calc(-50% + ${tx + ox - bx}px),calc(-50% + ${ty + oy - by}px)) rotate(${ang}deg) scale(.2)`, opacity: 0 }],
             { duration: dspd(T.shards), delay: dspd(k * T.stagger + j * 40), easing: 'cubic-bezier(.5,0,.8,.6)', fill: 'both' }); }
         const dm = raise(m); if (dm) climb(dm, T.climb, k * T.stagger + T.shards * .75);
       });
-      setTimeout(() => sfx('ward'), dspd(T.shards * .8));
+      setTimeout(() => sfx('ward'), dspd(list.length ? T.shards * .8 : T.climb * .5));
       g.animate([{ opacity: .85 }, { opacity: 0 }], { duration: dspd(T.shards + 200), fill: 'forwards' });
-      await sleep(dspd(T.shards * .75 + T.climb + Math.max(0, list.length - 1) * T.stagger + T.hold));
+      await sleep(dspd((list.length ? T.shards * .75 + Math.max(0, list.length - 1) * T.stagger : 0) + T.climb + T.hold));
     },
     async home() {
       if (dashLive !== d) return;
-      // she fades back into the line-up, and her own barrier forms around her
-      if (el.isConnected) el.style.visibility = '';
-      await wait(anim(d0, [{ opacity: 1 }, { opacity: 0 }], T.out, 'ease-in'), T.out);
-      d.raised.forEach(c => { c.style.zIndex = ''; c.style.position = ''; }); d.raised = [];
-      const me = isAlive(u) ? raise(u) : null; if (me) { climb(me, T.self); await sleep(dspd(T.self + 160)); }
-      // the barriers melt away as the real ones land
+      drop();                                                                   // back to her idle as the barriers melt away and the real ones land
       const all = [...domes.values()];
       await Promise.all(all.map(dm => wait(dm.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(3%)' }], { duration: dspd(T.melt), easing: 'ease-in', fill: 'forwards' }), T.melt)));
       dashClear();
@@ -4529,13 +4520,13 @@ async function leap3Begin(u, t, art) {
   await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
   const d = dashLive = { parts: [main, ...ghosts], el, tcard: null };
   el.style.visibility = 'hidden';
-  const T = K.ms, sc1 = B.h / A.h, lx = B.cx - dir * B.w * K.gap - A.cx, ly = B.bottom - A.bottom;
+  const T = K.ms, sc1 = depthSc(A, B, t), smax = bossCapS(A.h, Infinity), lx = B.cx - dir * B.w * K.gap - A.cx, ly = B.bottom - A.bottom;
   const tr = (x, y, s, r = 0, sx = 1, sy = 1) => `translate(${x}px,${y}px) rotate(${r}deg) scale(${s * sx},${s * sy})`;
   const peak = Math.min(A.bottom - A.h * SPR_SCALE, B.bottom - B.h * SPR_SCALE) - vh * K.apex;          // the top of her head at the top of the arc
   const arc = [];                                                                                     // gravity: hangs near the top, then slams down fast
   for (let k = 0; k <= 14; k++) { const p = k / 14, q = Math.pow(p, 1.35), s = 1 + (sc1 - 1) * p, lift = Math.sin(Math.PI * q);
     const headNow = (A.bottom + ly * p) - A.h * SPR_SCALE * s, up = Math.max(0, headNow - peak) * lift;
-    arc.push({ transform: tr(lx * p, ly * p - up, s * (1 + (K.grow - 1) * lift), dir * (-9 + 15 * p)), offset: p }); }
+    arc.push({ transform: tr(lx * p, ly * p - up, Math.min(smax, s * (1 + (K.grow - 1) * lift)), dir * (-9 + 15 * p)), offset: p }); }
   const anim = (node, frames, ms, ease, extra) => node.animate(frames, { duration: dspd(ms), easing: ease, fill: 'forwards', ...(extra || {}) });
   const wait = (a, ms) => Promise.race([a.finished.catch(() => {}), sleep(dspd(ms) + 120)]);
   const LAND = tr(lx, ly, sc1, 0);
@@ -4714,7 +4705,7 @@ async function weave3Begin(u, t, art) {
       sfx('whoosh', 'shock');
       for (let k = 0; k < foes.length; k++) {
         const e = foes[k], f = figs.get(e); if (!f || !f.isConnected) continue;
-        const B = figBox(f), away = Math.sign(B.cx - A.cx) || 1, behind = k % 2 === 0, P = behind ? K.behind : K.front, card = f.closest('.combatant-card'), s = B.h / A.h * P.sc;
+        const B = figBox(f), away = Math.sign(B.cx - A.cx) || 1, behind = k % 2 === 0, P = behind ? K.behind : K.front, card = f.closest('.combatant-card'), s = bossCapS(A.h, depthSc(A, B, e) * P.sc);
         if (behind) lift(card);                                                   // the foe's card goes over her: she is behind it
         setPose(behind ? 'a' : 'b');
         await go(tr(B.cx + away * B.w * P.dx - A.cx, B.bottom - B.h * P.up - A.bottom, s), T.dash, 'cubic-bezier(.4,0,.2,1)');
@@ -4790,40 +4781,54 @@ function immortalEnd(u) {                              // the look fades off her
 
 /* ---- Jean: potions. Skills 2 and 3 share two pictures in her own slot (no close-up): skill2 = rummaging in her bag, skill2b = the toss. A potion arcs to every
    ally the skill reaches (Tonic: the one she picked; Untested Potions: everyone), like the shopkeeper's throw in the Final Stand. If the only one is herself, she just
-   rummages: no toss, no potion. Art: assets/jean/<armoured | broken | skin>/skill2.png + skill2b.png; optional assets/jean/effects/potion.png (else a 🧪). */
+   rummages: no toss, no potion. Art: assets/jean/<armoured | broken | skin>/skill2.png + skill2b.png; optional assets/jean/effects/potion.png (else the game draws one).
+   The potions fly whatever pictures are found (no skill2b = thrown from skill2; neither = from her normal picture); dev mode logs which picture was missing. */
 const TOSS = { jean: { search: 'skill2', toss: 'skill2b', hand: { dx: .22, up: .62 }, ms: { search: 480, wind: 120, fly: 560, stagger: 90, after: 160, self: 560 } } };
-async function tossAssets(u) {
+const POTION_SVG = '<svg viewBox="0 0 40 52"><defs><clipPath id="potclip"><circle cx="20" cy="34" r="13.6"/></clipPath></defs><path d="M16 8h8v11.5a15 15 0 1 1-8 0z" fill="rgba(220,245,255,.22)" stroke="#eafcff" stroke-width="2.2"/><rect x="4" y="30" width="32" height="22" fill="#6dff7a" clip-path="url(#potclip)"/><path d="M8 31q6 3 12 0t12 0" stroke="#c8ffcf" stroke-width="1.6" fill="none" clip-path="url(#potclip)"/><rect x="14.5" y="2" width="11" height="7.5" rx="2" fill="#a8743f"/><ellipse cx="13.6" cy="27" rx="2.2" ry="3.4" fill="#fff" opacity=".75"/></svg>';      // the potion drawn in code (no picture needed, no emoji font needed)
+const artNoted = new Set();
+function artNote(msg) { if (!devMode || artNoted.has(msg)) return; artNoted.add(msg); console.info('[art] ' + msg); try { log('🛠 ' + msg, 'log-dev'); } catch (e) { } }     // dev mode only: say which picture a sequence could not find
+async function tossAssets(u) {            // never null when moves are on: the potions fly even with no pictures at all (she then rummages in her normal picture)
   const K = TOSS[u.id]; if (!K || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
-  for (const f of artChain(u)) { const a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.search}`); if (!a) continue; const b = await findStill(`${ANIM.base}/${u.id}/${f}/${K.toss}`);
-    const sf = stateFolder(u), pot = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/potion`)) || await findStill(`${ANIM.base}/${u.id}/effects/potion`);
-    return { K, a, b, pot }; }
-  return null;
+  let a = null, b = null;
+  for (const f of artChain(u)) { a = await findStill(`${ANIM.base}/${u.id}/${f}/${K.search}`); b = await findStill(`${ANIM.base}/${u.id}/${f}/${K.toss}`); if (a || b) break; }      // both poses from the same look
+  const sf = stateFolder(u), pot = (sf.startsWith('armoured - ') && await findStill(`${ANIM.base}/${u.id}/${sf}/effects/potion`)) || await findStill(`${ANIM.base}/${u.id}/effects/potion`);
+  const where = `assets/${u.id}/${artChain(u).join(' or ')}/`;
+  if (!a) artNote(`${u.name}: no ${K.search} picture found in ${where} (on the manifest?) - she rummages in her normal picture.`);
+  if (!b) artNote(`${u.name}: no ${K.toss} picture found in ${where} (on the manifest?) - the potions are thrown from her ${a ? K.search : 'normal'} picture.`);
+  if (!pot) artNote(`${u.name}: no effects/potion picture - the game draws the potions itself.`);
+  return { K, a, b, pot };
 }
 async function tossBegin(u, art, targets) {
   dashClear();
   const el = figs.get(u); if (!el || !el.isConnected) return null;
   const A = figBox(el); if (!A.w) return null;
-  const K = art.K, T = K.ms, flip = sprFlip(u), dir = flip ? -1 : 1, others = targets.filter(t => t && t !== u && isAlive(t) && figs.get(t) && figs.get(t).isConnected), toss = !!(art.b && others.length);
-  const main = document.createElement('div'); main.className = 'dashfx' + (flip ? ' flip' : '') + (toss ? '' : ''); Object.assign(main.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
-  [['a', art.a], ['b', art.b]].forEach(([k, a]) => { if (!a) return; const im = document.createElement('img'); im.className = k; im.src = a.url; im.draggable = false; main.appendChild(im); }); document.body.appendChild(main);
-  await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
-  const d = dashLive = { parts: [main], el, tcard: null }; el.style.visibility = 'hidden';
+  const K = art.K, T = K.ms, flip = sprFlip(u), dir = flip ? -1 : 1, others = targets.filter(t => t && t !== u && isAlive(t) && figs.get(t) && figs.get(t).isConnected), toss = others.length > 0;
+  let main = el;                                                     // no pictures: she rummages in her own figure
+  const d = dashLive = { parts: [], el, tcard: null };
+  if (art.a || art.b) {
+    main = document.createElement('div'); main.className = 'dashfx' + (flip ? ' flip' : ''); Object.assign(main.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px' });
+    [['a', art.a || art.b], ['b', art.b]].forEach(([k, a]) => { if (!a) return; const im = document.createElement('img'); im.className = k; im.src = a.url; im.draggable = false; main.appendChild(im); }); document.body.appendChild(main);
+    await Promise.all([...main.querySelectorAll('img')].map(im => im.decode ? im.decode().catch(() => {}) : 0));
+    d.parts.push(main); el.style.visibility = 'hidden';
+  }
   return {
     async run() {
       sfx('swing');
       main.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${dir * 2}px,1px)` }, { transform: `translate(${-dir * 2}px,0)` }, { transform: 'translate(0,0)' }], { duration: dspd(T.search * .5), iterations: 2 });      // rummaging
       await sleep(dspd(toss ? T.search : T.self));
       if (!toss) return;
-      main.classList.add('swap'); await sleep(dspd(T.wind)); sfx('whoosh');
+      if (art.b && main !== el) main.classList.add('swap'); await sleep(dspd(T.wind)); sfx('whoosh');
       const hx = A.cx + dir * K.hand.dx * A.h * SPR_SCALE, hy = A.bottom - K.hand.up * A.h * SPR_SCALE, flights = [];
+      const splash = (x, y) => { const r = document.createElement('div'); r.className = 'potsplash'; Object.assign(r.style, { left: x + 'px', top: y + 'px', width: A.h * .22 + 'px', height: A.h * .22 + 'px' }); document.body.appendChild(r); d.parts.push(r);
+        r.animate([{ transform: 'translate(-50%,-50%) scale(.2)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(1.25)', opacity: 0 }], { duration: dspd(420), easing: 'ease-out', fill: 'forwards' }); setTimeout(() => r.remove(), dspd(460)); };
       others.forEach((t, k) => { const f = figs.get(t), C = f.getBoundingClientRect(), x1 = C.left + C.width / 2, y1 = C.top + C.height * .4, pot = document.createElement('div');
-        pot.className = 'tosspot'; pot.innerHTML = art.pot ? `<img src="${art.pot.url}" alt="">` : '🧪'; Object.assign(pot.style, { left: hx + 'px', top: hy + 'px', fontSize: Math.max(26, A.h * .09) + 'px' }); document.body.appendChild(pot); d.parts.push(pot);
+        pot.className = 'tosspot'; pot.innerHTML = art.pot ? `<img src="${art.pot.url}" alt="">` : POTION_SVG; Object.assign(pot.style, { left: hx + 'px', top: hy + 'px', fontSize: Math.max(30, A.h * .11) + 'px' }); document.body.appendChild(pot); d.parts.push(pot);
         const lift = Math.max(90, Math.abs(x1 - hx) * .35), an = pot.animate([{ transform: 'translate(-50%,-50%) rotate(0)', opacity: 1 }, { transform: `translate(calc(-50% + ${(x1 - hx) / 2}px),calc(-50% + ${Math.min(y1, hy) - hy - lift}px)) rotate(${dir * 260}deg)`, offset: .5 }, { transform: `translate(calc(-50% + ${x1 - hx}px),calc(-50% + ${y1 - hy}px)) rotate(${dir * 540}deg)`, opacity: 1 }],
           { duration: dspd(T.fly), delay: dspd(k * T.stagger), easing: 'ease-in-out', fill: 'both' });
-        flights.push(Promise.race([an.finished.catch(() => {}), sleep(dspd(T.fly + k * T.stagger) + 150)]).then(() => { pot.remove(); f.classList.add('fbglow'); setTimeout(() => f.classList.remove('fbglow'), 700); sfx('heal'); })); });
+        flights.push(Promise.race([an.finished.catch(() => {}), sleep(dspd(T.fly + k * T.stagger) + 150)]).then(() => { pot.remove(); splash(x1, y1); f.classList.add('fbglow'); setTimeout(() => f.classList.remove('fbglow'), 700); sfx('heal'); })); });
       await Promise.all(flights); await sleep(dspd(T.after));
     },
-    async home() { if (dashLive !== d) return; main.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(120), fill: 'forwards' }); el.style.visibility = ''; await sleep(dspd(110)); dashClear(); }
+    async home() { if (dashLive !== d) return; if (main !== el) main.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(120), fill: 'forwards' }); el.style.visibility = ''; await sleep(dspd(110)); dashClear(); }
   };
 }
 
@@ -4909,7 +4914,7 @@ async function seqBegin(u, art) {
   // ---- placement (re-run live while tuning) ----
   function place() {
     const k = d.K || K, pc = $('party-cards'), pr = pc ? pc.getBoundingClientRect() : null; fx0 = (pr && pr.width ? pr.left + pr.width / 2 : A.cx) + dir * k.x * vw;
-    S0 = vh * k.h * fbScale(u) / ih; P1y = vh * k.bottom - A.bottom; P1 = `translate(${fx0 - A.cx}px,${P1y}px) scale(${S0})`;
+    const cc = closeCap(vh, k.h, k.bottom, u); S0 = cc.H / ih; P1y = cc.by - A.bottom; P1 = `translate(${fx0 - A.cx}px,${P1y}px) scale(${S0})`;
     const fh = ih * k.fxBox.s, dpr = Math.min(window.devicePixelRatio || 1, 1.25);
     layers.forEach(l => { const ar = l.img.naturalWidth / l.img.naturalHeight || 1, w = fh * ar; l.ar = ar;
       Object.assign(l.cv.style, { height: fh + 'px', width: w + 'px', left: `calc(50% + ${dir * k.fxBox.dx * ih - w / 2}px)`, bottom: (-k.fxBox.dy * ih) + 'px' });
@@ -4964,9 +4969,9 @@ async function seqBegin(u, art) {
     async run(opts = {}) {
       if (layers.length) raf = requestAnimationFrame(frame);
       sfx('whoosh');
-      const k = d.K || K, H = vh * k.h * fbScale(u);
+      const k = d.K || K, { H, by: bY } = closeCap(vh, k.h, k.bottom, u);
       if (di) {          // 1) her idle (feet and all) zooms up out of her slot toward the camera; as it reaches close-up size the legless skill3 fades in over it, bottom edge on the bottom of the screen
-        const ii = di.firstChild, ihI = ii.offsetHeight || A.h * SPR_SCALE, HI = H * (k.idleH || 1.5), top = vh * k.bottom - H + (k.idleTop ?? .1) * H;
+        const ii = di.firstChild, ihI = ii.offsetHeight || A.h * SPR_SCALE, HI = Math.min(H * (k.idleH || 1.5), bossCapH(Infinity)), top = bY - H + (k.idleTop ?? .1) * H;
         const PI = `translate(${fx0 - A.cx}px,${top + HI - A.bottom}px) scale(${HI / ihI})`;
         d0.style.transform = P1;
         const a1 = anim(di, [{ transform: 'none', opacity: 1 }, { opacity: 1, offset: .62 }, { transform: PI, opacity: 0 }], T.zoom, 'cubic-bezier(.3,.6,.35,1)');
@@ -5023,8 +5028,8 @@ async function seqPreview(freeze) {
     const q = await leap3Begin(u, t, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
     await q.run(); await q.follow(); await q.home(); seqDev = null; return;
   }
-  if (WARD3[u.id]) {                     // close-up behind the party + barriers: no barriers are actually given
-    const art = await ward3Assets(u, 2); if (!art) { banner(`No ${u.id} skill3 picture found`); return; }
+  if (WARD3[u.id]) {                     // the cast in her slot + barriers on everyone: no barriers are actually given
+    const art = await ward3Assets(u, 2); if (!art) return;
     const q = await ward3Begin(u, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
     await q.run(); await q.home(); seqDev = null; return;
   }
@@ -5886,7 +5891,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   // A video in the skill slot is a film: it plays alone, full screen, nobody moves, and the hit only happens once it ends (see skillFilm).
   const seq = await seqAssets(u, i);                                                        // skill 3 sprite sequence (skill3 + skill3b + effects): replaces the film once skill3b exists
   const st3 = !seq && s.t === 'dmg' && target ? await stage3Assets(u, i) : null;                // skill 3 close-up with a giant effect on the target (Aneesah): replaces the film once its pictures exist
-  const w3 = !seq && !st3 && s.t === 'barrierAll' ? await ward3Assets(u, i) : null;            // skill 3 close-up behind the party with barriers around them (Aria)
+  const w3 = !seq && !st3 && s.t === 'barrierAll' ? await ward3Assets(u, i) : null;            // skill 3 cast in her slot with barriers around everyone (Aria)
   const lp3 = !seq && !st3 && !w3 && s.t === 'dmg' && target ? await leap3Assets(u, i) : null;   // skill 3 leap-and-slam onto the target (Seria)
   const fl3 = !seq && s.t === 'smoke' ? await flip3Assets(u, i) : null;                       // skill 3 smoke slam and backflip to the rear (Irae)
   const wv3 = !seq && !st3 && !lp3 && s.t === 'dmg' && s.aoe && target ? await weave3Assets(u, i) : null;   // skill 3 weave through the enemy line with charms (Vesper)
@@ -6505,6 +6510,21 @@ async function battle() {
    A defeat in a real run rolls the whole save back to the snapshot taken before the run (FB.snap). In dev mode nothing is saved, so it only reports.
    Art (all optional): bosses are normal boss folders, assets/e_final_l/... and assets/e_final_r/... (armoured/idle, damaged, skill1-3, broken/idle). Draw them facing LEFT like any enemy: the right screen mirrors them. */
 const fbScale = u => FB && FB.active !== false && u.team === 'p' ? FINAL.partyScale : 1;       // the final fight shrinks the party, and with it the skill 2 close-ups
+/* The final fight's size rule: NO hero picture is ever drawn taller than the boss, in any animation (dashes, leaps, weaves, close-ups).
+   BOSS_ROOM = the tallest a hero may get, as a fraction of the (smallest standing) boss's height. Outside the final fight nothing is capped. */
+const BOSS_ROOM = 0.85;
+function bossRoomPx() {          // the tallest a hero's figure BOX may become on screen (px); Infinity outside the final fight
+  if (!FB || FB.active === false) return Infinity;
+  let h = Infinity;
+  enemies.forEach(e => { if (!e.final || e.gone) return; const f = figs.get(e); if (!f || !f.isConnected) return; const b = figBox(f); if (b.h > 0) h = Math.min(h, b.h); });
+  return h * BOSS_ROOM;
+}
+const bossCapS = (Ah, sc) => Math.min(sc, bossRoomPx() / (Ah || 1));                  // a scale for a figure box Ah tall, held under the boss
+const bossCapH = H => Math.min(H, bossRoomPx() * SPR_SCALE);                            // a drawn picture height (px), held under the boss's drawn picture
+const closeCap = (vh, h, bottom, u, tall = 1) => {            // a close-up picture h screen-heights tall with its feet at `bottom`: shrunk under the boss if need be, cropped by the screen edge the same way
+  const H0 = vh * h * fbScale(u), H = Math.min(H0, bossCapH(Infinity) / tall); return { H, by: vh + (vh * bottom - vh) * H / H0 };
+};
+const depthSc = (A, B, t) => bossCapS(A.h, t && t.final ? Math.min(1, B.h / A.h) : B.h / A.h);   // "at the target she is its own size" - except the final boss is GIANT, not closer: she stays her line-up size
 const FINAL = { guestDmg: 600, guestBreaks: 3, dummy: false, floor: 1.35, partyScale: 0.5, bossScale: 1.0, hp: 5460, brk: 550, stunRounds: 1, reviveFrac: 0.5, healFrac: 0.4, secondWindAt: 0.33 };
 const FB_SIDES = ['LEFT FRONT', 'RIGHT FRONT'];
 const FB_SAY = {
@@ -6695,7 +6715,7 @@ async function fbGuest() {              // end of the break: a stranger drops in
   const B = FB.bosses[0]; if (!FINAL.guestDmg || FB.usedRevive || !isAlive(B) || over || FINAL.dummy) return;
   const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = FB.side === 1, X = f => flip ? vw * (1 - f) : vw * f;
   const art = await findAsset(`${ANIM.base}/ui/guest`), castArt = await findAsset(`${ANIM.base}/ui/guest_cast`), okImg = a => a && ['png', 'webp', 'jpg'].includes(a.ext);
-  const H = vh * 1.05, g = document.createElement('div'); g.className = 'fb-guest';
+  const H = bossCapH(vh * 1.05), g = document.createElement('div'); g.className = 'fb-guest';        // (held under the boss's height like every other hero picture)
   g.style.cssText = `height:${H}px;left:${X(.2)}px;top:${vh * 1.04 - H}px;width:0`;      // her picture is centred on this x, whatever its width, so it never gets clipped
   const im = document.createElement('img'); im.src = okImg(art) ? art.url : fbGuestSvg(); im.draggable = false; im.style.cssText = `position:absolute;left:0;top:0;transform:translateX(-50%)${flip ? ' scaleX(-1)' : ''}`; g.appendChild(im);
   document.body.appendChild(g); const away = flip ? vw * .5 : -vw * .5;
