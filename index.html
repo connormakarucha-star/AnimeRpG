@@ -324,6 +324,26 @@ body.calm .seat .sp{animation:none}
 .sr-sky::before{content:'';position:absolute;inset:0;opacity:.85;background-image:radial-gradient(1.6px 1.6px at 49% 22%,#fff,transparent),radial-gradient(1.2px 1.2px at 53% 27%,#cfe0ff,transparent),radial-gradient(1.4px 1.4px at 56% 21%,#fff,transparent),radial-gradient(1.1px 1.1px at 50.5% 33%,#dfe9ff,transparent),radial-gradient(1.5px 1.5px at 55% 35%,#fff,transparent),radial-gradient(1px 1px at 48% 30%,#fff,transparent),radial-gradient(1.2px 1.2px at 57.5% 30%,#fff,transparent)}
 .sr-sky.coast::before{opacity:0}
 .sr-wares{display:none;position:absolute;inset:0;z-index:8;pointer-events:none}
+/* ---- outside, seen from inside (insideWeather): the view behind the windows, and the outside light in the painting tinted to match ---- */
+.ow-view{position:absolute;inset:0;z-index:0;overflow:hidden}
+.ow-win{position:absolute;overflow:hidden;container-type:size}
+.ow-sun{position:absolute;right:-8%;top:-14%;width:58cqh;height:58cqh;border-radius:50%;background:radial-gradient(circle,#fffdf0 0 14%,rgba(255,244,196,.75) 26%,rgba(255,236,170,0) 68%)}
+.ow-cloud{position:absolute;left:0;border-radius:50%;background:radial-gradient(ellipse at 50% 62%,rgba(255,255,255,.96),rgba(255,255,255,.7) 42%,rgba(255,255,255,0) 70%);filter:blur(1.5px);animation:owDrift linear infinite}
+@keyframes owDrift{from{translate:-70cqw 0}to{translate:120cqw 0}}
+.ow-rain i{position:absolute;top:0;width:1.5px;height:26cqh;background:linear-gradient(rgba(220,232,248,0),rgba(220,232,248,.75));rotate:10deg;animation:owRain linear infinite}
+@keyframes owRain{from{translate:0 -30cqh}to{translate:-20cqh 120cqh}}
+.ow-drop{position:absolute;width:var(--s);height:calc(var(--s) * 1.25);border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 35% 32%,rgba(255,255,255,.95),rgba(200,218,240,.5) 40%,rgba(110,130,160,.35) 72%);box-shadow:0 1px 2px rgba(0,0,0,.35),inset 0 -1px 1px rgba(0,0,0,.2);animation:owDrop var(--t) ease-in infinite;animation-delay:var(--dl)}
+@keyframes owDrop{0%{translate:0 0;opacity:0}8%{opacity:.95}55%{translate:0 var(--d1)}70%{translate:0 var(--d1)}100%{translate:0 var(--d2);opacity:0}}
+.ow-snow i{position:absolute;top:0;border-radius:50%;background:#fff;box-shadow:0 0 2px 1px rgba(255,255,255,.75),0 0 1px rgba(90,110,140,.6);animation:owSnow linear infinite}
+@keyframes owSnow{0%{translate:0 -10cqh}50%{translate:6cqw 55cqh}100%{translate:-3cqw 115cqh}}
+.ow-ground{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(rgba(255,255,255,0),rgba(244,248,252,.92) 55%,#fbfdff)}
+.ow-haze{position:absolute;inset:0;background:linear-gradient(rgba(210,220,232,.0),rgba(210,220,232,.35))}
+.ow-flash{position:absolute;inset:0;background:#e9f1ff;opacity:0;pointer-events:none}
+.ow-light{position:absolute;inset:0;z-index:2;pointer-events:none;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.ow-light.tint{mix-blend-mode:color}.ow-light.dim{mix-blend-mode:multiply}.ow-light.lift,.ow-light.flash{mix-blend-mode:screen}
+.ow-light.flash{opacity:0}
+.ow-roomflash{position:absolute;inset:0;z-index:7;pointer-events:none;background:#dfe8ff;mix-blend-mode:screen;opacity:0}
+body.calm .ow-cloud,body.calm .ow-rain i,body.calm .ow-snow i,body.calm .ow-drop{animation-duration:0s;animation:none}
 .sr-assist{position:absolute;z-index:3;pointer-events:none;transform:translateX(-50%);opacity:0;transition:opacity .7s ease}
 .sr-assist.on{opacity:1}
 .sr-assist .sa-flip{height:100%;transform-origin:50% 100%;transition:transform .3s ease}
@@ -2046,7 +2066,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
     <div class="hub-hall">
       <button class="shop-back" onclick="showScene('hub')">◀ Back to Town</button>
       <div class="fsbox shop-room" id="shop-room"><div class="fscov">
-        <div class="sr-sky" id="sr-sky"></div>
+        <div class="ow-view" id="sr-sky"></div>
         <svg class="sr-svg sr-bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" id="sr-bg"></svg>
         <div class="sr-assist" id="sr-assist"><div class="sa-flip"><img id="sr-assist-img" alt="" draggable="false"></div></div>
         <div class="sr-keeper" id="sr-keeper"></div>
@@ -5455,6 +5475,7 @@ document.addEventListener('keydown', e => { if (seqDev && e.key === 'Escape') { 
 document.addEventListener('keydown', e => {
   if (!devMode || !e.altKey) return;
   if (e.code === 'Digit3') { e.preventDefault(); seqPreview(e.shiftKey); return; }
+  if (e.code === 'KeyW' && $('shop').classList.contains('show')) { e.preventDefault(); const L = ['day', 'coast', 'frost']; owForce = L[(L.indexOf(owAct()) + 1) % 3]; shopWxSync(); banner('🛠 Outside: ' + { day: 'Act 1 · sunny', coast: 'Act 2 · rain', frost: 'Act 3 · snow' }[owForce], 'phase'); return; }
   if (e.code === 'KeyK' && FB && !over) { e.preventDefault(); FB.bosses[0].hp = 1; render(); banner('🛠 Boss at 1 HP', 'phase', 'one hit to see the finale'); return; }
   if (e.code === 'KeyE' || e.code === 'Minus' || e.code === 'Equal') {          // Alt+E: entrance idle zoom <-> rise · Alt+- / Alt+= : idle size at the hand-over (then Alt+3 to see it)
     const u0 = (seqDev && seqDev.u) || party.find(m => SEQ3[m.id]); if (!u0) return; e.preventDefault();
@@ -8633,10 +8654,119 @@ const SHOP_ART = {
   bubble:   { right: .155, top: .475 },                                    // his speech bubble, just left of his face
   mike:     { x: .525, y: .6, size: .24 }                                  // Big Mike through the window (only if the picture's window is transparent)
 };
-function shopSky() {
-  const v = typeof townVariant === 'function' ? townVariant() : 'day', el = $('sr-sky'); if (!el) return;
-  if (!MIKE.at.shop) MIKE.at.shop = SHOP_ART.mike;
-  el.className = 'sr-sky' + (v === 'coast' ? ' coast' : ''); el.innerHTML = mikeHtml(v === 'coast' ? 'day' : 'night', 'shop', .5);
+function shopSky() { if (shopWx) shopWx.view(); }       // Big Mike just loaded: redraw the view
+/* ============ OUTSIDE, SEEN FROM INSIDE ============
+   Interiors show the act's weather, like the town does: Act 1 a sunny day, Act 2 soft rain with distant thunder and lightning, Act 3 a white, snowy day.
+   insideWeather(cov, conf, roomUrl) gives an interior:
+     - a VIEW behind the room picture (it shows through transparent windows): sky, sun and clouds / rain and drops on the glass / snow; Big Mike far beyond.
+     - the OUTSIDE LIGHT in the painting (sun through a door or window) tinted to match: the game finds it in the picture itself (the bright, warm pixels
+       inside conf.light, a polygon in fractions of the room), and in Act 2 it flashes with the lightning.
+     - Act 2's sound: rain on the glass, and thunder rolling in a second or two after each flash (generated, follows the Sound switch and SFX volume).
+   conf: { windows: [[x0, y0, x1, y1], ...] the glass, light: [[x, y], ...] where the outside light falls, mike: Big Mike's spot }. Add an interior by giving it a conf.
+   OUTSIDE[act]: the look per act (sky, light tint / dim / lift, how often lightning strikes in ms). */
+const OUTSIDE = {
+  day:   { mode: 'day', sky: 'linear-gradient(#3f8fdc,#7dbcf0 50%,#cfe8fa)', sun: true, clouds: 3 },
+  coast: { mode: 'day', sky: 'linear-gradient(#2e3846,#4f5b6c 50%,#6e7a88)', rain: true, storm: [8000, 20000], mikeOp: .45,
+           light: { tint: '#8a99b0', amt: .88, dim: '#9aa3b0', dimAmt: .6, flash: '#eaf2ff' } },
+  frost: { mode: 'day', sky: 'linear-gradient(#93a3b7,#b9c5d2 55%,#dfe6ee)', snow: true, ground: true, mikeOp: .7,
+           light: { tint: '#d8e6ff', amt: .72, lift: .16 } }
+};
+const INSIDE = {
+  shop: { windows: [[.455, .19, .595, .415]], light: [[.06, .27], [.27, .29], [.52, .52], [.68, .86], [.64, 1.02], [.04, 1.02]] }
+};
+const owMasks = {};
+function owMask(url, poly) {              // where the painting's outside light is: bright + warm pixels inside the polygon (soft), as a mask picture
+  const key = url + '|' + JSON.stringify(poly); if (owMasks[key]) return owMasks[key];
+  return owMasks[key] = new Promise(res => { const im = new Image(); im.onerror = () => res(null); im.onload = () => { try {
+    const W = 400, H = 225, mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return c; }, c = mk(), g = c.getContext('2d', { willReadFrequently: true });
+    const sc = Math.max(1616 / im.naturalWidth, 909 / im.naturalHeight), iw = im.naturalWidth * sc, ih = im.naturalHeight * sc;            // the same framing as the room picture (shopPic)
+    g.drawImage(im, (-8 + (1616 - iw) / 2) / 1600 * W, (-4.5 + (909 - ih) / 2) / 900 * H, iw / 1600 * W, ih / 900 * H);
+    const d = g.getImageData(0, 0, W, H).data, pc = mk(), pg = pc.getContext('2d', { willReadFrequently: true });
+    pg.filter = 'blur(6px)'; pg.fillStyle = '#fff'; pg.beginPath(); poly.forEach(([x, y], i) => i ? pg.lineTo(x * W, y * H) : pg.moveTo(x * W, y * H)); pg.closePath(); pg.fill();
+    const P = pg.getImageData(0, 0, W, H).data, out = g.createImageData(W, H), ss = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    for (let i = 0; i < W * H; i++) { const o = i * 4, r = d[o] / 255, gg = d[o + 1] / 255, b = d[o + 2] / 255, lum = .2126 * r + .7152 * gg + .0722 * b;
+      out.data[o] = out.data[o + 1] = out.data[o + 2] = 255; out.data[o + 3] = Math.round(255 * ss(.22, .55, lum) * ss(.03, .18, r - b) * (P[o + 3] / 255)); }
+    g.putImageData(out, 0, 0); res(c.toDataURL('image/png'));
+  } catch (e) { res(null); } }; im.src = url; });
+}
+let rainSnd = null;
+function rainStart() {                    // rain on the glass: a soft hiss and drops ticking at random
+  if (rainSnd || sndMuted || !ac()) return;
+  const hiss = actx.createBufferSource(), hp = actx.createBiquadFilter(), lp = actx.createBiquadFilter(), g = actx.createGain();
+  hiss.buffer = anoise; hiss.loop = true; hp.type = 'highpass'; hp.frequency.value = 900; lp.type = 'lowpass'; lp.frequency.value = 5200; g.gain.value = 0;
+  hiss.connect(hp); hp.connect(lp); lp.connect(g); g.connect(asfx); hiss.start(); g.gain.setTargetAtTime(.03, actx.currentTime, .8);
+  rainSnd = { hiss, g, tick: 0 };
+  const tick = () => { if (!rainSnd || sndMuted) return; try { const t = actx.currentTime, s = actx.createBufferSource(), bp = actx.createBiquadFilter(), gg = actx.createGain();
+      s.buffer = anoise; bp.type = 'bandpass'; bp.frequency.value = 1800 + Math.random() * 4200; bp.Q.value = 5 + Math.random() * 9;
+      gg.gain.setValueAtTime(0, t); gg.gain.linearRampToValueAtTime(.04 + Math.random() * .09, t + .002); gg.gain.exponentialRampToValueAtTime(.0004, t + .03 + Math.random() * .06);
+      s.connect(bp); bp.connect(gg); gg.connect(asfx); s.start(t, Math.random() * .85, .12); } catch (e) { }
+    rainSnd.tick = setTimeout(tick, 35 + Math.random() * 180); };
+  tick();
+}
+function rainStop() { if (!rainSnd) return; const r = rainSnd; rainSnd = null; clearTimeout(r.tick); try { r.g.gain.setTargetAtTime(0, actx.currentTime, .35); setTimeout(() => { try { r.hiss.stop(); } catch (e) { } }, 2000); } catch (e) { } }
+function thunder(k = 1) {                 // a distant roll: low noise that swells, rumbles and rolls away
+  if (sndMuted || !ac()) return;
+  try { const t = actx.currentTime, s = actx.createBufferSource(), lp = actx.createBiquadFilter(), g = actx.createGain(), lfo = actx.createOscillator(), lg = actx.createGain(), dur = 4 + Math.random() * 3, pk = .5 * k;
+    s.buffer = anoise; s.loop = true; lp.type = 'lowpass'; lp.Q.value = .7; lp.frequency.setValueAtTime(420, t); lp.frequency.exponentialRampToValueAtTime(110, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(pk * .55, t + .3); g.gain.linearRampToValueAtTime(pk * .3, t + .7); g.gain.linearRampToValueAtTime(pk, t + 1.2); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    lfo.frequency.value = 2 + Math.random() * 3; lg.gain.value = pk * .3; lfo.connect(lg); lg.connect(g.gain);
+    s.connect(lp); lp.connect(g); g.connect(asfx); s.start(t); lfo.start(t); s.stop(t + dur + .2); lfo.stop(t + dur + .2); } catch (e) { }
+}
+let owForce = null;               // dev: Alt+W in an interior cycles its outside through the acts (day, rain, snow)
+const owAct = () => owForce || townVariant();
+function insideWeather(cov, conf, roomUrl) {
+  const act = owAct(), O = OUTSIDE[act] || OUTSIDE.day, view = cov.querySelector('.ow-view'), ctl = { act, on: false, timer: 0 };
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  ctl.view = () => {
+    if (conf.mike && !MIKE.at[conf.key]) MIKE.at[conf.key] = conf.mike;
+    let h = mikeHtml(O.mode, conf.key, .5); if (h && O.mikeOp) h = h.replace('<div class="tv-mike">', `<div class="tv-mike" style="opacity:${O.mikeOp}">`);
+    const win = (conf.windows || []).map(([x0, y0, x1, y1]) => { let w = '';
+      if (O.sun) w += '<div class="ow-sun"></div>';
+      for (let i = 0; i < (O.clouds || 0); i++) w += `<div class="ow-cloud" style="top:${rnd(2, 55).toFixed(0)}%;width:${rnd(55, 90).toFixed(0)}cqw;height:${rnd(22, 34).toFixed(0)}cqh;animation-duration:${rnd(70, 120).toFixed(0)}s;animation-delay:-${rnd(0, 110).toFixed(0)}s"></div>`;
+      if (O.rain) { w += '<div class="ow-haze"></div><div class="ow-rain">' + Array.from({ length: 64 }, () => `<i style="left:${rnd(-5, 125).toFixed(1)}%;animation-duration:${rnd(.42, .75).toFixed(2)}s;animation-delay:-${rnd(0, 1).toFixed(2)}s;opacity:${rnd(.45, .95).toFixed(2)}"></i>`).join('') + '</div>';
+        w += Array.from({ length: 16 }, () => { const sz = rnd(2.4, 4.8); return `<span class="ow-drop" style="left:${rnd(2, 95).toFixed(1)}%;top:${rnd(-5, 60).toFixed(1)}%;--s:${sz.toFixed(2)}cqw;--t:${rnd(4, 9).toFixed(1)}s;--dl:-${rnd(0, 9).toFixed(1)}s;--d1:${rnd(4, 18).toFixed(0)}cqh;--d2:${rnd(30, 70).toFixed(0)}cqh"></span>`; }).join(''); }
+      if (O.snow) w += '<div class="ow-snow">' + Array.from({ length: 56 }, () => { const z = rnd(2.5, 5.5); return `<i style="left:${rnd(-10, 105).toFixed(1)}%;width:${z.toFixed(1)}px;height:${z.toFixed(1)}px;animation-duration:${rnd(5, 10).toFixed(1)}s;animation-delay:-${rnd(0, 10).toFixed(1)}s;opacity:${rnd(.6, 1).toFixed(2)}"></i>`; }).join('') + '</div>';
+      if (O.ground) w += '<div class="ow-ground"></div>';
+      w += '<div class="ow-flash"></div>';
+      return `<div class="ow-win" style="left:${x0 * 100}%;top:${y0 * 100}%;width:${(x1 - x0) * 100}%;height:${(y1 - y0) * 100}%">${w}</div>`; }).join('');
+    view.style.background = O.sky; view.innerHTML = h + win;
+  };
+  ctl.view();
+  // the outside light in the painting
+  cov.querySelectorAll(':scope > .ow-light, :scope > .ow-roomflash').forEach(x => x.remove());
+  const L = O.light, layers = [];
+  if (L && conf.light && roomUrl) {
+    const add = (cls, bg, op) => { const d = document.createElement('div'); d.className = 'ow-light ' + cls; d.style.background = bg; if (op != null) d.style.opacity = op; cov.insertBefore(d, view.nextSibling ? view.nextSibling.nextSibling : null); layers.push(d); return d; };
+    if (L.tint) add('tint', L.tint, L.amt ?? .8);
+    if (L.dim) add('dim', L.dim, L.dimAmt ?? .5);
+    if (L.lift) add('lift', '#ffffff', L.lift);
+    if (L.flash) ctl.flashLayer = add('flash', L.flash, null);
+    layers.forEach(d => d.style.visibility = 'hidden');
+    owMask(roomUrl, conf.light).then(m => { if (!m) { layers.forEach(d => d.remove()); return; } layers.forEach(d => { d.style.webkitMaskImage = d.style.maskImage = `url("${m}")`; d.style.visibility = ''; }); });
+  }
+  if (O.storm) { const rf = document.createElement('div'); rf.className = 'ow-roomflash'; cov.appendChild(rf); ctl.roomFlash = rf; }
+  const strike = () => {           // lightning: the window, the outside light and (faintly) the room flash; thunder follows
+    if (!ctl.on) return;
+    if (FX.flash) {
+      const k = [{ opacity: 0 }, { opacity: 1, offset: .07 }, { opacity: .2, offset: .18 }, { opacity: .9, offset: .3 }, { opacity: 0 }], o = { duration: 700, easing: 'ease-out' };
+      view.querySelectorAll('.ow-flash').forEach(f => f.animate(k, o));
+      if (ctl.flashLayer) ctl.flashLayer.animate(k, o);
+      if (ctl.roomFlash) ctl.roomFlash.animate(k.map(f => ({ ...f, opacity: f.opacity * .12 })), o);
+    }
+    setTimeout(() => { if (ctl.on) thunder(rnd(.55, 1)); }, rnd(900, 2600));
+    ctl.timer = setTimeout(strike, rnd(O.storm[0], O.storm[1]));
+  };
+  ctl.start = () => { if (ctl.on) return; ctl.on = true; if (O.rain) rainStart(); if (O.storm) ctl.timer = setTimeout(strike, rnd(2500, 6000)); };
+  ctl.stop = () => { if (!ctl.on) return; ctl.on = false; clearTimeout(ctl.timer); if (O.rain) rainStop(); };
+  ctl.remove = () => { ctl.stop(); layers.forEach(d => d.remove()); if (ctl.roomFlash) ctl.roomFlash.remove(); };
+  return ctl;
+}
+let shopWx = null, shopRoomUrl = '';
+function shopWxSync() {          // the shop's weather runs while the shop is on screen, and follows the act
+  const on = $('shop').classList.contains('show') && $('shop-room').classList.contains('has-art') && !document.hidden;
+  if (on && (!shopWx || shopWx.act !== owAct())) { if (shopWx) shopWx.remove(); shopWx = insideWeather($('shop-room').querySelector('.fscov'), { key: 'shop', ...INSIDE.shop, mike: SHOP_ART.mike }, shopRoomUrl); }
+  if (shopWx) { if (on) shopWx.start(); else shopWx.stop(); }
+  if (shopWx && shopWx.on && (OUTSIDE[shopWx.act] || {}).rain) { if (sndMuted) rainStop(); else rainStart(); }      // follows the Sound switch
 }
 function buildShopRoom() {
   if (shopBuilt) return; shopBuilt = true;
@@ -8648,7 +8778,7 @@ function buildShopRoom() {
       const k = SHOP_ART.keeper, kp = $('sr-keeper').style, rm = $('shop-room').style;
       kp.setProperty('--kx', k.x); kp.setProperty('--kb', k.bottom); kp.setProperty('--kh', k.h); kp.setProperty('--kcut', ((k.bottom - k.cut) / k.h).toFixed(4));
       rm.setProperty('--bR', SHOP_ART.bubble.right); rm.setProperty('--bT', SHOP_ART.bubble.top);
-      shopSky(); if ($('shop').classList.contains('show')) renderShop();
+      shopRoomUrl = room.url; shopWxSync(); if ($('shop').classList.contains('show')) renderShop();
     }
     if (pic(ctr)) $('sr-fg').innerHTML = shopPic(ctr.url);
   });
@@ -8674,7 +8804,7 @@ function renderShop() {
     <div class="who"><strong>${r.name}</strong> <span class="rar rar-${r.rarity}">${r.rarity}</span><br>${r.desc}</div>
     <div class="btns"><button onclick="buyRelic('${id}')" ${game.gold < r.price ? 'disabled' : ''}>Buy · ${r.price}g</button></div></div>`; }).join('')
     : '<div class="dim sold-out">Sold out</div>';
-  if ($('shop-room').classList.contains('has-art')) { $('sr-wares').innerHTML = shopWaresHtml(); if (srSelKey) { const el = $('sr-wares').querySelector(`[data-k="${srSelKey}"]`); if (el) el.classList.add('sel'); } assistStart(); }
+  if ($('shop-room').classList.contains('has-art')) { shopWxSync(); $('sr-wares').innerHTML = shopWaresHtml(); if (srSelKey) { const el = $('sr-wares').querySelector(`[data-k="${srSelKey}"]`); if (el) el.classList.add('sel'); } assistStart(); }
   $('shop-supplies').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}</div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('');
   $('btn-relic-bag').textContent = `🎒 Relic Inventory (${game.relics.length})`;
   if (shopMsg) { shopSay(shopMsg, true); shopMsg = ''; }
@@ -8777,6 +8907,7 @@ function shopSay(text, ok) {
   shopNextAt = Date.now() + ms + SHOP_SAY.quietMin + Math.random() * (SHOP_SAY.quietMax - SHOP_SAY.quietMin);
 }
 setInterval(() => {
+  try { shopWxSync(); } catch (e) { }
   const sh = $('shop'); if (!sh || !sh.classList.contains('show') || document.hidden || Date.now() < shopNextAt) return;
   const b = $('sr-bubble'), pool = SHOP_GREETS.filter(g => g !== b.textContent); shopSay(pool[Math.floor(Math.random() * pool.length)], false);
 }, 1000);
