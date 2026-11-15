@@ -99,6 +99,7 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .vfx-aura span{animation-duration:1s;animation-iteration-count:1}
 .proj{position:absolute;z-index:14;pointer-events:none;width:max(26px,3.2vw);height:max(26px,3.2vw);transform:translate(-50%,-50%);filter:drop-shadow(0 0 10px var(--glow,#fff))}
 .proj svg,.vfx span svg{width:100%;height:100%;display:block;overflow:visible}
+.proj.knife{width:max(34px,4.4vw);height:max(34px,4.4vw);filter:drop-shadow(0 0 7px var(--glow,#fff)) drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 .bolt{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:14;animation:boltFlash .42s both}
 .bolt polyline{fill:none;stroke-linecap:round;stroke-linejoin:round}
 @keyframes boltFlash{0%{opacity:0}8%,40%,70%{opacity:1}25%,55%{opacity:.25}100%{opacity:0}}
@@ -473,6 +474,7 @@ body.dev #btn-quick{display:inline-block}
 .float.ward{color:#4fc3f7}
 .float.dot{color:#ce93d8;font-size:1.05rem}
 .float.tag{font-size:.95rem;color:#ffb74d;animation-duration:1.3s}
+#order .oq{position:relative}#order .oq.rush::after{content:'⚡';position:absolute;top:24px;right:-7px;font-size:16px;line-height:1;filter:drop-shadow(0 0 4px #ffd54f);pointer-events:none}.rushq{color:#ffd54f}
 .float.crit{font-size:2rem;color:#ffd54f;text-shadow:0 0 12px #ff9800,0 2px 3px #000;animation-name:floatcrit;animation-duration:1.2s}
 @keyframes floatup{0%{opacity:0;transform:translate(-50%,-20%) scale(.6)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-190%) scale(1)}}
 @keyframes floatcrit{0%{opacity:0;transform:translate(-50%,-20%) scale(.5)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.55)}30%{transform:translate(-50%,-85%) scale(1.25)}100%{opacity:0;transform:translate(-50%,-230%) scale(1.1)}}
@@ -703,6 +705,98 @@ body.calm #travel{display:none!important}
 #guide-body .g b{color:#ffd9a0}
 #guide-body .g.good{border-color:#2d5a3a}#guide-body .g.bad{border-color:#6b2f3a}
 #guide-body .dim{font-size:.9em}
+#guide-body .g.book-hint{border-color:#7a5a2a;background:#1e1810}
+/* ---- the guide book (town) ---- */
+#gbook{display:none;position:fixed;inset:0;z-index:186;background:radial-gradient(ellipse at 40% 45%,rgba(40,30,60,.72),rgba(4,3,10,.9));align-items:center;justify-content:center;overflow:hidden;
+  --bh:min(80vh,46vw);font-family:Georgia,'Palatino Linotype','Book Antiqua',serif}
+#gbook.show{display:flex;animation:sumIn .3s ease-out}
+.gb-stage{display:flex;align-items:center;justify-content:center;gap:calc(var(--bh)*.02);transform:translateX(calc(var(--bh)*-.04))}
+.gb-angel{position:relative;flex:none;height:calc(var(--bh)*1.14);display:flex;align-items:flex-end;justify-content:center;margin-right:calc(var(--bh)*-.06);z-index:2;pointer-events:none}
+.gb-pic{height:calc(var(--bh)*1.1);display:flex;align-items:flex-end}
+.gb-pic img{height:100%;width:auto;display:block;filter:drop-shadow(0 0 18px rgba(255,240,200,.35)) drop-shadow(0 8px 14px rgba(0,0,0,.45))}
+.gb-pic.flip img{transform:scaleX(-1)}
+.gb-pic svg{height:100%;width:auto;display:block}
+.gb-bob{animation:gbBob 4.6s ease-in-out infinite;will-change:transform}
+@keyframes gbBob{0%,100%{transform:translateY(calc(var(--bh)*-.035))}50%{transform:translateY(calc(var(--bh)*.01))}}
+.gb-shadow{position:absolute;left:50%;bottom:calc(var(--bh)*-.035);width:58%;height:calc(var(--bh)*.05);transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),rgba(0,0,0,0) 70%);animation:gbShadow 4.6s ease-in-out infinite}
+@keyframes gbShadow{0%,100%{transform:translateX(-50%) scale(.72);opacity:.45}50%{transform:translateX(-50%) scale(1);opacity:.8}}
+.gb-glow{position:absolute;left:50%;top:42%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,236,190,.28),rgba(255,220,160,.08) 45%,rgba(255,220,160,0) 68%);animation:gbGlow 4.6s ease-in-out infinite}
+@keyframes gbGlow{0%,100%{opacity:.75}50%{opacity:1}}
+.gb-motes i{position:absolute;bottom:12%;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;background:#fff6d8;box-shadow:0 0 8px 2px rgba(255,230,160,.7);opacity:0;animation:gbMote var(--t) linear infinite;animation-delay:var(--d)}
+@keyframes gbMote{0%{transform:translate(0,0);opacity:0}15%{opacity:.9}100%{transform:translate(var(--dx),calc(var(--bh)*-.8));opacity:0}}
+body.calm .gb-bob,body.calm .gb-shadow,body.calm .gb-glow,body.calm .gb-motes{animation:none}
+.gb-say{position:absolute;top:2%;left:58%;max-width:calc(var(--bh)*.42);background:#fbf3df;color:#3b2a1a;border-radius:14px;padding:.55em .9em;font-size:clamp(11px,calc(var(--bh)*.022),18px);font-style:italic;box-shadow:0 4px 18px rgba(0,0,0,.4);opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s;z-index:4}
+.gb-say::after{content:'';position:absolute;left:14%;bottom:-9px;border:9px solid transparent;border-top-color:#fbf3df;border-bottom:0}
+.gb-say.on{opacity:1;transform:none}
+.gb-book{position:relative;flex:none;height:var(--bh);width:calc(var(--bh)*1.46);z-index:1}
+.gb-cover{position:absolute;inset:0;border-radius:calc(var(--bh)*.022);padding:calc(var(--bh)*.026);box-sizing:border-box;
+  background:radial-gradient(ellipse at 30% 20%,#6b3a26,#3c1f14 60%,#24120b);box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 0 0 2px #8a5a2c,inset 0 0 0 calc(var(--bh)*.012) #3c1f14,inset 0 0 0 calc(var(--bh)*.014) rgba(214,170,90,.55)}
+.gb-pages{position:relative;width:100%;height:100%;border-radius:6px;perspective:2400px;color:#3b2a1a;
+  background:radial-gradient(ellipse at 25% 30%,rgba(255,255,255,.35),rgba(255,255,255,0) 60%),radial-gradient(ellipse at 75% 70%,rgba(160,120,60,.12),rgba(0,0,0,0) 60%),
+  linear-gradient(90deg,#d8c39a 0,#efe2c3 2.2%,#f6ecd4 10%,#f3e7cc 44%,#dcc8a0 48.6%,#a88c62 50%,#dcc8a0 51.4%,#f3e7cc 56%,#f6ecd4 90%,#efe2c3 97.8%,#d8c39a 100%);
+  box-shadow:inset 3px 0 0 #c9b388,inset -3px 0 0 #c9b388,inset 0 -3px 0 #cbb68c}
+.gb-view{position:absolute;left:5%;right:5%;top:7%;bottom:9%;overflow:hidden}
+.gb-flow{height:100%;column-fill:auto;font-size:clamp(10px,calc(var(--bh)*.0205),17px);line-height:1.55;transition:transform .01s}
+.gb-flow h4{margin:.9em 0 .35em;color:#7a1f2b;font-size:1.12em;letter-spacing:.02em;break-after:avoid;border-bottom:1px solid rgba(122,31,43,.25);padding-bottom:.15em}
+.gb-flow .g{background:rgba(120,80,30,.06);border:1px solid rgba(110,70,30,.2);border-radius:6px;padding:.45em .7em;margin:.4em 0;break-inside:avoid}
+.gb-flow .g b{color:#6b2a12}
+.gb-flow .g.good{border-left:3px solid #4f7a3a}.gb-flow .g.bad{border-left:3px solid #9a3a3a}
+.gb-flow a{color:#2a4f8a}
+.gb-chap{text-align:center;margin:0 0 .4em;break-after:avoid;break-inside:avoid}
+.gb-chap b{display:block;font-size:2.1em;color:#5a1820;font-variant:small-caps;letter-spacing:.06em;line-height:1.1}
+.gb-chap span{display:block;font-size:1.6em}
+.gb-chap i{display:block;color:#a07a40;font-style:normal;letter-spacing:.5em;margin-top:.2em}
+.gb-num{position:absolute;bottom:3%;font-size:clamp(9px,calc(var(--bh)*.018),14px);color:#8a6a40;font-style:italic}
+.gb-num.l{left:7%}.gb-num.r{right:7%}
+.gb-turn{position:absolute;bottom:2%;width:calc(var(--bh)*.07);height:calc(var(--bh)*.07);border-radius:50%;border:1px solid rgba(120,80,40,.35);background:rgba(255,248,230,.6);color:#6b3a1a;font-size:calc(var(--bh)*.045);line-height:1;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif}
+.gb-turn.prev{left:15%}.gb-turn.next{right:15%}
+.gb-turn:hover:not(:disabled){background:#fff6e0;box-shadow:0 0 12px rgba(200,150,60,.5)}
+.gb-turn:disabled{opacity:.25;cursor:default}
+.gb-leaf{position:absolute;top:0;bottom:0;width:50%;transform-style:preserve-3d;pointer-events:none;z-index:5;
+  background:linear-gradient(90deg,#e8d9b8,#f6ecd4 20%,#f3e7cc 80%,#dcc8a0);box-shadow:0 0 20px rgba(0,0,0,.25)}
+.gb-leaf.r{left:50%;transform-origin:left center}.gb-leaf.l{left:0;transform-origin:right center}
+.gb-tabs{position:absolute;left:calc(100% - calc(var(--bh)*.02));top:8%;display:flex;flex-direction:column;gap:calc(var(--bh)*.012);z-index:0}
+.gb-tabs button{position:relative;display:flex;align-items:center;gap:.45em;width:calc(var(--bh)*.2);min-height:calc(var(--bh)*.1);padding:.35em .6em .35em calc(var(--bh)*.03);border:0;border-radius:0 10px 10px 0;
+  font-family:inherit;font-size:clamp(10px,calc(var(--bh)*.019),16px);font-weight:bold;line-height:1.15;text-align:left;color:#fff8ea;cursor:pointer;background:var(--tc);box-shadow:inset 6px 0 8px rgba(0,0,0,.3),2px 3px 6px rgba(0,0,0,.35);transform:translateX(calc(var(--bh)*-.03));transition:transform .18s,filter .18s}
+.gb-tabs button span{font-size:1.3em}
+.gb-tabs button:hover{transform:translateX(calc(var(--bh)*-.012));filter:brightness(1.12)}
+.gb-tabs button.sel{transform:translateX(0);filter:brightness(1.18);box-shadow:inset 3px 0 6px rgba(0,0,0,.2),3px 4px 10px rgba(0,0,0,.45),0 0 14px rgba(255,220,150,.35)}
+.gb-close{position:absolute;top:calc(var(--bh)*-.03);right:calc(var(--bh)*-.03);width:calc(var(--bh)*.075);height:calc(var(--bh)*.075);border-radius:50%;padding:0;border:2px solid #d9a85a;background:radial-gradient(circle at 35% 35%,#b0303a,#6a1018);color:#ffe9c0;font-size:calc(var(--bh)*.032);cursor:pointer;z-index:6;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+.gb-close:hover{filter:brightness(1.2)}
+.mike{position:absolute;z-index:0;pointer-events:none;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.mike.nomask{-webkit-mask-image:linear-gradient(#000 0 28%,transparent 52%);mask-image:linear-gradient(#000 0 28%,transparent 52%)}
+.mike img{position:absolute;object-fit:contain;display:block}
+.tv-mike{position:absolute;inset:0;pointer-events:none}.tv-mike img{position:absolute;object-fit:contain}
+#finale{position:fixed;inset:0;z-index:400;overflow:hidden;cursor:pointer}
+#finale .fn-stage{position:absolute;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%);overflow:hidden;background:#0b0f18 center/cover no-repeat}
+#finale .fn-svg,#finale .fn-svg svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#finale .fn-dim{position:absolute;inset:0;background:radial-gradient(ellipse at var(--mx) var(--my),rgba(20,40,80,.0),rgba(6,8,24,.62) 55%);opacity:0;z-index:1;pointer-events:none}
+#finale .fn-cannon{position:absolute;z-index:2;transform-origin:50% 100%}
+#finale .fn-cannon img,#finale .fn-cannon svg{width:100%;height:100%;display:block}
+#finale .fn-fx{position:absolute;inset:0;z-index:3;pointer-events:none}
+#finale .fn-black,#finale .fn-white{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:9}
+#finale .fn-black{background:#000}#finale .fn-white{background:#fff}
+.fn-p{position:absolute;left:0;top:0;border-radius:50%;pointer-events:none}
+.fn-dust{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(205,190,170,.85),rgba(160,140,120,.5) 45%,rgba(120,100,90,0) 70%);transform:translate(-50%,-50%);pointer-events:none}
+.fn-rock{position:absolute;width:var(--s);height:var(--s);background:#5a4a40;border-radius:30%;pointer-events:none}
+.fn-orb{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff 0 18%,#c8f6ff 30%,rgba(110,220,255,.75) 48%,rgba(80,170,255,0) 70%);mix-blend-mode:screen;pointer-events:none}
+.fn-rays{position:absolute;border-radius:50%;background:repeating-conic-gradient(rgba(190,245,255,.55) 0 4deg,rgba(190,245,255,0) 4deg 20deg);-webkit-mask-image:radial-gradient(circle,#000 10%,transparent 70%);mask-image:radial-gradient(circle,#000 10%,transparent 70%);mix-blend-mode:screen;pointer-events:none}
+.fn-ring{position:absolute;border-radius:50%;border:3px solid rgba(190,245,255,.85);box-shadow:0 0 18px rgba(140,230,255,.8),inset 0 0 18px rgba(140,230,255,.6);pointer-events:none}
+.fn-beam{position:absolute;transform-origin:0 50%;pointer-events:none;z-index:4}
+.fn-beam i{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);border-radius:999px}
+.fn-beam .g{height:190%;background:rgba(110,220,255,.55);filter:blur(18px)}
+.fn-beam .b{height:100%;background:linear-gradient(180deg,rgba(120,220,255,0),rgba(120,220,255,.9) 22%,#e8fbff 42%,#fff 50%,#e8fbff 58%,rgba(120,220,255,.9) 78%,rgba(120,220,255,0))}
+.fn-beam .c{height:28%;background:#fff;box-shadow:0 0 22px #fff}
+.fn-crack{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.fn-edge{position:absolute;height:6px;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 20%,#dff8ff 50%,#fff 80%,rgba(255,255,255,0));box-shadow:0 0 18px 6px rgba(160,235,255,.9);pointer-events:none;z-index:5}
+body.fn-on #battle-scene .control-panel,body.fn-on #order,body.fn-on #fb-hud,body.fn-on #battle-scene .column-header,body.fn-on #battle-scene .stats-info,body.fn-on #menu-btn,body.fn-on #battle-scene .intent{opacity:0!important;transition:opacity .4s;pointer-events:none}
+.town-guide{position:absolute;top:11%;left:1.4%;z-index:12;pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:.2em;padding:.35em;background:rgba(10,8,20,.55);border:1px solid rgba(255,225,160,.45);border-radius:16px;cursor:pointer;color:#ffe9b8;transition:transform .15s,background .15s}
+.town-guide:hover{transform:translateY(-2px);background:rgba(60,40,30,.75)}
+.tg-ic{display:flex;align-items:center;justify-content:center;width:clamp(42px,4.6cqw,84px);height:clamp(42px,4.6cqw,84px);font-size:clamp(26px,3cqw,54px);line-height:1}
+.tg-ic img{width:100%;height:100%;object-fit:contain;display:block}
+.tg-lbl{font-size:clamp(10px,.95cqw,15px);font-weight:bold}
+.town-guide.new{animation:tgPulse 1.8s ease-in-out infinite}
+@keyframes tgPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,215,130,.55)}50%{box-shadow:0 0 0 10px rgba(255,215,130,0)}}
 /* ===== Town (hub), Dorm (gear) and the shop's side panel ===== */
 #town-map{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 #town-map .hub-title,#town-map .hub-sub,#hub-msg,#hub-back{grid-column:1/-1}
@@ -1656,11 +1750,30 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
     <div id="guide-body"></div>
   </div>
 </div>
+<div id="gbook" onclick="if (event.target === this) closeBook()">
+  <div class="gb-stage">
+    <div class="gb-angel" id="gb-angel"><div class="gb-glow"></div><div class="gb-bob"><div class="gb-pic" id="gb-pic"></div></div><div class="gb-shadow"></div><div class="gb-motes" id="gb-motes"></div><div class="gb-say" id="gb-say"></div></div>
+    <div class="gb-book">
+      <div class="gb-cover">
+        <div class="gb-pages" id="gb-pages">
+          <div class="gb-view"><div class="gb-flow" id="gb-flow"></div></div>
+          <span class="gb-num l" id="gb-num-l"></span><span class="gb-num r" id="gb-num-r"></span>
+          <button class="gb-turn prev" id="gb-prev" onclick="bookTurn(-1)" title="Previous page">‹</button><button class="gb-turn next" id="gb-next" onclick="bookTurn(1)" title="Next page">›</button>
+        </div>
+      </div>
+      <div class="gb-tabs" id="gb-tabs"></div>
+      <button class="gb-close" onclick="closeBook()" title="Close (Esc)">✕</button>
+    </div>
+  </div>
+</div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="mike-night" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values=".8"/><feGaussianBlur stdDeviation=".5"/></filter>
+  <filter id="mike-day" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values=".06" result="a"/><feComponentTransfer in="a" result="b"><feFuncR type="linear" slope=".45" intercept=".55"/><feFuncG type="linear" slope=".45" intercept=".55"/><feFuncB type="linear" slope=".45" intercept=".57"/></feComponentTransfer><feTurbulence type="fractalNoise" baseFrequency=".007 .022" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="b" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G" result="c"/><feGaussianBlur in="c" stdDeviation="1.1"/></filter>
   <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b3200a"/><stop offset=".35" stop-color="#ff5a1a"/><stop offset=".75" stop-color="#ffb52e"/><stop offset="1" stop-color="#fff2a0"/></linearGradient>
   <linearGradient id="gFlameCore" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a1f"/><stop offset="1" stop-color="#fffbe0"/></linearGradient>
   <linearGradient id="gDark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a72b4"/><stop offset="1" stop-color="#2a1d3d"/></linearGradient>
 <linearGradient id="gIce" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#bdefff"/><stop offset="1" stop-color="#4fb0ff"/></linearGradient>
+  <linearGradient id="gKnife" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f6f9fd"/><stop offset=".5" stop-color="#c8d2de"/><stop offset="1" stop-color="#7a8696"/></linearGradient>
   <linearGradient id="gBlood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5a6a"/><stop offset=".6" stop-color="#c1001f"/><stop offset="1" stop-color="#6a0010"/></linearGradient>
   <radialGradient id="gPoison" cx=".38" cy=".35" r=".75"><stop offset="0" stop-color="#f1ffc4" stop-opacity=".95"/><stop offset=".55" stop-color="#8be21b" stop-opacity=".85"/><stop offset="1" stop-color="#2f8a0b" stop-opacity=".9"/></radialGradient>
 </defs></svg>
@@ -1720,6 +1833,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
       </div>
       <div class="fs-ui" id="town-ui">
         <div class="fs-chip gold-chip" id="hub-gold"></div>
+        <button class="town-guide" id="btn-guide" onclick="openBook()" title="The guide book"><span class="tg-ic" id="tg-ic">📖</span><span class="tg-lbl">Guide</span></button>
         <div id="hub-msg"></div>
         <button id="hub-back" onclick="location.reload()">Back to Title</button>
       </div>
@@ -2111,7 +2225,7 @@ const HEROES = [
   // move:'front' = after the strike the unit steps to the front of her line (the line-up goes back to normal after the fight). stealthMul / stealthCrit only apply while stealthed.
   { id:'irae', weak:['fire'], resist:['bleed'], evasive:1.5, name:'Irae', tag:'IRAE', hp:100, brk:40, frontMod:-0.1, spd:12, locked:true, elems:['bleed'],
     unlockMsg:'Irae has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[
-    { n:'Knife Throw', t:'dmg', r:'ranged', d:[8,10], brk:6, chip:true, cd:0 },
+    { n:'Knife Throw', t:'dmg', r:'ranged', d:[8,10], brk:6, chip:true, cd:0, proj:'knife' },        // proj: what flies when the skill has no element (a bleeding throw flies a knife too)
     { n:'Backstab',    t:'dmg', r:'melee',  d:[17,20], brk:14, chip:true, cd:1, move:'front', stealthMul:1.7, stealthCrit:40, resetOnKO:true },   // a kill or an armour break resets its cooldown
     { n:'Smoke Bomb',  t:'smoke', dur:3, cd:3, free:true } ] },       // a free action: she throws it and still acts this turn
   // Jean, the plague doctor: the only true healer, at a cost. Tonic heals, but the same amount comes back as POISON (ignores armour): borrowed health.
@@ -3166,7 +3280,8 @@ function punch(t, k) {
 
 /* ============ GUIDE ============ */
 let guideTab = 'options';
-const GUIDE_TABS = [['options', '⚙️ Options'], ['controls', '🎮 Controls'], ['basics', '📖 Basics'], ['elements', 'Elements'], ['armour', 'Armour'], ['status', 'Buffs & debuffs'], ['traits', 'Traits & relics'], ['credits', '🏷️ Credits']];
+const GUIDE_TABS = [['options', '⚙️ Options'], ['controls', '🎮 Controls'], ['credits', '🏷️ Credits']];          // the ⚙️ menu: settings only. The rules of the game live in the guide book in town (BOOK_TABS)
+const BOOK_TABS = [['basics', '📜', 'Basics'], ['elements', '🔥', 'Elements'], ['armour', '🛡️', 'Armour'], ['status', '✨', 'Buffs &amp; Debuffs'], ['traits', '💎', 'Traits &amp; Relics']];
 function openGuide(tab) { if (tab) guideTab = tab; renderGuide(); $('guide').classList.add('show'); }
 function refreshOptions() { const gd = document.getElementById('guide'); if (guideTab === 'options' && gd && gd.classList.contains('show')) { const gb = document.getElementById('guide-body'), y = gb.scrollTop; renderGuide(); gb.scrollTop = y; } }
 function saveFx() { try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} }
@@ -3201,8 +3316,101 @@ const OPTIONS = [
 ];
 function closeGuide() { $('guide').classList.remove('show'); }
 function guideTabTo(t) { guideTab = t; renderGuide(); }
+
+/* ============ THE GUIDE BOOK (town) ============
+   The town's book icon (assets/ui/guide.png, else a 📖) opens an open book with a tab for each section down its right edge; the text runs on from page to page.
+   Beside it hovers the guiding angel: assets/guidingangel/guide.png (drawn standing, any width, facing right towards the book). She is shown about 1.1x the book's height and bobs as she floats.
+   ANGEL.flip mirrors her if she faces the wrong way; ANGEL.say = what she says when the book opens. */
+const ANGEL = { flip: false, say: ['Lost, hero? Let me light the way.', 'Every answer is written here.', 'Read closely. The road is unkind.', 'Ask, and the pages will answer.'] };
+const BOOK_TINT = ['#8a2a2a', '#b0552a', '#2f5a8a', '#5a3a8a', '#2f6a4a'];
+const ANGEL_SVG = `<svg viewBox="0 0 300 600"><defs><linearGradient id="agRobe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#cfc4e6"/></linearGradient><radialGradient id="agWing" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#c9d3ef"/></radialGradient></defs>
+  <path d="M150 175C60 110 4 190 16 345C58 290 92 268 140 256Z" fill="url(#agWing)" opacity=".92"/><path d="M150 175C240 110 296 190 284 345C242 290 208 268 160 256Z" fill="url(#agWing)" opacity=".92"/>
+  <path d="M110 100C104 64 196 64 190 100C196 140 206 176 200 200C182 160 118 160 100 200C94 176 104 140 110 100Z" fill="#f0cf78"/>
+  <path d="M150 150C110 160 100 220 106 300C96 420 80 520 70 594L230 594C220 520 204 420 194 300C200 220 190 160 150 150Z" fill="url(#agRobe)"/>
+  <circle cx="150" cy="112" r="36" fill="#ffe8d4"/><ellipse cx="150" cy="56" rx="44" ry="11" fill="none" stroke="#ffe08a" stroke-width="6"/>
+  <text x="150" y="430" text-anchor="middle" font-size="17" fill="#7a6a9a" font-family="Georgia">GUIDING ANGEL</text></svg>`;
+let bookTab = 'basics', bookSpread = 0, bookPages = 2, bookBusy = false, angelArt;
+const BOOK_SEEN = 'animeRpgBookSeen';
+function bookSeen() { try { return !!localStorage.getItem(BOOK_SEEN); } catch (e) { return true; } }
+const bookOpen = () => $('gbook').classList.contains('show');
+function openBook(tab) {
+  if (tab) bookTab = tab;
+  try { localStorage.setItem(BOOK_SEEN, '1'); } catch (e) { }
+  const b = $('btn-guide'); if (b) b.classList.remove('new');
+  $('gbook').classList.add('show'); sfx('click');
+  bookAngel(); bookFit(); renderBook(true);
+  const say = $('gb-say'); say.textContent = ANGEL.say[Math.floor(Math.random() * ANGEL.say.length)]; say.classList.remove('on');
+  clearTimeout(say._a); clearTimeout(say._b); say._a = setTimeout(() => say.classList.add('on'), 380); say._b = setTimeout(() => say.classList.remove('on'), 3900);
+}
+function closeBook() { $('gbook').classList.remove('show'); }
+async function bookAngel() {
+  const pic = $('gb-pic');
+  if (angelArt === undefined) angelArt = await findStill(`${ANIM.base}/guidingangel/guide`);
+  pic.classList.toggle('flip', !!ANGEL.flip);
+  if (angelArt) { if (!pic.querySelector('img')) { const im = new Image(); im.alt = ''; im.draggable = false; im.onload = () => { if (bookOpen()) { bookFit(); bookLayout(); bookShow(); } }; im.src = angelArt.url; pic.innerHTML = ''; pic.appendChild(im); } }
+  else if (!pic.firstChild) pic.innerHTML = ANGEL_SVG;
+  const m = $('gb-motes'); if (!m.firstChild) m.innerHTML = Array.from({ length: 12 }, () => `<i style="--x:${(12 + Math.random() * 76).toFixed(0)}%;--s:${(3 + Math.random() * 4).toFixed(1)}px;--t:${(5 + Math.random() * 5).toFixed(1)}s;--d:${(-Math.random() * 9).toFixed(1)}s;--dx:${(-40 + Math.random() * 80).toFixed(0)}px"></i>`).join('');
+}
+function bookFit() {          // the book is as big as the screen allows; a wide angel shrinks the whole spread so nothing runs off the sides
+  const g = $('gbook'), vw = innerWidth, vh = innerHeight; let bh = Math.min(vh * .8, vw * .46);
+  g.style.setProperty('--bh', bh + 'px');
+  const st = g.querySelector('.gb-stage'), w = st.scrollWidth + bh * .22;          // + the tabs sticking out on the right
+  if (w > vw * .97) { bh *= vw * .97 / w; g.style.setProperty('--bh', bh + 'px'); }
+}
+function renderBook(reset) {
+  $('gb-tabs').innerHTML = BOOK_TABS.map(([k, ic, n], i) => `<button class="${k === bookTab ? 'sel' : ''}" style="--tc:${BOOK_TINT[i % BOOK_TINT.length]}" onclick="bookTabTo('${k}')"><span>${ic}</span>${n}</button>`).join('');
+  const t = BOOK_TABS.find(x => x[0] === bookTab) || BOOK_TABS[0];
+  $('gb-flow').innerHTML = `<div class="gb-chap"><span>${t[1]}</span><b>${t[2]}</b><i>❦</i></div>` + guideHtml(t[0]);
+  if (reset) bookSpread = 0;
+  bookLayout(); bookShow();
+}
+function bookLayout() {        // the two pages are two columns; the rest of the text runs on in more columns to the right, one per page
+  const flow = $('gb-flow'), view = flow.parentElement, w = view.clientWidth, gap = Math.round(w * .118);
+  flow.style.columnCount = 2; flow.style.columnGap = gap + 'px'; flow.style.width = w + 'px'; flow.style.transform = '';
+  const step = (w - gap) / 2 + gap, r0 = flow.getBoundingClientRect(); let right = r0.left;
+  [...flow.children].forEach(c => { const rs = c.getClientRects(); for (const r of rs) right = Math.max(right, r.right); });
+  bookPages = Math.max(1, Math.ceil((right - r0.left + 1) / step));
+  flow.dataset.step = step;
+}
+function bookShow() {
+  const flow = $('gb-flow'), step = +flow.dataset.step || 0, spreads = Math.ceil(bookPages / 2);
+  bookSpread = Math.max(0, Math.min(spreads - 1, bookSpread));
+  flow.style.transform = `translateX(${-bookSpread * 2 * step}px)`;
+  const l = bookSpread * 2 + 1; $('gb-num-l').textContent = l; $('gb-num-r').textContent = l + 1 <= bookPages ? l + 1 : '';
+  $('gb-prev').disabled = bookSpread <= 0; $('gb-next').disabled = bookSpread >= spreads - 1;
+}
+function bookLeaf(dir, delay = 0) {          // one sheet turning over the spine
+  const pages = $('gb-pages'), lf = document.createElement('div'); lf.className = 'gb-leaf ' + (dir > 0 ? 'r' : 'l'); pages.appendChild(lf);
+  const a = lf.animate([{ transform: 'rotateY(0deg)', filter: 'brightness(1)' }, { transform: `rotateY(${dir > 0 ? -90 : 90}deg)`, filter: 'brightness(.78)', offset: .5 }, { transform: `rotateY(${dir > 0 ? -180 : 180}deg)`, filter: 'brightness(1)' }],
+    { duration: FX.calm ? 1 : 520, delay, easing: 'cubic-bezier(.45,.05,.4,1)', fill: 'both' });
+  a.finished.catch(() => {}).then(() => lf.remove());
+  return a;
+}
+async function bookTurn(d) {
+  if (bookBusy) return; const spreads = Math.ceil(bookPages / 2), to = Math.max(0, Math.min(spreads - 1, bookSpread + d)); if (to === bookSpread) return;
+  bookBusy = true; sfx('swing'); bookLeaf(d); await sleep(FX.calm ? 0 : 260); bookSpread = to; bookShow(); await sleep(FX.calm ? 0 : 280); bookBusy = false;
+}
+async function bookTabTo(k) {
+  if (bookBusy || k === bookTab) return;
+  const d = BOOK_TABS.findIndex(t => t[0] === k) > BOOK_TABS.findIndex(t => t[0] === bookTab) ? 1 : -1;
+  bookBusy = true; sfx('swing'); bookLeaf(d); bookLeaf(d, 90); await sleep(FX.calm ? 0 : 300); bookTab = k; renderBook(true); await sleep(FX.calm ? 0 : 320); bookBusy = false;
+}
+function bookTabStep(d) { const i = BOOK_TABS.findIndex(t => t[0] === bookTab); bookTabTo(BOOK_TABS[(i + d + BOOK_TABS.length) % BOOK_TABS.length][0]); }
+document.addEventListener('keydown', e => { if (!bookOpen() || e.altKey || e.ctrlKey) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); bookTurn(1); } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); bookTurn(-1); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); bookTabStep(1); } else if (e.key === 'ArrowUp') { e.preventDefault(); bookTabStep(-1); } });
+addEventListener('resize', () => { if (bookOpen()) { bookFit(); bookLayout(); bookShow(); } });
+async function townGuideIcon() {        // the book icon in town: your picture if there is one, and a gentle pulse until the book has been opened once
+  const b = $('btn-guide'); if (!b) return; b.classList.toggle('new', !bookSeen());
+  if (b.dataset.art) return; b.dataset.art = '1';
+  const a = await findStill(`${ANIM.base}/ui/guide`); if (a) $('tg-ic').innerHTML = `<img src="${a.url}" alt="" draggable="false">`;
+}
 function renderGuide() {
+  if (!GUIDE_TABS.some(t => t[0] === guideTab)) guideTab = 'options';
   $('guide-tabs').innerHTML = GUIDE_TABS.map(([k, n]) => `<button class="${k === guideTab ? 'sel' : ''}" onclick="guideTabTo('${k}')">${n}</button>`).join('');
+  $('guide-body').innerHTML = (guideTab === 'options' ? `<div class="g book-hint">📖 Looking for the rules? The <b>guiding angel</b> keeps the guide book in town (the book icon, top left).</div>` : '') + guideHtml(guideTab); $('guide-body').scrollTop = 0;
+}
+function guideHtml(guideTab) {          // one section's text (used by the ⚙️ menu and by the guide book)
   const g = (t, c = '') => `<div class="g ${c}">${t}</div>`, pb = Math.round(POS.bonus * 100);
   let h = '';
   if (guideTab === 'options') h = `<h4>Options</h4>` + OPTIONS.map(([k, n, d, on, lab]) => `<div class="optrow"><div><b>${n}</b><small>${d}</small></div><button id="opt-${k}" class="optsw ${on() ? 'on' : 'off'}" onclick="optToggle('${k}')">${lab ? lab() : on() ? 'ON' : 'OFF'}</button></div>`).join('') + `<div class="optrow"><div><b>🔊 Effects volume</b><small>Hits, spells, clicks and the blizzard wind. Needs Sound on.</small></div><input type="range" id="opt-sfx" min="0" max="100" step="5" value="${Math.round(FX.sfx * 100)}" oninput="setSfx(this.value / 100)" onchange="sfx('hit')" style="width:120px"></div><div class="optrow"><div><b>🎵 Music volume</b><small>Quiet ambient music that changes with the area. Needs Sound on.</small></div><input type="range" id="opt-vol" min="0" max="100" step="5" value="${Math.round(FX.vol * 100)}" oninput="setVol(this.value / 100)" style="width:120px"></div>` + `<div class="g">Options are remembered on this device. The other tabs are the game guide.</div>`;
@@ -3217,7 +3425,7 @@ function renderGuide() {
     <h4>Critical hits</h4>
     ${g(`Every attack has a ${CRIT.base}% base chance to crit for <b>+${CRIT.bonus}</b> damage. Hitting an enemy's <b>weakness</b> (⚠️) adds <b>+${CRIT.weak}%</b> crit chance; hitting something that <b>resists</b> the element (🛡️) takes off ${Math.abs(CRIT.resist)}%. The preview under an enemy shows the exact chance.`)}
     <h4>Barriers</h4>
-    ${g(`A barrier soaks damage <b>and</b> protects armour from that hit's break damage. It disappears at the end of the round. <b>Barriers never stack</b>: if a unit already has one, only the bigger of the two counts.`)}
+    ${g(`A barrier soaks damage <b>and</b> protects armour from that hit's break damage. It disappears at the end of the round. <b>Barriers never stack</b>: if a unit already has one, only the bigger of the two counts. An enemy about to cast a barrier <b>hurries</b> (⚡ +5 speed that round), so expect it to act early.`)}
     <h4>Guard, taunt and cleanse</h4>
     ${g(`🤝 <b>Guard</b> (Seria's Shield Wall): until the guard's next turn, every attack aimed at the chosen ally hits the guard instead (enemies still show their real target), and she raises a barrier that also lasts until her next turn. 🎯 <b>Taunt</b> (Defiant Slam): works even through armour. The target's next attack must be aimed at the taunter. ✨ <b>Cleanse</b> (Aria's Ward and Aegis): removes random ailments (burn, bleed, poison, frozen, shocked) from the target.`, 'good')}
     <h4>Poison, potions and immortality</h4>
@@ -3260,7 +3468,7 @@ function renderGuide() {
       ${g(`<b>Evasion</b> is a real chance to avoid a direct attack (it stacks with Evasive and never works on area attacks). <b>Sadistic</b> and <b>Masochistic</b> count burn, bleed, poison, freeze and shock only.`, 'good')}
       <h4>Relics</h4>${g(`Each hero wears up to ${RELIC.slots} relics, set from the Dorm (locked during a quest). Relics come from the Shop (restocked after every run) and boss drops. Rarity: common, rare, epic. Tidelands bosses and road finds drop <b>Tier II</b> relics (Iron Band II…, about 1.5× as strong) and a few coast-only relics; they are never sold in the Shop.`)}`;
   }
-  $('guide-body').innerHTML = h; $('guide-body').scrollTop = 0;
+  return h;
 }
 
 /* ============ SOUND ============ */
@@ -3665,6 +3873,77 @@ const manifestReady = (async () => {
   if (/[?&]probe\b/.test(location.search)) return;
   try { const r = await fetch(`${ANIM.base}/manifest.json`, { cache: 'no-cache' }); if (!r.ok) return; const j = await r.json(); if (j && j.files && typeof j.files === 'object') manifest = j.files; } catch (e) {}
 })();
+/* ============ BIG MIKE ============
+   A vast celestial body far out in space, faintly visible in every sky. Picture: assets/ui/bigmike.png (transparent background). Until it exists, nothing is drawn.
+   - Code-drawn scenes put him right behind their scenery (between the sky gradient and the hills / roofs).
+   - Painted backgrounds (town, battle_*, camp_*, beach, volleyball) get him through a SKY MASK the game works out from the picture: the smooth area connected to the top edge.
+     So he sits behind mountains, roofs and clouds, and a picture with no real sky (an indoor scene) gets no Big Mike. He goes where the sky is deepest near MIKE.x.
+   - Night skies: faint and see-through. Day skies (bright painted skies, the overcast coast, the beach): washed out to white/grey and warped by the air, like the moon at noon.
+   Knobs: x = preferred centre across the scene (0-1), size = diameter as a fraction of the scene height, op = opacity at night / by day.
+          MIKE.at[scene] overrides any of x, y, size, mode ('day' | 'night') or off: true. Scenes: town, battle, camp, beach, vb, gate, event, travel, finale. */
+const MIKE = { on: true, x: .7, size: .5, op: { night: .34, day: .24 }, at: {} };
+let mikeArt = null;
+manifestReady.then(async () => { mikeArt = await findStill(`${ANIM.base}/ui/bigmike`); if (mikeArt) mikeRefresh(); });
+function mikeRefresh() {         // he just became available: redraw the skies already on screen
+  try { townArt = null; if ($('hub').classList.contains('show')) loadTownBg(); const cb = $('camp-bg'); if (cb) cb.dataset.theme = ''; const gb = $('gate-bg'); if (gb) gb.innerHTML = '';
+    ['beach-art', 'vb-art'].forEach(id => { const e = $(id); if (e) e.innerHTML = ''; }); } catch (e) { }
+}
+const mikeMode = (hex) => { const h = (hex || '#000').replace('#', ''), n = parseInt(h.length === 3 ? h.replace(/./g, c => c + c) : h, 16); return (.2126 * (n >> 16 & 255) + .7152 * (n >> 8 & 255) + .0722 * (n & 255)) > 128 ? 'day' : 'night'; };
+function mikeSvg(W, H, horizon, mode, scene) {       // inside a code-drawn SVG, right after its sky
+  if (!MIKE.on || !mikeArt) return ''; const k = MIKE.at[scene] || {}; if (k.off) return '';
+  const md = k.mode || mode, d = Math.min(H * (k.size || MIKE.size), horizon * .95), cx = (k.x ?? MIKE.x) * W, cy = (k.y ?? .42) * horizon, r = n => Math.round(n * 10) / 10;
+  return `<image class="mike-svg" href="${mikeArt.url}" x="${r(cx - d / 2)}" y="${r(cy - d / 2)}" width="${r(d)}" height="${r(d)}" preserveAspectRatio="xMidYMid meet" opacity="${MIKE.op[md]}" filter="url(#mike-${md})"/>`;
+}
+function mikeHtml(mode, scene, horizon = .5) {       // in a 16:9 HTML scene (travel)
+  if (!MIKE.on || !mikeArt) return ''; const k = MIKE.at[scene] || {}; if (k.off) return '';
+  const md = k.mode || mode, d = Math.min(k.size || MIKE.size, horizon * .95), cx = k.x ?? MIKE.x, cy = (k.y ?? .42) * horizon, w = d * 9 / 16;
+  return `<div class="tv-mike"><img src="${mikeArt.url}" alt="" style="left:${((cx - w / 2) * 100).toFixed(2)}%;top:${((cy - d / 2) * 100).toFixed(2)}%;width:${(w * 100).toFixed(2)}%;height:${(d * 100).toFixed(2)}%;opacity:${MIKE.op[md]};filter:url(#mike-${md})"></div>`;
+}
+const skyCache = {};
+function skyMap(url) { return skyCache[url] || (skyCache[url] = new Promise(res => { const im = new Image(); im.onload = () => { try { res(skyRead(im)); } catch (e) { res(null); } }; im.onerror = () => res(null); im.src = url; })); }
+function skyRead(im) {          // find the sky in a painted picture: flood from the top edge through smooth colour, stopping at edges (hills, roofs, clouds)
+  const iw = im.naturalWidth, ih = im.naturalHeight, W = 160, H = Math.max(30, Math.round(W * ih / iw));
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d', { willReadFrequently: true }); g.imageSmoothingQuality = 'high'; g.drawImage(im, 0, 0, W, H);
+  let px; try { px = g.getImageData(0, 0, W, H).data; } catch (e) { return { ok: true, mode: 'night', mask: null, iw, ih, cx: MIKE.x, cy: .2, d: MIKE.size * .8 }; }       // can't read it (opened from disk): no mask, he fades out towards the horizon
+  const N = W * H, yMax = Math.floor(H * .92); let sky = new Uint8Array(N); const q = [];
+  const dist = (i, j) => { const a = i * 4, b = j * 4; return Math.abs(px[a] - px[b]) + Math.abs(px[a + 1] - px[b + 1]) + Math.abs(px[a + 2] - px[b + 2]); };
+  for (let x = 0; x < W; x++) { sky[x] = 1; q.push(x); }
+  while (q.length) { const i = q.pop(), x = i % W, y = (i / W) | 0;
+    for (let k = 0; k < 4; k++) { const nx = x + (k === 0) - (k === 1), ny = y + (k === 2) - (k === 3); if (nx < 0 || nx >= W || ny < 0 || ny > yMax) continue; const j = ny * W + nx; if (!sky[j] && dist(i, j) <= 26) { sky[j] = 1; q.push(j); } } }
+  const grow = (src, all) => { const o = new Uint8Array(N); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { let v = all ? 1 : 0;      // all=false: dilate (any sky neighbour), all=true: erode (every neighbour sky)
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = Math.min(W - 1, Math.max(0, x + dx)), yy = Math.min(H - 1, Math.max(0, y + dy)), n = src[yy * W + xx]; if (all && !n) v = 0; if (!all && n) v = 1; }
+      o[y * W + x] = v; } return o; };
+  sky = grow(grow(sky, false), true);          // close: fills star-sized holes
+  const depth = new Float32Array(W); let lum = 0, cnt = 0;
+  for (let x = 0; x < W; x++) { let y = 0; while (y < H && sky[y * W + x]) y++; depth[x] = y / H; }
+  for (let i = 0; i < N; i++) if (sky[i]) { const a = i * 4; lum += .2126 * px[a] + .7152 * px[a + 1] + .0722 * px[a + 2]; cnt++; }
+  const d0 = MIKE.size, rCols = Math.max(2, Math.round(d0 * H / 2)), med = cx => { const a = []; for (let x = Math.round(cx * W) - rCols; x <= Math.round(cx * W) + rCols; x++) if (x >= 0 && x < W) a.push(depth[x]); a.sort((p, q2) => p - q2); return a.length ? a[a.length >> 1] : 0; };
+  let best = 0, bx = MIKE.x; for (const cx of [MIKE.x, 1 - MIKE.x, .5, .85, .15]) { const m = med(cx); if (m > best + .04) { best = m; bx = cx; } }
+  if (best < .2) return { ok: false };                // no real sky in this picture
+  const out = document.createElement('canvas'); out.width = W; out.height = H; const og = out.getContext('2d'), id = og.createImageData(W, H);
+  for (let i = 0; i < N; i++) { id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = 255; id.data[i * 4 + 3] = sky[i] ? 255 : 0; }
+  og.putImageData(id, 0, 0); const soft = document.createElement('canvas'); soft.width = W; soft.height = H; const sg = soft.getContext('2d'); sg.filter = 'blur(.8px)'; sg.drawImage(out, 0, 0);
+  return { ok: true, mode: cnt && lum / cnt > 140 ? 'day' : 'night', mask: soft.toDataURL('image/png'), iw, ih, cx: bx, cy: Math.min(best * .45, .26), d: Math.min(d0, best * .95) };
+}
+const mikeRO = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(es => es.forEach(e => { const b = e.target.querySelector(':scope > .mike'); if (b) mikeFit(b, e.target); })) : { observe() { } };
+function mikeFit(box, host) {          // the layer covers exactly where the painted picture is drawn (background-size: cover)
+  const W = host.clientWidth, H = host.clientHeight; if (!W || !H) return;
+  const iw = +box.dataset.iw, ih = +box.dataset.ih, sc = Math.max(W / iw, H / ih), w = iw * sc, h = ih * sc;
+  const pos = (getComputedStyle(host).backgroundPosition || '50% 50%').split(',')[0].trim().split(/\s+/).map(v => v.endsWith('%') ? parseFloat(v) / 100 : .5);
+  Object.assign(box.style, { left: (W - w) * pos[0] + 'px', top: (H - h) * (pos[1] ?? .5) + 'px', width: w + 'px', height: h + 'px' });
+}
+async function mikePaint(host, url, scene) {       // a painted background (CSS cover) on `host`: lay him into its sky
+  if (!host) return; host.querySelectorAll(':scope > .mike').forEach(x => x.remove());
+  if (!MIKE.on || !mikeArt || !url) return; const k = MIKE.at[scene] || {}; if (k.off) return;
+  const sky = await skyMap(url); if (!sky || !sky.ok || !host.isConnected || !(host.style.backgroundImage || '').includes(url)) return;
+  host.querySelectorAll(':scope > .mike').forEach(x => x.remove());
+  const md = k.mode || sky.mode, d = k.size || sky.d, cx = k.x ?? sky.cx, cy = k.y ?? sky.cy, wf = d * sky.ih / sky.iw;
+  const box = document.createElement('div'); box.className = 'mike ' + md + (sky.mask ? '' : ' nomask'); box.dataset.iw = sky.iw; box.dataset.ih = sky.ih;
+  if (sky.mask) { box.style.webkitMaskImage = `url("${sky.mask}")`; box.style.maskImage = `url("${sky.mask}")`; }
+  const im = document.createElement('img'); im.src = mikeArt.url; im.alt = ''; im.draggable = false;
+  Object.assign(im.style, { left: ((cx - wf / 2) * 100) + '%', top: ((cy - d / 2) * 100) + '%', width: (wf * 100) + '%', height: (d * 100) + '%', opacity: MIKE.op[md], filter: `url(#mike-${md})` });
+  box.appendChild(im); host.prepend(box); mikeFit(box, host); mikeRO.observe(host);
+}
 /* ---- skins ----
    A skin is an alternative look for a hero's ARMOURED state: assets/<hero id>/armoured - <name>/  (idle, damaged, skill1-3, same file names as armoured/).
    The Dorm lets you switch; the game then reads that folder instead of armoured/ while the hero is not broken. Anything missing from the skin folder falls back to armoured/.
@@ -3838,6 +4117,23 @@ function spriteFor(u) {
   }
   return null;
 }
+/* A picture the manifest lists but the browser can't load (not on the site at that exact path, or not a real picture) used to leave the figure blank.
+   Now the game tries the same file in its other formats (an idle.webp that won't load falls back to idle.png), else shows the name box; dev mode logs the exact file. */
+const artFailed = new Set();
+async function artFail(a) {
+  if (!a || artFailed.has(a.url)) return; artFailed.add(a.url);
+  const path = a.url.slice(0, -(a.ext.length + 1));
+  let alt = null; for (const ext of ANIM.exts) if (ext !== a.ext && await probe(`${path}.${ext}`, ext)) { alt = { url: `${path}.${ext}`, ext }; break; }
+  artNote(`Couldn't load ${a.url}. The manifest lists it, but the site didn't send a picture the browser can read (missing on GitHub, a different name or case there, or not really a .${a.ext}).` + (alt ? ` Using ${alt.url} instead.` : ''));
+  Object.keys(animCache).forEach(k => { if (animCache[k] === a) animCache[k] = alt; });
+  render();
+}
+function artBlankCheck(m, a) {           // dev mode: a picture that loads but has nothing visible in it (an empty or hidden layer exported)
+  if (artFailed.has('blank|' + a.url)) return; artFailed.add('blank|' + a.url);
+  try { const c = document.createElement('canvas'); c.width = c.height = 48; const g = c.getContext('2d'); g.drawImage(m, 0, 0, 48, 48); const d = g.getImageData(0, 0, 48, 48).data;
+    let vis = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 8) vis++;
+    if (!vis) artNote(`${a.url} loaded, but it's completely transparent: nothing to show (an empty or hidden layer exported?).`); } catch (e) { }
+}
 function figureEl(u, team) {
   let el = figs.get(u);
   if (!el) { el = document.createElement('div'); el.className = 'figure'; el.innerHTML = `<div class="ph">${u.tag}</div>`; figs.set(u, el); el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's'); }
@@ -3848,6 +4144,7 @@ function figureEl(u, team) {
       const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
       m.className = 'spr'; m.src = a.url; m.draggable = false;
       if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; }
+      m.onerror = () => artFail(a); if (!vid && devMode) m.onload = () => artBlankCheck(m, a);
       markLive(m, a); el.prepend(m);
     }
     el.classList.toggle('has-art', !!a);
@@ -3930,6 +4227,7 @@ const SVGD = {
   shard: () => `<svg viewBox="0 0 16 40"><polygon points="8,0 15,14 11,40 5,40 1,14" fill="url(#gIce)" stroke="#eaffff" stroke-width=".9"/><polyline points="8,3 8,34" stroke="rgba(255,255,255,.75)" stroke-width="1"/><polyline points="8,14 15,14 11,40" fill="rgba(80,170,255,.25)" stroke="none"/></svg>`,
   spark: () => `<svg viewBox="0 0 20 20"><path d="M10 0l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill="#fff" style="filter:drop-shadow(0 0 3px #7fd8ff)"/></svg>`,
   bubble: () => `<svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="url(#gPoison)" stroke="#d9ff94" stroke-width="1"/><ellipse cx="6.8" cy="6.4" rx="2.6" ry="1.6" fill="rgba(255,255,255,.85)" transform="rotate(-30 6.8 6.4)"/></svg>`,
+  knife: () => `<svg viewBox="0 0 20 64"><path d="M10 1C13 10 15 21 15 33L5 33C5 21 7 10 10 1z" fill="url(#gKnife)" stroke="#262b34" stroke-width="1.1"/><path d="M10 4L10 31" stroke="#fff" stroke-width=".9" opacity=".75"/><rect x="2" y="33" width="16" height="4.2" rx="1.6" fill="#6b5a3e" stroke="#262b34" stroke-width="1"/><rect x="7" y="37" width="6" height="18" rx="2" fill="#2b2230" stroke="#14101a" stroke-width="1"/><path d="M7 41L13 43M7 45L13 47M7 49L13 51" stroke="#a3283a" stroke-width="1.5"/><circle cx="10" cy="58" r="2.7" fill="#6b5a3e" stroke="#262b34" stroke-width="1"/></svg>`,
   drop: () => `<svg viewBox="0 0 16 24"><path d="M8 0C8 7 15 11 15 17a7 7 0 0 1-14 0C1 11 8 7 8 0z" fill="url(#gBlood)"/><ellipse cx="5.4" cy="15" rx="1.5" ry="2.6" fill="rgba(255,255,255,.45)" transform="rotate(12 5.4 15)"/></svg>`,
   arc: () => {                                            // a little crackle of electricity: a jagged main line plus a side branch, glowing
     const pts = []; let x = rnd(14, 26); for (let k = 0; k <= 7; k++) { pts.push([x, k * 5.4 + 1]); x = Math.max(4, Math.min(36, x + rnd(-11, 11))); }
@@ -3946,6 +4244,7 @@ const VFX = {
   poison:  { n: 7, cls: 'bub',   mk: () => SVGD.bubble(), w: 1.3, h: 1.3, glow: '#9be21b' },
   bleed:   { n: 6, cls: 'fall',  mk: () => SVGD.drop(),   w: 1.0, h: 1.5, glow: '#ff3b52' },
   slash:   { n: 0, cls: 'slash' },
+  knife:   { n: 0, cls: 'burst', mk: () => SVGD.knife(), w: 1, h: 1, glow: '#e8f0ff' },        // thrown knives (only flies, never bursts)
   smoke:   { n: 6, cls: 'rise', mk: () => SVGD.smoke(), w: 2.6, h: 2, glow: '#aaa' },
   snow:    { n: 12, cls: 'fall', mk: () => SVGD.snow(), w: .8, h: .8, glow: '#8fe3ff' },
   shatter: { n: 7, cls: 'burst', mk: () => SVGD.piece(),  w: 1.5, h: 1.5, glow: '#8fe3ff' },
@@ -4113,11 +4412,12 @@ async function projectile(u, t, kind) {            // ranged elemental skills: a
     host.appendChild(svg); await sleep(230); setTimeout(() => svg.remove(), 120); return;
   }
   const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI + 90;                 // flames / shards point where they're going
-  const p = document.createElement('div'); p.className = 'proj'; p.innerHTML = v.mk(0); p.style.left = x1 + 'px'; p.style.top = y1 + 'px'; p.style.setProperty('--glow', v.glow);
-  if (kind === 'poison' || kind === 'bleed') p.style.transform = 'translate(-50%,-50%)';
+  const knife = kind === 'bleed' || kind === 'knife';                              // every ranged bleed attack (and Irae's Knife Throw) throws a spinning knife; the blood comes on impact
+  const p = document.createElement('div'); p.className = 'proj' + (knife ? ' knife' : ''); p.innerHTML = knife ? SVGD.knife() : v.mk(0); p.style.left = x1 + 'px'; p.style.top = y1 + 'px'; p.style.setProperty('--glow', kind === 'bleed' ? '#ff5468' : v.glow);
+  if (kind === 'poison' || knife) p.style.transform = 'translate(-50%,-50%)';
   host.appendChild(p); if (FB) p.style.scale = fbScale(t);
-  const rot = kind === 'poison' ? 0 : ang;
-  const an = p.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scale(.7)` }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) rotate(${rot}deg) scale(1.3)` }], { duration: 240, easing: 'ease-in', fill: 'forwards' });
+  const rot = kind === 'poison' ? 0 : ang, r0 = knife ? rot - (x2 > x1 ? 720 : -720) : rot;          // a knife turns twice in the air and lands point first
+  const an = p.animate([{ transform: `translate(-50%,-50%) rotate(${r0}deg) scale(${knife ? .85 : .7})` }, { transform: `translate(calc(-50% + ${x2 - x1}px),calc(-50% + ${y2 - y1}px)) rotate(${rot}deg) scale(${knife ? 1.1 : 1.3})` }], { duration: knife ? 260 : 240, easing: knife ? 'cubic-bezier(.3,.2,.6,1)' : 'ease-in', fill: 'forwards' });
   await Promise.race([an.finished.catch(() => {}), sleep(380)]); p.remove();
 }
 /* ---- attackers move: melee charges across the stage to the target, ranged steps back away from it (PC layout only) ---- */
@@ -4276,7 +4576,11 @@ async function dashBegin(u, t, art) {            // returns { run, follow, home 
    a bolt fires from her raised hand to every foe, the hit lands, and she shrinks back into her slot. Needs only the one picture. Placement is the knobs below:
    h = picture height as a fraction of the screen height, bottom = where its feet sit (fraction of screen height, >1 = cropped by the screen edge),
    hand = the raised hand measured from the picture's horizontal centre (dx) and up from its bottom (up), both in picture heights. */
-const STAND = { aneesah: { i: 1, h: 1.08, bottom: 1.14, hand: { dx: 0.292, up: 0.753 } } };
+const STAND = { aneesah: { i: null, h: 1.08, bottom: 1.14, hand: { dx: 0.292, up: 0.753 } } };      // i: null = no skill uses this cast any more (Aneesah's skill 2 is a plain ranged attack now); the knobs still place the close-up at the start of her skill 3
+/* Skills that borrow another skill's picture: Aneesah's Lightning Bolt (skill 2) plays like Static Spark, in her skill1 pose with a normal bolt
+   (her skill2 picture is still used, as the opening of her skill 3). */
+const POSE_OF = { aneesah: { 1: 'skill1' } };
+const poseKey = (u, i) => (POSE_OF[u.id] && POSE_OF[u.id][i]) || 'skill' + (i + 1);
 async function stageAssets(u, key) {
   if (!MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
   const a = await firstAsset(u, key); return a && a.ext !== 'mp4' && a.ext !== 'webm' ? { a } : null;
@@ -5055,6 +5359,7 @@ document.addEventListener('keydown', e => { if (seqDev && e.key === 'Escape') { 
 document.addEventListener('keydown', e => {
   if (!devMode || !e.altKey) return;
   if (e.code === 'Digit3') { e.preventDefault(); seqPreview(e.shiftKey); return; }
+  if (e.code === 'KeyK' && FB && !over) { e.preventDefault(); FB.bosses[0].hp = 1; render(); banner('🛠 Boss at 1 HP', 'phase', 'one hit to see the finale'); return; }
   if (e.code === 'KeyE' || e.code === 'Minus' || e.code === 'Equal') {          // Alt+E: entrance idle zoom <-> rise · Alt+- / Alt+= : idle size at the hand-over (then Alt+3 to see it)
     const u0 = (seqDev && seqDev.u) || party.find(m => SEQ3[m.id]); if (!u0) return; e.preventDefault();
     const c = SEQ_CAL[u0.id] = SEQ_CAL[u0.id] || {}, k = seqK(u0.id);
@@ -5306,7 +5611,7 @@ function buildBg(id, node, last) {
     <defs><linearGradient id="bgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.sky[0]}"/><stop offset=".55" stop-color="${T.sky[1]}"/><stop offset="1" stop-color="${T.sky[2]}"/></linearGradient>
     <linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.ground[0]}"/><stop offset="1" stop-color="${T.ground[1]}"/></linearGradient>
     <radialGradient id="bgL" cx=".5" cy=".62" r=".55"><stop offset="0" stop-color="${T.glow}" stop-opacity="${(.5 * k).toFixed(2)}"/><stop offset="1" stop-color="${T.glow}" stop-opacity="0"/></radialGradient></defs>
-    <rect width="1600" height="900" fill="url(#bgS)"/><rect width="1600" height="900" fill="url(#bgL)"/>
+    <rect width="1600" height="900" fill="url(#bgS)"/><rect width="1600" height="900" fill="url(#bgL)"/>${mikeSvg(1600, 900, 720, mikeMode(T.sky[1]), 'battle')}
     ${id === 'cove' ? '<circle cx="1180" cy="190" r="70" fill="#d8f6ff" opacity=".35"/><circle cx="1180" cy="190" r="140" fill="#9fe7ff" opacity=".1"/>' : ''}
     ${id === 'beach' ? '<circle cx="1240" cy="170" r="80" fill="#fffbe0" opacity=".85"/><circle cx="1240" cy="170" r="190" fill="#fff2bd" opacity=".16"/>' : ''}
     ${id === 'yokai' && node !== 3 ? '<circle cx="330" cy="200" r="95" fill="#ff9a78" opacity=".5"/><circle cx="330" cy="200" r="190" fill="#ff7a5c" opacity=".1"/>' : ''}
@@ -5333,7 +5638,7 @@ async function loadStageBg() {
   if (!quest || quest.def.id !== id || quest.node !== node) return;        // the quest moved on while the picture was loading
   const pic = a && a.ext !== 'mp4' && a.ext !== 'webm';
   b.style.backgroundImage = pic ? `url("${a.url}")` : '';
-  b.querySelectorAll(':scope > .bgp').forEach(x => x.remove());
+  b.querySelectorAll(':scope > .bgp').forEach(x => x.remove()); mikePaint(b, pic && id !== 'final' ? a.url : null, 'battle');
   if (!pic) b.prepend(buildBg(id, node, last));    // no picture: draw one in code
 }
 
@@ -5464,6 +5769,12 @@ function card(u, team, i) {
 }
 
 const isWard = s => !!s && (s.t === 'barrier' || s.t === 'barrierAll');
+/* Barriers fade when the round ends, so a slow enemy that shields an ally used to cast it after the heroes had already attacked.
+   Now an enemy whose telegraphed move this round is a barrier gets +WARD_RUSH speed for that round only (shown as ⚡ in the turn order and on its move),
+   so it goes ahead of some of the party and the barrier actually soaks damage. Stunned or charmed enemies don't hurry. */
+const WARD_RUSH = 5;
+const wardRush = e => isAlive(e) && e.intent && !e.intent.skip && isWard(e.skills[e.intent.i]) && !stunned(e) && !hasCharm(e) ? WARD_RUSH : 0;
+const turnSpd = u => u.spd + (u.team === 'e' && u.rush || 0);
 const wardTargets = (u, s) => (u.team === 'p' ? party : enemies).filter(a => (a !== u || (s && s.self)) && isAlive(a));    // every OTHER living ally (the caster too when the skill says self:true)
 // Poison that ignores armour (Jean's Tonic, the potion wearing off): `total` damage spread over up to `dur` ticks, merged into any poison already on the unit.
 function addPoison(t, total, dur = 6) {
@@ -5584,7 +5895,7 @@ function render() {
   mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e');
   [...party, ...enemies].forEach(syncAmbient);
   $('order').innerHTML = order.length ? `Round ${roundNo} · Turn order: ` + order.map(u =>
-    `<span class="oq ${u.team}${u === actor ? ' act' : ''}${isAlive(u) ? '' : ' dead'}"><span class="mini-sprite port-box" data-port="${u.id}">${u.tag}</span>${u === actor ? `<b>${u.short}</b>` : u.short}</span>`).join('›') : '';
+    `<span class="oq ${u.team}${u === actor ? ' act' : ''}${isAlive(u) ? '' : ' dead'}${u.team === 'e' && u.rush ? ' rush' : ''}"${u.team === 'e' && u.rush ? ` title="Hurrying to shield: +${u.rush} speed this round"` : ''}><span class="mini-sprite port-box" data-port="${u.id}">${u.tag}</span>${u === actor ? `<b>${u.short}</b>` : u.short}</span>`).join('›') : '';
   for (let i = 0; i < 3; i++) {
     const b = $('btn' + i);
     if (cur) {
@@ -5709,6 +6020,7 @@ document.addEventListener('keydown', e => {
   if (pauseOpen()) { pauseClose(); e.stopImmediatePropagation(); return; }
   if (typeof dormMenuEl !== 'undefined' && dormMenuEl) return;
   if ($('inspect').classList.contains('show')) return;
+  if (bookOpen()) { closeBook(); return; }
   if ($('guide').classList.contains('show')) { closeGuide(); return; }
   if ($('pot-modal').classList.contains('show')) { closePot(); return; }
   if ($('relic-modal').classList.contains('show')) { closeRelics(); return; }
@@ -5834,6 +6146,7 @@ async function hit(u, t, s) {
   if (t.hp <= 0) {
     if (tryRevive(t)) { render(); await anim; return; }
     if (t.team === 'p') speak(t, 'down');
+    if (t.final && FB) { t.hp = 0; t.barrier = 0; t.statuses = []; render(); await anim; return; }        // the final boss reels at 0 HP: the shop cannon finishes it (cannonFinale)
     const f = fall(t); await Promise.all([anim, f]); return;
   }
   if (s.taunt && isAlive(u) && t.team !== u.team) {         // Defiant Slam: works through armour and barriers; the target's next attack must go at the taunter
@@ -5896,7 +6209,8 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   const fl3 = !seq && s.t === 'smoke' ? await flip3Assets(u, i) : null;                       // skill 3 smoke slam and backflip to the rear (Irae)
   const wv3 = !seq && !st3 && !lp3 && s.t === 'dmg' && s.aoe && target ? await weave3Assets(u, i) : null;   // skill 3 weave through the enemy line with charms (Vesper)
   const ts = !seq && (s.t === 'tonic' || s.t === 'brew') && TOSS[u.id] ? await tossAssets(u) : null;                    // Jean: rummage, then toss a potion to each ally it reaches
-  const film = seq || st3 || w3 || lp3 || fl3 || wv3 || ts ? null : await skillFilm(u, 'skill' + (i + 1));
+  const pk = poseKey(u, i);                                                                     // the picture this skill plays in (usually its own)
+  const film = seq || st3 || w3 || lp3 || fl3 || wv3 || ts ? null : await skillFilm(u, pk);
   if (film) { setSpot([]); await playFilm(film, u.mir); }
   let begun; const started = new Promise(r => begun = r);
   const dashArt = !film && !seq && !st3 && !lp3 && !wv3 && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
@@ -5906,16 +6220,16 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   if (wv3) setSpot([]);                                                                      // she touches every foe: nobody is dimmed
   const dash = st3 ? await stage3Begin(u, target, st3) : lp3 ? await leap3Begin(u, target, lp3) : wv3 ? await weave3Begin(u, target, wv3) : dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
   const sq = seq ? await seqBegin(u, seq) : w3 ? await ward3Begin(u, w3) : fl3 ? await flip3Begin(u, fl3) : ts ? await tossBegin(u, ts, s.t === 'tonic' ? [target] : party.filter(isAlive)) : null;
-  const clip = film || dash || sq ? Promise.resolve() : playAnim(u, 'skill' + (i + 1), undefined, undefined, begun);       // keeps playing while the target reacts
-  const back = dash || sq ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, 'skill' + (i + 1)) : null;
+  const clip = film || dash || sq ? Promise.resolve() : playAnim(u, pk, undefined, undefined, begun);       // keeps playing while the target reacts
+  const back = dash || sq ? async () => {} : !film && s.t === 'dmg' && target ? await advance(u, target, s, pk) : null;
   if (!film && !dash && !sq) await Promise.race([started, sleep(500)]);                           // wait until the skill picture is really showing
   if (!film && !dash && !sq && s.t === 'dmg' && auraFits(u, s)) await aura(u, s.el);
-  if (!film && !dash && !sq && s.t === 'dmg' && !(s.el && rangeOf(s) === 'ranged')) sfx('swing');
+  if (!film && !dash && !sq && s.t === 'dmg' && !((s.el || s.proj) && rangeOf(s) === 'ranged')) sfx('swing');
   if (s.t === 'barrier' || s.t === 'barrierAll' || s.t === 'guard') sfx('ward');
   if (s.t === 'tonic') sfx('heal'); if (s.t === 'brew') sfx('charge', 'poison'); if (s.t === 'immortal') sfx('charge', 'fire');
   if (film) { if (target && (s.t === 'dmg' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]); }
   else if (sq) { await sq.run(); await sq.home(); }
-  else if (s.t === 'dmg') await (dash ? dash.run() : s.storm && target ? skyBolt(target, true) : s.aoe && target && s.el ? Promise.all((u.team === 'p' ? enemies : party).filter(isAlive).map(e => projectile(u, e, s.el))) : s.el && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el) : sleep(ANIM.impact));
+  else if (s.t === 'dmg') await (dash ? dash.run() : s.storm && target ? skyBolt(target, true) : s.aoe && target && s.el ? Promise.all((u.team === 'p' ? enemies : party).filter(isAlive).map(e => projectile(u, e, s.el))) : (s.el || s.proj) && target && rangeOf(s) === 'ranged' ? projectile(u, target, s.el || s.proj) : sleep(ANIM.impact));
   else await clip;
   if (s.t === 'smoke') {                                       // Smoke Bomb: a puff, a step back, and stealth for `dur` of her turns
     log(`🌫️ ${u.name} throws a ${s.n}! She slips back and vanishes into the smoke.`, 'log-player'); floatText(u, '🌫️ STEALTH', 'tag');
@@ -6061,8 +6375,9 @@ function intentText(u) {
   if (stunned(u)) return '💤 stunned, skips its turn';
   if (it.skip) return '▶ waits';
   const s = u.skills[it.i];
-  if (s.t === 'barrierAll') return `▶ ${s.n} +${s.p}🛡️ → all allies`;
-  if (s.t === 'barrier') return `▶ ${s.n} +${s.p}🛡️ → ${it.target.short}`;
+  const q = u.rush ? '<span class="rushq" title="Hurrying: +' + u.rush + ' speed this round">⚡</span>' : '';
+  if (s.t === 'barrierAll') return `▶ ${q}${s.n} +${s.p}🛡️ → all allies`;
+  if (s.t === 'barrier') return `▶ ${q}${s.n} +${s.p}🛡️ → ${it.target.short}`;
   if (s.t === 'charm') return `▶ ${s.n} 💘 → ${it.target.short}`;
   if (hasCharm(u)) return `▶ ${s.n} → 💘 hits its own friend`;
   return `<span title="${s.n}">▶ ${s.el ? ICON[s.el] : ''}${RICON[rangeOf(s)]} → ${it.target.short}</span>`;       // the damage itself is drawn on the target's HP bar
@@ -6313,7 +6628,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
     await playDamaged(u, STATUS_FX[st.type] || 'slash');
     await flushTriggers();
     if (--st.dur <= 0 || (st.left !== undefined && st.left <= 0)) u.statuses = u.statuses.filter(x => x !== st);
-    if (u.hp <= 0) { if (tryRevive(u)) render(); else { await fall(u); return; } }
+    if (u.hp <= 0) { if (tryRevive(u)) render(); else { if (u.final && FB) { u.statuses = []; render(); return; } await fall(u); return; } }
   }
   const stun = bonus ? null : u.statuses.find(x => x.stun);
   if (stun) {
@@ -6485,9 +6800,11 @@ async function battle() {
   log(`${curNode().name}: ${party.length} hero${party.length > 1 ? 'es' : ''} face ${enemies.length} enem${enemies.length > 1 ? 'ies' : 'y'}.`);
   for (let round = 1; ; round++) {
     roundNo = round; log(`— Round ${round} —`, 'log-round'); blizzTick(round);
-    order = [...party, ...enemies].filter(isAlive).sort((a, b) => b.spd - a.spd || Math.random() - 0.5);
     enemies.forEach(e => { const m = ELITE.mods[e.mod]; if (m && m.barrier && isAlive(e) && round % 2 === 1) e.barrier = Math.max(e.barrier || 0, m.barrier); });     // Warded elites
-    enemies.forEach(e => { e.intent = isAlive(e) ? enemyChoose(e, true) : null; });      // telegraph this round's moves
+    enemies.forEach(e => { e.intent = isAlive(e) ? enemyChoose(e, true) : null; });      // telegraph this round's moves (chosen BEFORE the turn order: a barrier caster hurries)
+    enemies.forEach(e => { e.rush = wardRush(e); });
+    order = [...party, ...enemies].filter(isAlive).sort((a, b) => turnSpd(b) - turnSpd(a) || Math.random() - 0.5);
+    if (enemies.some(e => e.rush)) setTimeout(() => enemies.forEach(e => { if (e.rush && isAlive(e)) floatText(e, `⚡ +${e.rush} SPD`, 'tag'); }), 250);
     for (const u of order) {
       if (!isAlive(u)) continue;      // died earlier this round
       actor = u; render();
@@ -6638,12 +6955,210 @@ async function fbSecondWind() {      // hidden: all 8 are down in the last phase
 async function fbCheckEnd() {        // true = the fight is over; 'again' = second wind, start the round over
   if (over) return true;
   const B = FB.bosses[0];
-  if (!isAlive(B)) { fbEnd(true); return true; }
+  if (!isAlive(B)) { await cannonFinale(); fbEnd(true); return true; }
   if (!fbAll().some(isAlive)) {
     if (!FB.usedRevive && B.hp <= FINAL.secondWindAt * B.maxHp) { await fbSecondWind(); return 'again'; }
     fbEnd(false); return true;
   }
   return false;
+}
+/* ============ THE FINALE: the shop becomes a cannon ============
+   When the final boss hits 0 HP it doesn't fall. Both halves reel; the scene cuts to TOWN, where the dirt erupts over the shop and the giant cannon
+   (assets/ui/shopkeepercannon.png or shopcannon.png, the shop riding on top) bursts up out of it and lands in its crater, charges and fires. Back on the battlefield, both halves stand side by side and the beam tears through
+   both at once; they burn away into light, and the ending plays. Click (or Esc) skips.
+   Knobs (CANNON):
+     h      the cannon's height as a fraction of the town picture (its width follows your art); dx nudges it sideways (fraction of the town's width). The bottom of the dirt sits on the shop's ground line.
+     anchor the point across the picture (0-1) that sits over the town's shop: 0.29 = the little shop riding on top of your cannon.
+     aim    the beam's angle in degrees (0 = right, -90 = straight up). Point it the way your barrel points.
+     muzzle where the beam leaves the picture, {x, y} as fractions of the cannon picture; null = found automatically (the tip of the art furthest along `aim`).
+     beam   the beam's thickness (fraction of the screen height); ms = timings. Dev: Alt+K in the final fight puts the boss on 1 HP. */
+const CANNON = { h: .66, dx: 0, anchor: .29, aim: -14, muzzle: null, beam: .09, ms: { reel: 900, rise: 1250, settle: 550, charge: 2300, fire: 1150, cross: 1100, burn: 1500, white: 1300 } };
+const CANNON_ART_FALLBACK = { foot: .966, muzzle: { x: .796, y: .259 } };      // measured on shopkeepercannon.png (used only if the picture can't be read, e.g. opened from disk)
+let cannonP = null;
+function cannonArt() {          // the cannon picture, loaded once (the final fight starts it early so the cut isn't held up): assets/ui/shopcannon or assets/ui/shopkeepercannon
+  return cannonP || (cannonP = (async () => {
+    const a = (await findStill(`${ANIM.base}/ui/shopcannon`)) || (await findStill(`${ANIM.base}/ui/shopkeepercannon`)); if (!a) return null;
+    const img = new Image(); img.src = a.url; await img.decode().catch(() => {}); if (!img.naturalWidth) return null;
+    return { a, img, box: fnArtBox(img, CANNON.aim) };
+  })());
+}
+function fnArtBox(img, aim) {           // where the picture's ground is (its lowest opaque row) and where the barrel ends (the opaque tip furthest along the aim)
+  try {
+    const W = 240, H = Math.max(20, Math.round(W * img.naturalHeight / img.naturalWidth)), c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, W, H); const d = g.getImageData(0, 0, W, H).data, op = (x, y) => d[(y * W + x) * 4 + 3] > 80;
+    let foot = 0; for (let y = H - 1; y >= 0 && !foot; y--) for (let x = 0; x < W; x++) if (op(x, y)) { foot = (y + 1) / H; break; }
+    return { foot: foot || 1, muzzle: CANNON.muzzle || fnMuzzle(img, aim) };
+  } catch (e) { return { foot: CANNON_ART_FALLBACK.foot, muzzle: CANNON.muzzle || CANNON_ART_FALLBACK.muzzle }; }
+}
+const CANNON_SVG = `<svg viewBox="0 0 640 700"><g fill="#3a3448" stroke="#14121c" stroke-width="6"><circle cx="190" cy="640" r="52"/><circle cx="450" cy="640" r="52"/></g>
+  <path d="M110 600 L530 600 L560 650 L80 650Z" fill="#4c4258" stroke="#14121c" stroke-width="6"/>
+  <g transform="rotate(-35 320 470)"><rect x="300" y="400" width="320" height="140" rx="30" fill="#5d6b86" stroke="#14121c" stroke-width="6"/><rect x="590" y="385" width="46" height="170" rx="14" fill="#7d8aa8" stroke="#14121c" stroke-width="6"/><rect x="380" y="400" width="26" height="140" fill="#c9a24a"/></g>
+  <circle cx="320" cy="500" r="120" fill="#4f5c78" stroke="#14121c" stroke-width="6"/>
+  <rect x="190" y="250" width="260" height="170" fill="#8a5a3a" stroke="#14121c" stroke-width="6"/><path d="M160 260 L320 150 L480 260Z" fill="#a83a3a" stroke="#14121c" stroke-width="6"/>
+  <rect x="290" y="330" width="60" height="90" fill="#3a2418"/><rect x="215" y="290" width="55" height="45" fill="#ffd77a"/><rect x="370" y="290" width="55" height="45" fill="#ffd77a"/>
+  <text x="320" y="245" text-anchor="middle" font-size="30" font-family="Georgia" fill="#fff2d0">SHOP</text></svg>`;
+const CANNON_SVG_MUZZLE = { x: .9, y: .27 };       // where the stand-in's barrel ends
+let fnSkipped = false; const fnWaits = new Set();
+const fnWait = ms => fnSkipped || !ms ? Promise.resolve() : new Promise(r => { const done = () => { clearTimeout(t); fnWaits.delete(done); r(); }, t = setTimeout(done, ms); fnWaits.add(done); });
+function fnSkip() { if (fnSkipped) return; fnSkipped = true; [...fnWaits].forEach(f => f()); }
+function fnMuzzle(img, aim) {            // the barrel tip: the opaque part of the art furthest along the aim (averaged across the mouth)
+  if (CANNON.muzzle) return CANNON.muzzle;
+  try {
+    const W = 220, H = Math.max(20, Math.round(W * img.naturalHeight / img.naturalWidth)), c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, W, H); const d = g.getImageData(0, 0, W, H).data;
+    const ax = Math.cos(aim * Math.PI / 180), ay = Math.sin(aim * Math.PI / 180); let best = -1e9;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 80) best = Math.max(best, x * ax + y * ay);
+    let sx = 0, sy = 0, n = 0; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3] > 80 && x * ax + y * ay >= best - 4) { sx += x; sy += y; n++; }
+    if (!n) return { x: .5, y: .1 };
+    let mx = sx / n, my = sy / n;
+    // the mouth of the barrel: the darkest blob just behind the tip (the opening); if there is one, the beam starts at its middle
+    let bx = 0, by = 0, bn = 0; const R = W * .06;
+    for (let y = Math.max(0, Math.floor(my - R * 1.6)); y < Math.min(H, my + R * 1.6); y++) for (let x = Math.max(0, Math.floor(mx - R * 2)); x < Math.min(W, mx + 2); x++) { const i = (y * W + x) * 4; if (d[i + 3] > 200 && d[i] + d[i + 1] + d[i + 2] < 110) { bx += x; by += y; bn++; } }
+    if (bn > 6) { mx = bx / bn; my = by / bn; }
+    return { x: mx / W, y: my / H };
+  } catch (e) { return { x: .5, y: .1 }; }
+}
+const fnAt = (el, x, y, d) => Object.assign(el.style, { left: (x - d / 2) + 'px', top: (y - d / 2) + 'px', width: d + 'px', height: d + 'px' });        // centred on (x, y) without a transform, so scale / rotate stay centred
+function fnPairNow() {          // both halves on this screen, side by side (as in the last phase)
+  const side = FB.side, g = FB.bosses[1 - side], bf = document.querySelector('#battle-scene .battlefield');
+  g.mir = side === 1; g.pside = side; enemies = [FB.bosses[side], g]; bf.classList.add('fbpair'); $('enemy-head').textContent = 'THE BOSS · BOTH WINGS'; render();
+}
+const fnA = (el, frames, ms, ease = 'linear', delay = 0, fill = 'forwards') => el.animate(frames, { duration: fnSkipped ? 1 : ms, easing: ease, delay: fnSkipped ? 0 : delay, fill });
+function fnShake(el, px, ms) { if (!FX.shake || fnSkipped) return; const k = []; for (let i = 0; i <= 10; i++) { const a = px * (1 - i / 10); k.push({ translate: `${((Math.random() - .5) * 2 * a).toFixed(1)}px ${((Math.random() - .5) * 2 * a).toFixed(1)}px` }); } el.animate(k, { duration: ms, easing: 'linear' }); }
+function fnSparks(host, x, y, n, dir, spread, len, col = '#dff8ff') {
+  for (let i = 0; i < n; i++) { const p = document.createElement('i'), sz = 2 + Math.random() * 5, a = dir + (Math.random() - .5) * spread, L = len * (.4 + Math.random() * .8);
+    p.className = 'fn-p'; Object.assign(p.style, { width: sz + 'px', height: sz + 'px', background: col, boxShadow: `0 0 ${sz * 2}px ${col}` }); host.appendChild(p);
+    fnA(p, [{ transform: `translate(${x}px,${y}px)`, opacity: 1 }, { transform: `translate(${x + Math.cos(a) * L}px,${y + Math.sin(a) * L + L * .25}px)`, opacity: 0 }], 500 + Math.random() * 500, 'cubic-bezier(.2,.7,.4,1)').finished.then(() => p.remove(), () => p.remove()); }
+}
+function fnBeam(host, x, y, ang, len, thick) {        // a beam from (x, y) along ang (degrees), drawn growing out of its start
+  const b = document.createElement('div'); b.className = 'fn-beam'; Object.assign(b.style, { left: x + 'px', top: (y - thick / 2) + 'px', width: len + 'px', height: thick + 'px', rotate: ang + 'deg' });
+  b.innerHTML = '<i class="g"></i><i class="b"></i><i class="c"></i>'; host.appendChild(b); return b;
+}
+async function cannonFinale() {
+  if (!FB || FB.finale) return; FB.finale = true; fnSkipped = false;
+  const T = CANNON.ms, vw = innerWidth, vh = innerHeight; setSpot([]); actor = null;
+  // 0. the boss reels: both halves, side by side, shaking in their damaged pictures
+  fnPairNow(); document.body.classList.add('fn-on'); sfx('shatter.big'); flash('#ffffff', .45, 600);
+  FB.bosses.forEach(b => { const f = figs.get(b); if (f) f.animate([0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => ({ translate: `${i % 2 ? -7 : 7}px ${i % 3 - 1}px` })), { duration: T.reel, easing: 'linear' }); });
+  const ov = document.createElement('div'); ov.id = 'finale'; ov.innerHTML = '<div class="fn-black"></div><div class="fn-white"></div>'; document.body.appendChild(ov);
+  const black = ov.querySelector('.fn-black'), white = ov.querySelector('.fn-white');
+  ov.onclick = fnSkip; const esc = e => { if (e.key === 'Escape') { e.stopImmediatePropagation(); fnSkip(); } }; document.addEventListener('keydown', esc, true);
+  await fnWait(T.reel);
+  // 1. cut to town
+  await fnA(black, [{ opacity: 0 }, { opacity: 1 }], 380).finished.catch(() => {});
+  const st = document.createElement('div'); st.className = 'fn-stage'; ov.prepend(st);
+  const v = townVariant(), art = await findAsset(`${ANIM.base}/ui/${v === 'day' ? 'town' : v === 'coast' ? 'town_act2' : 'town_act3'}`);
+  if (art && ['png', 'jpg', 'webp'].includes(art.ext)) { st.style.backgroundImage = `url("${art.url}")`; mikePaint(st, art.url, 'finale'); }
+  else st.innerHTML = `<div class="fn-svg">${townSVG(v).replace(/(id="|url\(#)t([A-Z])/g, '$1fnt$2')}</div>`;
+  const dim = document.createElement('div'); dim.className = 'fn-dim'; st.appendChild(dim);
+  const fx = document.createElement('div'); fx.className = 'fn-fx'; st.appendChild(fx);
+  // where the shop is (the town's Shop button marks it)
+  const sb = document.querySelector('#town-map .b-shop'), sv = (k, d) => sb && sb.style.getPropertyValue(k) ? parseFloat(sb.style.getPropertyValue(k)) / 100 : d;
+  const shop = { x: sv('--x', .044), y: sv('--y', .3), w: sv('--w', .238), h: sv('--h', .35) };
+  const can = document.createElement('div'); can.className = 'fn-cannon'; st.appendChild(can);
+  const ca = await cannonArt(), aspect = ca ? ca.img.naturalWidth / ca.img.naturalHeight : 640 / 700, box = ca ? ca.box : { foot: .99, muzzle: CANNON.muzzle || CANNON_SVG_MUZZLE }, anchor = ca ? CANNON.anchor : .5;
+  if (ca) { const im = ca.img.cloneNode(); im.alt = ''; im.draggable = false; can.appendChild(im); } else can.innerHTML = CANNON_SVG;
+  const mz = box.muzzle, SW = st.clientWidth, SH = st.clientHeight, ground = (shop.y + shop.h + .02) * SH, ch = CANNON.h * SH, cw = ch * aspect;
+  let cl = (shop.x + shop.w / 2 + CANNON.dx) * SW - anchor * cw;                         // the shop part of the picture over the town's shop
+  cl = Math.min(cl, SW * .96 - mz.x * cw); cl = Math.max(cl, -cw * .04);                   // the barrel tip stays on screen
+  const ct = ground - box.foot * ch;                                                       // the bottom of the dirt (the picture's lowest opaque row) on the shop's ground line
+  Object.assign(can.style, { left: cl + 'px', top: ct + 'px', width: cw + 'px', height: ch + 'px' });
+  can.style.visibility = 'hidden';
+  await fnA(black, [{ opacity: 1 }, { opacity: 0 }], 420).finished.catch(() => {});
+  // 2. the ground shakes, the dirt erupts over the shop, the cannon bursts up out of it and lands in its crater
+  const baseX = cl + anchor * cw, dust = (n, spread, rise, big, delay = 0) => { for (let i = 0; i < n; i++) { const d = document.createElement('div'); d.className = 'fn-dust'; const s0 = SH * (big ? .1 + Math.random() * .14 : .06 + Math.random() * .08); Object.assign(d.style, { left: (baseX + (Math.random() - .5) * cw * spread) + 'px', top: (ground - Math.random() * SH * .06) + 'px', width: s0 + 'px', height: s0 + 'px' }); fx.appendChild(d);
+      fnA(d, [{ transform: 'translate(-50%,-50%) scale(.3)', opacity: .95 }, { transform: `translate(-50%,-50%) translate(${(Math.random() - .5) * SH * .3}px,${-SH * (.04 + Math.random() * rise)}px) scale(${1.4 + Math.random() * 1.2})`, opacity: 0 }], 1200 + Math.random() * 900, 'cubic-bezier(.2,.7,.3,1)', delay + Math.random() * 260).finished.then(() => d.remove(), () => d.remove()); } };
+  const rocks = (n, delay = 0) => { for (let i = 0; i < n; i++) { const r = document.createElement('i'); r.className = 'fn-rock'; r.style.setProperty('--s', (4 + Math.random() * 12) + 'px'); const x0 = baseX + (Math.random() - .5) * cw * .8, a = -Math.PI / 2 + (Math.random() - .5) * 1.7, L = SH * (.14 + Math.random() * .26); fx.appendChild(r);
+      fnA(r, [{ transform: `translate(${x0}px,${ground}px) rotate(0)` }, { transform: `translate(${x0 + Math.cos(a) * L}px,${ground + Math.sin(a) * L}px) rotate(${Math.random() * 400}deg)`, offset: .45 }, { transform: `translate(${x0 + Math.cos(a) * L * 1.4}px,${ground + SH * .06}px) rotate(${Math.random() * 700}deg)` }], 1150, 'cubic-bezier(.3,.6,.6,1)', delay).finished.then(() => r.remove(), () => r.remove()); } };
+  sfx('nerve.slam'); fnShake(st, 6, 700); dust(6, .5, .05, false); await fnWait(520);
+  sfx('shatter.big'); fnShake(st, 14, 800); dust(26, 1.1, .22, true); rocks(24);
+  can.style.visibility = '';
+  const rise = fnA(can, [
+    { transform: 'translateY(55%) scale(.96,1.04)', clipPath: `inset(0 -30% ${(55 + (1 - box.foot) * 100).toFixed(1)}% -30%)`, offset: 0 },
+    { transform: 'translateY(-5%) scale(.98,1.03)', clipPath: 'inset(-30% -30% -30% -30%)', offset: .4 },
+    { transform: 'translateY(-6%) scale(1,1)', clipPath: 'inset(-30% -30% -30% -30%)', offset: .55 },
+    { transform: 'translateY(0) scale(1.04,.94)', clipPath: 'inset(-30% -30% -30% -30%)', offset: .78 },
+    { transform: 'translateY(0) scale(.99,1.02)', clipPath: 'inset(-30% -30% -30% -30%)', offset: .9 },
+    { transform: 'translateY(0) scale(1,1)', clipPath: 'inset(-30% -30% -30% -30%)', offset: 1 }], T.rise, 'cubic-bezier(.3,.7,.4,1)');
+  setTimeout(() => { if (fnSkipped) return; sfx('nerve.slam'); fnShake(st, 16, 500); dust(14, 1.25, .1, true); rocks(10); }, T.rise * .78);       // it lands
+  await rise.finished.catch(() => {}); await fnWait(T.settle);
+  // 3. charge: the sky dims, light streams into the barrel, an orb swells, rings close in
+  const cr = can.getBoundingClientRect(), sr = st.getBoundingClientRect(), MX = cr.left - sr.left + mz.x * cr.width, MY = cr.top - sr.top + mz.y * cr.height;
+  dim.style.setProperty('--mx', MX + 'px'); dim.style.setProperty('--my', MY + 'px'); fnA(dim, [{ opacity: 0 }, { opacity: 1 }], T.charge * .7, 'ease-in');
+  sfx('charge', 'shock'); setTimeout(() => sfx('charge'), T.charge * .45);
+  const glowF = fnA(can, [{ filter: 'drop-shadow(0 0 0 rgba(140,230,255,0))' }, { filter: 'drop-shadow(0 0 26px rgba(140,230,255,.9))' }], T.charge, 'ease-in');
+  const orb = document.createElement('div'); orb.className = 'fn-orb'; const O = SH * CANNON.beam * 2.4; fnAt(orb, MX, MY, O); fx.appendChild(orb);
+  fnA(orb, [{ scale: .05, opacity: .6 }, { scale: .55, opacity: .9, offset: .6 }, { scale: .45, offset: .7 }, { scale: 1, opacity: 1 }], T.charge, 'ease-in');
+  const rays = document.createElement('div'); rays.className = 'fn-rays'; fnAt(rays, MX, MY, O * 3); fx.appendChild(rays);
+  fnA(rays, [{ scale: .2, rotate: '0deg', opacity: 0 }, { scale: 1, rotate: '160deg', opacity: .9 }], T.charge, 'ease-in');
+  const t0 = performance.now();
+  while (!fnSkipped && performance.now() - t0 < T.charge) {
+    const k = (performance.now() - t0) / T.charge;
+    for (let i = 0; i < 4 + k * 6; i++) { const p = document.createElement('i'), a = Math.random() * Math.PI * 2, R = SH * (.12 + Math.random() * .28), sz = 2 + Math.random() * 4; p.className = 'fn-p'; Object.assign(p.style, { width: sz + 'px', height: sz + 'px', background: '#dff8ff', boxShadow: `0 0 ${sz * 3}px #8fe6ff` }); fx.appendChild(p);
+      fnA(p, [{ transform: `translate(${MX + Math.cos(a) * R}px,${MY + Math.sin(a) * R}px)`, opacity: 0 }, { opacity: 1, offset: .3 }, { transform: `translate(${MX}px,${MY}px)`, opacity: .9 }], 520 + Math.random() * 380, 'cubic-bezier(.6,0,.9,.6)').finished.then(() => p.remove(), () => p.remove()); }
+    if (Math.random() < .35) { const r = document.createElement('div'); r.className = 'fn-ring'; fnAt(r, MX, MY, O * 2.6); fx.appendChild(r); fnA(r, [{ scale: 1.6, opacity: 0 }, { opacity: .9, offset: .3 }, { scale: .2, opacity: 0 }], 600, 'ease-in').finished.then(() => r.remove(), () => r.remove()); }
+    fnShake(st, 2 + k * 6, 160); await fnWait(140);
+  }
+  // 4. FIRE
+  sfx('shatter.big'); sfx('hit', 'shock', true); fnA(white, [{ opacity: 0 }, { opacity: .9, offset: .15 }, { opacity: 0 }], 420, 'ease-out');
+  const thick = SH * CANNON.beam, beam = fnBeam(fx, MX, MY, CANNON.aim, Math.hypot(SW, SH) * 1.6, thick);
+  fnA(beam, [{ scale: '0 .4' }, { scale: '1 1.15', offset: .5 }, { scale: '1 1' }], 220, 'cubic-bezier(.2,.8,.3,1)');
+  beam.animate([{ opacity: 1 }, { opacity: .82 }, { opacity: 1 }], { duration: 90, iterations: Infinity });
+  const ar = CANNON.aim * Math.PI / 180, kick = SH * .03;
+  fnA(can, [{ translate: '0 0' }, { translate: `${-Math.cos(ar) * kick}px ${-Math.sin(ar) * kick}px`, offset: .15 }, { translate: '0 0' }], 650, 'cubic-bezier(.2,.8,.3,1)');
+  fnA(orb, [{ scale: 1 }, { scale: 1.6 }, { scale: 1.3 }], T.fire, 'ease-out'); fnA(rays, [{ scale: 1, rotate: '160deg', opacity: .9 }, { scale: 1.8, rotate: '220deg', opacity: 0 }], 500, 'ease-out');
+  for (let i = 0; i < 3; i++) { const r = document.createElement('div'); r.className = 'fn-ring'; fnAt(r, MX, MY, O); fx.appendChild(r); fnA(r, [{ scale: .5, opacity: 1 }, { scale: 6 + i * 3, opacity: 0 }], 700, 'ease-out', i * 110).finished.then(() => r.remove(), () => r.remove()); }
+  fnSparks(fx, MX, MY, 46, ar, 1.4, SH * .4); fnShake(st, 18, 700);
+  await fnWait(T.fire);
+  // 5. back on the battlefield: the beam comes in and goes through BOTH halves at once
+  await fnA(white, [{ opacity: 0 }, { opacity: 1 }], 140).finished.catch(() => {});
+  st.remove(); glowF.cancel(); ov.style.background = 'transparent';
+  const fA = figs.get(enemies[0]), fB = figs.get(enemies[1]), A = fA && figBox(fA), B = fB && figBox(fB);
+  const bf = document.querySelector('#battle-scene .battlefield'), fromRight = bf && bf.classList.contains('fbm');
+  const pts = [A, B].filter(Boolean).map(b => ({ x: b.cx, y: b.bottom - b.h * .58 })).sort((p1, p2) => p1.x - p2.x);
+  const P1 = pts[0] || { x: vw * .6, y: vh * .4 }, P2 = pts[1] || { x: P1.x + 10, y: P1.y }, ang = Math.atan2(P2.y - P1.y, P2.x - P1.x), L = Math.hypot(vw, vh) * 1.5;
+  const sx = fromRight ? vw + 20 : -20, sy = P1.y + Math.tan(ang) * (sx - P1.x), deg = ang * 180 / Math.PI + (fromRight ? 180 : 0);
+  const bfx = document.createElement('div'); bfx.className = 'fn-fx'; bfx.style.position = 'absolute'; ov.appendChild(bfx);
+  fnA(white, [{ opacity: 1 }, { opacity: 0 }], 360, 'ease-out');
+  await fnWait(260);
+  const glint = fnBeam(bfx, sx, sy, deg, L, Math.max(4, vh * .006)); fnA(glint, [{ scale: '0 1', opacity: 1 }, { scale: '1 1', opacity: 1, offset: .6 }, { scale: '1 1', opacity: 0 }], 300, 'ease-out');
+  sfx('charge', 'shock'); await fnWait(300);
+  const bthick = vh * CANNON.beam * 1.25, bb = fnBeam(bfx, sx, sy, deg, L, bthick);
+  fnA(bb, [{ scale: '0 .5' }, { scale: '1 1.2', offset: .55 }, { scale: '1 1' }], 200, 'cubic-bezier(.2,.8,.3,1)');
+  bb.animate([{ opacity: 1 }, { opacity: .85 }, { opacity: 1 }], { duration: 80, iterations: Infinity });
+  await fnWait(110);
+  sfx('hit', 'shock', true); sfx('shatter.big'); flash('#e8fbff', .55, 500); shake(3); fnShake(bfx, 10, 600);
+  const bodies = [fA, fB].filter(Boolean);
+  bodies.forEach((f, i) => {
+    f.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(3) saturate(.3)', offset: .1 }, { filter: 'brightness(1.8) saturate(.6)' }], { duration: T.cross, fill: 'forwards' });
+    f.animate([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(k => ({ translate: `${k % 2 ? -6 : 6}px ${(k % 3 - 1) * 3}px` })), { duration: T.cross, easing: 'linear' });
+    const b = figBox(f), hx = b.cx, hy = b.bottom - b.h * .58;
+    fnSparks(bfx, hx, hy, 40, fromRight ? Math.PI : 0, 1.6, b.h * .5); fnSparks(bfx, hx, hy, 18, -Math.PI / 2, 2.6, b.h * .35, '#ffffff');
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'fn-crack'); svg.setAttribute('width', vw); svg.setAttribute('height', vh); svg.style.position = 'absolute'; svg.style.left = '0'; svg.style.top = '0';
+    let h = ''; for (let k = 0; k < 9; k++) { let x = hx, y = hy, d = `M${x} ${y}`; const a0 = Math.random() * Math.PI * 2; for (let j = 0; j < 5; j++) { const a = a0 + (Math.random() - .5) * .9, l = b.h * (.05 + Math.random() * .07); x += Math.cos(a) * l; y += Math.sin(a) * l; d += ` L${x.toFixed(1)} ${y.toFixed(1)}`; } h += `<path d="${d}" fill="none" stroke="#fff" stroke-width="${2 + Math.random() * 2}" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" style="filter:drop-shadow(0 0 6px #9fe8ff)"/>`; }
+    svg.innerHTML = h; bfx.appendChild(svg); svg.querySelectorAll('path').forEach(pth => pth.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: fnSkipped ? 1 : 500 + i * 60, delay: fnSkipped ? 0 : 80, fill: 'forwards', easing: 'ease-out' }));
+  });
+  await fnWait(T.cross);
+  // 6. both halves burn away into light, bottom to top
+  sfx('defeat.bell');
+  bodies.forEach(f => {
+    const b = figBox(f), edge = document.createElement('div'); edge.className = 'fn-edge'; Object.assign(edge.style, { left: (b.cx - b.w * .45) + 'px', width: b.w * .9 + 'px', top: b.bottom + 'px' }); bfx.appendChild(edge);
+    fnA(f, [{ clipPath: 'inset(-20% -20% 0% -20%)' }, { clipPath: 'inset(-20% -20% 100% -20%)' }], T.burn, 'ease-in');
+    fnA(edge, [{ top: b.bottom + 'px', opacity: 1 }, { top: (b.bottom - b.h * 1.05) + 'px', opacity: .2 }], T.burn, 'ease-in');
+    for (let k = 0; k < 60; k++) { const p = document.createElement('i'), sz = 2 + Math.random() * 5, t = k / 60, y0 = b.bottom - b.h * Math.pow(t, 1.4) * 1.02, x0 = b.cx + (Math.random() - .5) * b.w * .8; p.className = 'fn-p'; Object.assign(p.style, { width: sz + 'px', height: sz + 'px', background: k % 3 ? '#dff8ff' : '#fff1c4', boxShadow: `0 0 ${sz * 2}px #9fe8ff` }); bfx.appendChild(p);
+      fnA(p, [{ transform: `translate(${x0}px,${y0}px)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(${x0 + (Math.random() - .5) * 80}px,${y0 - vh * (.12 + Math.random() * .25)}px)`, opacity: 0 }], 1200 + Math.random() * 600, 'ease-out', t * T.burn * .92).finished.then(() => p.remove(), () => p.remove()); }
+  });
+  setTimeout(() => fnA(bb, [{ scale: '1 1', opacity: 1 }, { scale: '1 0', opacity: 0 }], 600, 'ease-in'), fnSkipped ? 0 : T.burn * .55);
+  await fnWait(T.burn);
+  // 7. white out, and the ending
+  await fnA(white, [{ opacity: 0 }, { opacity: 1 }], 380, 'ease-in').finished.catch(() => {});
+  FB.bosses.forEach(b => { b.fell = true; b.vanish = true; }); render();
+  bodies.forEach(f => f.getAnimations().forEach(a => a.cancel()));
+  bfx.remove(); document.removeEventListener('keydown', esc, true);
+  await fnWait(260);
+  document.body.classList.remove('fn-on');
+  await fnA(white, [{ opacity: 1 }, { opacity: 0 }], T.white, 'ease-out').finished.catch(() => {});
+  ov.remove();
 }
 function fbEnd(won) {
   setSpot([]); over = true; actor = null; cur = null; waiting = null;
@@ -6890,6 +7405,7 @@ async function fbBattle() {
 }
 function startFinalReal(ids) { return startFinal(ids, true); }        // from the map: your real heroes, perks, relics and bag; a defeat rolls the save back
 function startFinal(ids, real) {
+  cannonArt();             // load the finale's cannon picture now, so the cut to town isn't held up
   const { units, bosses } = fbBuild(ids);
   FB = { real: !!real, units, bosses, side: 0, round: 0, stun: 0, stunOn: false, usedRevive: false, seq: 0, dealt: [0, 0], brk: [0, 0], trace: [], hist: [], snap: JSON.stringify(game) };
   quest = { def: { id: 'final', name: 'The Final Stand', nodes: [{ name: 'The Final Boss', boss: true, enemies: [], gold: 0 }], relicDrop: 0, unlocks: null }, node: 0, gold: 0, dev: true, final: true, party: [...units[0], ...units[1]], items: {}, plan: null, tier: 0 };
@@ -6963,7 +7479,7 @@ function townSVG(v = 'day') {
     <radialGradient id="tMoon"><stop offset="0" stop-color="#fff4d6" stop-opacity=".55"/><stop offset="1" stop-color="#fff4d6" stop-opacity="0"/></radialGradient>
     <radialGradient id="tLamp"><stop offset="0" stop-color="#ffd37a" stop-opacity=".75"/><stop offset="1" stop-color="#ffd37a" stop-opacity="0"/></radialGradient>
     <filter id="tBlur"><feGaussianBlur stdDeviation="7"/></filter></defs>`);
-  add(`<rect width="1600" height="470" fill="url(#tSky)"/>`);
+  add(`<rect width="1600" height="470" fill="url(#tSky)"/>` + mikeSvg(1600, 900, 470, v === 'coast' ? 'day' : 'night', 'town'));
   if (v === 'frost') add(`<path d="M0,190 C300,110 600,250 900,150 S1400,190 1600,110 L1600,250 C1300,290 900,190 600,310 S200,250 0,320Z" fill="url(#tAur)" filter="url(#tBlur)"/>`);
   if (v === 'coast') for (let i = 0; i < 9; i++) add(`<ellipse cx="${f(R() * 1700 - 50)}" cy="${f(40 + R() * 260)}" rx="${f(160 + R() * 240)}" ry="${f(26 + R() * 40)}" fill="#1b222c" opacity="${f(.35 + R() * .3)}" filter="url(#tBlur)"/>`);
   if (v !== 'coast') for (let i = 0; i < 46; i++) add(`<circle cx="${f(R() * 1600)}" cy="${f(R() * 240)}" r="${f(.8 + R() * 1.4)}" fill="#fff" opacity="${f(.25 + R() * .6)}"/>`);
@@ -7050,15 +7566,15 @@ let townArt = null;           // which look the town picture on screen is showin
 async function loadTownBg() {
   const map = $('town-map'); if (!map) return;
   const v = townVariant(); if (townArt === v) return; townArt = v;
-  $('town-art').innerHTML = townSVG(v); map.classList.remove('has-art'); map.style.backgroundImage = '';
+  $('town-art').innerHTML = townSVG(v); map.classList.remove('has-art'); map.style.backgroundImage = ''; mikePaint(map, null);
   // optional painted art per act: assets/ui/town (Act 1), town_act2 (Act 2), town_act3 (Act 3); the drawn town shows until the file exists
   const a = await findAsset(`${ANIM.base}/ui/${v === 'day' ? 'town' : v === 'coast' ? 'town_act2' : 'town_act3'}`);
-  if (townArt === v && a && ['png', 'jpg', 'webp'].includes(a.ext)) { map.style.backgroundImage = `url("${a.url}")`; map.classList.add('has-art'); }
+  if (townArt === v && a && ['png', 'jpg', 'webp'].includes(a.ext)) { map.style.backgroundImage = `url("${a.url}")`; map.classList.add('has-art'); mikePaint(map, a.url, 'town'); }
 }
 
 function renderHub() {
   $('hub-gold').innerHTML = goldChip(); $('btn-beach').style.display = beachOpen() ? '' : 'none'; $('btn-lake').style.display = lakeOpen() ? '' : 'none';
-  loadTownBg();
+  loadTownBg(); townGuideIcon();
   $('hub-msg').textContent = hubNote; hubNote = '';
   showNotice();      // e.g. the result of the last quest
 }
@@ -7172,7 +7688,7 @@ function togglePick(id) {
 let formSel = -1;       // slot picked for a tap-swap
 function swapSlots(i, j) { if (i === j || i < 0 || j < 0 || i >= picked.length || j >= picked.length) return; [picked[i], picked[j]] = [picked[j], picked[i]]; }
 function renderParty(full) {
-  if (!$('gate-bg').firstChild) $('gate-bg').innerHTML = GATE_SVG;
+  if (!$('gate-bg').firstChild) $('gate-bg').innerHTML = GATE_SVG.replace('<rect width="1600" height="560" fill="url(#gSky)"/>', m => m + mikeSvg(1600, 560, 330, 'night', 'gate'));
   if (pickedQuest === 'final') return renderFinalParty(full);
   const order = Array.from({ length: MAX_PARTY }, (_, k) => MAX_PARTY - 1 - k);      // shown back -> front, like the battlefield: the front line sits next to the enemy
   $('party-slots').innerHTML = `<div class="form-lab"><span>◀ BACK</span><b>Party ${picked.length}/${MAX_PARTY}</b><span>FRONT ▶</span></div><div class="form-row" id="form-row">` +
@@ -7546,7 +8062,7 @@ async function travel(kind, info = {}) {
   const title = kind === 'camp' ? 'Making camp' : kind === 'start' ? 'Setting out' : kind === 'event' ? 'Something lies ahead…' : kind === 'boss' ? 'The Boss' : `Fight ${quest.node + 1} of ${total}`;
   const sub = kind === 'camp' ? `Cleared ${quest.node} of ${total} battles` : kind === 'event' ? 'You slow down and look closer' : (node ? node.name : '');
   let dots = ''; for (let i = 0; i < total; i++) { const isBoss = quest.def.nodes[i].boss, cls = (kind === 'camp' ? i < quest.node : i < quest.node) ? 'done' : (i === quest.node && kind !== 'camp') ? 'cur' : ''; dots += `<i class="${cls}${isBoss ? ' boss' : ''}"></i>`; if (i < total - 1) { dots += '<u></u>'; if (camps.includes(i)) dots += '<em>⛺</em><u></u>'; if (evs.some(e => e.after === i)) dots += '<em>❓</em><u></u>'; } }
-  el.innerHTML = `<div class="cover169"><div class="tv-sky" style="background:${sky}"></div>
+  el.innerHTML = `<div class="cover169"><div class="tv-sky" style="background:${sky}"></div>${mikeHtml(kind === 'camp' || kind === 'boss' ? 'night' : mikeMode(T.s1), 'travel', .5)}
     <div class="tv-layer" style="--sp:16s">${tvTile(th, 'far')}${tvTile(th, 'far')}</div><div class="tv-layer" style="--sp:7s">${tvTile(th, 'mid')}${tvTile(th, 'mid')}</div><div class="tv-layer" style="--sp:2.8s">${tvTile(th, 'near')}${tvTile(th, 'near')}</div>
     <div class="tv-fog"></div>${kind === 'camp' ? '<div class="tv-glow"></div>' : ''}${kind === 'boss' ? '<div class="tv-flash"></div>' : ''}
     <div class="tv-banner${kind === 'boss' ? ' boss' : ''}"><small>${quest.def.name.toUpperCase()}</small><b>${title}</b><span>${sub}</span></div>
@@ -7630,7 +8146,7 @@ function campBgHtml(theme) {
     let waves = ''; for (let i = 0; i < 8; i++) waves += `<path d="M0 ${330 + i * 16} Q200 ${322 + i * 16} 400 ${330 + i * 16} T800 ${330 + i * 16} T1200 ${330 + i * 16} T1600 ${330 + i * 16}" fill="none" stroke="rgba(190,215,230,${.24 - i * .02})" stroke-width="2"/>`;
     let pebbles = ''; for (let i = 0; i < 50; i++) pebbles += `<ellipse cx="${rnd() * W}" cy="${GY + 30 + rnd() * 400}" rx="${2 + rnd() * 4}" ry="${1.5 + rnd() * 2}" fill="rgba(70,60,50,.45)"/>`;
     return sv(`<defs><linearGradient id="bsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2036"/><stop offset=".6" stop-color="#4a4768"/><stop offset="1" stop-color="#8a7c8a"/></linearGradient><linearGradient id="bsea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a5368"/><stop offset="1" stop-color="#24384a"/></linearGradient><linearGradient id="bsd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a7d68"/><stop offset="1" stop-color="#4a4034"/></linearGradient></defs>`
-      + `<rect width="${W}" height="${H}" fill="url(#bsk)"/><circle cx="1240" cy="150" r="50" fill="#e8e4ee" opacity=".85"/><circle cx="1240" cy="150" r="105" fill="rgba(230,225,245,.12)"/>`
+      + `<rect width="${W}" height="${H}" fill="url(#bsk)"/>${mikeSvg(W, H, GY, 'night', 'camp')}<circle cx="1240" cy="150" r="50" fill="#e8e4ee" opacity=".85"/><circle cx="1240" cy="150" r="105" fill="rgba(230,225,245,.12)"/>`
       + `<rect y="300" width="${W}" height="190" fill="url(#bsea)"/>${waves}`
       + `<path d="M0 ${GY - 14} Q400 ${GY - 30} 800 ${GY - 16} T1600 ${GY - 22} V${H} H0Z" fill="url(#bsd)"/><path d="M0 ${GY - 14} Q400 ${GY - 30} 800 ${GY - 16} T1600 ${GY - 22}" fill="none" stroke="rgba(235,245,250,.55)" stroke-width="6"/>`
       + pebbles + patch('rgba(60,48,36,.22)', 'rgba(50,38,28,.3)') + BIG('#6d7a5a')
@@ -7642,7 +8158,7 @@ function campBgHtml(theme) {
     const cliffR = `<path d="M1600 0 H1280 L1310 140 L1250 280 L1320 400 L1230 ${GY + 20} L1600 ${GY + 60}Z" fill="#323e56"/><path d="M1600 0 H1400 L1420 120 L1370 270 L1430 400 L1380 ${GY + 30} L1600 ${GY + 60}Z" fill="#46556e"/><path d="M1600 0 H1300 L1330 70 L1390 50 L1440 100 L1500 60 L1560 110 L1600 90Z" fill="#eaf3ff"/>`;
     let drifts = ''; for (let i = 0; i < 26; i++) drifts += `<ellipse cx="${rnd() * W}" cy="${GY + 40 + rnd() * 390}" rx="${30 + rnd() * 70}" ry="${5 + rnd() * 9}" fill="rgba(255,255,255,${.25 + rnd() * .3})"/>`;
     return sv(`<defs><linearGradient id="ssk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1530"/><stop offset=".55" stop-color="#27406a"/><stop offset="1" stop-color="#7f9cc0"/></linearGradient><linearGradient id="sgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e4eefb"/><stop offset="1" stop-color="#8fa3c0"/></linearGradient><linearGradient id="aur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(90,255,190,0)"/><stop offset=".4" stop-color="rgba(90,255,190,.35)"/><stop offset=".7" stop-color="rgba(150,120,255,.3)"/><stop offset="1" stop-color="rgba(150,120,255,0)"/></linearGradient></defs>`
-      + `<rect width="${W}" height="${H}" fill="url(#ssk)"/><path d="M250 40 Q600 190 900 70 T1450 120 L1450 200 Q1100 280 800 170 T250 150Z" fill="url(#aur)" opacity=".8"/>`
+      + `<rect width="${W}" height="${H}" fill="url(#ssk)"/>${mikeSvg(W, H, GY, 'night', 'camp')}<path d="M250 40 Q600 190 900 70 T1450 120 L1450 200 Q1100 280 800 170 T250 150Z" fill="url(#aur)" opacity=".8"/>`
       + `<path d="M300 ${GY} L480 260 L580 360 L740 190 L930 380 L1060 290 L1300 ${GY}Z" fill="#5a7396"/><path d="M740 190 L670 290 L720 280 L760 320 L810 280 L850 300Z" fill="#eaf3ff"/><path d="M480 260 L430 330 L480 315 L520 340Z" fill="#eaf3ff"/>`
       + campPines(7, GY + 6, 90, 150, '#25384f', 16, true) + cliffL + cliffR
       + `<path d="M0 ${GY} Q400 ${GY - 22} 800 ${GY - 6} T1600 ${GY - 14} V${H} H0Z" fill="url(#sgd)"/>` + drifts + patch('rgba(255,255,255,.12)', 'rgba(255,200,140,.12)') + BIG('#a05a3a', true))
@@ -7651,7 +8167,7 @@ function campBgHtml(theme) {
   // forest
   let stars = ''; for (let i = 0; i < 46; i++) stars += `<circle cx="${(i * 197) % W}" cy="${(i * 83) % 230 + 10}" r="${i % 5 ? 1.2 : 2}" fill="#fff" opacity="${.35 + (i % 4) * .15}"/>`;
   return sv(`<defs><linearGradient id="fsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b1a"/><stop offset="1" stop-color="#1c3a3a"/></linearGradient><linearGradient id="fgd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a5a30"/><stop offset="1" stop-color="#162416"/></linearGradient></defs>`
-    + `<rect width="${W}" height="${H}" fill="url(#fsk)"/>${stars}<circle cx="260" cy="110" r="46" fill="#f2efd8" opacity=".9"/><circle cx="260" cy="110" r="100" fill="rgba(240,240,200,.1)"/>`
+    + `<rect width="${W}" height="${H}" fill="url(#fsk)"/>${mikeSvg(W, H, GY, 'night', 'camp')}${stars}<circle cx="260" cy="110" r="46" fill="#f2efd8" opacity=".9"/><circle cx="260" cy="110" r="100" fill="rgba(240,240,200,.1)"/>`
     + campPines(3, GY - 10, 220, 340, '#10241f', 14) + campPines(11, GY + 6, 200, 300, '#0c1a17', 11)
     + `<path d="M0 ${GY} Q400 ${GY - 22} 800 ${GY - 6} T1600 ${GY - 14} V${H} H0Z" fill="url(#fgd)"/>`
     + tufts('#2a4524', 90, GY + 20, 880, 14) + patch('rgba(120,90,50,.28)', 'rgba(90,64,36,.4)') + tufts('#4a7a3a', 40, GY + 120, 800, 12) + BIG('#7a6a3a'))
@@ -7662,7 +8178,7 @@ function campBackdrop() {
   const bg = $('camp-bg'), g = quest && quest.def && groupOf(quest.def.id), theme = CAMP_THEME[g && g.id] || 'forest';
   if (bg.dataset.theme === theme) return;
   bg.dataset.theme = theme; bg.className = ''; bg.style.backgroundImage = ''; bg.innerHTML = campBgHtml(theme);
-  findAsset(`assets/ui/camp_${theme}`).then(a => { if (a && bg.dataset.theme === theme) { bg.style.backgroundImage = `url("${a.url}")`; bg.classList.add('has-art'); } });
+  findAsset(`assets/ui/camp_${theme}`).then(a => { if (a && bg.dataset.theme === theme) { bg.style.backgroundImage = `url("${a.url}")`; bg.classList.add('has-art'); mikePaint(bg, a.url, 'camp'); } });
 }
 function renderCamp() {
   campBackdrop();
@@ -7884,7 +8400,7 @@ function evBackdrop(th) {
     <radialGradient id="evBlue"><stop offset="0" stop-color="#8fd8ff" stop-opacity=".6"/><stop offset="1" stop-color="#8fd8ff" stop-opacity="0"/></radialGradient>
     <linearGradient id="evFog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${T.fog}" stop-opacity="0"/><stop offset=".6" stop-color="${T.fog}" stop-opacity=".32"/><stop offset="1" stop-color="${T.fog}" stop-opacity="0"/></linearGradient>
     <filter id="evBlur"><feGaussianBlur stdDeviation="9"/></filter></defs>`);
-  o.push(`<rect width="1600" height="560" fill="url(#evS)"/>`);
+  o.push(`<rect width="1600" height="560" fill="url(#evS)"/>` + mikeSvg(1600, 900, 440, mikeMode(T.s1), 'event'));
   if (th === 'coast') { o.push(`<rect y="500" width="1600" height="60" fill="#2e424d"/>`); for (let i = 0; i < 22; i++) { const x = R() * 1600, y = 505 + R() * 50, w = 50 + R() * 120; o.push(`<path d="M${f(x)},${f(y)} q${f(w / 4)},-4 ${f(w / 2)},0 t${f(w / 2)},0" fill="none" stroke="#9fb6c0" stroke-width="2" opacity="${f(.15 + R() * .25)}"/>`); } }
   else if (th === 'frost') { let d = 'M0,520 L0,420'; for (let x = 0; x <= 1600; x += 110) d += ` L${x},${f(400 - R() * 120)}`; o.push(`<path d="${d} L1600,520Z" fill="${T.far}"/>`); for (let i = 0; i < 26; i++) { const x = i * 64 + R() * 30, h = 70 + R() * 80; o.push(`<path d="M${x},520 L${x + 22},${520 - h} L${x + 44},520Z" fill="#24334e"/>`); } }
   else { let d = 'M0,520 L0,430'; for (let x = 0; x <= 1600; x += 90) d += ` L${x},${f(430 - R() * 60)}`; o.push(`<path d="${d} L1600,520Z" fill="${T.far}"/>`); [160, 420, 1180, 1450].forEach((x, i) => o.push(`<rect x="${x}" y="${300 + i * 12}" width="${46 + (i % 2) * 14}" height="240" fill="#1d1630"/><rect x="${x - 6}" y="${292 + i * 12}" width="${58 + (i % 2) * 14}" height="14" fill="#241b3a"/>`)); }
@@ -9275,7 +9791,7 @@ function beachSVG(court) {
     <radialGradient id="bSun"><stop offset="0" stop-color="#dfe5e6" stop-opacity=".5"/><stop offset="1" stop-color="#dfe5e6" stop-opacity="0"/></radialGradient>
     <linearGradient id="bMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#aab6bd" stop-opacity="0"/><stop offset=".5" stop-color="#aab6bd" stop-opacity=".28"/><stop offset="1" stop-color="#aab6bd" stop-opacity="0"/></linearGradient>
     <filter id="bBlur"><feGaussianBlur stdDeviation="16"/></filter></defs>`);
-  add(`<rect width="1600" height="420" fill="url(#bSky)"/><circle cx="1130" cy="250" r="190" fill="url(#bSun)"/>`);
+  add(`<rect width="1600" height="420" fill="url(#bSky)"/>${mikeSvg(1600, 900, 420, 'day', court ? 'vb' : 'beach')}<circle cx="1130" cy="250" r="190" fill="url(#bSun)"/>`);
   for (let i = 0; i < 9; i++) add(`<ellipse cx="${f(R() * 1700 - 50)}" cy="${f(40 + R() * 280)}" rx="${f(160 + R() * 240)}" ry="${f(26 + R() * 40)}" fill="#1b222c" opacity="${f(.35 + R() * .3)}" filter="url(#bBlur)"/>`);
   add(`<rect y="395" width="1600" height="330" fill="url(#bSea)"/>`);
   for (let i = 0; i < 26; i++) { const y = 410 + R() * 280, x = R() * 1600, w = 50 + R() * 140; add(`<path d="M${f(x)},${f(y)} q${f(w / 4)},-5 ${f(w / 2)},0 t${f(w / 2)},0" fill="none" stroke="#9fb6c0" stroke-width="2" opacity="${f(.1 + R() * .2)}"/>`); }
@@ -9296,7 +9812,7 @@ function beachSVG(court) {
 async function loadBeachBg(mapId, artId, key, svgFn) {
   const el = $(artId); if (!el.firstChild) el.innerHTML = svgFn();
   const a = await findAsset(`${ANIM.base}/ui/${key}`);
-  if (a && ['png', 'jpg', 'webp'].includes(a.ext)) { const m = $(mapId); m.style.backgroundImage = `url("${a.url}")`; m.style.backgroundSize = 'cover'; m.classList.add('has-art'); }
+  if (a && ['png', 'jpg', 'webp'].includes(a.ext)) { const m = $(mapId); m.style.backgroundImage = `url("${a.url}")`; m.style.backgroundSize = 'cover'; m.classList.add('has-art'); mikePaint(m, a.url, mapId === 'vb-court' ? 'vb' : 'beach'); }
 }
 async function beachIdle(id) {         // always the swimsuit idle (armoured - swimsuit), never whatever skin is worn; else the normal idle
   return (await findAsset(`${ANIM.base}/${id}/armoured - swimsuit/idle`)) || findAsset(`${ANIM.base}/${id}/armoured/idle`);
@@ -9571,7 +10087,7 @@ const GP = (() => {
     if (shown('pause')) return { root: shown('pause'), modal: 'pause' };
     for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
     if (typeof dormMenuEl !== 'undefined' && dormMenuEl && dormMenuEl.isConnected) return { root: dormMenuEl, modal: 'rcmenu' };           // the dorm's swap menu floats outside the scene
-    for (const id of ['guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
+    for (const id of ['gbook', 'guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
     const t = document.getElementById('title'); if (t && !t.classList.contains('hide')) return { root: t };
     const sc = document.querySelector('.scene.show'); if (sc && sc.id === 'dive' && typeof diveLive !== 'undefined' && diveLive()) return { root: sc, skip: true, noClick: true };
     return { root: sc || document.body, scene: sc && sc.id };
@@ -9640,6 +10156,7 @@ const GP = (() => {
     if (L.skip) return L.root.click();
     if (L.modal === 'pause') return $('pz-ask').classList.contains('on') ? pauseAskTitle(false) : pauseClose();
     if (L.modal === 'rcmenu') return closeDormMenu();
+    if (L.modal === 'gbook') return closeBook();
     if (L.modal === 'guide') return closeGuide();
     if (L.modal === 'pot-modal') return closePot();
     if (L.modal === 'relic-modal') return closeRelics();
@@ -9711,6 +10228,7 @@ const GP = (() => {
         if (edge('X') && L.scene === 'battle-scene' && !$('btn-items').disabled) $('btn-items').click();
         if (edge('Y') && S.focus && L.scene !== 'party-select') { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
         if (L.modal === 'guide') { if (edge('LB')) guideStep(-1); if (edge('RB')) guideStep(1); }
+        if (L.modal === 'gbook') { if (edge('LB')) bookTabStep(-1); if (edge('RB')) bookTabStep(1); }
         else if (L.scene === 'battle-scene' && edge('RB')) cycleSpeed();
         else if (L.scene === 'gear' && dormHero) { if (edge('LB')) dormStep(-1); if (edge('RB')) dormStep(1); }
         if (edge('START') && L.modal === 'pause') pauseClose();
