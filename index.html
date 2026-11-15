@@ -318,6 +318,33 @@ body.calm .seat .sp{animation:none}
 .sr-bubble{position:absolute;z-index:20;left:54%;top:7%;max-width:30%;padding:.5em 1em;border-radius:12px;background:#fff;color:#1b1b26;font-weight:700;font-size:clamp(12px,.95vw,18px);line-height:1.25;box-shadow:0 3px 10px rgba(0,0,0,.55);pointer-events:none;text-align:center}
 .sr-bubble::after{content:"";position:absolute;left:18%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-top-color:#fff;border-bottom:0}
 .sr-bubble.ok{background:#e9ffe0}.sr-bubble.ok::after{border-top-color:#e9ffe0}
+/* ---- the painted shop (assets/ui/shop_room): window sky, assistant, keeper behind the counter, wares as icons ---- */
+.sr-sky{position:absolute;inset:0;z-index:0;overflow:hidden;background:linear-gradient(#081026,#1b2a52 55%,#33456e)}
+.sr-sky.coast{background:linear-gradient(#2f3a49,#59667a 60%,#7b8799)}
+.sr-sky::before{content:'';position:absolute;inset:0;opacity:.85;background-image:radial-gradient(1.6px 1.6px at 49% 22%,#fff,transparent),radial-gradient(1.2px 1.2px at 53% 27%,#cfe0ff,transparent),radial-gradient(1.4px 1.4px at 56% 21%,#fff,transparent),radial-gradient(1.1px 1.1px at 50.5% 33%,#dfe9ff,transparent),radial-gradient(1.5px 1.5px at 55% 35%,#fff,transparent),radial-gradient(1px 1px at 48% 30%,#fff,transparent),radial-gradient(1.2px 1.2px at 57.5% 30%,#fff,transparent)}
+.sr-sky.coast::before{opacity:0}
+.sr-wares{display:none;position:absolute;inset:0;z-index:8;pointer-events:none}
+.sr-assist{position:absolute;z-index:3;pointer-events:none;transform:translateX(-50%);opacity:0;transition:opacity .7s ease}
+.sr-assist.on{opacity:1}
+.sr-assist .sa-flip{height:100%;transform-origin:50% 100%;transition:transform .3s ease}
+.sr-assist.flip .sa-flip{transform:scaleX(-1)}
+.sr-assist img{height:100%;width:auto;display:block;transform-origin:50% 100%;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+.sr-assist.sweep img{animation:saSweep var(--sw,2.8s) ease-in-out infinite}
+.sr-assist.stand img{animation:saBreathe 4.4s ease-in-out infinite}
+@keyframes saSweep{0%,100%{rotate:0deg;translate:0 0}40%{rotate:-3.4deg;translate:-2.6% 0}55%{rotate:-3.6deg;translate:-3% 0}}
+@keyframes saBreathe{0%,100%{scale:1 1}50%{scale:1.004 1.01}}
+.sa-dust{position:absolute;z-index:4;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(205,182,140,.9),rgba(178,156,118,.45) 42%,rgba(160,140,105,0) 70%);filter:blur(.5px)}
+.sa-dust.mote{background:#f3e3b8;filter:none;box-shadow:0 0 4px rgba(255,235,180,.8)}
+body.calm .sr-assist img{animation:none}
+.sr-abubble{left:50%;top:50%;transform:translate(-50%,-100%);max-width:22%}
+.sr-abubble.gone{transform:translate(-50%,-100%) translateY(6px)}
+.sr-abubble.pop{animation:none}
+#shop .shop-room.has-art .sr-keeper{left:calc(var(--kx) * 100%);top:calc((var(--kb) - var(--kh)) * 100%);height:calc(var(--kh) * 100%);width:auto;aspect-ratio:auto;transform:translateX(-50%);animation:none;clip-path:inset(-25% -60% calc(var(--kcut) * 100%) -60%)}
+#shop .shop-room.has-art .sr-keeper img,#shop .shop-room.has-art .sr-keeper svg{position:static;left:auto;transform:none;height:100%;width:auto;transform-origin:50% 100%;animation:srBreathe2 4.6s ease-in-out infinite}
+@keyframes srBreathe2{0%,100%{scale:1 1}50%{scale:1.004 1.012}}
+#shop .shop-room.has-art #sr-bubble{left:auto;right:calc(var(--bR) * 100%);top:calc(var(--bT) * 100%);max-width:24%;text-align:left}
+#shop .shop-room.has-art #sr-bubble::after{left:auto;right:-8px;top:46%;bottom:auto;margin:0;border:8px solid transparent;border-left-color:#fff;border-right:0}
+#shop .shop-room.has-art #sr-bubble.ok::after{border-left-color:#e9ffe0}
 .sr-bubble{transition:opacity .7s ease,transform .7s ease}
 .sr-bubble.gone{opacity:0;transform:translateY(6px)}
 .sr-bubble.pop{animation:srPop .35s ease-out}
@@ -767,6 +794,7 @@ body.calm .gb-bob,body.calm .gb-shadow,body.calm .gb-glow,body.calm .gb-motes{an
 .mike.nomask{-webkit-mask-image:linear-gradient(#000 0 28%,transparent 52%);mask-image:linear-gradient(#000 0 28%,transparent 52%)}
 .mike img{position:absolute;object-fit:contain;display:block}
 .tv-mike{position:absolute;inset:0;pointer-events:none}.tv-mike img{position:absolute;object-fit:contain}
+.mike img,.tv-mike img{-webkit-mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%);mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%)}
 #finale{position:fixed;inset:0;z-index:400;overflow:hidden;cursor:pointer}
 #finale .fn-stage{position:absolute;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);transform:translate(-50%,-50%);overflow:hidden;background:#0b0f18 center/cover no-repeat}
 #finale .fn-svg,#finale .fn-svg svg{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -1235,6 +1263,41 @@ body.fs .qmap{margin:0}
   #shop .shop-side .sup-note{font-size:.62rem}
   #shop .shop-back{display:block;position:absolute;top:2%;right:1.4%;z-index:14;margin:0;padding:.5em 1.2em;background:rgba(10,8,20,.7);border:1px solid rgba(255,255,255,.2);border-radius:12px}
   #shop .shop-gold{margin:0 0 6px;justify-content:center}
+  /* the painted room: the old card shelves give way to icons sitting on the painted shelves */
+  #shop .shop-room.has-art ~ .shop-layout .shop-main{display:none!important}
+  #shop .shop-room.has-art .sr-wares{display:block}
+  /* wares: just the icon on the shelf, a price tag, and a tooltip on hover / focus */
+  .sr-ware{position:absolute;pointer-events:auto;transform:translate(-50%,-100%);display:block;padding:0;margin:0;background:none;border:0;box-shadow:none;cursor:pointer;color:inherit;font:inherit;min-width:0}      /* the icon's bottom sits on the shelf line; the price tag hangs just below */
+  .sr-ware .ic{display:block;line-height:1;font-size:var(--is,6cqh);filter:drop-shadow(0 4px 5px rgba(0,0,0,.6)) drop-shadow(0 0 10px var(--rc,rgba(255,226,160,.35)));transition:transform .18s ease,filter .18s ease}
+  .sr-ware.sup{--is:6.2cqh}
+  .sr-ware.rel{--is:5cqh}
+  .sr-ware.rel .ic{animation:srOrb 3.4s ease-in-out infinite}
+  .sr-ware.relic-common{--rc:#b8c8d8}.sr-ware.relic-rare{--rc:#7fb6ff}.sr-ware.relic-epic{--rc:#c58aff}.sr-ware.relic-legendary{--rc:#ffcf5a}
+  .sr-ware:hover .ic,.sr-ware:focus-visible .ic,.sr-ware.gp-focus .ic,.sr-ware.sel .ic{transform:translateY(-6%) scale(1.12);filter:drop-shadow(0 6px 6px rgba(0,0,0,.6)) drop-shadow(0 0 16px var(--rc,#ffe2a0))}
+  body.gp .sr-ware.gp-focus{outline:none!important;box-shadow:none!important}
+  .sr-ware .cnt{position:absolute;right:-22%;top:-6%;min-width:1.7em;padding:.1em .35em;border-radius:999px;background:#2b1a0e;border:1px solid #c79a5c;color:#ffe2a8;font-size:clamp(10px,1.2cqh,15px);font-weight:800;line-height:1.3}
+  .sr-tag{position:absolute;left:50%;top:calc(100% + .35cqh);transform:translateX(-50%);display:inline-flex;align-items:center;gap:.25em;padding:.12em .55em;border-radius:5px;white-space:nowrap;background:linear-gradient(#f2e2bd,#d6bf8e);color:#3a2410;border:1px solid #6b4a26;box-shadow:0 2px 4px rgba(0,0,0,.5);font-size:clamp(10px,1.3cqh,17px);font-weight:800;line-height:1.25}
+  .sr-ware.poor .sr-tag{background:linear-gradient(#cdbfa6,#a99a80);color:#7a1d1d}
+  .sr-ware.poor .ic{opacity:.72}
+  .sr-tip{display:none;position:absolute;z-index:30;width:clamp(230px,19cqw,340px);box-sizing:border-box;padding:.75em .9em .7em;text-align:left;pointer-events:none;cursor:default;
+    background:linear-gradient(rgba(42,27,16,.98),rgba(24,15,9,.98));border:2px solid #a8794a;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,225,170,.12),0 10px 26px rgba(0,0,0,.65);color:#f1e3c8;font-size:clamp(12px,1.45cqh,17px);line-height:1.4}
+  .sr-tip.below{left:50%;top:calc(100% + 4.2cqh);transform:translateX(-50%)}
+  .sr-tip.right{left:calc(100% + 1.4cqw);top:50%;transform:translateY(-50%)}
+  .sr-tip .t{display:block;font-size:1.15em;color:#ffd98f;margin-bottom:.25em}
+  .sr-tip .d{display:block}
+  .sr-tip .m{display:block;margin-top:.35em;color:#cbb898}
+  .sr-tip .f{display:block;margin-top:.55em;padding-top:.45em;border-top:1px solid rgba(200,160,110,.3);color:#9fe3a0;font-weight:800}
+  .sr-ware.poor .sr-tip .f{color:#ff9a8a}
+  .sr-tip .rar{margin-left:.3em}
+  .sr-ware:hover .sr-tip,.sr-ware:focus-visible .sr-tip,.sr-ware.gp-focus .sr-tip,.sr-ware.sel .sr-tip{display:block}
+  .sr-ware:hover,.sr-ware:focus-visible,.sr-ware.gp-focus,.sr-ware.sel{z-index:20}
+  #shop .fscov:has(.sr-ware:hover,.sr-ware.sel,.sr-ware.gp-focus) .sr-bubble{opacity:0!important}
+  .sr-soldout{position:absolute;transform:translate(-50%,-115%);padding:.2em .7em;border-radius:5px;background:rgba(20,12,8,.82);border:1px solid #7a5638;color:#cbb898;font-size:clamp(11px,1.4cqh,16px);font-weight:700;letter-spacing:.06em;pointer-events:none}
+  /* the supplies panel and the Back sign, in the room's wood and brass */
+  #shop .shop-room.has-art ~ .shop-layout .shop-side{background:linear-gradient(rgba(44,28,16,.95),rgba(24,15,9,.96));border:2px solid #a8794a;box-shadow:inset 0 0 0 1px rgba(255,225,170,.12),0 12px 28px rgba(0,0,0,.6);border-radius:12px}
+  #shop .shop-room.has-art ~ .shop-layout .shop-side .hub-section{color:#e7c78e;letter-spacing:.12em}
+  #shop .shop-room.has-art ~ .shop-layout .shop-side .sup-row{background:rgba(255,235,200,.05);border-color:rgba(200,160,110,.18)}
+  #shop .shop-room.has-art ~ .shop-back,#shop .hub-hall:has(.shop-room.has-art) .shop-back{background:linear-gradient(#6a4528,#3e2615);border:2px solid #a8794a;color:#ffe9c0;box-shadow:0 4px 12px rgba(0,0,0,.5)}
   #shop .fs-chip .hub-sub{max-width:none}
   body.dev #party-select #btn-quick{display:block}
   #party-select .em-roster .rs-h{flex:0 0 auto}
@@ -1767,7 +1830,8 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
   </div>
 </div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <filter id="mike-night" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values=".8"/><feGaussianBlur stdDeviation=".5"/></filter>
+  <filter id="mike-night" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values=".75"/><feGaussianBlur stdDeviation=".9"/></filter>
+  <radialGradient id="mike-fadeG" cx=".5" cy=".5" r=".5"><stop offset=".58" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient><mask id="mike-fade" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#mike-fadeG)"/></mask>
   <filter id="mike-day" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values=".06" result="a"/><feComponentTransfer in="a" result="b"><feFuncR type="linear" slope=".45" intercept=".55"/><feFuncG type="linear" slope=".45" intercept=".55"/><feFuncB type="linear" slope=".45" intercept=".57"/></feComponentTransfer><feTurbulence type="fractalNoise" baseFrequency=".007 .022" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="b" in2="n" scale="14" xChannelSelector="R" yChannelSelector="G" result="c"/><feGaussianBlur in="c" stdDeviation="1.1"/></filter>
   <linearGradient id="gFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b3200a"/><stop offset=".35" stop-color="#ff5a1a"/><stop offset=".75" stop-color="#ffb52e"/><stop offset="1" stop-color="#fff2a0"/></linearGradient>
   <linearGradient id="gFlameCore" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a1f"/><stop offset="1" stop-color="#fffbe0"/></linearGradient>
@@ -1982,10 +2046,14 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
     <div class="hub-hall">
       <button class="shop-back" onclick="showScene('hub')">◀ Back to Town</button>
       <div class="fsbox shop-room" id="shop-room"><div class="fscov">
+        <div class="sr-sky" id="sr-sky"></div>
         <svg class="sr-svg sr-bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" id="sr-bg"></svg>
+        <div class="sr-assist" id="sr-assist"><div class="sa-flip"><img id="sr-assist-img" alt="" draggable="false"></div></div>
         <div class="sr-keeper" id="sr-keeper"></div>
         <svg class="sr-svg sr-fg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" id="sr-fg"></svg>
+        <div class="sr-wares" id="sr-wares"></div>
         <div class="sr-bubble sbubble-look" id="sr-bubble"></div>
+        <div class="sr-bubble sbubble-look sr-abubble gone" id="sr-abubble"></div>
       </div></div>
       <div class="shop-layout">
         <div class="shop-main">
@@ -3879,24 +3947,51 @@ const manifestReady = (async () => {
    - Painted backgrounds (town, battle_*, camp_*, beach, volleyball) get him through a SKY MASK the game works out from the picture: the smooth area connected to the top edge.
      So he sits behind mountains, roofs and clouds, and a picture with no real sky (an indoor scene) gets no Big Mike. He goes where the sky is deepest near MIKE.x.
    - Night skies: faint and see-through. Day skies (bright painted skies, the overcast coast, the beach): washed out to white/grey and warped by the air, like the moon at noon.
-   Knobs: x = preferred centre across the scene (0-1), size = diameter as a fraction of the scene height, op = opacity at night / by day.
+   His picture: any shape (his width follows it), transparent background preferred. A solid background is cut out automatically, and his edges always fade softly into the sky.
+   Knobs: x = preferred centre across the scene (0-1), size = his height as a fraction of the scene height, op = opacity at night / by day.
           MIKE.at[scene] overrides any of x, y, size, mode ('day' | 'night') or off: true. Scenes: town, battle, camp, beach, vb, gate, event, travel, finale. */
-const MIKE = { on: true, x: .7, size: .5, op: { night: .34, day: .24 }, at: {} };
+const MIKE = { on: true, x: .7, size: .4, op: { night: .3, day: .22 }, at: {} };          // size = his HEIGHT as a fraction of the scene's height (his width follows the picture)
 let mikeArt = null;
-manifestReady.then(async () => { mikeArt = await findStill(`${ANIM.base}/ui/bigmike`); if (mikeArt) mikeRefresh(); });
+manifestReady.then(async () => { const a = await findStill(`${ANIM.base}/ui/bigmike`); if (!a) return; mikeArt = await mikeClean(a); if (mikeArt) mikeRefresh(); });
+async function mikeClean(a) {          // his picture, made safe for the sky: a solid background (white or any flat colour) is removed; every scene also fades his edges softly
+  const im = new Image(); im.src = a.url; try { await im.decode(); } catch (e) { return null; }
+  const aspect = im.naturalWidth / im.naturalHeight || 1;
+  try {
+    const sc = Math.min(1, 1400 / Math.max(im.naturalWidth, im.naturalHeight)), W = Math.max(8, Math.round(im.naturalWidth * sc)), H = Math.max(8, Math.round(im.naturalHeight * sc));
+    const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0, W, H);
+    const id = g.getImageData(0, 0, W, H), d = id.data, border = [];
+    for (let x = 0; x < W; x++) border.push(x, (H - 1) * W + x); for (let y = 1; y < H - 1; y++) border.push(y * W, y * W + W - 1);
+    const solid = border.filter(i => d[i * 4 + 3] > 200);
+    if (solid.length < border.length * .6) return { url: a.url, aspect };                  // already transparent around the edges: use it as it is
+    const med = k => { const v = solid.map(i => d[i * 4 + k]).sort((p, q) => p - q); return v[v.length >> 1]; }, bg = [med(0), med(1), med(2)];
+    const off = i => { const o = i * 4; return Math.abs(d[o] - bg[0]) + Math.abs(d[o + 1] - bg[1]) + Math.abs(d[o + 2] - bg[2]); };
+    const gone = new Uint8Array(W * H), q = border.filter(i => off(i) < 70); q.forEach(i => gone[i] = 1);
+    while (q.length) { const i = q.pop(), x = i % W, y = (i / W) | 0;
+      for (const j of [x > 0 ? i - 1 : -1, x < W - 1 ? i + 1 : -1, y > 0 ? i - W : -1, y < H - 1 ? i + W : -1]) if (j >= 0 && !gone[j] && off(j) < 70) { gone[j] = 1; q.push(j); } }
+    for (let i = 0; i < W * H; i++) { if (gone[i]) { d[i * 4 + 3] = 0; continue; }
+      const x = i % W, y = (i / W) | 0, edge = (x > 0 && gone[i - 1]) || (x < W - 1 && gone[i + 1]) || (y > 0 && gone[i - W]) || (y < H - 1 && gone[i + W]);
+      if (edge) d[i * 4 + 3] = Math.round(d[i * 4 + 3] * Math.min(1, off(i) / 160)); }                // soften the cut-out edge
+    g.putImageData(id, 0, 0);
+    const blob = await new Promise(r => c.toBlob(r, 'image/png')); if (!blob) return { url: a.url, aspect };
+    artNote(`${a.url} has a solid background (rgb ${bg.join(', ')}). The game cut it out, but export him with a transparent background for the cleanest edges.`);
+    return { url: URL.createObjectURL(blob), aspect, cleaned: true };
+  } catch (e) { return { url: a.url, aspect }; }                    // can't read the picture (opened from disk): used as it is, edges still faded
+}
 function mikeRefresh() {         // he just became available: redraw the skies already on screen
   try { townArt = null; if ($('hub').classList.contains('show')) loadTownBg(); const cb = $('camp-bg'); if (cb) cb.dataset.theme = ''; const gb = $('gate-bg'); if (gb) gb.innerHTML = '';
-    ['beach-art', 'vb-art'].forEach(id => { const e = $(id); if (e) e.innerHTML = ''; }); } catch (e) { }
+    ['beach-art', 'vb-art'].forEach(id => { const e = $(id); if (e) e.innerHTML = ''; }); if (typeof shopBuilt !== 'undefined' && shopBuilt) shopSky(); } catch (e) { }
 }
 const mikeMode = (hex) => { const h = (hex || '#000').replace('#', ''), n = parseInt(h.length === 3 ? h.replace(/./g, c => c + c) : h, 16); return (.2126 * (n >> 16 & 255) + .7152 * (n >> 8 & 255) + .0722 * (n & 255)) > 128 ? 'day' : 'night'; };
 function mikeSvg(W, H, horizon, mode, scene) {       // inside a code-drawn SVG, right after its sky
   if (!MIKE.on || !mikeArt) return ''; const k = MIKE.at[scene] || {}; if (k.off) return '';
-  const md = k.mode || mode, d = Math.min(H * (k.size || MIKE.size), horizon * .95), cx = (k.x ?? MIKE.x) * W, cy = (k.y ?? .42) * horizon, r = n => Math.round(n * 10) / 10;
-  return `<image class="mike-svg" href="${mikeArt.url}" x="${r(cx - d / 2)}" y="${r(cy - d / 2)}" width="${r(d)}" height="${r(d)}" preserveAspectRatio="xMidYMid meet" opacity="${MIKE.op[md]}" filter="url(#mike-${md})"/>`;
+  const md = k.mode || mode, as = mikeArt.aspect || 1; let h = Math.min(H * (k.size || MIKE.size), horizon * .9); if (h * as > W * .62) h = W * .62 / as;      // never wider than ~60% of the scene
+  const w = h * as, cx = (k.x ?? MIKE.x) * W, cy = (k.y ?? .44) * horizon, r = n => Math.round(n * 10) / 10;
+  return `<g mask="url(#mike-fade)" opacity="${MIKE.op[md]}"><image class="mike-svg" href="${mikeArt.url}" x="${r(cx - w / 2)}" y="${r(cy - h / 2)}" width="${r(w)}" height="${r(h)}" preserveAspectRatio="xMidYMid meet" filter="url(#mike-${md})"/></g>`;
 }
 function mikeHtml(mode, scene, horizon = .5) {       // in a 16:9 HTML scene (travel)
   if (!MIKE.on || !mikeArt) return ''; const k = MIKE.at[scene] || {}; if (k.off) return '';
-  const md = k.mode || mode, d = Math.min(k.size || MIKE.size, horizon * .95), cx = k.x ?? MIKE.x, cy = (k.y ?? .42) * horizon, w = d * 9 / 16;
+  const md = k.mode || mode, as = mikeArt.aspect || 1; let d = Math.min(k.size || MIKE.size, horizon * .9); if (d * as * 9 / 16 > .62) d = .62 * 16 / 9 / as;
+  const cx = k.x ?? MIKE.x, cy = (k.y ?? .44) * horizon, w = d * as * 9 / 16;
   return `<div class="tv-mike"><img src="${mikeArt.url}" alt="" style="left:${((cx - w / 2) * 100).toFixed(2)}%;top:${((cy - d / 2) * 100).toFixed(2)}%;width:${(w * 100).toFixed(2)}%;height:${(d * 100).toFixed(2)}%;opacity:${MIKE.op[md]};filter:url(#mike-${md})"></div>`;
 }
 const skyCache = {};
@@ -3917,7 +4012,7 @@ function skyRead(im) {          // find the sky in a painted picture: flood from
   const depth = new Float32Array(W); let lum = 0, cnt = 0;
   for (let x = 0; x < W; x++) { let y = 0; while (y < H && sky[y * W + x]) y++; depth[x] = y / H; }
   for (let i = 0; i < N; i++) if (sky[i]) { const a = i * 4; lum += .2126 * px[a] + .7152 * px[a + 1] + .0722 * px[a + 2]; cnt++; }
-  const d0 = MIKE.size, rCols = Math.max(2, Math.round(d0 * H / 2)), med = cx => { const a = []; for (let x = Math.round(cx * W) - rCols; x <= Math.round(cx * W) + rCols; x++) if (x >= 0 && x < W) a.push(depth[x]); a.sort((p, q2) => p - q2); return a.length ? a[a.length >> 1] : 0; };
+  const d0 = MIKE.size, rCols = Math.max(2, Math.round(d0 * H * ((mikeArt && mikeArt.aspect) || 1) / 2)), med = cx => { const a = []; for (let x = Math.round(cx * W) - rCols; x <= Math.round(cx * W) + rCols; x++) if (x >= 0 && x < W) a.push(depth[x]); a.sort((p, q2) => p - q2); return a.length ? a[a.length >> 1] : 0; };
   let best = 0, bx = MIKE.x; for (const cx of [MIKE.x, 1 - MIKE.x, .5, .85, .15]) { const m = med(cx); if (m > best + .04) { best = m; bx = cx; } }
   if (best < .2) return { ok: false };                // no real sky in this picture
   const out = document.createElement('canvas'); out.width = W; out.height = H; const og = out.getContext('2d'), id = og.createImageData(W, H);
@@ -3937,7 +4032,8 @@ async function mikePaint(host, url, scene) {       // a painted background (CSS 
   if (!MIKE.on || !mikeArt || !url) return; const k = MIKE.at[scene] || {}; if (k.off) return;
   const sky = await skyMap(url); if (!sky || !sky.ok || !host.isConnected || !(host.style.backgroundImage || '').includes(url)) return;
   host.querySelectorAll(':scope > .mike').forEach(x => x.remove());
-  const md = k.mode || sky.mode, d = k.size || sky.d, cx = k.x ?? sky.cx, cy = k.y ?? sky.cy, wf = d * sky.ih / sky.iw;
+  const md = k.mode || sky.mode, as = mikeArt.aspect || 1; let d = k.size || sky.d; if (d * as * sky.ih / sky.iw > .62) d = .62 * sky.iw / sky.ih / as;
+  const cx = k.x ?? sky.cx, cy = k.y ?? sky.cy, wf = d * as * sky.ih / sky.iw;
   const box = document.createElement('div'); box.className = 'mike ' + md + (sky.mask ? '' : ' nomask'); box.dataset.iw = sky.iw; box.dataset.ih = sky.ih;
   if (sky.mask) { box.style.webkitMaskImage = `url("${sky.mask}")`; box.style.maskImage = `url("${sky.mask}")`; }
   const im = document.createElement('img'); im.src = mikeArt.url; im.alt = ''; im.draggable = false;
@@ -8523,9 +8619,39 @@ const SHOP_FG = `<defs><linearGradient id="sCtr" x1="0" y1="0" x2="0" y2="1"><st
   <g><ellipse cx="1180" cy="640" rx="60" ry="9" fill="#000" opacity=".3"/><path d="M1130 640 q-10 -50 20 -60 q30 -10 60 0 q30 10 20 60Z" fill="#7a4a2a"/><path d="M1160 584 q30 -18 50 0" stroke="#e8c860" stroke-width="6" fill="none"/><circle cx="1260" cy="628" r="12" fill="#e8c860" stroke="#a8802a" stroke-width="3"/><circle cx="1290" cy="634" r="12" fill="#e8c860" stroke="#a8802a" stroke-width="3"/></g>
   <g><rect x="700" y="610" width="200" height="30" rx="4" fill="#3a2a1e" opacity=".0"/></g>`;
 const SHOP_KEEPER_PH = `<svg viewBox="0 0 200 400"><path d="M30 400 Q20 200 70 150 H130 Q180 200 170 400Z" fill="#4a3a52"/><path d="M70 160 Q100 190 130 160 L140 400 H60Z" fill="#d9c9a0" opacity=".9"/><ellipse cx="100" cy="110" rx="52" ry="58" fill="#33283a"/><ellipse cx="100" cy="118" rx="34" ry="38" fill="#d9ad8a"/><path d="M82 118 h10 M108 118 h10" stroke="#2a1c14" stroke-width="5" stroke-linecap="round"/><path d="M88 140 q12 8 24 0" stroke="#7a4a3a" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+/* Shop interior art (optional; until it exists the room is drawn in code). Both 16:9, same canvas size, painted for the whole window like the town:
+     assets/ui/shop_room.png     the room BEHIND the shopkeeper: walls, shelves, window, lantern (no counter)
+     assets/ui/shop_counter.png  the counter IN FRONT of him, on a transparent canvas the same size as shop_room, so he stands behind it.
+   With shop_room but no shop_counter, the drawn counter is dropped: paint the counter into shop_room and he stands in front of it.
+   The wares sit at SHOP_SLOTS on the shelves, the 5 relic cases along the counter front (see renderShop); both can be moved to match the painting. */
+const shopPic = url => `<image href="${url}" x="-8" y="-4.5" width="1616" height="909" preserveAspectRatio="xMidYMid slice"/>`;     // 1% overscan hides any stray line at the picture's edges
+/* Where things sit in the painted room, as fractions of the picture (tuned to shop_room.png). */
+const SHOP_ART = {
+  supplies: [[.659, .305], [.716, .305], [.773, .305], [.827, .305]],      // on top of the right-hand bookcases: [x centre, y the item rests on]
+  relics:   [[.36, .408], [.36, .494], [.36, .574]],                       // the 2nd, 3rd and 4th shelves on the left wall
+  keeper:   { x: .895, bottom: .975, h: .52, cut: .682 },                  // the shopkeeper: centre, feet line, height; cut = the counter's back edge (he is hidden below it)
+  bubble:   { right: .155, top: .475 },                                    // his speech bubble, just left of his face
+  mike:     { x: .525, y: .6, size: .24 }                                  // Big Mike through the window (only if the picture's window is transparent)
+};
+function shopSky() {
+  const v = typeof townVariant === 'function' ? townVariant() : 'day', el = $('sr-sky'); if (!el) return;
+  if (!MIKE.at.shop) MIKE.at.shop = SHOP_ART.mike;
+  el.className = 'sr-sky' + (v === 'coast' ? ' coast' : ''); el.innerHTML = mikeHtml(v === 'coast' ? 'day' : 'night', 'shop', .5);
+}
 function buildShopRoom() {
   if (shopBuilt) return; shopBuilt = true;
   $('sr-bg').innerHTML = SHOP_BG; $('sr-fg').innerHTML = SHOP_FG;
+  Promise.all([findAsset(`${ANIM.base}/ui/shop_room`), findAsset(`${ANIM.base}/ui/shop_counter`)]).then(([room, ctr]) => {
+    const pic = a => a && ['png', 'jpg', 'webp'].includes(a.ext);
+    if (pic(room)) {
+      $('sr-bg').innerHTML = shopPic(room.url); $('sr-fg').innerHTML = ''; $('shop-room').classList.add('has-art');
+      const k = SHOP_ART.keeper, kp = $('sr-keeper').style, rm = $('shop-room').style;
+      kp.setProperty('--kx', k.x); kp.setProperty('--kb', k.bottom); kp.setProperty('--kh', k.h); kp.setProperty('--kcut', ((k.bottom - k.cut) / k.h).toFixed(4));
+      rm.setProperty('--bR', SHOP_ART.bubble.right); rm.setProperty('--bT', SHOP_ART.bubble.top);
+      shopSky(); if ($('shop').classList.contains('show')) renderShop();
+    }
+    if (pic(ctr)) $('sr-fg').innerHTML = shopPic(ctr.url);
+  });
   $('sr-keeper').innerHTML = SHOP_KEEPER_PH;
   findAsset(`${ANIM.base}/ui/shopkeeper`).then(a => {
     if (!a) return; const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img'); m.src = a.url; m.draggable = false;
@@ -8548,10 +8674,98 @@ function renderShop() {
     <div class="who"><strong>${r.name}</strong> <span class="rar rar-${r.rarity}">${r.rarity}</span><br>${r.desc}</div>
     <div class="btns"><button onclick="buyRelic('${id}')" ${game.gold < r.price ? 'disabled' : ''}>Buy · ${r.price}g</button></div></div>`; }).join('')
     : '<div class="dim sold-out">Sold out</div>';
+  if ($('shop-room').classList.contains('has-art')) { $('sr-wares').innerHTML = shopWaresHtml(); if (srSelKey) { const el = $('sr-wares').querySelector(`[data-k="${srSelKey}"]`); if (el) el.classList.add('sel'); } assistStart(); }
   $('shop-supplies').innerHTML = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<div class="sup-row"><span class="ic">${it.icon}</span><div>${it.name}</div><span class="n">×${game.items[it.id] || 0}</span></div>`).join('');
   $('btn-relic-bag').textContent = `🎒 Relic Inventory (${game.relics.length})`;
   if (shopMsg) { shopSay(shopMsg, true); shopMsg = ''; }
   else if (!$('sr-bubble').textContent) shopSay(shopGreet || SHOP_GREETS[0], false);
+}
+function shopWaresHtml() {         // the painted shop: each ware is its icon on the shelf + a price tag; hover / focus shows what it is, a click buys it
+  const items = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()), at = (L, i) => L[Math.min(i, L.length - 1)], tag = p => `<span class="sr-tag">🪙 ${p}</span>`;
+  const sup = items.map((it, k) => { const [x, y] = at(SHOP_ART.supplies, k), n = game.items[it.id] || 0, can = game.gold >= it.price;
+    return `<button class="sr-ware sup${can ? '' : ' poor'}" data-k="i:${it.id}" style="left:${(x * 100).toFixed(2)}%;top:${(y * 100).toFixed(2)}%" onclick="srBuy(this, () => buyItem('${it.id}'))" aria-label="${it.name}, ${it.price} gold">
+      <span class="ic">${it.icon}</span>${n ? `<span class="cnt">×${n}</span>` : ''}${tag(it.price)}
+      <span class="sr-tip below"><b class="t">${it.name}</b><span class="d">${it.desc}</span><span class="m">In your bag: <b>${n}</b></span><span class="f">${can ? 'Click to buy' : 'Not enough gold'} · 🪙 ${it.price}</span></span></button>`; }).join('');
+  const stock = (game.shop && game.shop.stock) || [];
+  const rel = stock.map((id, i) => { const r = RELICS[id], [x, y] = at(SHOP_ART.relics, i), can = game.gold >= r.price;
+    return `<button class="sr-ware rel relic-${r.rarity}${can ? '' : ' poor'}" data-k="r:${id}" style="left:${(x * 100).toFixed(2)}%;top:${(y * 100).toFixed(2)}%" onclick="srBuy(this, () => buyRelic('${id}'))" aria-label="${r.name}, ${r.price} gold">
+      <span class="ic">${r.icon}</span>${tag(r.price)}
+      <span class="sr-tip right"><b class="t">${r.name}<span class="rar rar-${r.rarity}">${r.rarity}</span></b><span class="d">${r.desc}</span><span class="m">Equip relics from the Dorm.</span><span class="f">${can ? 'Click to buy' : 'Not enough gold'} · 🪙 ${r.price}</span></span></button>`; }).join('');
+  const mid = SHOP_ART.relics[Math.min(1, SHOP_ART.relics.length - 1)];
+  return sup + rel + (stock.length ? '' : `<div class="sr-soldout" style="left:${mid[0] * 100}%;top:${mid[1] * 100}%">Sold out</div>`);
+}
+let srLastPtr = 'mouse', srSelKey = null;
+document.addEventListener('pointerdown', e => { srLastPtr = e.pointerType || 'mouse'; if (!e.target.closest || !e.target.closest('.sr-ware')) { srSelKey = null; document.querySelectorAll('.sr-ware.sel').forEach(x => x.classList.remove('sel')); } }, true);
+function srBuy(el, buy) {          // touch: the first tap shows the tooltip, a second tap buys. Mouse, keys and pad buy at once (the tooltip already showed on hover / focus)
+  if (srLastPtr === 'touch' && !el.classList.contains('sel')) { document.querySelectorAll('.sr-ware.sel').forEach(x => x.classList.remove('sel')); el.classList.add('sel'); srSelKey = el.dataset.k; return; }
+  buy();
+}
+/* ---- the shop assistant (painted shop only) ----
+   Art: assets/ui/assistantsweeping.png (sweeping; drawn facing LEFT with the broom head at her feet on the left) and assets/ui/assistant.png (standing).
+   She drifts between sweeping the floor (a slow stroke with a puff of dust each time, and now and then she turns to sweep the other way), standing by the
+   shelves, and being out the back. Her spots keep her clear of everything for sale and of the counter, and she's scaled for how far back she stands.
+   Knobs: sweep / stand = her spots [x centre, feet line]; size(feet) = her height for that feet line (further back = smaller); broom = where the broom
+   head is in the sweeping picture (fractions); odds = how often each state is picked; stay = how long a state lasts (ms); strokeMs = one sweep stroke;
+   flip = she turns round after this many strokes (random in the range); say = her lines (sayChance = the odds she speaks when she appears). */
+const ASSIST = {
+  sweep: [[.53, .82], [.575, .795]], stand: [[.615, .765], [.485, .775]],
+  size: f => .32 + .82 * (f - .735), broom: { x: .16, y: .95 },
+  odds: { sweep: .45, stand: .3, away: .25 }, stay: [11000, 22000], strokeMs: 2800, flip: [3, 6], sayChance: .4,
+  say: ['The dust never ends.', 'Welcome in... mind the floor.', 'He says sweeping builds character. I have so much character.', 'Take your time. Really. I have nowhere to be.', "Don't touch the lanterns. I just cleaned them.", '...oh. Hello.', "If you see a rat, it's not my fault."]
+};
+let asArt = null, asRun = false, asState = 'away', asSpot = null, asT = 0, asDustT = 0, asStrokes = 0, asFlipAt = 4, asSayT = 0;
+async function assistStart() {
+  if (asRun) return; asRun = true;
+  if (!asArt) {
+    const load = async n => { const a = await findStill(`${ANIM.base}/ui/${n}`); if (!a) return null; const im = new Image(); im.src = a.url; await im.decode().catch(() => {}); return im.naturalWidth ? { url: a.url, aspect: im.naturalWidth / im.naturalHeight } : null; };
+    const [sweep, stand] = await Promise.all([load('assistantsweeping'), load('assistant')]); asArt = { sweep, stand };
+  }
+  if (!asArt.sweep && !asArt.stand) { asRun = false; return; }
+  assistNext(true);
+}
+const asLive = () => $('shop').classList.contains('show') && $('shop-room').classList.contains('has-art') && !document.hidden;
+function assistNext(first) {
+  clearTimeout(asT); clearInterval(asDustT);
+  const el = $('sr-assist'); if (!asLive()) { asRun = false; el.classList.remove('on'); asState = 'away'; return; }
+  const O = ASSIST.odds, pick = () => { let r = Math.random() * (O.sweep + O.stand + O.away); if ((r -= O.sweep) < 0) return 'sweep'; if ((r -= O.stand) < 0) return 'stand'; return 'away'; };
+  let st = pick(); if (st === 'sweep' && !asArt.sweep) st = asArt.stand ? 'stand' : 'away'; if (st === 'stand' && !asArt.stand) st = asArt.sweep ? 'sweep' : 'away';
+  if (first && st === 'away') st = asArt.sweep ? 'sweep' : 'stand';          // she's usually around when you walk in
+  const spots = st === 'away' ? [] : ASSIST[st].filter(sp => sp !== asSpot), spot = spots[Math.floor(Math.random() * spots.length)] || ASSIST[st === 'away' ? 'sweep' : st][0];
+  const wasOn = el.classList.contains('on');
+  el.classList.remove('on'); $('sr-abubble').classList.add('gone');
+  setTimeout(() => {
+    if (!asLive()) return;
+    asState = st; asSpot = st === 'away' ? null : spot;
+    el.classList.remove('sweep', 'stand');
+    if (st !== 'away') {
+      const art = asArt[st], [x, f] = spot, h = ASSIST.size(f);
+      $('sr-assist-img').src = art.url; Object.assign(el.style, { left: (x * 100) + '%', top: ((f - h) * 100) + '%', height: (h * 100) + '%', width: (h * art.aspect * 9 / 16 * 100) + '%' });
+      el.style.setProperty('--sw', ASSIST.strokeMs + 'ms'); el.classList.toggle('flip', Math.random() < .5); el.classList.add(st, 'on');
+      if (st === 'sweep') { asStrokes = 0; asFlipAt = ASSIST.flip[0] + Math.floor(Math.random() * (ASSIST.flip[1] - ASSIST.flip[0] + 1)); setTimeout(() => { assistDust(); asDustT = setInterval(assistStroke, ASSIST.strokeMs); }, ASSIST.strokeMs * .45); }
+      if (Math.random() < ASSIST.sayChance && Date.now() > shopNextAt - SHOP_SAY.quietMin + 2500) setTimeout(() => assistSay(ASSIST.say[Math.floor(Math.random() * ASSIST.say.length)]), 1400);
+    }
+    asT = setTimeout(assistNext, ASSIST.stay[0] + Math.random() * (ASSIST.stay[1] - ASSIST.stay[0]));
+  }, wasOn ? 750 : 0);
+}
+function assistStroke() {
+  if (!asLive() || asState !== 'sweep') return;
+  assistDust();
+  if (++asStrokes >= asFlipAt) { asStrokes = 0; asFlipAt = ASSIST.flip[0] + Math.floor(Math.random() * (ASSIST.flip[1] - ASSIST.flip[0] + 1)); $('sr-assist').classList.toggle('flip'); }
+}
+function assistDust() {            // a puff of dust where the broom head is
+  if (FX.calm || asState !== 'sweep') return;
+  const el = $('sr-assist'), cov = el.parentElement, r = el.getBoundingClientRect(), c = cov.getBoundingClientRect(); if (!r.width || !c.width) return;
+  const fl = el.classList.contains('flip'), bx = fl ? 1 - ASSIST.broom.x : ASSIST.broom.x, x = r.left - c.left + bx * r.width, y = r.top - c.top + ASSIST.broom.y * r.height, dir = fl ? 1 : -1, S = r.height;
+  for (let i = 0; i < 8; i++) { const d = document.createElement('div'), z = S * (.08 + Math.random() * .09); d.className = 'sa-dust'; Object.assign(d.style, { left: (x - z / 2) + 'px', top: (y - z / 2) + 'px', width: z + 'px', height: z + 'px' }); cov.appendChild(d);
+    d.animate([{ transform: 'translate(0,0) scale(.35)', opacity: 1 }, { opacity: .85, offset: .3 }, { transform: `translate(${dir * S * (.05 + Math.random() * .14)}px,${-S * (.05 + Math.random() * .12)}px) scale(${1.5 + Math.random() * 1.1})`, opacity: 0 }], { duration: 1300 + Math.random() * 900, delay: i * 55, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'both' }).finished.then(() => d.remove(), () => d.remove()); }
+  for (let i = 0; i < 6; i++) { const m = document.createElement('div'), z = Math.max(2, S * .008); m.className = 'sa-dust mote'; Object.assign(m.style, { left: (x + (Math.random() - .5) * S * .08) + 'px', top: y + 'px', width: z + 'px', height: z + 'px' }); cov.appendChild(m);
+    m.animate([{ transform: 'translate(0,0)', opacity: 0 }, { opacity: 1, offset: .2 }, { transform: `translate(${dir * S * (.02 + Math.random() * .08)}px,${-S * (.15 + Math.random() * .25)}px)`, opacity: 0 }], { duration: 2200 + Math.random() * 1400, delay: 150 + i * 90, easing: 'ease-out', fill: 'both' }).finished.then(() => m.remove(), () => m.remove()); }
+}
+function assistSay(text) {
+  if (!asLive() || asState === 'away' || !asSpot) return;
+  const b = $('sr-abubble'), [x, f] = asSpot, h = ASSIST.size(f);
+  b.textContent = text; b.style.left = (x * 100) + '%'; b.style.top = ((f - h - .015) * 100) + '%'; b.classList.remove('gone');
+  clearTimeout(asSayT); asSayT = setTimeout(() => b.classList.add('gone'), 4200 + text.length * 30);
 }
 /* The shopkeeper's speech bubble: a line stays for SHOP_SAY.showMs, fades away, and after a quiet spell he says another one (only while the shop is open). */
 const SHOP_SAY = { showMs: 5500, quietMin: 7000, quietMax: 14000 };
