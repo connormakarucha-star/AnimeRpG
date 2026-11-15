@@ -324,6 +324,12 @@ body.calm .seat .sp{animation:none}
 .sr-sky::before{content:'';position:absolute;inset:0;opacity:.85;background-image:radial-gradient(1.6px 1.6px at 49% 22%,#fff,transparent),radial-gradient(1.2px 1.2px at 53% 27%,#cfe0ff,transparent),radial-gradient(1.4px 1.4px at 56% 21%,#fff,transparent),radial-gradient(1.1px 1.1px at 50.5% 33%,#dfe9ff,transparent),radial-gradient(1.5px 1.5px at 55% 35%,#fff,transparent),radial-gradient(1px 1px at 48% 30%,#fff,transparent),radial-gradient(1.2px 1.2px at 57.5% 30%,#fff,transparent)}
 .sr-sky.coast::before{opacity:0}
 .sr-wares{display:none;position:absolute;inset:0;z-index:8;pointer-events:none}
+.sr-door{display:none;position:absolute;z-index:6;padding:0;margin:0;border:0;border-radius:0;background:rgba(255,236,190,0);box-shadow:none;cursor:pointer;transition:background .25s ease}
+#shop .shop-room .sr-door:hover,#shop .shop-room .sr-door:focus-visible,#shop .shop-room .sr-door.gp-focus{background:rgba(255,236,190,.16)!important;box-shadow:inset 0 0 3cqh rgba(255,226,160,.55)!important;transform:none!important;border:0!important;filter:none!important}
+#shop .shop-room .sr-door,#shop .shop-room .sr-door:active{transform:none!important;border:0!important}
+body.gp .sr-door.gp-focus{outline:none!important;background:rgba(255,236,190,.2)}
+.sr-door-lbl{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);white-space:nowrap;padding:.35em .8em;border-radius:6px;background:linear-gradient(#6a4528,#3e2615);border:2px solid #a8794a;color:#ffe9c0;font-weight:800;font-size:clamp(11px,1.5cqh,18px);box-shadow:0 4px 10px rgba(0,0,0,.55);opacity:.88;transition:opacity .2s,transform .2s}
+.sr-door:hover .sr-door-lbl,.sr-door:focus-visible .sr-door-lbl,.sr-door.gp-focus .sr-door-lbl{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
 /* ---- outside, seen from inside (insideWeather): the view behind the windows, and the outside light in the painting tinted to match ---- */
 .ow-view{position:absolute;inset:0;z-index:0;overflow:hidden}
 .ow-win{position:absolute;overflow:hidden;container-type:size}
@@ -850,6 +856,7 @@ body.fn-on #battle-scene .control-panel,body.fn-on #order,body.fn-on #fb-hud,bod
 #town-map .hub-title,#town-map .hub-sub,#hub-msg,#hub-back{grid-column:1/-1}
 #town-map .embark{grid-column:1/-1}
 #town-art{display:none}
+.tw-layer{display:none}
 .t-drift{animation:tdrift 22s ease-in-out infinite alternate}
 @keyframes tdrift{from{transform:translateX(-40px)}to{transform:translateX(50px)}}
 #hub-back{margin-top:6px}
@@ -1113,6 +1120,10 @@ body.calm .pot-back svg.tt{animation:none!important}
   #town-art{display:block;position:absolute;inset:0}
   #town-art svg{display:block;width:100%;height:100%}
   #town-map.has-art #town-art{display:none}
+  #town-map .tw-layer{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+  #town-flash{background:#dfe9ff;mix-blend-mode:screen;opacity:0}
+  #town-bolt{-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+  #town-bolt path{fill:none;stroke-linecap:round;stroke-linejoin:round}
   #town-ui .hub-title{position:absolute;top:1.2%;left:50%;transform:translateX(-50%);z-index:5;margin:0;font-size:clamp(22px,3.4cqw,56px);text-shadow:0 2px 10px #000,0 0 18px rgba(255,117,140,.5);pointer-events:none}
   #town-ui .hub-sub{position:absolute;top:1.8%;left:1.4%;z-index:5;margin:0;font-size:clamp(12px,1.25cqw,20px);background:rgba(10,8,20,.6);padding:.35em .9em;border-radius:14px;color:#d8d8ea}
   #hub #hub-msg{position:absolute;bottom:2.2%;left:50%;transform:translateX(-50%);z-index:6;margin:0;max-width:62%;background:rgba(8,6,16,.8);border:1px solid rgba(255,213,79,.4);padding:.5em 1.1em;border-radius:12px;font-size:clamp(12px,1.2cqw,19px)}
@@ -1317,7 +1328,8 @@ body.fs .qmap{margin:0}
   #shop .shop-room.has-art ~ .shop-layout .shop-side{background:linear-gradient(rgba(44,28,16,.95),rgba(24,15,9,.96));border:2px solid #a8794a;box-shadow:inset 0 0 0 1px rgba(255,225,170,.12),0 12px 28px rgba(0,0,0,.6);border-radius:12px}
   #shop .shop-room.has-art ~ .shop-layout .shop-side .hub-section{color:#e7c78e;letter-spacing:.12em}
   #shop .shop-room.has-art ~ .shop-layout .shop-side .sup-row{background:rgba(255,235,200,.05);border-color:rgba(200,160,110,.18)}
-  #shop .shop-room.has-art ~ .shop-back,#shop .hub-hall:has(.shop-room.has-art) .shop-back{background:linear-gradient(#6a4528,#3e2615);border:2px solid #a8794a;color:#ffe9c0;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+  #shop .hub-hall:has(.shop-room.has-art) .shop-back{display:none}          /* the green door is the way out */
+  #shop .shop-room.has-art .sr-door{display:block}
   #shop .fs-chip .hub-sub{max-width:none}
   body.dev #party-select #btn-quick{display:block}
   #party-select .em-roster .rs-h{flex:0 0 auto}
@@ -1570,6 +1582,81 @@ body.calm #bar,body.calm #bar-hero,body.calm .action-grid button{animation:none!
   body.ui-bar #battle-scene #bar{height:150px;padding-bottom:12px}
   body.ui-bar #battle-scene #btn0,body.ui-bar #battle-scene #btn1,body.ui-bar #battle-scene #btn2{height:92px}
   body.ui-bar #bar-hero .bar-port{width:96px;height:96px}
+}
+
+/* ===== Button diamond (PC): on your turn the hero's skills pop up beside them, laid out like a pad's face buttons
+   (Skill 1 bottom, Skill 2 left, Skill 3 top, Items right, Shift Line below-left). Setting: Options > Battle menu. Knobs: DIA in the script. ===== */
+#dia{display:none}
+@media (min-width:900px){
+body.ui-dia #battle-scene #bar{display:none!important}
+body.ui-bar.ui-dia #battle-scene .battlefield{--figH:clamp(150px,calc(100vh - 300px),900px);padding-bottom:18px}
+body.ui-dia #dia{display:block;position:fixed;left:0;top:0;width:0;height:0;z-index:31;pointer-events:none;visibility:hidden;--W:11rem;--H:3.5rem;--dx:6.75rem;--dy:3.875rem}      /* in rem: the diamond grows with the Text size option */
+body.ui-dia.bar-on #dia,body.ui-dia.bar-off #dia{visibility:visible}
+#dia .dia-k{position:absolute;left:0;top:0}
+#dia .dia-k::before{content:'';position:absolute;left:-270px;top:-170px;width:540px;height:340px;background:radial-gradient(closest-side,rgba(6,8,16,.62),rgba(6,8,16,.3) 60%,rgba(6,8,16,0));pointer-events:none}
+body.ui-dia.bar-off #dia .dia-k{animation:diaOut .26s ease-in both}
+body.ui-dia.bar-off #dia *{pointer-events:none!important}
+body.ui-dia.bar-on #dia .dt,body.ui-dia.bar-on #dia .dsh{animation:diaIn .5s cubic-bezier(.3,1.5,.5,1) calc(.04s + var(--n) * .05s) backwards}
+body.ui-dia.bar-on #dia .dia-core{animation:diaCore .45s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes diaIn{0%{transform:translate(calc(var(--x) * var(--dx) * -1),calc(var(--y) * var(--dy) * -1)) scale(.35);opacity:0}100%{transform:none;opacity:1}}
+@keyframes diaOut{to{opacity:0;scale:.7}}
+@keyframes diaCore{0%{scale:0;opacity:0}100%{scale:1;opacity:1}}
+/* the core gem in the middle */
+#dia .dia-core{position:absolute;left:-11px;top:-11px;width:22px;height:22px;rotate:45deg;border:2px solid #ffd54f;background:radial-gradient(circle,#fff6c8,#b98a12 70%);box-shadow:0 0 14px 3px rgba(255,213,79,.6)}
+/* the tiles: slanted, with the element's colour as the rim */
+#dia .dt{--ec:#9fd8ff;position:absolute;left:calc(var(--x) * var(--dx) - var(--W) / 2);top:calc(var(--y) * var(--dy) - var(--H) / 2);width:var(--W);height:var(--H);margin:0;border:0;border-radius:0;padding:0 36px 0 26px;background:none;color:#eef2fc;
+  cursor:pointer;pointer-events:auto;isolation:isolate;display:flex;align-items:center;text-align:left;transition:filter .15s,scale .15s,opacity .2s;box-shadow:none}
+#dia .dt::before{content:'';position:absolute;inset:0;z-index:-2;background:var(--ec);clip-path:polygon(16px 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+#dia .dt::after{content:'';position:absolute;inset:2px;z-index:-1;background:linear-gradient(135deg,rgba(30,40,72,.97),rgba(12,15,30,.97));clip-path:polygon(15px 0,100% 0,calc(100% - 15px) 100%,0 100%)}
+#dia .dt .nm{flex:1;min-width:0;font-size:.92rem;font-weight:800;line-height:1.08;letter-spacing:.01em;text-shadow:0 1px 3px #000;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+#dia .dt .nm.long{font-size:.8rem}
+#dia .dt .ic{position:absolute;right:22px;top:50%;translate:0 -50%;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:.7rem;line-height:1.05;opacity:.95}
+#dia .dt>.gl{position:absolute;left:-7px;top:-11px;z-index:2}
+#dia .dt .cdov{position:absolute;right:22px;top:50%;translate:0 -50%;font-size:1.7rem;font-weight:900;color:#ffb74d;text-shadow:0 2px 4px #000;display:none}
+#dia .dt.oncd .cdov{display:block}
+#dia .dt.oncd .ic{display:none}
+#dia .dt:disabled{--ec:#3a4058;cursor:default}
+#dia .dt:disabled .nm,#dia .dt:disabled .gl{opacity:.42}
+#dia .dt:not(:disabled):hover{filter:brightness(1.2);scale:1.05;z-index:2}
+#dia .dt.sel{--ec:#fff2b0;scale:1.08;z-index:3;filter:drop-shadow(0 0 10px rgba(255,213,79,.85))}
+#dia .dt.sel::after{background:linear-gradient(135deg,rgba(110,90,24,.97),rgba(40,32,10,.97))}
+#dia .dt.sel .nm{color:#fff4c2}
+#dia.picking .dt:not(.sel),#dia.picking .dsh{opacity:.28;scale:.92}
+#dia.picking .dt:not(.sel),#dia.picking .dsh{pointer-events:none}      /* while aiming, clicks go through to the fighters underneath */
+/* the button badge: the key on a keyboard, the face button on a pad */
+#dia .gl{flex:none;display:none;place-items:center;width:28px;height:28px;border-radius:50%;font-size:.84rem;font-weight:900;line-height:1;color:#fff;background:#262a3e;border:2px solid rgba(255,255,255,.4);box-shadow:0 1px 4px rgba(0,0,0,.6)}
+#dia .gl.k{display:grid;width:24px;height:24px;border-radius:6px;font-size:.8rem;color:#d7ddf0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.3)}
+body.gp #dia .gl.k{display:none}
+body.gp #dia .gl.p{display:grid}
+#dia[data-pad=xbox] .gl.p.b0{background:#3d9b39}#dia[data-pad=xbox] .gl.p.b1{background:#d3413b}#dia[data-pad=xbox] .gl.p.b2{background:#2f80d8}#dia[data-pad=xbox] .gl.p.b3{background:#e7b70f;color:#2a2200}
+#dia[data-pad=ps] .gl.p{background:#171926;font-size:1rem}#dia[data-pad=ps] .gl.p.b0{color:#8fb4ff}#dia[data-pad=ps] .gl.p.b1{color:#ff7a7a}#dia[data-pad=ps] .gl.p.b2{color:#f59ad8}#dia[data-pad=ps] .gl.p.b3{color:#4fe0b5}
+#dia[data-pad=nin] .gl.p{background:#30313c}
+#dia .gl.p.sh{width:auto;min-width:28px;padding:0 6px;border-radius:8px;font-size:.72rem;background:#30344a}
+/* Shift Line: a small chip below-left */
+#dia .dsh{--x:-1;--y:1;position:absolute;right:calc(var(--W) / 2 + 12px);top:calc(var(--dy) - 12px);height:34px;padding:0 12px 0 6px;margin:0;display:flex;align-items:center;gap:7px;border-radius:17px;border:1px solid rgba(255,255,255,.22);background:rgba(16,18,32,.94);color:#cfd6ec;font-size:.78rem;font-weight:700;white-space:nowrap;cursor:pointer;pointer-events:auto;transition:filter .15s,scale .15s,opacity .2s}
+#dia .dsh:not(:disabled):hover{filter:brightness(1.25);scale:1.05}
+#dia .dsh:disabled{opacity:.35;cursor:default}
+/* the info tag under the diamond: what the hovered or chosen skill does, and what to press next */
+#dia .dia-tag{display:none;position:absolute;left:0;top:calc(var(--dy) + var(--H) / 2 + 14px);width:max-content;min-width:200px;max-width:380px;padding:7px 14px 8px;background:rgba(10,12,22,.94);border:1px solid rgba(255,255,255,.14);border-left:4px solid var(--tc,#4fc3f7);border-radius:4px;color:#dfe6f7;font-size:.78rem;line-height:1.35;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none}
+#dia .dia-tag.on{display:block}
+#dia.up .dia-tag{top:auto;bottom:calc(var(--dy) + var(--H) / 2 + 16px)}
+#dia .dia-tag b{font-size:.92rem;color:#fff}
+#dia .dia-tag .t2{color:#b9c3dc}
+#dia .dia-tag .t3{margin-top:4px;color:#ffd54f;font-weight:700;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+#dia .dia-tag .t3 .gl{display:inline-grid;width:22px;height:22px;font-size:.7rem}
+#dia .dia-tag .bonus{color:#ffd54f;font-weight:800;letter-spacing:.06em}
+/* the bag opens beside the Items tile (or on the other side when there is no room) */
+body.ui-dia #battle-scene #dia #inv{position:absolute;right:auto;bottom:auto;left:calc(var(--dx) + var(--W) / 2 + 16px);top:calc(var(--H) / -2 - 14px);width:290px;max-height:58vh;overflow:auto;z-index:5;pointer-events:auto;background:rgba(12,14,24,.96);border:1px solid #ff8a65;border-radius:6px;box-shadow:0 8px 22px rgba(0,0,0,.55)}
+body.ui-dia #battle-scene #dia #inv.flip{left:auto;right:calc(var(--dx) + var(--W) / 2 + 16px)}
+/* untargeted skills picked on a pad: everyone it will reach glows until A confirms */
+#battle-scene .combatant-card.aoe-mark .figure{filter:drop-shadow(0 0 9px rgba(255,213,79,.95))}
+#battle-scene .combatant-card.aoe-mark .floor{border-color:#ffd54f;box-shadow:0 3px 10px rgba(255,213,79,.8);animation:pulse 1s infinite alternate}
+body.calm #dia .dt,body.calm #dia .dsh,body.calm #dia .dia-k,body.calm #dia .dia-core{animation:none!important}
+}
+@media (min-width:900px) and (max-height:800px){
+  body.ui-bar.ui-dia #battle-scene .battlefield{--figH:clamp(140px,calc(100vh - 270px),860px);padding-bottom:14px}
+  body.ui-dia #dia{--W:10.25rem;--H:3.125rem;--dx:6.25rem;--dy:3.5rem}
+  #dia .dt .nm{font-size:.86rem}
 }
 
 /* ===== Widescreen battle: characters first, minimal chrome ===== */
@@ -1907,6 +1994,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
     <div class="hub-hall">
       <div id="town-map">
         <div id="town-art"></div>
+        <canvas id="town-rain" class="tw-layer"></canvas><svg id="town-bolt" class="tw-layer" viewBox="0 0 1600 900" preserveAspectRatio="none"></svg><div id="town-flash" class="tw-layer"></div>
         <button class="hub-btn bld b-shop" style="--x:4.4%;--y:30%;--w:23.8%;--h:35%" onclick="openShop()"><span class="lbl">🛒 Shop</span></button>
         <button class="hub-btn bld b-spa" style="--x:31%;--y:22%;--w:20.5%;--h:36%" onclick="openSpa()"><span class="lbl">♨️ Spa</span></button>
         <button class="hub-btn bld b-dorm" style="--x:54%;--y:21%;--w:25%;--h:39%" onclick="openGear()"><span class="lbl">🛏️ Dorm</span></button>
@@ -2071,6 +2159,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
         <div class="sr-assist" id="sr-assist"><div class="sa-flip"><img id="sr-assist-img" alt="" draggable="false"></div></div>
         <div class="sr-keeper" id="sr-keeper"></div>
         <svg class="sr-svg sr-fg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" id="sr-fg"></svg>
+        <button class="sr-door" id="sr-door" onclick="showScene('hub')" aria-label="Back to Town" title="Back to Town"><span class="sr-door-lbl">◀ Back to Town</span></button>
         <div class="sr-wares" id="sr-wares"></div>
         <div class="sr-bubble sbubble-look" id="sr-bubble"></div>
         <div class="sr-bubble sbubble-look sr-abubble gone" id="sr-abubble"></div>
@@ -2276,7 +2365,7 @@ const ICON = { fire: '🔥', bleed: '🩸', poison: '☠️', ice: '❄️', sho
 //        counter:0.2 on a damage skill = when an enemy attacks the owner, that chance she answers at once with this skill (never against friendly fire). dr:{mult,dur} = the owner also takes that much less damage for dur of her turns.
 //        t:'charm' = no damage; a broken target is charmed: its next attack hits a random ally instead (cleansable like any ailment).
 //        chip:true on a physical damage skill = it still damages armour (brk) though it has no element; statuses only land from elemental hits.
-//        aoe:0.6 on a damage skill = the chosen target takes full damage and every other living foe takes that fraction. move:'front'|'back' = the owner steps to that row after the strike.
+//        aoe:0.6 on a damage skill = the chosen target takes full damage and every other living foe takes that fraction. all:true (with aoe:1) = no target to pick: every living foe takes the full hit, all landing in one quick ripple (ALL_RIPPLE). move:'front'|'back' = the owner steps to that row after the strike.
 //        r='melee'|'ranged' (damage skills, default melee), el=element, brk=break damage, cd=cooldown in turns.
 // Barriers soak damage AND armour-break damage, and vanish at the end of the turn of the unit that carries them.
 // Optional unit traits (see POS): frontMod / backMod = extra damage taken (+) or avoided (-) while standing in that row,
@@ -2294,7 +2383,7 @@ const HEROES = [
     unlockMsg:'Vesper has joined your guild! You can now pick her in Party Select, and visit her at the Spa and the Training Ground.', skills:[        // fast glass cannon: stuns once armour is broken
     { n:'Spark Step',      t:'dmg', r:'melee',  d:[9,11],  el:'shock', brk:8,  cd:0, move:'back', stunOnBreak:true },        // hit and run: after the strike she dashes to the back row
     { n:'Chain Lightning', t:'dmg', r:'ranged', d:[13,16], el:'shock', brk:24, cd:2, stunOnBreak:true },
-    { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[23,27], el:'shock', brk:30, cd:4, aoe:0.5, aoeBrk:0.3 } ] },        // the target takes it all; every other foe takes 50% damage and only 30% of the break
+    { n:'Thunderstorm',    t:'dmg', r:'ranged', d:[18,21], el:'shock', brk:18, cd:4, aoe:1, all:true } ] },        // no target to pick: every foe takes the same full hit, in one quick ripple
   { id:'iris', weak:['poison'], resist:['fire'], frontMod:-0.1, name:'Iris', tag:'IRIS', hp:105, brk:45, spd:9, skills:[      // martial artist, front liner
     { n:'Iron Fist',       t:'dmg', r:'melee', d:[12,14], brk:12, chip:true, cd:0 },          // physical, but the blows chip armour
     { n:'Blazing Kick',    t:'dmg', r:'melee', d:[13,15], el:'fire', brk:22, cd:2 },
@@ -3290,10 +3379,10 @@ const hasKind = (h, k) => h.skills.some(s => s.t === 'dmg' && (k === 'physical' 
 
 /* ============ EFFECTS (hit numbers, screen shake) ============ */
 // Visual feedback only. The two toggles are remembered on this device (not part of the game save).
-const FX = { numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5, sfx: 1, ui: 'bar', travel: true };
+const FX = { numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5, sfx: 1, ui: 'dia', uiV: 2, travel: true };
 try {
   const saved = JSON.parse(localStorage.getItem('animeRpgFx') || 'null');
-  if (saved) { FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.travel = saved.travel !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; FX.sfx = typeof saved.sfx === 'number' ? Math.max(0, Math.min(1, saved.sfx)) : 1; FX.ui = saved.ui === 'classic' ? 'classic' : 'bar'; }
+  if (saved) { FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.travel = saved.travel !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; FX.sfx = typeof saved.sfx === 'number' ? Math.max(0, Math.min(1, saved.sfx)) : 1; FX.ui = saved.ui === 'classic' ? 'classic' : saved.ui === 'bar' && saved.uiV === 2 ? 'bar' : 'dia'; }      // (the button diamond replaced the bar as the default)
   else if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) FX.shake = false;
 } catch (e) {}
 /* ============ BATTLE SPEED (1x / 1.5x / 2x) ============ */
@@ -3375,7 +3464,8 @@ function refreshOptions() { const gd = document.getElementById('guide'); if (gui
 function saveFx() { try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} }
 function applyFxLook() {
   document.documentElement.style.fontSize = ['', '112.5%', '125%'][FX.text] || '';
-  document.body.classList.toggle('cb', !!FX.cb); document.body.classList.toggle('calm', !!FX.calm); document.body.classList.toggle('ui-bar', FX.ui === 'bar');
+  document.body.classList.toggle('cb', !!FX.cb); document.body.classList.toggle('calm', !!FX.calm); document.body.classList.toggle('ui-bar', FX.ui === 'bar' || FX.ui === 'dia'); document.body.classList.toggle('ui-dia', FX.ui === 'dia');
+  if (typeof renderDia === 'function' && $('battle-scene') && $('battle-scene').classList.contains('show')) renderDia();
   if (typeof weatherSet === 'function') weatherSet();
 }
 function optToggle(k) {
@@ -3383,7 +3473,7 @@ function optToggle(k) {
   else if (k === 'text') { FX.text = (FX.text + 1) % 3; saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'calm') { FX.calm = !FX.calm; if (FX.calm) { FX.shake = false; FX.flash = false; } saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'cb') { FX.cb = !FX.cb; saveFx(); applyFxLook(); refreshOptions(); }
-  else if (k === 'ui') { FX.ui = FX.ui === 'bar' ? 'classic' : 'bar'; saveFx(); applyFxLook(); refreshOptions(); }
+  else if (k === 'ui') { FX.ui = { dia: 'bar', bar: 'classic', classic: 'dia' }[FX.ui] || 'dia'; saveFx(); applyFxLook(); refreshOptions(); }
   else toggleFx(k);
 }
 let asfx = null;      // sound-effect bus (all effects and the wind go through it; music has its own slider)
@@ -3397,7 +3487,7 @@ const OPTIONS = [
   ['flash', '⚡ Screen flashes', 'Colour flashes on kills, crits and boss phases, and the red pulse when a hero is nearly down. Turn off if flashing bothers you.', () => FX.flash],
   ['text', '🔤 Text size', 'Makes all text bigger: Normal, Large, Extra large.', () => FX.text > 0, () => ['Normal', 'Large', 'Extra large'][FX.text]],
   ['calm', '🕊️ Reduced motion', 'Turns off weather, screen shake, flashes and the fade between scenes. Calmer on the eyes.', () => FX.calm],
-  ['ui', '🖥️ Battle bar (PC)', 'Bar: a lively bottom bar with the active hero and slanted skill buttons that springs up on your turn and drops away during attacks. Classic: the old fixed panel.', () => FX.ui === 'bar', () => FX.ui === 'bar' ? 'Bar' : 'Classic'],
+  ['ui', '🖥️ Battle menu (PC)', 'Diamond: on your turn the hero\'s skills pop up beside them, laid out like a controller\'s buttons. Bar: a bottom bar with slanted skill buttons. Classic: the old fixed panel.', () => FX.ui !== 'classic', () => ({ dia: 'Diamond', bar: 'Bar', classic: 'Classic' })[FX.ui]],
   ['travel', '🚶 Travel scenes', 'A short walking scene between fights, camps and events during a quest. Click or press a key to skip any of them.', () => FX.travel],
   ['cb', '🎨 Colour-blind palette', 'Safer colours for the element numbers (blue, orange and yellow instead of red and green tints).', () => FX.cb],
   ['talk', '💬 Battle chatter', 'Heroes talk in little speech bubbles: crits, kills, broken armour, boss phases and gag lines.', () => FX.talk]
@@ -3503,8 +3593,11 @@ function guideHtml(guideTab) {          // one section's text (used by the ⚙�
   let h = '';
   if (guideTab === 'options') h = `<h4>Options</h4>` + OPTIONS.map(([k, n, d, on, lab]) => `<div class="optrow"><div><b>${n}</b><small>${d}</small></div><button id="opt-${k}" class="optsw ${on() ? 'on' : 'off'}" onclick="optToggle('${k}')">${lab ? lab() : on() ? 'ON' : 'OFF'}</button></div>`).join('') + `<div class="optrow"><div><b>🔊 Effects volume</b><small>Hits, spells, clicks and the blizzard wind. Needs Sound on.</small></div><input type="range" id="opt-sfx" min="0" max="100" step="5" value="${Math.round(FX.sfx * 100)}" oninput="setSfx(this.value / 100)" onchange="sfx('hit')" style="width:120px"></div><div class="optrow"><div><b>🎵 Music volume</b><small>Quiet ambient music that changes with the area. Needs Sound on.</small></div><input type="range" id="opt-vol" min="0" max="100" step="5" value="${Math.round(FX.vol * 100)}" oninput="setVol(this.value / 100)" style="width:120px"></div>` + `<div class="g">Options are remembered on this device. The other tabs are the game guide.</div>`;
   else if (guideTab === 'controls') h = `<h4>Controller</h4>
-    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>X</b> opens Items in battle, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip tabs in this menu, <b>Start</b> opens the pause menu (Esc on the keyboard; it has Return to Title), <b>Select</b> opens this guide and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
+    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip tabs in this menu, <b>Start</b> opens the pause menu (Esc on the keyboard; it has Return to Title), <b>Select</b> opens this guide and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
+    <h4>Controller in battle</h4>
+    ${g(`On your turn the hero's skills pop up beside them in a diamond, laid out like the face buttons: <b>A</b> Skill 1, <b>X</b> Skill 2, <b>Y</b> Skill 3, <b>B</b> Items, <b>LB</b> Shift Line. Then <b>◀ ▶</b> to a target and <b>A</b>; <b>B</b> backs out. A skill with no target (a team barrier, Thunderstorm...) lights up everyone it reaches: <b>A</b> uses it. <b>RB</b> changes the battle speed. (With the Bar or Classic battle menu, the D-pad moves the highlight and <b>X</b> opens Items.)`)}
     <h4>Mouse, touch and keyboard</h4>
+    ${g(`In battle: click a skill, then a target. <b>Right-click</b> or <b>Esc</b> backs out. Keys <b>1 2 3</b> pick a skill, <b>4</b> opens the bag, <b>5</b> shifts the line.`)}
     ${g(`Everything is tappable or clickable. In Beach Volleyball you can also hit <b>Space</b> or <b>Enter</b>, or the big HIT button.`)}`;
   else if (guideTab === 'basics') h = `<h4>A turn</h4>
     ${g(`Fighters act in <b>speed</b> order, highest first (the bar at the top shows the order). On your turn pick one of three <b>skills</b>, then a target. Strong skills have a <b>cooldown</b>: they cannot be used again for that many turns. You can also <b>Shift Line</b> (swap places with the ally ahead; it ends your turn) or use a potion from your bag.`)}
@@ -5441,7 +5534,7 @@ async function seqPreview(freeze) {
   if (WEAVE3[u.id]) {                    // the weave and the charms, then every charm bursts; no damage
     const t = enemies.find(isAlive), art = t && await weave3Assets(u, 2); if (!art) { banner(`No ${u.id} skill3a + skill3b pictures found`); return; }
     const q = await weave3Begin(u, t, art); if (!q) return; seqDev = { u, q: { home: () => q.home() }, freeze: false };
-    await q.run(); await q.follow(); for (const e of enemies.filter(isAlive)) { q.zap(e); await sleep(dspd(200)); } await q.home(); seqDev = null; return;
+    await q.run(); for (const e of enemies.filter(isAlive)) { q.zap(e); await sleep(dspd(ALL_RIPPLE)); } await sleep(dspd(400)); await q.home(); seqDev = null; return;
   }
   if (LEAP3[u.id]) {                     // leap and slam onto the first enemy, no damage
     const t = enemies.find(isAlive), art = t && await leap3Assets(u, 2); if (!art) { banner(`No ${u.id} skill3 + skill3b pictures found`); return; }
@@ -5475,7 +5568,7 @@ document.addEventListener('keydown', e => { if (seqDev && e.key === 'Escape') { 
 document.addEventListener('keydown', e => {
   if (!devMode || !e.altKey) return;
   if (e.code === 'Digit3') { e.preventDefault(); seqPreview(e.shiftKey); return; }
-  if (e.code === 'KeyW' && $('shop').classList.contains('show')) { e.preventDefault(); const L = ['day', 'coast', 'frost']; owForce = L[(L.indexOf(owAct()) + 1) % 3]; shopWxSync(); banner('🛠 Outside: ' + { day: 'Act 1 · sunny', coast: 'Act 2 · rain', frost: 'Act 3 · snow' }[owForce], 'phase'); return; }
+  if (e.code === 'KeyW' && ($('shop').classList.contains('show') || $('hub').classList.contains('show'))) { e.preventDefault(); const L = ['day', 'coast', 'frost']; owForce = L[(L.indexOf(owAct()) + 1) % 3]; shopWxSync(); if ($('hub').classList.contains('show')) { townArt = null; loadTownBg(); townWxSync(); } banner('🛠 Outside: ' + { day: 'Act 1 · sunny', coast: 'Act 2 · rain', frost: 'Act 3 · snow' }[owForce], 'phase'); return; }
   if (e.code === 'KeyK' && FB && !over) { e.preventDefault(); FB.bosses[0].hp = 1; render(); banner('🛠 Boss at 1 HP', 'phase', 'one hit to see the finale'); return; }
   if (e.code === 'KeyE' || e.code === 'Minus' || e.code === 'Equal') {          // Alt+E: entrance idle zoom <-> rise · Alt+- / Alt+= : idle size at the hand-over (then Alt+3 to see it)
     const u0 = (seqDev && seqDev.u) || party.find(m => SEQ3[m.id]); if (!u0) return; e.preventDefault();
@@ -5858,7 +5951,8 @@ function card(u, team, i) {
   if (u.final) c.push('fbboss');                 // the final boss's HP is hidden: only the break bar shows
   if (spot.length) c.push(spot.includes(u) ? 'spot' : 'bg');
   const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
-  if (sk && alive && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'charm' && team === 'e' && charmable(u)) || (sk.t === 'barrier' && team === 'p') || (sk.t === 'guard' && team === 'p' && u !== cur) || (sk.t === 'tonic' && team === 'p' && u.hp < u.maxHp))) c.push('targetable');
+  if (sk && alive && noTarget(sk) && hitsAll(cur, sk, u)) c.push('aoe-mark');
+  if (sk && alive && !noTarget(sk) && ((sk.t === 'dmg' && team === 'e') || (sk.t === 'charm' && team === 'e' && charmable(u)) || (sk.t === 'barrier' && team === 'p') || (sk.t === 'guard' && team === 'p' && u !== cur) || (sk.t === 'tonic' && team === 'p' && u.hp < u.maxHp))) c.push('targetable');
   if (waiting && selItem && team === 'p' && alive && u.hp < u.maxHp) c.push('targetable');   // bag item: wounded living heroes
   const st = (u.statuses || []).map(x => ` <span class="ail ail-${x.type}">[${x.type.toUpperCase()}${x.dot ? ' ' + x.dur : ''}]</span>`).join('');
   let extra = '';
@@ -5969,7 +6063,8 @@ function skillDesc(s, u) {
   if (s.resetOnKO) more.push('🗡️ a kill or armour break resets its cooldown');
   if (s.move === 'back') more.push('→ dashes to the back row');
   if (s.chip) more.push(`💥 chips armour (${s.brk})`);
-  if (s.aoe) more.push(`🌐 other foes take ${Math.round(s.aoe * 100)}% (break ${Math.round((s.aoeBrk ?? s.aoe) * 100)}%)`);
+  if (s.all) more.push('🌐 hits every foe, no target');
+  else if (s.aoe) more.push(`🌐 other foes take ${Math.round(s.aoe * 100)}% (break ${Math.round((s.aoeBrk ?? s.aoe) * 100)}%)`);
   if (s.counter) more.push(`↩️ ${Math.round(s.counter * 100)}% counter when attacked`);
   if (s.bonusOnBleed) more.push('⚡ bonus turn if the target was already bleeding');
   if (s.dr) more.push(`🔰 −${Math.round(s.dr.mult * 100)}% damage taken, ${s.dr.dur} turns`);
@@ -6031,10 +6126,148 @@ function render() {
   $('btn-items').disabled = !waiting || n <= 0;
   $('btn-items').classList.toggle('sel', !!waiting && (invOpen || !!selItem));
   setBar(!!(cur && waiting)); if (cur) renderBarHero(cur);
+  renderDia();
   const inv = $('inv'); inv.style.display = waiting && invOpen ? 'flex' : 'none';
   if (waiting && invOpen) inv.innerHTML = battleItems().map(it => { const c = quest.items[it.id] || 0;
     const off = c <= 0 || (it.type === 'torch' && !torchCanLight()); return `<button onclick="chooseItem('${it.id}')" ${off ? 'disabled' : ''}>${it.icon} ${it.name} ×${c}<br><small>${it.type === 'torch' && !(blizz && blizz.on) ? 'Only useful in a blizzard' : it.type === 'torch' && blizz.torch > 0.4 ? 'Your torch is still burning well' : it.desc}</small></button>`; }).join('');
 }
+
+/* ============ BUTTON DIAMOND (PC battle menu) ============
+   On the player's turn the active hero's skills pop up beside them, laid out like a pad's face buttons:
+   Skill 1 bottom (A), Skill 2 left (X), Skill 3 top (Y), Items right (B), Shift Line below-left (LB).
+   Mouse: click a tile, then a target; right-click or Esc backs out. Keys: 1 2 3 skills, 4 items, 5 shift.
+   Pad: press the skill's button, then ◀ ▶ to a target and A; B backs out. A skill with no target (team barriers, Thunderstorm...) casts at once with
+   the mouse; on a pad everyone it reaches lights up and A (or the same button again) casts it, so a stray press never wastes the turn.
+   Knobs: at = the core's height on the hero (fraction of the figure from its top); shift = how far the core sits from the hero's centre toward the enemies (in hero widths);
+   short = a hero shorter than this (px, e.g. the shrunken party in the final fight) gets the diamond above the head instead, with the tag on top;
+   top = keep clear of the turn-order strip (px); edge = margin from the screen edges (px). Sizes (--W --H --dx --dy) are in the CSS. */
+const DIA = { at: .64, shift: .15, short: 400, top: 128, edge: 14 };
+const diaOn = () => FX.ui === 'dia' && wide();
+const noTarget = s => !!s && (['barrierAll', 'buff', 'smoke', 'brew', 'immortal'].includes(s.t) || !!s.all);
+function hitsAll(u, s, x) {             // who an untargeted skill reaches (for the glow before a pad confirms it)
+  if (!isAlive(x)) return false;
+  if (s.all) return x.team !== u.team;
+  if (s.t === 'barrierAll') return x.team === u.team && (s.self || x !== u);
+  if (s.t === 'brew') return x.team === u.team;
+  return x === u;
+}
+// what is printed on each face button (standard mapping: 0 bottom, 1 right, 2 left, 3 top) and the left bumper
+const PAD_GLYPH = { xbox: ['A', 'B', 'X', 'Y', 'LB', 'RB'], ps: ['✕', '○', '□', '△', 'L1', 'R1'], nin: ['B', 'A', 'Y', 'X', 'L', 'R'] };
+function padFamily() {
+  try { const p = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(g => g && g.connected), id = p ? p.id : '';
+    return /xbox|045e|xinput/i.test(id) ? 'xbox' : /054c|playstation|dualsense|dualshock|^wireless controller/i.test(id) ? 'ps' : /057e|nintendo|pro controller|joy-con/i.test(id) ? 'nin' : 'xbox'; } catch (_) { return 'xbox'; }
+}
+const padGl = b => `<span class="gl p b${b}">${PAD_GLYPH[padFamily()][b]}</span>`;
+const DIA_SLOTS = [                       // k = skill index or 'items'; b = the pad button; key = keyboard; x / y = place in the diamond
+  { k: 0, b: 0, key: '1', x: 0, y: 1 },
+  { k: 1, b: 2, key: '2', x: -1, y: 0 },
+  { k: 2, b: 3, key: '3', x: 0, y: -1 },
+  { k: 'items', b: 1, key: '4', x: 1, y: 0 }
+];
+const SK_COL = { fire: '#ff8a50', ice: '#6fd3ff', shock: '#ffd54f', poison: '#9ccc65', bleed: '#ff5d6c' };
+const skCol = s => s.el ? SK_COL[s.el] || '#9fd8ff' : s.t === 'dmg' ? '#c3cbe0' : ['barrier', 'barrierAll', 'guard'].includes(s.t) ? '#7fb8ff' : s.t === 'tonic' ? '#8de0a0' : '#c79bff';
+let diaHov = null, diaRaf = 0;
+function diaBuild() {
+  const d = document.createElement('div'); d.id = 'dia';
+  d.innerHTML = `<div class="dia-k">${DIA_SLOTS.map((t, n) => { const q = typeof t.k === 'number' ? t.k : `'${t.k}'`;
+      return `<button class="dt" id="dia-${t.k}" style="--x:${t.x};--y:${t.y};--n:${n}" onclick="diaPress(${q})" onmouseenter="diaHover(${q})" onmouseleave="diaHover(null)"><span class="gl k">${t.key}</span><span class="gl p b${t.b}"></span><span class="nm"></span><span class="ic"></span><span class="cdov"></span></button>`; }).join('')}
+    <i class="dia-core"></i><button class="dsh" id="dia-shift" style="--n:4" onclick="diaPress('shift')"><span class="gl k">5</span><span class="gl p sh"></span>⇄ Shift Line</button><div class="dia-tag"></div></div>`;
+  $('battle-scene').appendChild(d); return d;
+}
+function diaPress(k) {                   // a tile clicked, or 1-5 pressed
+  if (!waiting || !cur) return;
+  if (k === 'items') { if (!$('btn-items').disabled) toggleInv(); return; }
+  if (k === 'shift') { doShift(); return; }
+  if (!usable(cur, k)) { diaNope(k); return; }
+  chooseSkill(k);
+}
+function diaNope(k) {                     // that one is on cooldown: the tile shakes instead
+  const b = $('dia-' + k); if (!b || !b.animate) return; try { sfx('ward'); } catch (_) {}
+  b.animate([{ translate: '0 0' }, { translate: '-6px 0' }, { translate: '6px 0' }, { translate: '-3px 0' }, { translate: '0 0' }], { duration: 260 });
+}
+function diaHover(k) { diaHov = k; diaTag(); }
+function cancelPick() {                   // back out of picking a target or an item
+  if (!waiting || !cur) return;
+  if (sel !== null) { sel = null; $('turn-indicator').innerText = `${cur.name}'s turn`; render(); }
+  else if (selItem || invOpen) toggleInv();
+}
+function diaTag() {
+  const d = $('dia'), tg = d && d.querySelector('.dia-tag'); if (!tg || !cur) return;
+  const pad = document.body.classList.contains('gp'), k = diaHov !== null && diaHov !== 'items' ? diaHov : sel;
+  let h = '', col = '#4fc3f7';
+  if (k !== null && k !== undefined && typeof k === 'number') {
+    const s = effSkill(cur, k), cd = cur.cd[k], nt = noTarget(s); col = skCol(s);
+    h = `<div><b>${s.n}</b>${cd > 0 ? ` <span style="color:#ffb74d">· ready in ${cd}</span>` : ''}</div><div class="t2">${skillDesc(s, cur)}</div>`;
+    if (sel === k && waiting) h += `<div class="t3">${nt ? (pad ? `${padGl(0)} use it ${padGl(1)} back` : 'Click it again to use it · right-click to cancel')
+      : pad ? `◀ ▶ pick ${padGl(0)} confirm ${padGl(1)} back` : `Click ${s.t === 'dmg' || s.t === 'charm' ? 'an enemy' : 'an ally'} · right-click to cancel`}</div>`;
+  } else if (diaHov === 'items' || invOpen || selItem) {
+    col = '#ff8a65'; h = `<div><b>🎒 Items</b></div><div class="t2">${itemCount()} in the bag · using one takes the turn</div>`;
+    if (invOpen) h += `<div class="t3">${pad ? `${padGl(0)} use ${padGl(1)} close` : 'Pick an item · right-click to close'}</div>`;
+    else if (selItem) h += `<div class="t3">${pad ? `◀ ▶ pick ${padGl(0)} give ${padGl(1)} back` : 'Click a wounded ally · right-click to cancel'}</div>`;
+  } else if (/bonus turn$/.test($('turn-indicator').innerText)) h = '<div class="bonus">⚡ BONUS TURN</div>';
+  tg.style.setProperty('--tc', col);
+  if (tg.dataset.h !== h) { tg.dataset.h = h; tg.innerHTML = h; }
+  tg.classList.toggle('on', !!h); placeDia();
+}
+function renderDia() {
+  if (!$('battle-scene')) return;
+  const d = $('dia') || diaBuild(), inv = $('inv'), home = $('bar');
+  if (!diaOn()) { if (inv && home && inv.parentNode !== home) home.appendChild(inv); return; }
+  if (inv && inv.parentNode !== d) d.appendChild(inv);
+  if (!cur) return;                                         // the last hero's tiles stay while the diamond folds away
+  const fam = padFamily(), G = PAD_GLYPH[fam]; if (d.dataset.pad !== fam) d.dataset.pad = fam;
+  const put = (el, v) => { if (el && el.innerHTML !== v) el.innerHTML = v; };
+  DIA_SLOTS.forEach(t => {
+    const b = $('dia-' + t.k); if (!b) return;
+    put(b.querySelector('.gl.p'), G[t.b]);
+    if (t.k === 'items') {
+      const n = itemCount(); b.disabled = !waiting || n <= 0; b.classList.toggle('sel', !!waiting && (invOpen || !!selItem)); b.style.setProperty('--ec', '#ff8a65');
+      put(b.querySelector('.nm'), 'Items'); put(b.querySelector('.ic'), `🎒×${n}`); b.classList.remove('oncd'); return;
+    }
+    const s = effSkill(cur, t.k), cd = cur.cd[t.k] || 0, ok = usable(cur, t.k), ic = [s.el ? ICON[s.el] : '', s.t === 'dmg' ? RICON[rangeOf(s)] : '', s.aoe || s.all ? '🌐' : ''].filter(Boolean).map(c => `<i>${c}</i>`).join('');
+    b.style.setProperty('--ec', skCol(s)); put(b.querySelector('.nm'), s.n); b.querySelector('.nm').classList.toggle('long', Math.max(...s.n.split(' ').map(w => w.length)) > 11); put(b.querySelector('.ic'), ic); put(b.querySelector('.cdov'), cd > 0 ? String(cd) : '');
+    b.disabled = !waiting || !ok; b.classList.toggle('oncd', cd > 0); b.classList.toggle('sel', !!waiting && sel === t.k);
+  });
+  const sh = $('dia-shift'); if (sh) { sh.disabled = !waiting || party.filter(isAlive).length < 2; put(sh.querySelector('.gl.p'), G[4]); }
+  d.classList.toggle('picking', !!waiting && (sel !== null || invOpen || !!selItem));
+  if (!waiting) diaHov = null;
+  diaTag();
+  if (document.body.classList.contains('bar-on')) diaLoop();
+}
+function placeDia() {                    // beside the hero, on the side facing the enemies, clamped to the screen
+  const d = $('dia'); if (!d || !cur || !diaOn()) return;
+  const el = figs.get(cur); if (!el || !el.isConnected) return;
+  const A = figBox(el); if (!A.w) return;
+  const t0 = $('dia-0'), tR = $('dia-items'); if (!t0 || !tR) return;
+  const W = t0.offsetWidth || 176, H = t0.offsetHeight || 56, dx = tR.offsetLeft + W / 2, dy = t0.offsetTop + H / 2;      // measured, so the Text size option scales it all
+  const up = A.h < DIA.short, halfW = dx + W / 2 + 6 + 40, below = dy + H / 2 + 14 + (up ? 0 : 70), above = dy + H / 2 + (up ? 14 + 70 : 0);
+  let x = A.cx + A.w * DIA.shift * (cur.team === 'p' ? 1 : -1), y = up ? A.bottom - A.h - dy - H / 2 - 10 : A.bottom - A.h + A.h * DIA.at;
+  x = Math.max(halfW + DIA.edge, Math.min(innerWidth - halfW - DIA.edge, x));
+  y = Math.max(DIA.top + above, Math.min(innerHeight - below - DIA.edge, y));
+  d.classList.toggle('up', up);
+  x = Math.round(x); y = Math.round(y);
+  if (d.dataset.xy !== x + ',' + y) { d.dataset.xy = x + ',' + y; d.style.transform = `translate(${x}px,${y}px)`; }
+  const tg = d.querySelector('.dia-tag');                  // the tag hangs under the diamond, kept on screen
+  if (tg && tg.classList.contains('on')) { const w = tg.offsetWidth, L = Math.max(DIA.edge, Math.min(innerWidth - DIA.edge - w, x - w / 2)); tg.style.left = Math.round(L - x) + 'px'; }
+  const inv = $('inv');                                    // the bag opens on whichever side has room
+  if (inv && inv.parentNode === d && inv.style.display !== 'none') inv.classList.toggle('flip', x + dx + W / 2 + 16 + inv.offsetWidth > innerWidth - DIA.edge);
+}
+function diaLoop() {                      // follow the hero while the camera settles (cheap: one box per frame, only while the menu is up)
+  if (diaRaf) return;
+  const step = () => { diaRaf = 0; if (!diaOn() || !document.body.classList.contains('bar-on') || !$('battle-scene').classList.contains('show')) return; placeDia(); diaRaf = requestAnimationFrame(step); };
+  diaRaf = requestAnimationFrame(step);
+}
+addEventListener('resize', () => { if (typeof cur !== 'undefined' && $('battle-scene') && $('battle-scene').classList.contains('show')) renderDia(); });
+addEventListener('gamepadconnected', () => { if ($('battle-scene') && $('battle-scene').classList.contains('show')) renderDia(); });
+document.addEventListener('keydown', e => {                // 1 2 3 skills, 4 items, 5 shift (any battle menu style)
+  if (e.altKey || e.ctrlKey || e.metaKey || e.repeat || !waiting || !cur || !$('battle-scene').classList.contains('show')) return;
+  if (pauseOpen() || bookOpen() || $('guide').classList.contains('show') || $('inspect').classList.contains('show')) return;
+  const k = { '1': 0, '2': 1, '3': 2, '4': 'items', '5': 'shift' }[e.key]; if (k === undefined) return;
+  e.preventDefault(); diaPress(k);
+});
+document.addEventListener('contextmenu', e => {            // right-click backs out of picking a target or an item
+  if (waiting && cur && $('battle-scene').classList.contains('show') && (sel !== null || invOpen || selItem)) { e.preventDefault(); cancelPick(); }
+});
 
 /* Camera: on PC the 4v4 starts pulled back and zooms in as fighters fall (every figure scales about its feet, so all effects, which are positioned
    in figure-box %, stay correct). 1v1 is the closest. The zoom is capped so nobody's head leaves the screen. */
@@ -6079,7 +6312,8 @@ function skillWhat(u, s) {
   let x = skillWhat0(u, s);
   if (s.bonusOnBleed) x += ' · ⚡ if the target was ALREADY bleeding, she gets a bonus turn right away (once per turn), so she can follow up with a Crimson Bite';
   if (s.chip) x += ` · 💥 physical, but still damages armour (break ${s.brk}); statuses only come from elemental hits`;
-  if (s.aoe) x += ` · 🌐 the target takes full damage, every other foe takes ${Math.round(s.aoe * 100)}% damage and ${Math.round((s.aoeBrk ?? s.aoe) * 100)}% of the break`;
+  if (s.all) x += ' · 🌐 no target to pick: every foe takes the full damage and break at once';
+  else if (s.aoe) x += ` · 🌐 the target takes full damage, every other foe takes ${Math.round(s.aoe * 100)}% damage and ${Math.round((s.aoeBrk ?? s.aoe) * 100)}% of the break`;
   if (s.move === 'back') x += ' · 💨 afterwards she dashes to the back row';
   if (s.counter) x += ` · ↩️ ${Math.round(s.counter * 100)}% chance to counterattack with it whenever an enemy attacks her`;
   if (s.dr) x += ` · 🔰 she also takes ${Math.round(s.dr.mult * 100)}% less damage for ${s.dr.dur} of her turns`;
@@ -6135,6 +6369,7 @@ function pauseAllowed() {
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape' || e.repeat) return;
   if (pauseOpen()) { pauseClose(); e.stopImmediatePropagation(); return; }
+  if (waiting && cur && (sel !== null || invOpen || selItem) && $('battle-scene').classList.contains('show') && !$('inspect').classList.contains('show')) { cancelPick(); e.stopImmediatePropagation(); return; }      // Esc backs out of a pick first
   if (typeof dormMenuEl !== 'undefined' && dormMenuEl) return;
   if ($('inspect').classList.contains('show')) return;
   if (bookOpen()) { closeBook(); return; }
@@ -6146,12 +6381,15 @@ document.addEventListener('keydown', e => {
 function closeInspect() { $('inspect').classList.remove('show'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeInspect(); });
 
-function chooseSkill(i) {
+function chooseSkill(i, pad) {            // pad: chosen with a controller button (an untargeted skill then waits for A)
   if (!waiting || !usable(cur, i)) return;
   selItem = null; invOpen = false;
-  if (sel === i) { sel = null; render(); return; }          // click again to cancel
-  if (['barrierAll', 'buff', 'smoke', 'brew', 'immortal'].includes(cur.skills[i].t)) { finish({ i }); return; }
-  sel = i; render();
+  const nt = noTarget(cur.skills[i]);
+  if (sel === i) { if (nt) { finish({ i }); return; } sel = null; render(); return; }          // again: cancels a targeted skill, uses an untargeted one
+  if (nt && !pad) { finish({ i }); return; }      // nothing to aim: it just goes
+  sel = i;
+  if (nt) { $('turn-indicator').innerText = `${cur.name}: press A to use ${cur.skills[i].n}`; render(); return; }
+  render();
   $('turn-indicator').innerText = `${cur.name}: pick a ${cur.skills[i].t === 'dmg' ? 'target' : cur.skills[i].t === 'guard' ? 'ally to protect' : cur.skills[i].t === 'charm' ? 'broken enemy to charm' : cur.skills[i].t === 'tonic' ? 'wounded ally to treat' : 'friendly target'} for ${cur.skills[i].n}`;
 }
 
@@ -6296,7 +6534,7 @@ async function hit(u, t, s) {
   }
   render(); await anim;
   await flushTriggers();
-  if (!countering && s.t === 'dmg' && t.team !== u.team && isAlive(t) && isAlive(u) && t.skills && t.skills[0].counter && !stunned(t) && Math.random() < t.skills[0].counter) await counterAttack(t, u);
+  if (!countering && s.t === 'dmg' && t.team !== u.team && isAlive(t) && isAlive(u) && t.skills && t.skills[0].counter && !stunned(t) && Math.random() < t.skills[0].counter) { if (s.cq) s.cq.push(t); else await counterAttack(t, u); }      // hits that land together (allHit) answer one by one afterwards
 }
 
 async function useItem(u, id, t) {          // using an item takes the hero's turn
@@ -6311,10 +6549,30 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
   render(); await sleep(200);
 }
 
+// all:true damage skills (Vesper's Thunderstorm): no target is picked. Every foe takes the same full hit; the hits ripple out from the nearest foe ALL_RIPPLE ms apart
+// and land together instead of one after another. Counters wait until every hit is in. A charmed caster turns it on her own side instead.
+const ALL_RIPPLE = 70;
+function allFoes(u, t) {
+  const own = t && t.team === u.team;
+  return (own ? (u.team === 'p' ? party : enemies).filter(e => e !== u) : (u.team === 'p' ? enemies : party)).filter(isAlive);
+}
+async function allHit(u, s, t, dash) {
+  const foes = allFoes(u, t), cq = [];
+  if (foes.length > 1) log(`🌩️ ${s.n} strikes ${foes.map(e => e.name).join(', ')}!`, 'log-status');
+  await Promise.all(foes.map(async (e, k) => {
+    if (k) await sleep(dspd(ALL_RIPPLE * k));
+    if (!isAlive(e)) return;
+    if (dash && dash.zap) dash.zap(e);                                                           // its charm bursts as the hit lands
+    await hit(u, e, { ...s, noDodge: true, cq });
+  }));
+  for (const e of cq) if (isAlive(e) && isAlive(u) && !stunned(e)) await counterAttack(e, u);
+}
+
 async function perform(u, i, target, opts) {      // opts.hold: do not walk home after a melee strike, hand the way back to the caller in opts.held (Iris's one-two)
   const s = effSkill(u, i);
-  say(target && s.t !== 'barrierAll' && s.t !== 'buff' ? `${u.name} uses ${s.n} on ${target.name}` : `${u.name} uses ${s.n}`);
-  if (target && (s.t === 'dmg' || s.t === 'charm' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot([u, target]);
+  if (s.all && s.t === 'dmg' && !target) target = allFoes(u)[0];                          // an everyone-at-once skill still needs someone to aim the art at: the nearest foe
+  say(target && s.t !== 'barrierAll' && s.t !== 'buff' && !s.all ? `${u.name} uses ${s.n} on ${target.name}` : `${u.name} uses ${s.n}`);
+  if (target && (s.t === 'dmg' || s.t === 'charm' || s.t === 'barrier' || s.t === 'guard' || s.t === 'tonic')) setSpot(s.all ? [u, ...allFoes(u, target)] : [u, target]);
   if ((u.team === 'p' && (i === 2 || s.cd >= 3)) || (u.team === 'e' && u.boss && s.cd >= 3)) banner(s.n, u.team, u.short || u.name);           // the big moves get announced
   u.cd[i] = s.cd > 0 ? s.cd + 1 : 0;      // +1 because cooldowns tick at the start of the unit's next turn
   // The order of a hit: 1) her skill picture replaces the idle  2) a short charge-up effect for elemental attacks  3) the attack connects (bolt flies / blow lands)  4) the target's damaged picture and hit effects (in hit()).
@@ -6324,7 +6582,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   const w3 = !seq && !st3 && s.t === 'barrierAll' ? await ward3Assets(u, i) : null;            // skill 3 cast in her slot with barriers around everyone (Aria)
   const lp3 = !seq && !st3 && !w3 && s.t === 'dmg' && target ? await leap3Assets(u, i) : null;   // skill 3 leap-and-slam onto the target (Seria)
   const fl3 = !seq && s.t === 'smoke' ? await flip3Assets(u, i) : null;                       // skill 3 smoke slam and backflip to the rear (Irae)
-  const wv3 = !seq && !st3 && !lp3 && s.t === 'dmg' && s.aoe && target ? await weave3Assets(u, i) : null;   // skill 3 weave through the enemy line with charms (Vesper)
+  const wv3 = !seq && !st3 && !lp3 && s.t === 'dmg' && s.aoe && target && target.team !== u.team ? await weave3Assets(u, i) : null;   // skill 3 weave through the enemy line with charms (Vesper)
   const ts = !seq && (s.t === 'tonic' || s.t === 'brew') && TOSS[u.id] ? await tossAssets(u) : null;                    // Jean: rummage, then toss a potion to each ally it reaches
   const pk = poseKey(u, i);                                                                     // the picture this skill plays in (usually its own)
   const film = seq || st3 || w3 || lp3 || fl3 || wv3 || ts ? null : await skillFilm(u, pk);
@@ -6360,10 +6618,11 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   if (s.t === 'dmg') {
     if (FB && s.shockOne) { const br = party.filter(x => isAlive(x) && x.state !== 'armoured'); FB.shockPick = br.length ? fbPick(br) : null; }
     const wasBleeding = !!(target && target.statuses && target.statuses.some(x => x.type === 'bleed')), wasArmoured = !!target && target.state !== 'broken' && target.state !== 'super';
-    await Promise.all([clip, hit(u, target, s), dash ? dash.follow() : null]);
+    if (s.all) await Promise.all([clip, allHit(u, s, target, dash)]);                         // Thunderstorm: every foe at once
+    else await Promise.all([clip, hit(u, target, s), dash ? dash.follow() : null]);
     if (s.resetOnKO && target && isAlive(u) && (!isAlive(target) || (wasArmoured && target.state === 'broken'))) { u.cd[i] = 0; log(`🗡️ ${u.name} is ready to strike again: ${s.n} is ready.`, 'log-player'); floatText(u, '🗡️ RESET', 'tag'); }
     if (s.bonusOnBleed && wasBleeding && isAlive(u) && u.team === 'p') u.extraTurn = true;
-    if (s.aoe && isAlive(u)) {                                      // Thunderstorm: everyone else on the other side is caught in it too
+    if (s.aoe && !s.all && isAlive(u)) {                            // a sweep: everyone else on the other side is caught in it too
       const others = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && e !== target);
       if (others.length) log(`🌩️ ${s.n} sweeps over ${others.map(e => e.name).join(', ')}!`, 'log-status');
       for (const e of others) if (isAlive(e)) { if (dash && dash.zap) dash.zap(e); await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)), noDodge: true }); }
@@ -7682,7 +7941,7 @@ function townSVG(v = 'day') {
 let townArt = null;           // which look the town picture on screen is showing: 'day' | 'coast' | 'frost'
 async function loadTownBg() {
   const map = $('town-map'); if (!map) return;
-  const v = townVariant(); if (townArt === v) return; townArt = v;
+  const v = owAct(); if (townArt === v) return; townArt = v;          // (owAct = the act, or dev mode's Alt+W preview)
   $('town-art').innerHTML = townSVG(v); map.classList.remove('has-art'); map.style.backgroundImage = ''; mikePaint(map, null);
   // optional painted art per act: assets/ui/town (Act 1), town_act2 (Act 2), town_act3 (Act 3); the drawn town shows until the file exists
   const a = await findAsset(`${ANIM.base}/ui/${v === 'day' ? 'town' : v === 'coast' ? 'town_act2' : 'town_act3'}`);
@@ -7691,7 +7950,7 @@ async function loadTownBg() {
 
 function renderHub() {
   $('hub-gold').innerHTML = goldChip(); $('btn-beach').style.display = beachOpen() ? '' : 'none'; $('btn-lake').style.display = lakeOpen() ? '' : 'none';
-  loadTownBg(); townGuideIcon();
+  loadTownBg(); townGuideIcon(); setTimeout(() => { try { townWxSync(); } catch (e) { } }, 50);
   $('hub-msg').textContent = hubNote; hubNote = '';
   showNotice();      // e.g. the result of the last quest
 }
@@ -8652,8 +8911,11 @@ const SHOP_ART = {
   relics:   [[.36, .408], [.36, .494], [.36, .574]],                       // the 2nd, 3rd and 4th shelves on the left wall
   keeper:   { x: .895, bottom: .975, h: .52, cut: .682 },                  // the shopkeeper: centre, feet line, height; cut = the counter's back edge (he is hidden below it)
   bubble:   { right: .155, top: .475 },                                    // his speech bubble, just left of his face
-  mike:     { x: .525, y: .6, size: .24 }                                  // Big Mike through the window (only if the picture's window is transparent)
+  mike:     { x: .525, y: .6, size: .24 },                                 // Big Mike through the window (only if the picture's window is transparent)
+  door:     [[.085, .297], [.258, .343], [.258, .781], [.085, .867]]        // the big green door: click it to go back to town (its corners: top-left, top-right, bottom-right, bottom-left)
 };
+let shopFrame = { ax: 0, bx: 1, ay: 0, by: 1 };
+const sp = (x, y) => [shopFrame.ax + shopFrame.bx * x, shopFrame.ay + shopFrame.by * y];        // a spot measured on the room picture -> the same spot on screen (the picture is framed a touch larger than the screen box)
 function shopSky() { if (shopWx) shopWx.view(); }       // Big Mike just loaded: redraw the view
 /* ============ OUTSIDE, SEEN FROM INSIDE ============
    Interiors show the act's weather, like the town does: Act 1 a sunny day, Act 2 soft rain with distant thunder and lightning, Act 3 a white, snowy day.
@@ -8690,20 +8952,26 @@ function owMask(url, poly) {              // where the painting's outside light 
   } catch (e) { res(null); } }; im.src = url; });
 }
 let rainSnd = null;
-function rainStart() {                    // rain on the glass: a soft hiss and drops ticking at random
+const RAIN_SND = {        // 'glass': indoors, drops ticking on the window; 'out': out in the open, a fuller hiss and soft patter on roofs and puddles
+  glass: { hp: 900, lp: 5200, hiss: .03, f: [1800, 6000], q: [5, 14], amp: [.04, .13], every: [35, 215] },
+  out:   { hp: 380, lp: 3800, hiss: .05, f: [500, 2600], q: [2, 6], amp: [.015, .05], every: [18, 90] }
+};
+function rainStart(kind = 'glass') {
+  if (rainSnd && rainSnd.kind !== kind) rainStop();
   if (rainSnd || sndMuted || !ac()) return;
-  const hiss = actx.createBufferSource(), hp = actx.createBiquadFilter(), lp = actx.createBiquadFilter(), g = actx.createGain();
-  hiss.buffer = anoise; hiss.loop = true; hp.type = 'highpass'; hp.frequency.value = 900; lp.type = 'lowpass'; lp.frequency.value = 5200; g.gain.value = 0;
-  hiss.connect(hp); hp.connect(lp); lp.connect(g); g.connect(asfx); hiss.start(); g.gain.setTargetAtTime(.03, actx.currentTime, .8);
-  rainSnd = { hiss, g, tick: 0 };
+  const K = RAIN_SND[kind], hiss = actx.createBufferSource(), hp = actx.createBiquadFilter(), lp = actx.createBiquadFilter(), g = actx.createGain();
+  hiss.buffer = anoise; hiss.loop = true; hp.type = 'highpass'; hp.frequency.value = K.hp; lp.type = 'lowpass'; lp.frequency.value = K.lp; g.gain.value = 0;
+  hiss.connect(hp); hp.connect(lp); lp.connect(g); g.connect(asfx); hiss.start(); g.gain.setTargetAtTime(K.hiss, actx.currentTime, .8);
+  rainSnd = { hiss, g, tick: 0, kind };
+  const R = (a) => a[0] + Math.random() * (a[1] - a[0]);
   const tick = () => { if (!rainSnd || sndMuted) return; try { const t = actx.currentTime, s = actx.createBufferSource(), bp = actx.createBiquadFilter(), gg = actx.createGain();
-      s.buffer = anoise; bp.type = 'bandpass'; bp.frequency.value = 1800 + Math.random() * 4200; bp.Q.value = 5 + Math.random() * 9;
-      gg.gain.setValueAtTime(0, t); gg.gain.linearRampToValueAtTime(.04 + Math.random() * .09, t + .002); gg.gain.exponentialRampToValueAtTime(.0004, t + .03 + Math.random() * .06);
+      s.buffer = anoise; bp.type = 'bandpass'; bp.frequency.value = R(K.f); bp.Q.value = R(K.q);
+      gg.gain.setValueAtTime(0, t); gg.gain.linearRampToValueAtTime(R(K.amp), t + .002); gg.gain.exponentialRampToValueAtTime(.0004, t + .03 + Math.random() * .06);
       s.connect(bp); bp.connect(gg); gg.connect(asfx); s.start(t, Math.random() * .85, .12); } catch (e) { }
-    rainSnd.tick = setTimeout(tick, 35 + Math.random() * 180); };
+    rainSnd.tick = setTimeout(tick, R(K.every)); };
   tick();
 }
-function rainStop() { if (!rainSnd) return; const r = rainSnd; rainSnd = null; clearTimeout(r.tick); try { r.g.gain.setTargetAtTime(0, actx.currentTime, .35); setTimeout(() => { try { r.hiss.stop(); } catch (e) { } }, 2000); } catch (e) { } }
+function rainStop(kind) { if (!rainSnd || (kind && rainSnd.kind !== kind)) return; const r = rainSnd; rainSnd = null; clearTimeout(r.tick); try { r.g.gain.setTargetAtTime(0, actx.currentTime, .35); setTimeout(() => { try { r.hiss.stop(); } catch (e) { } }, 2000); } catch (e) { } }
 function thunder(k = 1) {                 // a distant roll: low noise that swells, rumbles and rolls away
   if (sndMuted || !ac()) return;
   try { const t = actx.currentTime, s = actx.createBufferSource(), lp = actx.createBiquadFilter(), g = actx.createGain(), lfo = actx.createOscillator(), lg = actx.createGain(), dur = 4 + Math.random() * 3, pk = .5 * k;
@@ -8712,7 +8980,7 @@ function thunder(k = 1) {                 // a distant roll: low noise that swel
     lfo.frequency.value = 2 + Math.random() * 3; lg.gain.value = pk * .3; lfo.connect(lg); lg.connect(g.gain);
     s.connect(lp); lp.connect(g); g.connect(asfx); s.start(t); lfo.start(t); s.stop(t + dur + .2); lfo.stop(t + dur + .2); } catch (e) { }
 }
-let owForce = null;               // dev: Alt+W in an interior cycles its outside through the acts (day, rain, snow)
+let owForce = null;               // dev: Alt+W in the town or an interior cycles through the acts' looks and weather (Act 1 sun, Act 2 rain, Act 3 snow)
 const owAct = () => owForce || townVariant();
 function insideWeather(cov, conf, roomUrl) {
   const act = owAct(), O = OUTSIDE[act] || OUTSIDE.day, view = cov.querySelector('.ow-view'), ctl = { act, on: false, timer: 0 };
@@ -8756,17 +9024,89 @@ function insideWeather(cov, conf, roomUrl) {
     setTimeout(() => { if (ctl.on) thunder(rnd(.55, 1)); }, rnd(900, 2600));
     ctl.timer = setTimeout(strike, rnd(O.storm[0], O.storm[1]));
   };
-  ctl.start = () => { if (ctl.on) return; ctl.on = true; if (O.rain) rainStart(); if (O.storm) ctl.timer = setTimeout(strike, rnd(2500, 6000)); };
-  ctl.stop = () => { if (!ctl.on) return; ctl.on = false; clearTimeout(ctl.timer); if (O.rain) rainStop(); };
+  ctl.start = () => { if (ctl.on) return; ctl.on = true; if (O.rain) rainStart('glass'); if (O.storm) ctl.timer = setTimeout(strike, rnd(2500, 6000)); };
+  ctl.stop = () => { if (!ctl.on) return; ctl.on = false; clearTimeout(ctl.timer); if (O.rain) rainStop('glass'); };
   ctl.remove = () => { ctl.stop(); layers.forEach(d => d.remove()); if (ctl.roomFlash) ctl.roomFlash.remove(); };
   return ctl;
 }
+/* ============ THE TOWN IN THE RAIN (Act 2) ============
+   Over the town (drawn or painted): rain falling across the whole scene with splashes on the ground, lightning every so often that lights the town up
+   (and sometimes a bolt in the sky: kept to the sky of a painted town by its sky mask), distant thunder a second or two later, and the sound of rain
+   out in the open. Runs only while the town is on screen in Act 2. Knobs: TOWN_RAIN (amount of rain, its slant, how often lightning strikes in ms). */
+const TOWN_RAIN = { drops: 260, slant: .22, storm: [7000, 17000], ground: [.7, .98], bolt: .6 };
+const townWx = { on: false, raf: 0, timer: 0, drops: [], splash: [], last: 0 };
+function townWxSync() {
+  const on = $('hub').classList.contains('show') && owAct() === 'coast' && !document.hidden && wide();
+  if (on && !townWx.on) townWxStart(); else if (!on && townWx.on) townWxStop();
+  if (townWx.on) { if (sndMuted) rainStop('out'); else rainStart('out'); }
+}
+function townWxStart() {
+  townWx.on = true; const c = $('town-rain'), b = $('town-bolt');
+  [c, b, $('town-flash')].forEach(e => e.style.display = 'block');
+  const map = $('town-map'); b.style.webkitMaskImage = b.style.maskImage = '';
+  if (map.classList.contains('has-art')) { const u = (map.style.backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1]; if (u) skyMap(u).then(sk => { if (sk && sk.mask && townWx.on) b.style.webkitMaskImage = b.style.maskImage = `url("${sk.mask}")`; }); }
+  townWx.drops = []; townWx.splash = []; townWx.last = performance.now();
+  if (!FX.calm) townWx.raf = requestAnimationFrame(townRainFrame);
+  clearTimeout(townWx.timer); townWx.timer = setTimeout(townStrike, 2500 + Math.random() * 4000);
+  rainStart('out');
+}
+function townWxStop() {
+  townWx.on = false; cancelAnimationFrame(townWx.raf); townWx.raf = 0; clearTimeout(townWx.timer);
+  const c = $('town-rain'); try { c.getContext('2d').clearRect(0, 0, c.width, c.height); } catch (e) { }
+  [c, $('town-bolt'), $('town-flash')].forEach(e => e.style.display = ''); $('town-bolt').innerHTML = '';
+  rainStop('out');
+}
+function townRainFrame(now) {
+  if (!townWx.on) return;
+  const c = $('town-rain'), W = c.clientWidth, H = c.clientHeight; if (!W || !H) { townWx.raf = requestAnimationFrame(townRainFrame); return; }
+  if (c.width !== W || c.height !== H) { c.width = W; c.height = H; townWx.drops = []; }
+  const g = c.getContext('2d'), dt = Math.min(.05, (now - townWx.last) / 1000), K = TOWN_RAIN, sl = K.slant; townWx.last = now;
+  const n = Math.round(K.drops * W * H / (1600 * 900)), gy = () => (K.ground[0] + Math.random() * (K.ground[1] - K.ground[0])) * H;
+  while (townWx.drops.length < n) { const near = Math.random() < .35; townWx.drops.push({ x: Math.random() * W * 1.2, y: Math.random() * H, l: (near ? .055 : .028) * H * (.7 + Math.random() * .6), v: (near ? 1.9 : 1.25) * H * (.85 + Math.random() * .3), a: near ? .5 + Math.random() * .25 : .22 + Math.random() * .18, w: near ? 1.6 : 1, near, gy: gy() }); }
+  g.clearRect(0, 0, W, H); g.lineCap = 'round';
+  for (const d of townWx.drops) {
+    d.y += d.v * dt; d.x -= d.v * sl * dt;
+    if ((d.near && d.y > d.gy) || d.y - d.l > H) {
+      if (d.near && townWx.splash.length < 90) townWx.splash.push({ x: d.x, y: d.gy, t: 0 });
+      d.y = -d.l - Math.random() * H * .3; d.x = Math.random() * W * 1.25; if (d.near) d.gy = gy();
+    }
+    g.strokeStyle = `rgba(205,220,240,${d.a})`; g.lineWidth = d.w; g.beginPath(); g.moveTo(d.x, d.y); g.lineTo(d.x + d.l * sl, d.y - d.l); g.stroke();
+  }
+  g.lineWidth = 1;
+  townWx.splash = townWx.splash.filter(s => (s.t += dt) < .28);
+  for (const s of townWx.splash) { const k = s.t / .28, r = 2 + k * H * .012; g.strokeStyle = `rgba(215,228,245,${(.55 * (1 - k)).toFixed(3)})`; g.beginPath(); g.ellipse(s.x, s.y, r, r * .32, 0, 0, 6.283); g.stroke(); }
+  townWx.raf = requestAnimationFrame(townRainFrame);
+}
+function townStrike() {          // lightning over the town: everything lights up (a double flicker), sometimes a bolt in the sky; thunder rolls in after
+  if (!townWx.on) return;
+  if (FX.flash) {
+    const k = [{ opacity: 0 }, { opacity: .55, offset: .06 }, { opacity: .1, offset: .18 }, { opacity: .42, offset: .3 }, { opacity: 0 }];
+    $('town-flash').animate(k, { duration: 750, easing: 'ease-out' });
+    if (Math.random() < TOWN_RAIN.bolt) {
+      const painted = $('town-map').classList.contains('has-art'), x0 = 160 + Math.random() * 1280, yEnd = (painted ? .24 + Math.random() * .14 : .12 + Math.random() * .1) * 900;
+      const path = (x, y, y2) => { let d = `M${x.toFixed(0)} ${y.toFixed(0)}`; while (y < y2) { y += 18 + Math.random() * 26; x += (Math.random() - .5) * 46; d += ` L${x.toFixed(0)} ${y.toFixed(0)}`; } return d; };
+      const main = path(x0, -10, yEnd), br = path(x0 + (Math.random() - .5) * 60, yEnd * (.3 + Math.random() * .3), yEnd * (.75 + Math.random() * .2));
+      const b = $('town-bolt'); b.innerHTML = [main, br].map((d, i) => `<path d="${d}" stroke="#bcd4ff" stroke-width="${i ? 5 : 9}" opacity=".45" style="filter:blur(3px)"/><path d="${d}" stroke="#fff" stroke-width="${i ? 1.6 : 2.8}"/>`).join('');
+      b.animate([{ opacity: 0 }, { opacity: 1, offset: .05 }, { opacity: .2, offset: .2 }, { opacity: 1, offset: .32 }, { opacity: 0 }], { duration: 650, easing: 'ease-out', fill: 'forwards' });
+    }
+  }
+  setTimeout(() => { if (townWx.on) thunder(.7 + Math.random() * .4); }, 800 + Math.random() * 1800);
+  townWx.timer = setTimeout(townStrike, TOWN_RAIN.storm[0] + Math.random() * (TOWN_RAIN.storm[1] - TOWN_RAIN.storm[0]));
+}
 let shopWx = null, shopRoomUrl = '';
+function shopPlace() {            // the shopkeeper, his bubble and the door, on their spots in the painting
+  const k = SHOP_ART.keeper, [kx, kb] = sp(k.x, k.bottom), kc = sp(0, k.cut)[1], kh = k.h * shopFrame.by, kp = $('sr-keeper').style, rm = $('shop-room').style;
+  kp.setProperty('--kx', kx); kp.setProperty('--kb', kb); kp.setProperty('--kh', kh); kp.setProperty('--kcut', ((kb - kc) / kh).toFixed(4));
+  const [bx, by] = sp(1 - SHOP_ART.bubble.right, SHOP_ART.bubble.top); rm.setProperty('--bR', (1 - bx).toFixed(4)); rm.setProperty('--bT', by.toFixed(4));
+  const D = SHOP_ART.door.map(([x, y]) => sp(x, y)), xs = D.map(p => p[0]), ys = D.map(p => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), dr = $('sr-door').style;
+  Object.assign(dr, { left: x0 * 100 + '%', top: y0 * 100 + '%', width: (x1 - x0) * 100 + '%', height: (y1 - y0) * 100 + '%' });
+  dr.clipPath = `polygon(${D.map(([x, y]) => `${((x - x0) / (x1 - x0) * 100).toFixed(1)}% ${((y - y0) / (y1 - y0) * 100).toFixed(1)}%`).join(',')})`;
+}
 function shopWxSync() {          // the shop's weather runs while the shop is on screen, and follows the act
   const on = $('shop').classList.contains('show') && $('shop-room').classList.contains('has-art') && !document.hidden;
-  if (on && (!shopWx || shopWx.act !== owAct())) { if (shopWx) shopWx.remove(); shopWx = insideWeather($('shop-room').querySelector('.fscov'), { key: 'shop', ...INSIDE.shop, mike: SHOP_ART.mike }, shopRoomUrl); }
+  if (on && (!shopWx || shopWx.act !== owAct())) { if (shopWx) shopWx.remove(); shopWx = insideWeather($('shop-room').querySelector('.fscov'), { key: 'shop', windows: INSIDE.shop.windows.map(([a, b, c, d]) => [...sp(a, b), ...sp(c, d)]), light: INSIDE.shop.light.map(([x, y]) => sp(x, y)), mike: SHOP_ART.mike }, shopRoomUrl); }
   if (shopWx) { if (on) shopWx.start(); else shopWx.stop(); }
-  if (shopWx && shopWx.on && (OUTSIDE[shopWx.act] || {}).rain) { if (sndMuted) rainStop(); else rainStart(); }      // follows the Sound switch
+  if (shopWx && shopWx.on && (OUTSIDE[shopWx.act] || {}).rain) { if (sndMuted) rainStop('glass'); else rainStart('glass'); }      // follows the Sound switch
 }
 function buildShopRoom() {
   if (shopBuilt) return; shopBuilt = true;
@@ -8775,10 +9115,13 @@ function buildShopRoom() {
     const pic = a => a && ['png', 'jpg', 'webp'].includes(a.ext);
     if (pic(room)) {
       $('sr-bg').innerHTML = shopPic(room.url); $('sr-fg').innerHTML = ''; $('shop-room').classList.add('has-art');
-      const k = SHOP_ART.keeper, kp = $('sr-keeper').style, rm = $('shop-room').style;
-      kp.setProperty('--kx', k.x); kp.setProperty('--kb', k.bottom); kp.setProperty('--kh', k.h); kp.setProperty('--kcut', ((k.bottom - k.cut) / k.h).toFixed(4));
-      rm.setProperty('--bR', SHOP_ART.bubble.right); rm.setProperty('--bT', SHOP_ART.bubble.top);
-      shopRoomUrl = room.url; shopWxSync(); if ($('shop').classList.contains('show')) renderShop();
+      shopRoomUrl = room.url;
+      const im = new Image(); im.src = room.url;
+      im.decode().catch(() => {}).then(() => {
+        if (im.naturalWidth) { const sc = Math.max(1616 / im.naturalWidth, 909 / im.naturalHeight), iw = im.naturalWidth * sc, ih = im.naturalHeight * sc;
+          shopFrame = { ax: (-8 + (1616 - iw) / 2) / 1600, bx: iw / 1600, ay: (-4.5 + (909 - ih) / 2) / 900, by: ih / 900 }; }
+        shopPlace(); if (shopWx) { shopWx.remove(); shopWx = null; } shopWxSync(); if ($('shop').classList.contains('show')) renderShop();
+      });
     }
     if (pic(ctr)) $('sr-fg').innerHTML = shopPic(ctr.url);
   });
@@ -8812,16 +9155,16 @@ function renderShop() {
 }
 function shopWaresHtml() {         // the painted shop: each ware is its icon on the shelf + a price tag; hover / focus shows what it is, a click buys it
   const items = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()), at = (L, i) => L[Math.min(i, L.length - 1)], tag = p => `<span class="sr-tag">🪙 ${p}</span>`;
-  const sup = items.map((it, k) => { const [x, y] = at(SHOP_ART.supplies, k), n = game.items[it.id] || 0, can = game.gold >= it.price;
+  const sup = items.map((it, k) => { const [x, y] = sp(...at(SHOP_ART.supplies, k)), n = game.items[it.id] || 0, can = game.gold >= it.price;
     return `<button class="sr-ware sup${can ? '' : ' poor'}" data-k="i:${it.id}" style="left:${(x * 100).toFixed(2)}%;top:${(y * 100).toFixed(2)}%" onclick="srBuy(this, () => buyItem('${it.id}'))" aria-label="${it.name}, ${it.price} gold">
       <span class="ic">${it.icon}</span>${n ? `<span class="cnt">×${n}</span>` : ''}${tag(it.price)}
       <span class="sr-tip below"><b class="t">${it.name}</b><span class="d">${it.desc}</span><span class="m">In your bag: <b>${n}</b></span><span class="f">${can ? 'Click to buy' : 'Not enough gold'} · 🪙 ${it.price}</span></span></button>`; }).join('');
   const stock = (game.shop && game.shop.stock) || [];
-  const rel = stock.map((id, i) => { const r = RELICS[id], [x, y] = at(SHOP_ART.relics, i), can = game.gold >= r.price;
+  const rel = stock.map((id, i) => { const r = RELICS[id], [x, y] = sp(...at(SHOP_ART.relics, i)), can = game.gold >= r.price;
     return `<button class="sr-ware rel relic-${r.rarity}${can ? '' : ' poor'}" data-k="r:${id}" style="left:${(x * 100).toFixed(2)}%;top:${(y * 100).toFixed(2)}%" onclick="srBuy(this, () => buyRelic('${id}'))" aria-label="${r.name}, ${r.price} gold">
       <span class="ic">${r.icon}</span>${tag(r.price)}
       <span class="sr-tip right"><b class="t">${r.name}<span class="rar rar-${r.rarity}">${r.rarity}</span></b><span class="d">${r.desc}</span><span class="m">Equip relics from the Dorm.</span><span class="f">${can ? 'Click to buy' : 'Not enough gold'} · 🪙 ${r.price}</span></span></button>`; }).join('');
-  const mid = SHOP_ART.relics[Math.min(1, SHOP_ART.relics.length - 1)];
+  const mid = sp(...SHOP_ART.relics[Math.min(1, SHOP_ART.relics.length - 1)]);
   return sup + rel + (stock.length ? '' : `<div class="sr-soldout" style="left:${mid[0] * 100}%;top:${mid[1] * 100}%">Sold out</div>`);
 }
 let srLastPtr = 'mouse', srSelKey = null;
@@ -8868,7 +9211,7 @@ function assistNext(first) {
     asState = st; asSpot = st === 'away' ? null : spot;
     el.classList.remove('sweep', 'stand');
     if (st !== 'away') {
-      const art = asArt[st], [x, f] = spot, h = ASSIST.size(f);
+      const art = asArt[st], [x, f] = sp(...spot), h = ASSIST.size(spot[1]) * shopFrame.by;
       $('sr-assist-img').src = art.url; Object.assign(el.style, { left: (x * 100) + '%', top: ((f - h) * 100) + '%', height: (h * 100) + '%', width: (h * art.aspect * 9 / 16 * 100) + '%' });
       el.style.setProperty('--sw', ASSIST.strokeMs + 'ms'); el.classList.toggle('flip', Math.random() < .5); el.classList.add(st, 'on');
       if (st === 'sweep') { asStrokes = 0; asFlipAt = ASSIST.flip[0] + Math.floor(Math.random() * (ASSIST.flip[1] - ASSIST.flip[0] + 1)); setTimeout(() => { assistDust(); asDustT = setInterval(assistStroke, ASSIST.strokeMs); }, ASSIST.strokeMs * .45); }
@@ -8893,7 +9236,7 @@ function assistDust() {            // a puff of dust where the broom head is
 }
 function assistSay(text) {
   if (!asLive() || asState === 'away' || !asSpot) return;
-  const b = $('sr-abubble'), [x, f] = asSpot, h = ASSIST.size(f);
+  const b = $('sr-abubble'), [x, f] = sp(...asSpot), h = ASSIST.size(asSpot[1]) * shopFrame.by;
   b.textContent = text; b.style.left = (x * 100) + '%'; b.style.top = ((f - h - .015) * 100) + '%'; b.classList.remove('gone');
   clearTimeout(asSayT); asSayT = setTimeout(() => b.classList.add('gone'), 4200 + text.length * 30);
 }
@@ -8907,7 +9250,7 @@ function shopSay(text, ok) {
   shopNextAt = Date.now() + ms + SHOP_SAY.quietMin + Math.random() * (SHOP_SAY.quietMax - SHOP_SAY.quietMin);
 }
 setInterval(() => {
-  try { shopWxSync(); } catch (e) { }
+  try { shopWxSync(); townWxSync(); } catch (e) { }
   const sh = $('shop'); if (!sh || !sh.classList.contains('show') || document.hidden || Date.now() < shopNextAt) return;
   const b = $('sr-bubble'), pool = SHOP_GREETS.filter(g => g !== b.textContent); shopSay(pool[Math.floor(Math.random() * pool.length)], false);
 }, 1000);
@@ -10442,7 +10785,12 @@ const GP = (() => {
   function candidates(L) {
     let list = [...L.root.querySelectorAll(SEL)].filter(e => e !== L.root && !e.disabled && !e.closest(NOFOCUS) && vis(e));
     if (L.scene === 'vb') { const pn = document.getElementById('vb-panel'); if (pn && vis(pn)) { const inP = list.filter(e => pn.contains(e)); if (inP.length) list = inP; } }      // the volleyball result / perk-swap panel owns the pad while it is open
-    if (L.scene === 'battle-scene') { const t = list.filter(e => e.classList.contains('targetable')); list = t.length ? t : list.filter(e => !e.classList.contains('combatant-card')); }
+    if (L.scene === 'battle-scene' && diaOn() && waiting && cur) {      // the button diamond: no highlight on the menu (each face button is its tile); targets or bag items otherwise
+      if (invOpen && !selItem) list = list.filter(e => e.closest('#inv'));
+      else if (selItem || (sel !== null && !noTarget(cur.skills[sel]))) list = list.filter(e => e.classList.contains('targetable'));
+      else list = [];
+    }
+    else if (L.scene === 'battle-scene') { const t = list.filter(e => e.classList.contains('targetable')); list = t.length ? t : list.filter(e => !e.classList.contains('combatant-card')); }
     return list.filter(e => !list.some(o => o !== e && e.contains(o)));       // containers are not targets, their buttons are
   }
   const ctr = e => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
@@ -10509,7 +10857,7 @@ const GP = (() => {
     if (L.modal === 'inspect') return closeInspect();
     if (L.modal === 'notice') return $('notice-btn').click();
     if (L.scene === 'spa') { const q = $('btn-spa-quit'); if (q && vis(q)) return q.click(); }
-    if (L.scene === 'battle-scene') { if (waiting && sel !== null) return chooseSkill(sel); if (waiting && (selItem || invOpen)) return toggleInv(); return; }
+    if (L.scene === 'battle-scene') { if (waiting && (sel !== null || selItem || invOpen)) cancelPick(); return; }
     if (L.root.id === 'title') { const b = visBtn(/^(←|‹|back|cancel|close)/i); return b && b.click(); }
     const b = [...L.root.querySelectorAll('button')].find(b => !b.disabled && vis(b) && /^\W*(back|cancel|close|leave|return|exit|done)\b/i.test(b.textContent.trim()) && !/title/i.test(b.textContent));
     if (b) b.click();
@@ -10552,7 +10900,8 @@ const GP = (() => {
     const rep = k => { if (!down[k]) { S.held[k] = 0; return false; } if (!S.held[k]) { S.held[k] = now + 380; return true; } if (now >= S.held[k]) { S.held[k] = now + 120; return true; } return false; };
     const wake = !S.active && any; if (wake) { on(); for (const k of ['up', 'dn', 'lf', 'rt']) if (down[k]) S.held[k] = now + 380; }
     const L = layer(); const list = ensureFocus(L);
-    if (S.active && S.hk !== L.scene) { S.hk = L.scene; hint.innerHTML = L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Info / Party<b>LB/RB</b>Difficulty<b>Start</b>Pause<b>B</b>Town' : (innerWidth < 700 ? HINTS_S : HINTS); }
+    const hk = L.scene === 'battle-scene' && diaOn() ? 'dia' : L.scene;
+    if (S.active && S.hk !== hk) { S.hk = hk; const G = PAD_GLYPH[padFamily()]; hint.innerHTML = hk === 'dia' ? `<b>${G[0]} ${G[2]} ${G[3]}</b>Skills<b>${G[1]}</b>Items / Back<b>◀▶</b>Target<b>${G[4]}</b>Shift<b>${G[5]}</b>Speed<b>Start</b>Pause` : L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Info / Party<b>LB/RB</b>Difficulty<b>Start</b>Pause<b>B</b>Town' : (innerWidth < 700 ? HINTS_S : HINTS); }
     if (L.root && L.root.id === 'dive' && typeof dv !== 'undefined' && dv && dv.running && !dv.over && !$('dv-choose').classList.contains('on') && !$('dv-end').classList.contains('on')) {      // Polar Dip: Start / Select pauses; while paused B resumes
       if (edge('START') || edge('SEL')) divePause(!$('dv-pausebox').classList.contains('on'));
       else if ($('dv-pausebox').classList.contains('on') && edge('B')) divePause(false);
@@ -10564,13 +10913,32 @@ const GP = (() => {
       S.prev = down; return;
     }
     if (!wake && L.scene === 'party-select') embarkPad(down, edge, rep);
+    if (!wake && L.scene === 'battle-scene' && !L.modal && !L.skip && diaOn() && waiting && cur && !selItem && !invOpen && (sel === null || noTarget(cur.skills[sel]))) {
+      // the button diamond: A / X / Y = Skill 1 / 2 / 3, B = Items, LB = Shift Line. An untargeted skill waits: A or its own button again uses it, B backs out
+      const BTN = ['A', 'B', 'X', 'Y'], SLOT = [0, 2, 3], hit = k => edge(BTN[SLOT[k]]);
+      const pick = k => { if (usable(cur, k)) chooseSkill(k, true); else diaNope(k); };
+      if (sel === null) {
+        if (hit(0)) pick(0); else if (hit(1)) pick(1); else if (hit(2)) pick(2);
+        else if (edge('B')) { if (!$('btn-items').disabled) toggleInv(); else diaNope('items'); }
+        else if (edge('LB')) doShift();
+      } else {
+        const k = sel;
+        if (edge('A') || hit(k)) finish({ i: k });
+        else if (edge('B')) cancelPick();
+        else for (const j of [0, 1, 2]) if (j !== k && hit(j)) { pick(j); break; }
+      }
+      if (edge('RB')) cycleSpeed();
+      if (edge('START') && pauseAllowed()) pauseToggle();
+      if (edge('SEL')) openGuide();
+      S.prev = down; return;
+    }
     if (!wake) {
       if (L.skip) { if (!L.noClick && (edge('A') || edge('B') || edge('START'))) L.root.click(); }
       else {
         if (rep('up')) move(0, -1, L, list); if (rep('dn')) move(0, 1, L, list); if (rep('lf')) move(-1, 0, L, list); if (rep('rt')) move(1, 0, L, list);
         if (edge('A')) { if (L.scene === 'party-select' && S.focus && S.focus.classList.contains('mnode')) { pickQuest(S.focus.dataset.q); const bq = $('btn-start-quest'); if (bq && !bq.disabled) bq.click(); else press(S.focus); } else press(S.focus); }      // embark: A on a quest = Begin Quest
         if (edge('B') && L.scene !== 'party-select') back(L);
-        if (edge('X') && L.scene === 'battle-scene' && !$('btn-items').disabled) $('btn-items').click();
+        if (edge('X') && L.scene === 'battle-scene' && !diaOn() && !$('btn-items').disabled) $('btn-items').click();
         if (edge('Y') && S.focus && L.scene !== 'party-select') { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
         if (L.modal === 'guide') { if (edge('LB')) guideStep(-1); if (edge('RB')) guideStep(1); }
         if (L.modal === 'gbook') { if (edge('LB')) bookTabStep(-1); if (edge('RB')) bookTabStep(1); }
