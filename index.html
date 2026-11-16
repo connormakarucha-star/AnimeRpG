@@ -1728,8 +1728,8 @@ body.calm .kpuff{animation-duration:4.5s}body.calm .dp-frame.cook .kglow{animati
 .lk-pic{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;user-select:none}
 #lk-room .ow-view{z-index:0}
 .lk-pane{position:absolute;z-index:2;overflow:hidden;pointer-events:none}
-.lk-pane img{position:absolute;max-width:none;filter:brightness(0) blur(3.2px);opacity:0;transition:opacity 1.6s ease}      /* a dark shape in the steam: no colour, no detail, could be anybody */
-.lk-pane img.on{opacity:.5}
+.lk-pane img{position:absolute;max-width:none;filter:brightness(0) invert(.36) blur(3px);opacity:0;transition:opacity 1.6s ease}      /* a solid grey shape (hides the wall behind it), softened by the glass and steam on top: no colour, no detail, could be anybody */
+.lk-pane img.on{opacity:1}
 .lk-pane img.flip{transform:scaleX(-1)}
 .lk-pane .lk-sway{position:absolute;inset:0;animation:lkSway 3.4s ease-in-out infinite}
 @keyframes lkSway{0%,100%{translate:0 0}50%{translate:0 .6%}}
@@ -1756,28 +1756,32 @@ body.calm .kpuff{animation-duration:4.5s}body.calm .dp-frame.cook .kglow{animati
 .lk .lk-left .dorm-art{position:absolute;left:0;width:30vw;top:20vh;bottom:1vh;background:none;border:0;border-radius:0}
 .lk .lk-left .dorm-art .figure.dorm-big{height:100%;width:100%;max-height:none}
 .lk .lk-left .dorm-art .ph{background:rgba(255,255,255,.35);border:2px dashed rgba(90,80,100,.3);color:#6a6272}
-.lk .lk-panel{position:absolute;right:1.4vw;top:10.5vh;bottom:2.4vh;width:min(28vw,640px);z-index:5;box-sizing:border-box;overflow-y:auto;padding:16px 18px 18px;text-align:left;
+#gear .lk .lk-panel{position:absolute;right:1.2vw;top:1.6vh;bottom:1.6vh;width:min(29vw,660px);z-index:5;box-sizing:border-box;overflow-y:auto;padding:12px 16px 14px;font-size:calc(15px * var(--lkf,1));text-align:left;
   background:rgba(250,248,244,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid #fff;border-radius:14px;box-shadow:0 12px 40px rgba(60,50,40,.28);scrollbar-width:thin;scrollbar-color:#c9c0b3 transparent}
-.lk .lk-panel h3{margin:0;font-size:1.7rem;color:#c23a5c;line-height:1.1}
-.lk .lk-panel .dbio{background:#f1ece4;border-left-color:#e0a82e;color:#3a3440;margin:8px 0}
-.lk .lk-panel .dbio .likes{color:#2e8b45}.lk .lk-panel .dbio .hates{color:#c0392b}
-.lk .lk-panel .dorm-stats{color:#4a4452;font-size:.84rem}
+#gear .lk .lk-panel h3{margin:0;font-size:1.75em;color:#c23a5c;line-height:1.1}
+#gear .lk .lk-panel .dbio{background:#f1ece4;border-left-color:#e0a82e;color:#3a3440;margin:5px 0;padding:5px 9px;font-size:.84em;line-height:1.35}
+#gear .lk .lk-panel .dbio .likes{color:#2e8b45}.lk .lk-panel .dbio .hates{color:#c0392b}
+#gear .lk .lk-panel .dorm-stats{color:#4a4452;font-size:.88em;line-height:1.45}
 .lk .dh{color:#8a7f72;letter-spacing:.14em;font-size:.68rem;font-weight:800;margin:14px 0 6px;padding-bottom:3px;border-bottom:1px solid #e3ddd3}
-.lk .lk-panel .rslots{grid-template-columns:1fr 1fr;gap:8px}
-.lk .lk-panel .rslot{background:#fff;border-color:#cfc6b8;color:#3a3440;min-height:0;padding:8px 10px;font-size:.76rem}
-.lk .lk-panel .rslot.relic-rare{border-color:#2f9fd8}.lk .lk-panel .rslot.relic-epic{border-color:#a86ad8}
-.lk .lk-panel .rslot:hover:not(:disabled){background:#fffaf0;border-color:#e0a82e}
-.lk .lk-panel .rslot i{color:#c0392b}
-.lk .lk-panel .rar-common{color:#7a8294}.lk .lk-panel .rar-rare{color:#1f8fc8}.lk .lk-panel .rar-epic{color:#9b59d0}
-.lk .lk-panel .dsk{background:#fff;border:1px solid #e6e0d6;color:#3a3440;font-size:.78rem;padding:8px 10px;margin-bottom:6px;box-shadow:0 1px 3px rgba(60,50,40,.06)}
-.lk .lk-panel .dsk b{color:#2b2733}
-.lk .lk-panel .dsk .el{background:#efeae2;color:#5a5262}
-.lk .lk-panel .dim{color:#8a8290}
-.lk .lk-panel .dtr{display:grid;grid-template-columns:1fr 1fr;gap:5px 8px}
-.lk .lk-panel .dtr .tr-row{background:#fff;border:1px solid #e6e0d6;color:#3a3440;font-size:.76rem;margin:0;padding:5px 8px;border-radius:7px}
-.lk .lk-panel .dtr .tr-row.bad{background:#fff5f3;border-color:#f0c4bd}
-.lk .lk-panel button:not(.rslot){background:#2b2733;color:#fff;border:0;border-radius:8px;padding:8px 14px;margin-top:8px;cursor:pointer}
-.lk .lk-panel button:not(.rslot):hover{background:#463f55}
+#gear .lk .lk-panel .dh{font-size:.72em;margin:.8em 0 .4em;padding-bottom:.2em}
+#gear .lk .lk-panel .rslots{grid-template-columns:1fr 1fr;gap:.45em}
+#gear .lk .lk-panel .rslot{background:#fff;border-color:#cfc6b8;color:#3a3440;min-height:0;padding:.4em .6em;font-size:.8em;gap:.5em;line-height:1.3}
+#gear .lk .lk-panel .rslot .ic{font-size:1.7em;min-width:1.6em}.lk .lk-panel .rslot .rt{line-height:1.3}
+#gear .lk .lk-panel .rslot.relic-rare{border-color:#2f9fd8}.lk .lk-panel .rslot.relic-epic{border-color:#a86ad8}
+#gear .lk .lk-panel .rslot:hover:not(:disabled){background:#fffaf0;border-color:#e0a82e}
+#gear .lk .lk-panel .rslot i{color:#c0392b}
+#gear .lk .lk-panel .rar-common{color:#7a8294}.lk .lk-panel .rar-rare{color:#1f8fc8}.lk .lk-panel .rar-epic{color:#9b59d0}
+#gear .lk .lk-panel .dsk{background:#fff;border:1px solid #e6e0d6;color:#3a3440;font-size:.8em;line-height:1.38;padding:.4em .65em;margin-bottom:.35em;box-shadow:0 1px 3px rgba(60,50,40,.06)}
+#gear .lk .lk-panel .dsk b{color:#2b2733}
+#gear .lk .lk-panel .dsk .el{background:#efeae2;color:#5a5262}
+#gear .lk .lk-panel .dim{color:#8a8290}
+#gear .lk .lk-panel .dtr{display:grid;grid-template-columns:1fr 1fr;gap:.3em .45em}
+#gear .lk .lk-panel .dsk b{font-size:1.06em}.lk .lk-panel .dsk .dim{display:inline;margin-left:.4em}.lk .lk-panel .dsk .dim br{display:none}
+#gear .lk .lk-panel .dtr .tr-row{background:#fff;border:1px solid #e6e0d6;color:#3a3440;font-size:.78em;line-height:1.3;margin:0;padding:.3em .55em;border-radius:7px}
+#gear .lk .lk-panel>.dim,#gear .lk .lk-panel .dtr>.dim{font-size:.8em!important}
+#gear .lk .lk-panel .dtr .tr-row.bad{background:#fff5f3;border-color:#f0c4bd}
+#gear .lk .lk-panel button:not(.rslot){background:#2b2733;color:#fff;border:0;border-radius:8px;padding:.45em .9em;margin-top:.5em;cursor:pointer;font-size:.85em}
+#gear .lk .lk-panel button:not(.rslot):hover{background:#463f55}
 .lk .skinbtn{background:#fff;border-color:#cfc6b8;color:#3a3440}
 .lk .skinbtn.on{background:#fff4d2;border-color:#e0a82e;color:#8a5a00}
 .lk .skinbtn.legend{color:#ffe08a}
@@ -9769,7 +9773,7 @@ function renderGear() {
           <div class="dh">PERKS (${traitCount(dormHero, 'good')}/${TRAITS.maxGood})</div><div class="dtr">${group('good')}</div>
           <div class="dh">FLAWS (${traitCount(dormHero, 'bad')}/${TRAITS.maxBad})</div><div class="dtr">${group('bad')}</div>
           ${potSection(dormHero)}</div>`;
-      lkPlace(); setTimeout(() => { lkPlace(); lockerSync(); }, 30);
+      lkPlace(); lkFit(); setTimeout(() => { lkPlace(); lkFit(); lockerSync(); }, 30); if (document.fonts) document.fonts.ready.then(lkFit);
     } else
     $('dorm-char').innerHTML = strip + `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
       <div class="dorm-info dc-col">${head}
@@ -9836,6 +9840,12 @@ function lkPlace() {                   // keep the hero standing on the floor of
   A.style.left = Math.round(F.left + LOCKER.stand.x * F.width - R.left - A.offsetWidth / 2) + 'px'; A.style.right = 'auto';
 }
 addEventListener('resize', () => { if (typeof lkPlace === 'function') lkPlace(); });
+function lkFit() {                    // everything on the hero's panel fits without scrolling: the text steps down a little until it does
+  const P = document.querySelector('.lk .lk-panel'); if (!P) return; let f = 1.15;      // starts a touch larger, steps down only as far as it must
+  P.style.setProperty('--lkf', f);
+  while (P.scrollHeight > P.clientHeight + 1 && f > .6) { f = +(f - .03).toFixed(2); P.style.setProperty('--lkf', f); }
+}
+addEventListener('resize', () => { if (typeof lkFit === 'function') lkFit(); });
 function lkShowers(who) {             // who: '' | 'a' | 'b' | 'ab'
   const r = $('lk-room'); if (!r) return; lkS.who = who;
   for (const k of ['a', 'b']) { const on = who.includes(k), flip = Math.random() < .5;
