@@ -1728,13 +1728,13 @@ body.calm .kpuff{animation-duration:4.5s}body.calm .dp-frame.cook .kglow{animati
 .lk-pic{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;user-select:none}
 #lk-room .ow-view{z-index:0}
 .lk-pane{position:absolute;z-index:2;overflow:hidden;pointer-events:none}
-.lk-pane img{position:absolute;max-width:none;filter:blur(1.4px) brightness(1.04);opacity:0;transition:opacity 1.2s ease}
-.lk-pane img.on{opacity:.95}
+.lk-pane img{position:absolute;max-width:none;filter:brightness(0) blur(3.2px);opacity:0;transition:opacity 1.6s ease}      /* a dark shape in the steam: no colour, no detail, could be anybody */
+.lk-pane img.on{opacity:.5}
 .lk-pane img.flip{transform:scaleX(-1)}
 .lk-pane .lk-sway{position:absolute;inset:0;animation:lkSway 3.4s ease-in-out infinite}
 @keyframes lkSway{0%,100%{translate:0 0}50%{translate:0 .6%}}
 .lk-pane .lk-glass{position:absolute;inset:0;background:linear-gradient(180deg,rgba(238,244,247,.3),rgba(232,240,244,.16) 60%,rgba(240,246,248,.32));-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
-.lk-pane .lk-fog{position:absolute;inset:0;background:linear-gradient(0deg,rgba(255,255,255,.55),rgba(255,255,255,.12) 45%,rgba(255,255,255,.4));opacity:0;transition:opacity 2.4s ease}
+.lk-pane .lk-fog{position:absolute;inset:0;background:linear-gradient(0deg,rgba(255,255,255,.62),rgba(255,255,255,.22) 45%,rgba(255,255,255,.5));opacity:0;transition:opacity 2.4s ease}
 .lk-pane.steamy .lk-fog{opacity:1}
 .lk-puff{position:absolute;width:70%;aspect-ratio:1;margin-left:-35%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.7),rgba(255,255,255,.22) 50%,rgba(255,255,255,0) 70%);filter:blur(3px);animation:lkPuff 4.5s ease-out forwards;pointer-events:none}
 @keyframes lkPuff{0%{opacity:0;transform:translateY(0) scale(.5)}20%{opacity:.9}100%{opacity:0;transform:translateY(-55cqh) scale(1.6)}}
@@ -1753,7 +1753,7 @@ body.calm .kpuff{animation-duration:4.5s}body.calm .dp-frame.cook .kglow{animati
 .lk .lk-left{position:absolute;left:1.5vw;top:0;bottom:0;width:30vw;z-index:4;pointer-events:none}
 .lk .lk-skins{position:absolute;left:1vw;top:12vh;pointer-events:auto;background:rgba(252,250,246,.9);border:1px solid #fff;border-radius:12px;padding:8px 12px 10px;box-shadow:0 6px 22px rgba(60,50,40,.22);max-width:26vw}
 .lk .lk-skins .dh{margin:0 0 6px}
-.lk .lk-left .dorm-art{position:absolute;left:0;right:0;top:20vh;bottom:1vh;background:none;border:0;border-radius:0}
+.lk .lk-left .dorm-art{position:absolute;left:0;width:30vw;top:20vh;bottom:1vh;background:none;border:0;border-radius:0}
 .lk .lk-left .dorm-art .figure.dorm-big{height:100%;width:100%;max-height:none}
 .lk .lk-left .dorm-art .ph{background:rgba(255,255,255,.35);border:2px dashed rgba(90,80,100,.3);color:#6a6272}
 .lk .lk-panel{position:absolute;right:1.4vw;top:10.5vh;bottom:2.4vh;width:min(28vw,640px);z-index:5;box-sizing:border-box;overflow-y:auto;padding:16px 18px 18px;text-align:left;
@@ -9769,7 +9769,7 @@ function renderGear() {
           <div class="dh">PERKS (${traitCount(dormHero, 'good')}/${TRAITS.maxGood})</div><div class="dtr">${group('good')}</div>
           <div class="dh">FLAWS (${traitCount(dormHero, 'bad')}/${TRAITS.maxBad})</div><div class="dtr">${group('bad')}</div>
           ${potSection(dormHero)}</div>`;
-      setTimeout(lockerSync, 30);
+      lkPlace(); setTimeout(() => { lkPlace(); lockerSync(); }, 30);
     } else
     $('dorm-char').innerHTML = strip + `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
       <div class="dorm-info dc-col">${head}
@@ -9800,7 +9800,8 @@ const LOCKER = {
   windows: [[.4296, .2268, .4988, .2939], [.5047, .2245, .5748, .2945]],
   mike: { x: .5, y: .26, size: .07 },
   showers: { a: { file: 'showera', x: .399, bottom: .705, h: .34, panes: [0, 1] }, b: { file: 'showerb', x: .6045, bottom: .705, h: .34, panes: [2, 3] } },
-  every: [16000, 38000], odds: [.3, .25, .25, .2]
+  every: [16000, 38000], odds: [.3, .25, .25, .2],
+  stand: { x: .3 }                     // where the hero stands: on the floor between the lockers and the bench (x of their centre, fraction of the picture)
 };
 RAIN_SND.shower = { hp: 450, lp: 6500, hiss: .07, f: [700, 4200], q: [1, 4], amp: [.012, .045], every: [8, 40] };
 let lkPic, lkLook = false, lkWx = null, lkArt = {};
@@ -9829,6 +9830,12 @@ function lkRoom() {                    // the room behind the page: built once, 
       r.querySelector(`.lk-pane[data-p="${pi}"] .lk-sway`).appendChild(im); } }
   return r;
 }
+function lkPlace() {                   // keep the hero standing on the floor of the picture, whatever the window's shape
+  const fr = document.querySelector('#lk-room .lk-frame'), L = document.querySelector('.lk .lk-left'), A = L && L.querySelector('.dorm-art'); if (!fr || !A) return;
+  const F = fr.getBoundingClientRect(), R = L.getBoundingClientRect(); if (!F.width) return;
+  A.style.left = Math.round(F.left + LOCKER.stand.x * F.width - R.left - A.offsetWidth / 2) + 'px'; A.style.right = 'auto';
+}
+addEventListener('resize', () => { if (typeof lkPlace === 'function') lkPlace(); });
 function lkShowers(who) {             // who: '' | 'a' | 'b' | 'ab'
   const r = $('lk-room'); if (!r) return; lkS.who = who;
   for (const k of ['a', 'b']) { const on = who.includes(k), flip = Math.random() < .5;
