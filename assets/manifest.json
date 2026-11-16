@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-15 16:08",
+  "generated": "2026-11-15 21:45",
   "files": {
     "aneesah/armoured - swimsuit/damaged": "png",
     "aneesah/armoured - swimsuit/idle": "png",
@@ -209,6 +209,7 @@
     "ui/assistant": "png",
     "ui/assistantsweeping": "png",
     "ui/bigmike": "png",
+    "ui/dorm_interior": "png",
     "ui/guest": "png",
     "ui/guide": "png",
     "ui/irae_camp": "png",
@@ -218,6 +219,9 @@
     "ui/shop_room": "png",
     "ui/shopkeeper": "png",
     "ui/shopkeepercannon": "png",
+    "ui/shower_interior": "png",
+    "ui/showera": "png",
+    "ui/showerb": "png",
     "ui/spa_back": "png",
     "ui/tyr_camp": "png",
     "ui/vesper_camp": "png",
