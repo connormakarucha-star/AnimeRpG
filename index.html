@@ -1683,6 +1683,106 @@ body.calm #dia .dt,body.calm #dia .dsh,body.calm #dia .dia-k,body.calm #dia .dia
 /* Act 3, no sunny painting yet: the Act 2 picture warmed and brightened */
 .bmap.sunfix::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(150,205,255,.42),rgba(255,236,170,.32) 55%,rgba(255,214,140,.3));mix-blend-mode:screen}
 
+/* ===== The dorm, painted (assets/ui/dorm_interior.png): the room fills the window beside the party list, the party sits round the table ===== */
+.dorm-pic{display:none;position:absolute;inset:0;overflow:hidden;container-type:size;z-index:2;background:#1a1210;touch-action:none}
+#dorm-box.has-pic .dorm-pic{display:block}
+#dorm-box.has-pic #dorm-list{display:none}
+.dp-frame{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * var(--ar)));height:max(100cqh,calc(100cqw / var(--ar)));transform:translate(-50%,-50%);container-type:size}
+.dp-room{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.dorm-pic .ow-view{z-index:0}
+.dorm-pic.hov{cursor:pointer}
+.dorm-pic .seat{--sh:24}
+.dorm-pic .seat .seat-lbl{top:calc(100% + .6cqh);opacity:0;transition:opacity .15s;font-size:max(.62rem,1.5cqh);font-weight:700}
+.dorm-pic .seat .seat-lbl small{display:block;font-weight:400;opacity:.75;font-size:.85em}
+.dorm-pic .seat.hov .seat-lbl,.dorm-pic .seat.gp-focus .seat-lbl{opacity:1;color:#ffd54f}
+.dorm-pic .seat .sf{transition:filter .15s,translate .15s}
+.dorm-pic .seat.hov .sf,.dorm-pic .seat.gp-focus .sf{filter:brightness(1.15) drop-shadow(0 0 1.1cqh rgba(255,200,120,.9));translate:0 -1.2%}
+.dorm-pic .seat.hov,.dorm-pic .seat.gp-focus{z-index:90!important}
+body.gp .dorm-pic .seat.gp-focus{outline:none!important}
+body.dorm-dragging .dorm-pic .seat[data-slot]{outline:none}
+body.dorm-dragging .dorm-pic .seat[data-slot] .sf{filter:drop-shadow(0 0 .7cqh rgba(255,213,79,.65))}
+.dorm-pic .seat.drop-over{outline:none!important;background:none!important}
+.dorm-pic .seat.drop-over .sf{filter:brightness(1.22) drop-shadow(0 0 1.6cqh #ffd54f)!important}
+.dorm-pic .seat.dragging{opacity:.45}
+/* the front door: back to town */
+.dp-door{position:absolute;z-index:99;background:none!important;border:0!important;padding:0;margin:0;cursor:pointer;border-radius:0;box-shadow:none!important}
+.dp-door:hover,.dp-door:focus-visible,body.gp .dp-door.gp-focus{background:rgba(255,236,190,.13)!important;outline:none!important}
+.dp-door:hover .sr-door-lbl,.dp-door:focus-visible .sr-door-lbl,.dp-door.gp-focus .sr-door-lbl{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
+/* the kitchen: now and then someone's cooking (warm glow in the hatch, steam, sizzling) */
+.kglow,.kspill{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 1.4s ease}
+.kglow{clip-path:var(--kclip);background:radial-gradient(ellipse 14% 22% at var(--kx) var(--ky),rgba(255,170,80,.95),rgba(255,130,50,.55) 45%,rgba(255,120,40,0) 100%);mix-blend-mode:screen}
+.kspill{background:radial-gradient(ellipse 16% 20% at calc(var(--kx) + 4%) calc(var(--ky) - 3%),rgba(255,160,80,.35),rgba(255,140,60,0) 100%);mix-blend-mode:screen}
+.dp-frame.cook .kglow{opacity:1;animation:kflick 1.7s ease-in-out infinite alternate}
+.dp-frame.cook .kspill{opacity:1}
+@keyframes kflick{0%{filter:brightness(1)}35%{filter:brightness(.82)}60%{filter:brightness(1.12)}100%{filter:brightness(.92)}}
+.ksteam{position:absolute;inset:0;z-index:3;pointer-events:none;clip-path:var(--kclip)}
+.kpuff{position:absolute;width:5.6cqw;height:5.6cqw;margin:-2.8cqw 0 0 -2.8cqw;border-radius:50%;background:radial-gradient(circle,rgba(255,250,240,.9),rgba(255,245,235,.4) 50%,rgba(255,255,255,0) 70%);filter:blur(.3cqw);animation:kpuff 3.2s ease-out forwards}
+@keyframes kpuff{0%{opacity:0;transform:translate(0,0) scale(.35)}18%{opacity:.95}100%{opacity:0;transform:translate(var(--dx),-15cqh) scale(2.3)}}
+body.calm .kpuff{animation-duration:4.5s}body.calm .dp-frame.cook .kglow{animation:none}
+
+/* ===== The locker room (PC character page): the hero gears up in the shower room. assets/ui/shower_interior.png behind; showera / showerb behind the stall glass ===== */
+#lk-room{display:none}
+@media (min-width:900px){
+#gear.char.lkon #lk-room{display:block;position:absolute;inset:0;z-index:9;overflow:hidden;container-type:size;background:linear-gradient(#f4f1ec,#e9e4dc 62%,#d9d4cc)}
+.lk-frame{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * var(--ar,1.5)));height:max(100cqh,calc(100cqw / var(--ar,1.5)));transform:translate(-50%,-50%);container-type:size}
+.lk-pic{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;user-select:none}
+#lk-room .ow-view{z-index:0}
+.lk-pane{position:absolute;z-index:2;overflow:hidden;pointer-events:none}
+.lk-pane img{position:absolute;max-width:none;filter:blur(1.4px) brightness(1.04);opacity:0;transition:opacity 1.2s ease}
+.lk-pane img.on{opacity:.95}
+.lk-pane img.flip{transform:scaleX(-1)}
+.lk-pane .lk-sway{position:absolute;inset:0;animation:lkSway 3.4s ease-in-out infinite}
+@keyframes lkSway{0%,100%{translate:0 0}50%{translate:0 .6%}}
+.lk-pane .lk-glass{position:absolute;inset:0;background:linear-gradient(180deg,rgba(238,244,247,.3),rgba(232,240,244,.16) 60%,rgba(240,246,248,.32));-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.lk-pane .lk-fog{position:absolute;inset:0;background:linear-gradient(0deg,rgba(255,255,255,.55),rgba(255,255,255,.12) 45%,rgba(255,255,255,.4));opacity:0;transition:opacity 2.4s ease}
+.lk-pane.steamy .lk-fog{opacity:1}
+.lk-puff{position:absolute;width:70%;aspect-ratio:1;margin-left:-35%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.7),rgba(255,255,255,.22) 50%,rgba(255,255,255,0) 70%);filter:blur(3px);animation:lkPuff 4.5s ease-out forwards;pointer-events:none}
+@keyframes lkPuff{0%{opacity:0;transform:translateY(0) scale(.5)}20%{opacity:.9}100%{opacity:0;transform:translateY(-55cqh) scale(1.6)}}
+.lk-haze{position:absolute;z-index:3;pointer-events:none;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.7),rgba(255,255,255,0) 70%);filter:blur(8px);opacity:0;transition:opacity 2.5s ease}
+.lk-haze.on{opacity:1;animation:lkHaze 6s ease-in-out infinite alternate}
+@keyframes lkHaze{from{translate:-2% 0}to{translate:2% -6%}}
+/* the page over the room */
+#gear.char.lkon .dorm-char.lk{display:block;background:transparent;padding:0;z-index:10;color:#2b2733}
+#gear.char.lkon #dorm-back{z-index:30;background:rgba(43,39,51,.9);color:#fff;border-color:rgba(255,255,255,.3)}
+.lk .lk-strip{position:absolute;top:1.6vh;left:50%;transform:translateX(-50%);z-index:6;margin:0;gap:10px;background:none;flex-wrap:nowrap}
+.lk .lk-strip .dcs{background:rgba(255,255,255,.4);border-color:rgba(70,60,80,.25);box-shadow:0 3px 10px rgba(60,50,40,.25)}
+.lk .lk-strip .dcs .mini-sprite{width:52px;height:52px;flex:0 0 52px}
+.lk .lk-strip .dcs:not(.on){filter:saturate(.85)}
+.lk .lk-strip .dcs:hover{border-color:#e0a82e;transform:translateY(-2px)}
+.lk .lk-strip .arr{background:rgba(43,39,51,.72);color:#fff;border:0;border-radius:50%;width:38px;height:38px;padding:0;line-height:38px}
+.lk .lk-left{position:absolute;left:1.5vw;top:0;bottom:0;width:30vw;z-index:4;pointer-events:none}
+.lk .lk-skins{position:absolute;left:1vw;top:12vh;pointer-events:auto;background:rgba(252,250,246,.9);border:1px solid #fff;border-radius:12px;padding:8px 12px 10px;box-shadow:0 6px 22px rgba(60,50,40,.22);max-width:26vw}
+.lk .lk-skins .dh{margin:0 0 6px}
+.lk .lk-left .dorm-art{position:absolute;left:0;right:0;top:20vh;bottom:1vh;background:none;border:0;border-radius:0}
+.lk .lk-left .dorm-art .figure.dorm-big{height:100%;width:100%;max-height:none}
+.lk .lk-left .dorm-art .ph{background:rgba(255,255,255,.35);border:2px dashed rgba(90,80,100,.3);color:#6a6272}
+.lk .lk-panel{position:absolute;right:1.4vw;top:10.5vh;bottom:2.4vh;width:min(28vw,640px);z-index:5;box-sizing:border-box;overflow-y:auto;padding:16px 18px 18px;text-align:left;
+  background:rgba(250,248,244,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid #fff;border-radius:14px;box-shadow:0 12px 40px rgba(60,50,40,.28);scrollbar-width:thin;scrollbar-color:#c9c0b3 transparent}
+.lk .lk-panel h3{margin:0;font-size:1.7rem;color:#c23a5c;line-height:1.1}
+.lk .lk-panel .dbio{background:#f1ece4;border-left-color:#e0a82e;color:#3a3440;margin:8px 0}
+.lk .lk-panel .dbio .likes{color:#2e8b45}.lk .lk-panel .dbio .hates{color:#c0392b}
+.lk .lk-panel .dorm-stats{color:#4a4452;font-size:.84rem}
+.lk .dh{color:#8a7f72;letter-spacing:.14em;font-size:.68rem;font-weight:800;margin:14px 0 6px;padding-bottom:3px;border-bottom:1px solid #e3ddd3}
+.lk .lk-panel .rslots{grid-template-columns:1fr 1fr;gap:8px}
+.lk .lk-panel .rslot{background:#fff;border-color:#cfc6b8;color:#3a3440;min-height:0;padding:8px 10px;font-size:.76rem}
+.lk .lk-panel .rslot.relic-rare{border-color:#2f9fd8}.lk .lk-panel .rslot.relic-epic{border-color:#a86ad8}
+.lk .lk-panel .rslot:hover:not(:disabled){background:#fffaf0;border-color:#e0a82e}
+.lk .lk-panel .rslot i{color:#c0392b}
+.lk .lk-panel .rar-common{color:#7a8294}.lk .lk-panel .rar-rare{color:#1f8fc8}.lk .lk-panel .rar-epic{color:#9b59d0}
+.lk .lk-panel .dsk{background:#fff;border:1px solid #e6e0d6;color:#3a3440;font-size:.78rem;padding:8px 10px;margin-bottom:6px;box-shadow:0 1px 3px rgba(60,50,40,.06)}
+.lk .lk-panel .dsk b{color:#2b2733}
+.lk .lk-panel .dsk .el{background:#efeae2;color:#5a5262}
+.lk .lk-panel .dim{color:#8a8290}
+.lk .lk-panel .dtr{display:grid;grid-template-columns:1fr 1fr;gap:5px 8px}
+.lk .lk-panel .dtr .tr-row{background:#fff;border:1px solid #e6e0d6;color:#3a3440;font-size:.76rem;margin:0;padding:5px 8px;border-radius:7px}
+.lk .lk-panel .dtr .tr-row.bad{background:#fff5f3;border-color:#f0c4bd}
+.lk .lk-panel button:not(.rslot){background:#2b2733;color:#fff;border:0;border-radius:8px;padding:8px 14px;margin-top:8px;cursor:pointer}
+.lk .lk-panel button:not(.rslot):hover{background:#463f55}
+.lk .skinbtn{background:#fff;border-color:#cfc6b8;color:#3a3440}
+.lk .skinbtn.on{background:#fff4d2;border-color:#e0a82e;color:#8a5a00}
+.lk .skinbtn.legend{color:#ffe08a}
+}
+
 /* ===== Widescreen battle: characters first, minimal chrome ===== */
 #action-line,#active-panel,#btn-log,#log-close{display:none}
 @media (min-width:900px){
@@ -5592,7 +5692,9 @@ document.addEventListener('keydown', e => { if (seqDev && e.key === 'Escape') { 
 document.addEventListener('keydown', e => {
   if (!devMode || !e.altKey) return;
   if (e.code === 'Digit3') { e.preventDefault(); seqPreview(e.shiftKey); return; }
-  if (e.code === 'KeyW' && ($('shop').classList.contains('show') || $('hub').classList.contains('show'))) { e.preventDefault(); const L = ['day', 'coast', 'frost']; owForce = L[(L.indexOf(owAct()) + 1) % 3]; shopWxSync(); if ($('hub').classList.contains('show')) { townArt = null; loadTownBg(); townWxSync(); } banner('🛠 Outside: ' + { day: 'Act 1 · sunny', coast: 'Act 2 · rain', frost: 'Act 3 · snow' }[owForce], 'phase'); return; }
+  if (e.code === 'KeyW' && ($('shop').classList.contains('show') || $('hub').classList.contains('show') || $('gear').classList.contains('show'))) { e.preventDefault(); const L = ['day', 'coast', 'frost']; owForce = L[(L.indexOf(owAct()) + 1) % 3]; shopWxSync(); dormWxSync(); lockerSync(); if ($('hub').classList.contains('show')) { townArt = null; loadTownBg(); townWxSync(); } banner('🛠 Outside: ' + { day: 'Act 1 · sunny', coast: 'Act 2 · rain', frost: 'Act 3 · snow' }[owForce], 'phase'); return; }
+  if (e.code === 'KeyS' && $('gear').classList.contains('show') && $('lk-room')) { e.preventDefault(); const L = ['', 'a', 'b', 'ab']; lkShowers(L[(L.indexOf(lkS.who) + 1) % 4].split('').filter(k => lkArt[k]).join('')); lkPuffs(); lkS.next = Date.now() + 60000; banner('🛠 Showers: ' + (lkS.who || 'nobody')); return; }      // the locker room: Alt+S cycles who's showering
+  if (e.code === 'KeyC' && $('gear').classList.contains('show') && $('dorm-pic')) { e.preventDefault(); if (dormCook.on) dormCookEnd(); dormCookNow(); return; }      // the dorm: Alt+C cooking now
   if ((e.code === 'KeyW' || e.code === 'KeyL') && ($('beach').classList.contains('show') || $('vb').classList.contains('show'))) {      // the beach: Alt+W storm <-> sun, Alt+L a strike in the shallows
     e.preventDefault();
     if (e.code === 'KeyW') { owForce = beachSunny() ? 'coast' : 'frost'; weatherSet(); if ($('beach').classList.contains('show')) renderBeach(); else loadBeachBg('vb-court', 'vb-art', 'volleyball', sunny => beachSVG(true, sunny)); beachWxSync(); banner('🛠 Beach: ' + (beachSunny() ? 'Act 3 · sunny' : 'Act 2 · storm')); }
@@ -9285,7 +9387,7 @@ function shopSay(text, ok) {
   shopNextAt = Date.now() + ms + SHOP_SAY.quietMin + Math.random() * (SHOP_SAY.quietMax - SHOP_SAY.quietMin);
 }
 setInterval(() => {
-  try { shopWxSync(); townWxSync(); beachWxSync(); } catch (e) { }
+  try { shopWxSync(); townWxSync(); beachWxSync(); dormWxSync(); lockerSync(); } catch (e) { }
   const sh = $('shop'); if (!sh || !sh.classList.contains('show') || document.hidden || Date.now() < shopNextAt) return;
   const b = $('sr-bubble'), pool = SHOP_GREETS.filter(g => g !== b.textContent); shopSay(pool[Math.floor(Math.random() * pool.length)], false);
 }, 1000);
@@ -9445,6 +9547,137 @@ function dormPlace(id, slot) {
   if (from >= 0) [p[from], p[slot]] = [p[slot], p[from]]; else p[slot] = id;
   game.lastParty = p; writeSave(); sfx('click'); renderGear();
 }
+
+/* ============ THE DORM, PAINTED ============
+   assets/ui/dorm_interior.png (or dorm_room; png/jpg/webp, any shape: it's scaled to cover the room area beside the party list, centred). Until it
+   exists the drawn living room is used. The party sits on the four cushions round the table on their seated sprites (assets/ui/<Name>_camp.png):
+   left to right = back line to front line, like the battle line-up. Click a hero for their page, drag one onto another (or a list card onto a seat)
+   to swap. Only the hero's own drawn pixels count for the mouse, so they can overlap. The front door goes back to town.
+   The windows (transparent in the picture) show the act's weather (Act 1 sun, Act 2 rain + thunder, Act 3 snow), like the shop. Now and then
+   someone cooks in the kitchen behind the hatch on the left: a warm flickering glow, steam, and the sound of a pan sizzling and a spoon clinking.
+   DORM_ART (fractions of the picture): seats {x, y = where the seat's bottom sits, sc = size, flip}, pick = which seats are used for 1-4 heroes,
+   sh = seat height (% of the picture's height), windows [x0, y0, x1, y1], mike = Big Mike in the window, door [x0, y0, x1, y1],
+   kitchen {poly = the hatch opening, src = where the steam rises, every = ms between cooking, ms = how long it lasts}.
+   Dev: Alt+W cycles the acts' weather, Alt+C starts cooking now. */
+const DORM_ART = {
+  names: ['dorm_interior', 'dorm_room'],
+  seats: [{ x: .117, y: .795, sc: 1 }, { x: .188, y: .672, sc: .96 }, { x: .327, y: .64, sc: .93 }, { x: .447, y: .65, sc: .93 }],
+  pick: { 1: [3], 2: [2, 3], 3: [1, 2, 3], 4: [0, 1, 2, 3] },
+  sh: 24,
+  windows: [[.2678, .1057, .468, .3765], [.5827, .1087, .6824, .2797]],
+  mike: { x: .41, y: .34, size: .2 },
+  door: [.546, .055, .718, .566],
+  kitchen: { poly: [[0, .316], [.102, .243], [.102, .405], [0, .482]], src: [.055, .43], every: [22000, 50000], ms: 9500 }
+};
+let dormPic, dormPicLook = false, dormWx = null;
+const dormCook = { on: false, next: 0, stop: null, pt: 0 };
+const dpRnd = (a, b) => a + Math.random() * (b - a);
+function dormPaint() {
+  if (!dormPicLook) { dormPicLook = true; (async () => {
+    for (const n of DORM_ART.names) { const a = await findAsset(`${ANIM.base}/ui/${n}`); if (!a || !['png', 'jpg', 'webp'].includes(a.ext)) continue;
+      const im = new Image(); im.src = a.url; await im.decode().catch(() => {}); dormPic = { url: a.url, ar: im.naturalWidth && im.naturalHeight ? im.naturalWidth / im.naturalHeight : 1.5 }; break; }
+    if (dormPic && $('gear').classList.contains('show') && !dormHero) renderGear();
+  })(); return; }
+  if (!dormPic) return;
+  const box = $('dorm-box'); box.classList.add('has-pic');
+  let pic = $('dorm-pic');
+  if (!pic) {
+    const K = DORM_ART.kitchen, D = DORM_ART.door;
+    pic = document.createElement('div'); pic.id = 'dorm-pic'; pic.className = 'dorm-pic';
+    pic.innerHTML = `<div class="dp-frame" style="--ar:${dormPic.ar};--kclip:polygon(${K.poly.map(([x, y]) => `${x * 100}% ${y * 100}%`).join(',')});--kx:${K.src[0] * 100}%;--ky:${K.src[1] * 100}%">`
+      + `<div class="ow-view"></div><img class="dp-room" src="${dormPic.url}" alt="" draggable="false"><div class="kspill"></div><div class="kglow"></div><div class="ksteam"></div><div class="dp-seats"></div>`
+      + `<button class="dp-door" style="left:${D[0] * 100}%;top:${D[1] * 100}%;width:${(D[2] - D[0]) * 100}%;height:${(D[3] - D[1]) * 100}%" onclick="showScene('hub')" title="Back to town"><span class="sr-door-lbl">🚪 Back to town</span></button></div>`;
+    box.appendChild(pic);
+    pic.addEventListener('pointermove', e => dpHover(dpHit(e.clientX, e.clientY)));
+    pic.addEventListener('pointerleave', () => dpHover(null));
+    pic.addEventListener('pointerdown', e => { if (e.target.closest('.dp-door')) return; const s = dpHit(e.clientX, e.clientY); if (s) { e.preventDefault(); dormDrag(e, s, s.dataset.id, () => dormOpen(s.dataset.id)); } });
+  }
+  const p = dormParty(), n = p.length, seats = pic.querySelector('.dp-seats');
+  seats.innerHTML = (DORM_ART.pick[n] || []).map((si, k) => {
+    const slot = n - 1 - k, id = p[slot], S = DORM_ART.seats[si], h = heroById(id), u = heroUnit(id);
+    return seatHtml(id, S.x * 100, S.y * 100, { sc: S.sc, flip: S.flip, cls: 'dp', attr: `data-slot="${slot}" data-id="${id}" onclick="dormOpen('${id}')" title="${h.name}: HP ${u.maxHp} · SPD ${u.spd}"`, label: `${h.name} ${elIcons(h)}<small>${slotName(slot, n)}</small>` });
+  }).join('');
+  seats.querySelectorAll('.seat').forEach(s => s.style.setProperty('--sh', DORM_ART.sh));
+  fillSeats(seats);
+  setTimeout(dormWxSync, 30);
+}
+// tight hit-testing: the hero's own drawn pixels (from a small copy of each seated sprite's alpha), front seats first
+const dpAlpha = new Map();
+function dpAlphaOf(img) {
+  const u = img.currentSrc || img.src; if (dpAlpha.has(u)) return dpAlpha.get(u); if (!img.complete || !img.naturalWidth) return null;
+  try { const h = 160, w = Math.max(1, Math.round(img.naturalWidth * h / img.naturalHeight)), c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, w, h); const d = g.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h);
+    for (let i = 0; i < w * h; i++) a[i] = d[i * 4 + 3]; const r = { w, h, a }; dpAlpha.set(u, r); return r;
+  } catch (e) { dpAlpha.set(u, false); return false; }       // can't read the picture (opened from a file): its box counts
+}
+function dpHit(x, y) {
+  const fr = document.querySelector('#dorm-pic .dp-frame'); if (!fr) return null;
+  const seats = [...fr.querySelectorAll('.seat[data-slot]')].sort((a, b) => parseFloat(b.style.getPropertyValue('--y')) - parseFloat(a.style.getPropertyValue('--y')));
+  for (const s of seats) {
+    const m = s.querySelector('.sp > img'), el = m || s.querySelector('.sp > video') || s.querySelector('.seat-ph'); if (!el) continue;
+    const r = el.getBoundingClientRect(); if (x < r.left || x > r.right || y < r.top || y > r.bottom) continue;
+    if (!m) return s;
+    const A = dpAlphaOf(m); if (!A) return s;
+    let fx = (x - r.left) / r.width; if (s.classList.contains('flip')) fx = 1 - fx;
+    const px = Math.floor(fx * A.w), py = Math.floor((y - r.top) / r.height * A.h);
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const qx = px + dx, qy = py + dy; if (qx >= 0 && qy >= 0 && qx < A.w && qy < A.h && A.a[qy * A.w + qx] > 60) return s; }
+  }
+  return null;
+}
+function dpHover(s) {
+  const pic = $('dorm-pic'); if (!pic) return;
+  pic.querySelectorAll('.seat.hov').forEach(x => { if (x !== s) x.classList.remove('hov'); });
+  if (s) s.classList.add('hov'); pic.classList.toggle('hov', !!s);
+}
+function dormWxSync() {            // the dorm's windows follow the act; cooking happens now and then while you're in the room
+  const pic = $('dorm-pic'), fr = pic && pic.querySelector('.dp-frame'), on = !!fr && $('gear').classList.contains('show') && !dormHero && $('dorm-box').classList.contains('has-pic') && !document.hidden;
+  if (on && (!dormWx || dormWx.act !== owAct())) { if (dormWx) dormWx.remove(); dormWx = insideWeather(fr, { key: 'dorm', windows: DORM_ART.windows, mike: DORM_ART.mike }, null); }
+  if (dormWx) { if (on) dormWx.start(); else dormWx.stop(); }
+  if (dormWx && dormWx.on && (OUTSIDE[dormWx.act] || {}).rain) { if (sndMuted) rainStop('glass'); else rainStart('glass'); }
+  if (!on) { dormCook.next = 0; if (dormCook.on) dormCookEnd(); return; }
+  if (!dormCook.next) dormCook.next = Date.now() + dpRnd(6000, 14000);
+  else if (!dormCook.on && Date.now() > dormCook.next) dormCookNow();
+}
+function dormCookNow() {
+  const fr = document.querySelector('#dorm-pic .dp-frame'); if (!fr || dormCook.on) return;
+  const K = DORM_ART.kitchen, end = Date.now() + K.ms, steam = fr.querySelector('.ksteam');
+  dormCook.on = true; fr.classList.add('cook');
+  const puff = () => {
+    if (!dormCook.on || Date.now() > end - 1800) return;
+    const d = document.createElement('i'); d.className = 'kpuff'; d.style.left = (K.src[0] * 100 + dpRnd(-3, 2.5)).toFixed(2) + '%'; d.style.top = (K.src[1] * 100 + dpRnd(-1, 1)).toFixed(2) + '%';
+    d.style.setProperty('--dx', dpRnd(-1, 3.5).toFixed(1) + 'cqw'); steam.appendChild(d); setTimeout(() => d.remove(), 4800);
+    dormCook.pt = setTimeout(puff, dpRnd(220, 520));
+  };
+  puff(); dormCook.stop = cookSound(K.ms);
+  dormCook.t = setTimeout(dormCookEnd, K.ms);
+}
+function dormCookEnd() {
+  clearTimeout(dormCook.t); clearTimeout(dormCook.pt); if (dormCook.stop) dormCook.stop(); dormCook.stop = null;
+  const fr = document.querySelector('#dorm-pic .dp-frame'); if (fr) fr.classList.remove('cook');
+  dormCook.on = false; dormCook.next = Date.now() + dpRnd(DORM_ART.kitchen.every[0], DORM_ART.kitchen.every[1]);
+}
+function cookSound(ms) {           // a pan sizzling (a hiss bed plus little fat-pops), and a spoon clinking on the pan a couple of times; generated, follows Sound / SFX volume
+  if (sndMuted || !ac()) return null;
+  try {
+    const t0 = actx.currentTime + .05, dur = ms / 1000, out = actx.createGain(), R = dpRnd;
+    out.gain.setValueAtTime(0, t0); out.gain.linearRampToValueAtTime(1, t0 + 1.4); out.gain.setValueAtTime(1, t0 + dur - 2); out.gain.linearRampToValueAtTime(0, t0 + dur); out.connect(asfx);
+    const s = actx.createBufferSource(), hp = actx.createBiquadFilter(), lp = actx.createBiquadFilter(), g = actx.createGain(), lfo = actx.createOscillator(), lg = actx.createGain();
+    s.buffer = anoise; s.loop = true; hp.type = 'highpass'; hp.frequency.value = 2400; lp.type = 'lowpass'; lp.frequency.value = 9000; g.gain.value = .03;
+    lfo.frequency.value = .5; lg.gain.value = .012; lfo.connect(lg); lg.connect(g.gain);
+    s.connect(hp); hp.connect(lp); lp.connect(g); g.connect(out); s.start(t0); lfo.start(t0); s.stop(t0 + dur + .1); lfo.stop(t0 + dur + .1);
+    for (let t = t0 + .25; t < t0 + dur - .8; t += R(.025, .13)) {          // the fat popping
+      const p = actx.createBufferSource(), bp = actx.createBiquadFilter(), pg = actx.createGain(), a = R(.015, .08);
+      p.buffer = anoise; bp.type = 'bandpass'; bp.frequency.value = R(2200, 7500); bp.Q.value = R(3, 9);
+      pg.gain.setValueAtTime(0, t); pg.gain.linearRampToValueAtTime(a, t + .002); pg.gain.exponentialRampToValueAtTime(.0004, t + R(.012, .045));
+      p.connect(bp); bp.connect(pg); pg.connect(out); p.start(t, Math.random() * .8, .08);
+    }
+    for (let k = 0, n = 2 + (Math.random() < .5); k < n; k++) {             // a spoon on the pan
+      const t = t0 + R(1.2, dur - 2.2), f = R(1700, 2500);
+      [[f, .05], [f * 2.76, .025], [f * 5.4, .012]].forEach(([fr, a]) => { const o = actx.createOscillator(), og = actx.createGain(); o.frequency.value = fr; og.gain.setValueAtTime(0, t); og.gain.linearRampToValueAtTime(a, t + .003); og.gain.exponentialRampToValueAtTime(.0002, t + R(.25, .45)); o.connect(og); og.connect(out); o.start(t); o.stop(t + .5); });
+    }
+    return () => { try { out.gain.cancelScheduledValues(actx.currentTime); out.gain.setTargetAtTime(0, actx.currentTime, .25); setTimeout(() => { try { out.disconnect(); } catch (e) { } }, 1500); } catch (e) { } };
+  } catch (e) { return null; }
+}
 /* ---- shared by the full-screen hubs: a hero card for the roster list, and the door that leads back to town ---- */
 function rcard(id, o = {}) {
   const h = heroById(id); if (!h) return ''; const u = heroUnit(id);
@@ -9468,10 +9701,11 @@ function renderDormRoom() {
   $('dorm-roster').innerHTML = `<div class="rr-h">PARTY</div>${p.map((_, k) => card(p[n - 1 - k], n - 1 - k)).join('')}`
     + (bench.length ? `<div class="rr-h">ROSTER</div>${bench.map(id => card(id, -1)).join('')}` : '');
   $('dorm-roster').querySelectorAll('.rc').forEach(el => { el.onpointerdown = e => dormDrag(e, el, el.dataset.id, () => dormMenu(el.dataset.id, el)); });
+  dormPaint();
 }
 function dormDrag(e, el, id, onClick) {
   if (e.button) return; const x0 = e.clientX, y0 = e.clientY; let ghost = null, over = null; closeDormMenu();
-  const targetAt = (x, y) => { const t = document.elementFromPoint(x, y), f = t && t.closest && t.closest('#gear [data-slot]'); return f; };
+  const targetAt = (x, y) => { const d = typeof dpHit === 'function' && dpHit(x, y); if (d) return d; const t = document.elementFromPoint(x, y), f = t && t.closest && t.closest('#gear [data-slot]'); return f; };
   const move = ev => {
     if (!ghost && Math.hypot(ev.clientX - x0, ev.clientY - y0) > 8) {
       const h = heroById(id); ghost = document.createElement('div'); ghost.className = 'dghost'; ghost.innerHTML = `<div class="mini-sprite port-box" data-port="${id}">${h.tag}</div>${h.name}`;
@@ -9508,6 +9742,7 @@ function renderGear() {
   $('dorm-box').style.display = dormHero ? 'none' : ''; document.querySelector('#gear .dm-side').style.display = dormHero ? 'none' : ''; $('dorm-char').style.display = dormHero ? '' : 'none'; closeDormMenu();
   $('dorm-back').textContent = dormHero ? (dormFrom ? '◀ Back' : '◀ Back to the roster') : 'Back to Town';
   if (!dormHero) {
+    $('gear').classList.remove('lkon'); $('dorm-char').className = 'dorm-char';
     renderDormRoom();
   } else {
     const h = heroById(dormHero); if (!h) { dormHero = null; return renderGear(); }
@@ -9520,11 +9755,25 @@ function renderGear() {
     const group = kind => { const n = {}; tr.forEach(id => { if (TRAIT[id] && TRAIT[id].kind === kind) n[id] = (n[id] || 0) + 1; });
       return Object.keys(n).map(id => { const t = TRAIT[id]; return `<div class="tr-row ${kind}">${t.icon} <b>${t.name}</b>${n[id] > 1 ? ' ×' + n[id] : ''}: ${t.desc}${n[id] > 1 ? ' <span class="dim">(each)</span>' : ''}</div>`; }).join('') || '<div class="dim" style="font-size:.78rem">None</div>'; };
     const strip = `<div class="dc-strip"><button class="arr" onclick="dormStep(-1)" title="Previous hero">◀</button>${game.roster.filter(heroById).map(x => `<button class="dcs${x === dormHero ? ' on' : ''}" onclick="dormOpen('${x}')" title="${heroById(x).name}"><span class="mini-sprite port-box" data-port="${x}">${heroById(x).tag}</span></button>`).join('')}<button class="arr" onclick="dormStep(1)" title="Next hero">▶</button></div>`;
-    $('dorm-char').innerHTML = strip + `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
-      <div class="dorm-info dc-col"><h3>${h.name} ${elIcons(h)}</h3>
+    const skins = skinsFor(dormHero).length || legendTease(dormHero) ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${n === LEGEND ? ' legend' : ''}${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${skinLabel(n)}</button>`).join('')}${legendTease(dormHero) ? `<button class="skinbtn legend locked" disabled title="Buy ${heroById(dormHero).name}'s Tier III Potential to unlock">🔒 👑 Legendary</button>` : ''}</div>` : '';
+    const head = `<h3>${h.name} ${elIcons(h)}</h3>
         ${BIOS[dormHero] ? `<div class="dbio">${BIOS[dormHero].bio}<br><span class="likes">♥ Likes: ${BIOS[dormHero].like}</span> · <span class="hates">✖ Dislikes: ${BIOS[dormHero].hate}</span></div>` : ''}
-        <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}${u.rel && u.rel.dodge ? ` · 🌀 Evade ${Math.round(u.rel.dodge * 100)}%` : ''}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>
-        ${skinsFor(dormHero).length || legendTease(dormHero) ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${n === LEGEND ? ' legend' : ''}${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${skinLabel(n)}</button>`).join('')}${legendTease(dormHero) ? `<button class="skinbtn legend locked" disabled title="Buy ${heroById(dormHero).name}'s Tier III Potential to unlock">🔒 👑 Legendary</button>` : ''}</div>` : ''}
+        <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}${u.rel && u.rel.dodge ? ` · 🌀 Evade ${Math.round(u.rel.dodge * 100)}%` : ''}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>`;
+    const lk = lkOn(); $('gear').classList.toggle('lkon', lk); $('dorm-char').className = 'dorm-char' + (lk ? ' lk' : '');
+    if (lk) {                      // PC: the locker room (see LOCKER)
+      lkRoom();
+      $('dorm-char').innerHTML = strip.replace('class="dc-strip"', 'class="dc-strip lk-strip"')
+        + `<div class="lk-left">${skins ? `<div class="lk-skins">${skins}</div>` : ''}<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div></div>
+        <div class="lk-panel">${head}<div class="dh">RELICS</div><div class="rslots">${rs}</div>
+          <div class="dh">SKILLS</div>${sk}
+          <div class="dh">PERKS (${traitCount(dormHero, 'good')}/${TRAITS.maxGood})</div><div class="dtr">${group('good')}</div>
+          <div class="dh">FLAWS (${traitCount(dormHero, 'bad')}/${TRAITS.maxBad})</div><div class="dtr">${group('bad')}</div>
+          ${potSection(dormHero)}</div>`;
+      setTimeout(lockerSync, 30);
+    } else
+    $('dorm-char').innerHTML = strip + `<div class="dorm-art"><div class="figure dorm-big" data-art="${dormHero}"><div class="ph">${h.tag}</div></div></div>
+      <div class="dorm-info dc-col">${head}
+        ${skins}
         <div class="dh">RELICS</div><div class="rslots">${rs}</div>
         ${potSection(dormHero)}</div>
       <div class="dc-col"><div class="dh" style="margin-top:0">SKILLS</div>${sk}
@@ -9533,6 +9782,82 @@ function renderGear() {
     fillHeroArt($('dorm-char'));
   }
   $('gear-msg').textContent = gearMsg;
+}
+
+
+/* ============ THE LOCKER ROOM (PC character page) ============
+   The hero's page is set in the shower room (assets/ui/shower_interior.png, any shape: it covers the window, centred). The portraits run along the
+   top, the hero stands on the left in their idle (it follows the skin picked above them), and everything about them is on the panel on the right.
+   The high window (transparent in the picture) shows the act's weather like the other interiors.
+   Behind the stall glass, now and then someone's showering: assets/ui/showera.png stands behind the left pair of panes, showerb.png behind the right
+   pair (they're cut to the glass, so the frames stay in front). Sometimes one, sometimes both, sometimes nobody, sometimes mirrored; whenever someone's
+   in there the glass steams up, steam rises, and you hear the water running.
+   LOCKER (fractions of the picture): panes [x0, y0, x1, y1] (the 4 glass panes, left to right), windows, mike, showers: who stands where
+   {x = centre, bottom = feet line, h = height, panes = which panes show them}, every = ms between changes, odds = chance of [nobody, A, B, both]. */
+const LOCKER = {
+  names: ['shower_interior', 'locker_room'],
+  panes: [[.3046, .3213, .3932, .6669], [.4051, .3213, .4941, .6669], [.5091, .3213, .5981, .6669], [.6100, .3213, .7002, .6669]],
+  windows: [[.4296, .2268, .4988, .2939], [.5047, .2245, .5748, .2945]],
+  mike: { x: .5, y: .26, size: .07 },
+  showers: { a: { file: 'showera', x: .399, bottom: .705, h: .34, panes: [0, 1] }, b: { file: 'showerb', x: .6045, bottom: .705, h: .34, panes: [2, 3] } },
+  every: [16000, 38000], odds: [.3, .25, .25, .2]
+};
+RAIN_SND.shower = { hp: 450, lp: 6500, hiss: .07, f: [700, 4200], q: [1, 4], amp: [.012, .045], every: [8, 40] };
+let lkPic, lkLook = false, lkWx = null, lkArt = {};
+const lkS = { who: '', next: 0, puffT: 0 };
+const lkOn = () => wide() && !!dormHero;
+function lkRoom() {                    // the room behind the page: built once, kept while you flip through heroes
+  if (!lkLook) { lkLook = true; (async () => {
+    for (const n of LOCKER.names) { const a = await findAsset(`${ANIM.base}/ui/${n}`); if (!a || !['png', 'jpg', 'webp'].includes(a.ext)) continue;
+      const im = new Image(); im.src = a.url; await im.decode().catch(() => {}); lkPic = { url: a.url, ar: im.naturalWidth ? im.naturalWidth / im.naturalHeight : 1.5 }; break; }
+    for (const k of ['a', 'b']) { const a = await findAsset(`${ANIM.base}/ui/${LOCKER.showers[k].file}`); if (a && ['png', 'webp'].includes(a.ext)) { const im = new Image(); im.src = a.url; await im.decode().catch(() => {}); if (im.naturalWidth) lkArt[k] = { url: a.url, ar: im.naturalWidth / im.naturalHeight }; } }
+    const r = $('lk-room'); if (r) { r.remove(); } if (lkWx) { lkWx.remove(); lkWx = null; } lkS.who = ''; if (lkOn() && $('gear').classList.contains('show')) lkRoom();
+  })(); }
+  let r = $('lk-room'); if (r) return r;
+  r = document.createElement('div'); r.id = 'lk-room';
+  const P = LOCKER.panes, pct = v => (v * 100).toFixed(3) + '%';
+  r.innerHTML = `<div class="lk-frame" style="--ar:${lkPic ? lkPic.ar : 1.5}"><div class="ow-view"></div>${lkPic ? `<img class="lk-pic" src="${lkPic.url}" alt="" draggable="false">` : ''}`
+    + (lkPic ? P.map(([x0, y0, x1, y1], i) => `<div class="lk-pane" data-p="${i}" style="left:${pct(x0)};top:${pct(y0)};width:${pct(x1 - x0)};height:${pct(y1 - y0)}"><div class="lk-sway"></div><div class="lk-glass"></div><div class="lk-fog"></div></div>`).join('')
+      + ['a', 'b'].map(k => { const S = LOCKER.showers[k], p0 = P[S.panes[0]], p1 = P[S.panes[S.panes.length - 1]]; return `<div class="lk-haze" data-k="${k}" style="left:${pct(p0[0] - .02)};top:${pct(p0[1] - .1)};width:${pct(p1[2] - p0[0] + .04)};height:${pct(.22)}"></div>`; }).join('') : '')
+    + `</div>`;
+  $('dorm-char').parentNode.insertBefore(r, $('dorm-char'));
+  // the showering figures, cut into the panes they stand behind
+  if (lkPic) for (const k of ['a', 'b']) { const A = lkArt[k]; if (!A) continue; const S = LOCKER.showers[k], fw = S.h * A.ar / lkPic.ar, fx0 = S.x - fw / 2, fy0 = S.bottom - S.h;
+    for (const pi of S.panes) { const [x0, y0, x1, y1] = P[pi], pw = x1 - x0, ph = y1 - y0, im = document.createElement('img');
+      im.src = A.url; im.alt = ''; im.dataset.k = k; im.draggable = false;
+      Object.assign(im.style, { left: pct((fx0 - x0) / pw), top: pct((fy0 - y0) / ph), width: pct(fw / pw), height: pct(S.h / ph) });
+      r.querySelector(`.lk-pane[data-p="${pi}"] .lk-sway`).appendChild(im); } }
+  return r;
+}
+function lkShowers(who) {             // who: '' | 'a' | 'b' | 'ab'
+  const r = $('lk-room'); if (!r) return; lkS.who = who;
+  for (const k of ['a', 'b']) { const on = who.includes(k), flip = Math.random() < .5;
+    r.querySelectorAll(`.lk-pane img[data-k="${k}"]`).forEach(im => { if (on && !im.classList.contains('on')) im.classList.toggle('flip', flip); im.classList.toggle('on', on); });
+    LOCKER.showers[k].panes.forEach(pi => { const p = r.querySelector(`.lk-pane[data-p="${pi}"]`); if (p) p.classList.toggle('steamy', on); });
+    const hz = r.querySelector(`.lk-haze[data-k="${k}"]`); if (hz) hz.classList.toggle('on', on); }
+}
+function lkPuffs() {
+  clearTimeout(lkS.puffT); const r = $('lk-room'); if (!r || !lkS.who) return;
+  for (const k of lkS.who) { const S = LOCKER.showers[k], pi = S.panes[Math.floor(Math.random() * S.panes.length)], p = r.querySelector(`.lk-pane[data-p="${pi}"]`); if (!p) continue;
+    const d = document.createElement('i'); d.className = 'lk-puff'; d.style.left = (20 + Math.random() * 60) + '%'; d.style.top = (55 + Math.random() * 40) + '%'; p.appendChild(d); setTimeout(() => d.remove(), 4700); }
+  lkS.puffT = setTimeout(lkPuffs, 450 + Math.random() * 500);
+}
+function lockerSync() {
+  const r = $('lk-room'), fr = r && r.querySelector('.lk-frame'), on = !!fr && $('gear').classList.contains('show') && lkOn() && !document.hidden;
+  if (on && (!lkWx || lkWx.act !== owAct())) { if (lkWx) lkWx.remove(); lkWx = insideWeather(fr, { key: 'locker', windows: LOCKER.windows, mike: LOCKER.mike }, null); }
+  if (lkWx) { if (on) lkWx.start(); else lkWx.stop(); }
+  if (!on) { if (lkS.who) { lkShowers(''); clearTimeout(lkS.puffT); } lkS.next = 0; rainStop('shower'); return; }
+  const now = Date.now();
+  if (lkArt.a || lkArt.b) {
+    if (!lkS.next) { lkS.next = now + 2500 + Math.random() * 5000; }
+    else if (now > lkS.next) {
+      const o = LOCKER.odds, x = Math.random(); let who = x < o[0] ? '' : x < o[0] + o[1] ? 'a' : x < o[0] + o[1] + o[2] ? 'b' : 'ab';
+      who = who.split('').filter(k => lkArt[k]).join(''); lkShowers(who); if (who) lkPuffs();
+      lkS.next = now + LOCKER.every[0] + Math.random() * (LOCKER.every[1] - LOCKER.every[0]);
+    }
+  }
+  if (lkS.who && !sndMuted) rainStart('shower');
+  else { rainStop('shower'); if (lkWx && lkWx.on && (OUTSIDE[lkWx.act] || {}).rain && !sndMuted) rainStart('glass'); }
 }
 
 /* ============ TRAINING GROUND ============ */
@@ -10935,7 +11260,7 @@ const GP = (() => {
   const HINTS = '<b>◀▶▲▼</b>Move<b>A</b>Select<b>B</b>Back<b>X</b>Items<b>Y</b>Info<b>LB/RB</b>Tabs<b>Start</b>Pause<b>Sel</b>Guide';
 
   const S = { active: false, focus: null, cx: 0, cy: 0, prev: {}, held: {}, synth: false };
-  const vis = el => { if (!el.isConnected) return false; const r = el.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || cs.pointerEvents === 'none') return false; return true; };
+  const vis = el => { if (!el.isConnected) return false; const r = el.getBoundingClientRect(); if (r.width < 4 || r.height < 4) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || (cs.pointerEvents === 'none' && !el.classList.contains('dp'))) return false; return true; };      // (.dp: the painted dorm's seats take the mouse through their pixels, but a pad still lands on them)
   const shown = id => { const e = document.getElementById(id); return e && e.classList.contains('show') ? e : null; };
 
   // which layer is on top right now
