@@ -792,6 +792,9 @@ body.calm .gate .fslot.has::before,body.calm .gate .fslot.has::after{animation:n
 @keyframes mothFly{25%{transform:translate(14px,-10px)}50%{transform:translate(-6px,-22px)}75%{transform:translate(-16px,-6px)}}
 @keyframes mothWing{to{transform:scaleY(.3)}}
 body.calm .mothfx i{animation:none}
+.dmgmk{position:absolute;pointer-events:none;z-index:2;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.dmgmk svg{position:absolute;inset:0;width:100%;height:100%}
+.dmgmk.flip{-webkit-mask-position:center;mask-position:center}
 .tod-ov{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;z-index:0}
 .qm-pc.down img,.qm-pc.down .ph{filter:grayscale(1) brightness(.6);rotate:-8deg}
 @keyframes qmBob{50%{translate:0 -3px}}
@@ -2040,6 +2043,19 @@ body.calm .kpuff{animation-duration:4.5s}body.calm .dp-frame.cook .kglow{animati
 .lk-pane{position:absolute;z-index:2;overflow:hidden;pointer-events:none}
 .lk-pane img{position:absolute;max-width:none;filter:brightness(0) invert(.36) blur(3px);opacity:0;transition:opacity 1.6s ease}      /* a solid grey shape (hides the wall behind it), softened by the glass and steam on top: no colour, no detail, could be anybody */
 .lk-pane img.on{opacity:1}
+@property --h1x{syntax:'<percentage>';inherits:false;initial-value:40%}@property --h1y{syntax:'<percentage>';inherits:false;initial-value:50%}@property --h1o{syntax:'<number>';inherits:false;initial-value:0}
+@property --h2x{syntax:'<percentage>';inherits:false;initial-value:55%}@property --h2y{syntax:'<percentage>';inherits:false;initial-value:75%}@property --h2o{syntax:'<number>';inherits:false;initial-value:0}
+@property --h3x{syntax:'<percentage>';inherits:false;initial-value:48%}@property --h3y{syntax:'<percentage>';inherits:false;initial-value:62%}@property --h3o{syntax:'<number>';inherits:false;initial-value:0}
+.lk-pane .lk-peekw{z-index:3}
+.lk-pane img.lk-peek{filter:blur(1.1px) brightness(.97) saturate(.85);transition:opacity 1.6s ease;
+  -webkit-mask-image:radial-gradient(ellipse 12% 8% at var(--h1x) var(--h1y),rgba(0,0,0,var(--h1o)) 30%,transparent 100%),radial-gradient(ellipse 14% 7% at var(--h2x) var(--h2y),rgba(0,0,0,var(--h2o)) 30%,transparent 100%),radial-gradient(ellipse 10% 9% at var(--h3x) var(--h3y),rgba(0,0,0,var(--h3o)) 30%,transparent 100%);
+  mask-image:radial-gradient(ellipse 12% 8% at var(--h1x) var(--h1y),rgba(0,0,0,var(--h1o)) 30%,transparent 100%),radial-gradient(ellipse 14% 7% at var(--h2x) var(--h2y),rgba(0,0,0,var(--h2o)) 30%,transparent 100%),radial-gradient(ellipse 10% 9% at var(--h3x) var(--h3y),rgba(0,0,0,var(--h3o)) 30%,transparent 100%);
+  animation:lkH1 11s ease-in-out var(--d1,0s) infinite,lkH2 14s ease-in-out var(--d2,0s) infinite,lkH3 9s ease-in-out var(--d3,0s) infinite}
+@keyframes lkH1{0%{--h1x:38%;--h1y:34%;--h1o:0}25%{--h1o:.95}55%{--h1x:52%;--h1y:46%;--h1o:.85}75%{--h1o:0}100%{--h1x:38%;--h1y:34%;--h1o:0}}
+@keyframes lkH2{0%{--h2x:58%;--h2y:80%;--h2o:0}30%{--h2o:.9}60%{--h2x:44%;--h2y:68%;--h2o:.8}80%{--h2o:0}100%{--h2x:58%;--h2y:80%;--h2o:0}}
+@keyframes lkH3{0%{--h3x:46%;--h3y:58%;--h3o:0}35%{--h3o:.9}65%{--h3x:56%;--h3y:52%;--h3o:.7}85%{--h3o:0}100%{--h3x:46%;--h3y:58%;--h3o:0}}
+body.tame .lk-pane img.lk-peek{display:none}
+body.calm .lk-pane img.lk-peek{animation-duration:30s,36s,26s}
 .lk-pane img.flip{transform:scaleX(-1)}
 .lk-pane .lk-sway{position:absolute;inset:0;animation:lkSway 3.4s ease-in-out infinite}
 @keyframes lkSway{0%,100%{translate:0 0}50%{translate:0 .6%}}
@@ -4121,7 +4137,7 @@ function refreshOptions() { const gd = document.getElementById('guide'); if (gui
 function saveFx() { try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} }
 function applyFxLook() {
   document.documentElement.style.fontSize = ['', '112.5%', '125%'][FX.text] || '';
-  document.body.classList.toggle('cb', !!FX.cb); document.body.classList.toggle('calm', !!FX.calm); document.body.classList.toggle('ui-bar', FX.ui === 'bar' || FX.ui === 'dia'); document.body.classList.toggle('ui-dia', FX.ui === 'dia');
+  document.body.classList.toggle('cb', !!FX.cb); document.body.classList.toggle('tame', FX.spicy === false); document.body.classList.toggle('calm', !!FX.calm); document.body.classList.toggle('ui-bar', FX.ui === 'bar' || FX.ui === 'dia'); document.body.classList.toggle('ui-dia', FX.ui === 'dia');
   if (typeof renderDia === 'function' && $('battle-scene') && $('battle-scene').classList.contains('show')) renderDia();
   if (typeof weatherSet === 'function') weatherSet();
 }
@@ -4130,6 +4146,7 @@ function optToggle(k) {
   else if (k === 'text') { FX.text = (FX.text + 1) % 3; saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'calm') { FX.calm = !FX.calm; if (FX.calm) { FX.shake = false; FX.flash = false; } saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'cb') { FX.cb = !FX.cb; saveFx(); applyFxLook(); refreshOptions(); }
+  else if (k === 'spicy') { FX.spicy = !FX.spicy; saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'ui') { FX.ui = { dia: 'bar', bar: 'classic', classic: 'dia' }[FX.ui] || 'dia'; saveFx(); applyFxLook(); refreshOptions(); }
   else toggleFx(k);
 }
@@ -6815,7 +6832,33 @@ function renderBarHero(u) {
   if (el.dataset.k !== u.id + '|' + html.length + '|' + st) { el.dataset.k = u.id + '|' + html.length + '|' + st; el.innerHTML = html; }
   const h = el.querySelector('.bh-h'), ti = $('turn-indicator'); if (h && ti) h.textContent = /turn$/.test(ti.innerText) ? '' : ti.innerText;
 }
+/* ---- BATTLE DAMAGE MARKS: anime-style scuffs drawn over a hurt hero's sprite (cut to the sprite's own shape). DMG_MARKS: the HP thresholds and how many marks. ---- */
+const DMG_MARKS = { grey: .6, red: .3, nGrey: [4, 7], nRed: 4 };
+function dmgMarkSvg(u, lvl) {
+  let sd = [...u.id].reduce((a, c) => a * 31 + c.charCodeAt(0), 7) % 2147483647 || 7; const R = () => (sd = (sd * 16807) % 2147483647) / 2147483647, o = [];
+  const mark = (col, w, op) => { const x = 28 + R() * 44, y = 26 + R() * 58, a = (R() < .5 ? -1 : 1) * (25 + R() * 35) * Math.PI / 180, L = 4 + R() * 5, n = 2 + (R() < .5 ? 1 : 0);
+    for (let k = 0; k < n; k++) { const ox = Math.cos(a + Math.PI / 2) * k * 1.6, oy = Math.sin(a + Math.PI / 2) * k * 1.1, l = L * (1 - k * .18);
+      o.push(`<line x1="${(x + ox - Math.cos(a) * l / 2).toFixed(1)}" y1="${(y + oy - Math.sin(a) * l * .55).toFixed(1)}" x2="${(x + ox + Math.cos(a) * l / 2).toFixed(1)}" y2="${(y + oy + Math.sin(a) * l * .55).toFixed(1)}" stroke="${col}" stroke-width="${w}" stroke-opacity="${op}" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`); } };
+  const ng = lvl >= 2 ? DMG_MARKS.nGrey[1] : DMG_MARKS.nGrey[0];
+  for (let i = 0; i < ng; i++) mark('#4a4652', 1.8, .8);
+  if (lvl >= 2) for (let i = 0; i < DMG_MARKS.nRed; i++) mark('#c3203a', 2.2, .85);
+  return `<svg viewBox="0 0 100 100" preserveAspectRatio="none">${o.join('')}</svg>`;
+}
+function dmgMarksAll() {
+  if (typeof party === 'undefined' || !$('battle-scene') || !$('battle-scene').classList.contains('show')) return;
+  party.forEach(u => {
+    const fig = figs.get(u); if (!fig) return; let ov = fig.querySelector(':scope > .dmgmk');
+    const f = u.hp / u.maxHp, lvl = !isAlive(u) ? 0 : f < DMG_MARKS.red ? 2 : f < DMG_MARKS.grey ? 1 : 0, img = fig.querySelector(':scope > img.spr');
+    if (!lvl || !img || !img.complete || !img.naturalWidth) { if (ov) ov.remove(); return; }
+    if (!ov) { ov = document.createElement('div'); ov.className = 'dmgmk'; fig.appendChild(ov); }
+    const key = lvl + '|' + img.src; if (ov.dataset.k !== key) { ov.dataset.k = key; ov.innerHTML = dmgMarkSvg(u, lvl); ov.style.webkitMaskImage = ov.style.maskImage = `url("${img.src}")`; }
+    const F = fig.getBoundingClientRect(), r = img.getBoundingClientRect(), k = F.width && fig.offsetWidth ? F.width / fig.offsetWidth : 1; if (!r.width) return;
+    Object.assign(ov.style, { left: (r.left - F.left) / k + 'px', top: (r.top - F.top) / k + 'px', width: r.width / k + 'px', height: r.height / k + 'px' });
+    ov.classList.toggle('flip', getComputedStyle(img).transform.includes('-1') || fig.classList.contains('flip'));
+  });
+}
 function render() {
+  requestAnimationFrame(dmgMarksAll);
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
   if (FB) fbHud();
@@ -11200,7 +11243,7 @@ function lkRoom() {                    // the room behind the page: built once, 
   r = document.createElement('div'); r.id = 'lk-room';
   const P = LOCKER.panes, pct = v => (v * 100).toFixed(3) + '%';
   r.innerHTML = `<div class="lk-frame" style="--ar:${lkPic ? lkPic.ar : 1.5}"><div class="ow-view"></div>${lkPic ? `<img class="lk-pic" src="${lkPic.url}" alt="" draggable="false">` : ''}`
-    + (lkPic ? P.map(([x0, y0, x1, y1], i) => `<div class="lk-pane" data-p="${i}" style="left:${pct(x0)};top:${pct(y0)};width:${pct(x1 - x0)};height:${pct(y1 - y0)}"><div class="lk-sway"></div><div class="lk-glass"></div><div class="lk-fog"></div></div>`).join('')
+    + (lkPic ? P.map(([x0, y0, x1, y1], i) => `<div class="lk-pane" data-p="${i}" style="left:${pct(x0)};top:${pct(y0)};width:${pct(x1 - x0)};height:${pct(y1 - y0)}"><div class="lk-sway"></div><div class="lk-glass"></div><div class="lk-fog"></div><div class="lk-sway lk-peekw"></div></div>`).join('')
       + ['a', 'b'].map(k => { const S = LOCKER.showers[k], p0 = P[S.panes[0]], p1 = P[S.panes[S.panes.length - 1]]; return `<div class="lk-haze" data-k="${k}" style="left:${pct(p0[0] - .02)};top:${pct(p0[1] - .1)};width:${pct(p1[2] - p0[0] + .04)};height:${pct(.22)}"></div>`; }).join('') : '')
     + `</div>`;
   $('dorm-char').parentNode.insertBefore(r, $('dorm-char'));
@@ -11209,7 +11252,10 @@ function lkRoom() {                    // the room behind the page: built once, 
     for (const pi of S.panes) { const [x0, y0, x1, y1] = P[pi], pw = x1 - x0, ph = y1 - y0, im = document.createElement('img');
       im.src = A.url; im.alt = ''; im.dataset.k = k; im.draggable = false;
       Object.assign(im.style, { left: pct((fx0 - x0) / pw), top: pct((fy0 - y0) / ph), width: pct(fw / pw), height: pct(S.h / ph) });
-      r.querySelector(`.lk-pane[data-p="${pi}"] .lk-sway`).appendChild(im); } }
+      r.querySelector(`.lk-pane[data-p="${pi}"] .lk-sway`).appendChild(im);
+      const pk = im.cloneNode(); pk.className = 'lk-peek'; pk.dataset.k = k;          // the same figure, unshaded, seen through a few clear patches in the steam
+      ['1', '2', '3'].forEach(n => pk.style.setProperty('--d' + n, (-Math.random() * 14).toFixed(1) + 's'));
+      const wrap = r.querySelector(`.lk-pane[data-p="${pi}"] .lk-peekw`); if (wrap) wrap.appendChild(pk); } }
   return r;
 }
 function lkPlace() {                   // keep the hero standing on the floor of the picture, whatever the window's shape
@@ -11227,7 +11273,7 @@ addEventListener('resize', () => { if (typeof lkFit === 'function') lkFit(); });
 function lkShowers(who) {             // who: '' | 'a' | 'b' | 'ab'
   const r = $('lk-room'); if (!r) return; lkS.who = who;
   for (const k of ['a', 'b']) { const on = who.includes(k), flip = Math.random() < .5;
-    r.querySelectorAll(`.lk-pane img[data-k="${k}"]`).forEach(im => { if (on && !im.classList.contains('on')) im.classList.toggle('flip', flip); im.classList.toggle('on', on); });
+    r.querySelectorAll(`.lk-pane img[data-k="${k}"]`).forEach(im => { if (on && !im.classList.contains('on')) im.classList.toggle('flip', flip); im.classList.toggle('on', on); });      // (the peek copies flip with their figure)
     LOCKER.showers[k].panes.forEach(pi => { const p = r.querySelector(`.lk-pane[data-p="${pi}"]`); if (p) p.classList.toggle('steamy', on); });
     const hz = r.querySelector(`.lk-haze[data-k="${k}"]`); if (hz) hz.classList.toggle('on', on); }
 }
