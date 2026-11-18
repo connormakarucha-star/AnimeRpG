@@ -2203,6 +2203,8 @@ body.gp .bspot.pk .pk-hit.gp-focus{outline:none!important;box-shadow:none!import
 @keyframes tbTw{0%,100%{opacity:0;scale:.4}50%{opacity:.9;scale:1}}
 #title-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 26% at 50% 4%,rgba(4,2,10,.7),transparent 100%),radial-gradient(ellipse 50% 30% at 50% 100%,rgba(4,2,10,.75),transparent 100%)}
 body.calm #title-bg *{animation:none!important}
+#title-bg .tb-gl,#title-bg .tb-layer{position:absolute;inset:0;width:100%;height:100%;display:block}
+#title-bg.spin .tb-tw{z-index:1}
 #title>*:not(#title-bg):not(.tt-name):not(.tt-ver){position:relative;z-index:1}
 #title>.tt-name,#title>.tt-ver{z-index:1}
 #title h2.tt-name{position:absolute;top:6vh;left:0;right:0;margin:0;text-align:center;font-family:'Cinzel','Trajan Pro','Palatino Linotype','Book Antiqua',Georgia,serif;font-weight:700;color:#f3ecff;letter-spacing:.32em;font-size:clamp(46px,7.2vw,132px);line-height:1;text-shadow:0 0 18px rgba(170,130,255,.75),0 0 46px rgba(120,80,230,.55),0 3px 6px rgba(0,0,0,.8);padding-left:.32em;pointer-events:none;animation:ttGlow 6s ease-in-out infinite alternate}
@@ -11592,10 +11594,124 @@ const TITLE_RINGS = [
   { cx: .5, cy: .54, rx: .405, ry: .80, w: .07, t: 60, rev: true }
 ];
 const TITLE_DISK = { x: .5, y: .41, rx: .40, ry: .13, tilt: -11, t: 7 };
+/* ---- TURNING RINGS (layered title art) ----
+   assets/ui/title_bg   : the heavens with no rings (jpg / png / webp)
+   assets/ui/title_rings: the rings alone, transparent, same frame as title_bg (any size; same aspect)
+   assets/ui/title_disk : the black hole + accretion disk alone, transparent, drawn on top
+   The rings are found by reading the picture (each band of solid pixels around the centre is one ring), so new or bigger art drops straight in.
+   A ring that fits in the frame truly turns; one that runs off the top and bottom (only its sides show) flows along its visible arcs instead, looping seamlessly.
+   TITLE_SPIN knobs: c = ring centre (fraction of the picture); turn = seconds per full turn, inner ring first (extra rings reuse the last); rev = which turn the other way;
+   fire = flame glow along the ring edges; embers = sparks drifting off the rings; hole = the black hole: centre x, y (fraction of the picture) and radius
+   (picture-height units). It's filled black under the disk with a faint photon ring, and the start-game dive aims at it;
+   disk = accretion disk centre / tilt / width / thickness (height units) + seconds per glint sweep. */
+const TITLE_SPIN = { c: [.5, .489], turn: [38, 52, 66, 84, 110], rev: [false, true, false, true, false], fire: 1, embers: 1, hole: [.496, .474, .112],
+  disk: { x: .507, y: .505, tilt: -11, rx: .62, ry: .15, t: 7 } };
+function titleRingBands(img, cx, cy) {          // read the ring picture: radial coverage around the centre -> [{b0, b1, out, arc}] in picture-height units
+  const W = 640, H = Math.max(1, Math.round(W * img.naturalHeight / img.naturalWidth)), cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, W, H); const d = g.getImageData(0, 0, W, H).data;
+  const bin = .004, nb = Math.ceil(1.6 / bin), sum = new Float32Array(nb), cnt = new Float32Array(nb), asp = W / H;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const r = Math.hypot((x / W - cx) * asp, y / H - cy), k = Math.floor(r / bin); if (k < nb) { sum[k] += d[(y * W + x) * 4 + 3] / 255; cnt[k]++; } }
+  const runs = []; let st = -1;
+  for (let k = 0; k <= nb; k++) { const on = k < nb && cnt[k] && sum[k] / cnt[k] > .12; if (on && st < 0) st = k; if (!on && st >= 0) { runs.push([st * bin, k * bin]); st = -1; } }
+  const m = []; runs.forEach(r => { const l = m[m.length - 1]; if (l && r[0] - l[1] < .012) l[1] = r[1]; else m.push(r.slice()); });
+  const rings = m.filter(r => r[1] - r[0] > .012), edge = Math.min(cy, 1 - cy);
+  return rings.map((r, i) => ({ b0: i ? (rings[i - 1][1] + r[0]) / 2 : Math.max(0, r[0] - .03), b1: i < rings.length - 1 ? (r[1] + rings[i + 1][0]) / 2 : r[1] + .04, out: r[1],
+    arc: r[0] > edge ? Math.asin(Math.min(1, edge / (r[1] + .006))) - .02 : 0 }));
+}
+const TITLE_VS = 'attribute vec2 a;varying vec2 v;void main(){v=vec2(a.x*.5+.5,.5-a.y*.5);gl_Position=vec4(a,0.,1.);}';
+const TITLE_FS = `precision highp float;
+uniform sampler2D uR,uD;uniform vec2 uC;uniform float uAsp,uT,uFire,uEmb,uBoost;uniform vec4 uRing[8];uniform float uPh[8];uniform int uN;uniform vec4 uDisk;uniform vec2 uDiskR;uniform float uGl;uniform vec3 uHole;
+varying vec2 v;const float PI=3.14159265;
+float h1(float n){return fract(sin(n*127.1)*43758.5453);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);float a=h1(i.x+i.y*57.),b=h1(i.x+1.+i.y*57.),c=h1(i.x+(i.y+1.)*57.),d=h1(i.x+1.+(i.y+1.)*57.);return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}
+float vp(vec2 p,float N){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);float x0=mod(i.x,N),x1=mod(i.x+1.,N);float a=h1(x0+i.y*57.),b=h1(x1+i.y*57.),c=h1(x0+(i.y+1.)*57.),d=h1(x1+(i.y+1.)*57.);return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}
+float wrapPi(float a){return a-2.*PI*floor((a+PI)/(2.*PI));}
+vec4 at(float r,float a){vec2 q=uC+vec2(cos(a)*r/uAsp,sin(a)*r);if(q.x<0.||q.y<0.||q.x>1.||q.y>1.)return vec4(0.);return texture2D(uR,q);}
+vec4 ringS(vec4 R,float ph,float r,float th){
+  if(R.w<=0.)return at(r,th-ph);
+  float A=R.w,side=cos(th)>=0.?0.:PI,phi=wrapPi(th-side),F=min(.35,.6*A),L=2.*A-F,u=mod(phi-ph+A,L);
+  vec4 c=at(r,side+u-A);if(u<F)c=mix(at(r,side+u+L-A),c,smoothstep(0.,1.,u/F));return c;}
+void main(){
+  vec2 p=vec2((v.x-uC.x)*uAsp,v.y-uC.y);float r=length(p),th=atan(p.y,p.x);
+  vec4 col=vec4(0.);vec3 glow=vec3(0.);
+  for(int k=0;k<8;k++){if(k>=uN)break;vec4 R=uRing[k];float ph=uPh[k];
+    if(r>=R.x&&r<R.y){col=ringS(R,ph,r,th);
+      float h=0.;h+=ringS(R,ph,r-.007,th).a*.9;h+=ringS(R,ph,r-.016,th).a*.6;h+=ringS(R,ph,r-.028,th).a*.35;h+=ringS(R,ph,r+.008,th).a*.5;h+=ringS(R,ph,r+.018,th).a*.25;
+      float halo=max(h*.5-col.a*.6,0.);float ta=th-ph;
+      float tu=ta/(2.*PI);float n=vp(vec2(tu*24.,r*55.-uT*2.4),24.)*.65+vp(vec2(tu*60.,r*130.-uT*4.1),60.)*.35;
+      vec3 fc=mix(vec3(.42,.18,.95),vec3(1.,.42,.78),smoothstep(.45,.85,n));
+      glow+=fc*halo*(.35+1.1*n)*uFire*(1.+uBoost);
+      col.rgb*=1.+.22*(n-.4)*uFire;}
+    if(uEmb>0.){float ca=2.*PI/34.,a0=th-ph,ci=mod(floor(a0/ca),34.),s1=h1(ci+float(k)*17.3),s2=h1(ci*1.71+float(k)*5.37);
+      if(s1>.42){float pr=fract(uT*(.04+.06*s2)*(1.+uBoost*3.)+s1*7.3),ea=(ci+.5+(s2-.5)*.45)*ca+ph,er=R.z*.985+pr*.1;
+        vec2 pe=er*vec2(cos(ea),sin(ea))+vec2(sin(uT*1.3+s1*40.),cos(uT*1.1+s2*30.))*.004;float sz=.0032*(1.-pr*.5),d=length(p-pe);
+        glow+=mix(vec3(1.,.55,.9),vec3(.55,.35,1.),pr)*exp(-d*d/(sz*sz))*sin(pr*PI)*1.3*uEmb;}}}
+  vec2 hq=p-vec2((uHole.x-uC.x)*uAsp,uHole.y-uC.y);float hr=length(hq)/uHole.z;
+  float hole=1.-smoothstep(.86,1.02,hr);col=col*(1.-hole)+vec4(0.,0.,0.,hole);glow*=1.-hole;
+  glow+=vec3(.62,.5,1.)*exp(-pow((hr-.97)*14.,2.))*(.35+.15*sin(uT*2.3))*(1.+uBoost);
+  vec4 dk=texture2D(uD,v);
+  vec2 q=p-vec2((uDisk.x-uC.x)*uAsp,uDisk.y-uC.y);float ct=cos(uDisk.z),sn=sin(uDisk.z);q=vec2(ct*q.x+sn*q.y,-sn*q.x+ct*q.y);q.y*=uDiskR.x/uDiskR.y;
+  float da=atan(q.y,q.x),band=pow(max(cos(da-uGl),0.),14.)+.6*pow(max(cos(da-uGl-PI),0.),20.);
+  float sh=vp(vec2(da/(2.*PI)*9.-uT*.25,length(q)*30.),9.);dk.rgb+=dk.a*(band*vec3(.55,.5,1.)*.55+sh*.06);
+  float dh=texture2D(uD,v+vec2(.004,0.)).a+texture2D(uD,v-vec2(.004,0.)).a+texture2D(uD,v+vec2(0.,.008)).a+texture2D(uD,v-vec2(0.,.008)).a;
+  glow+=vec3(.5,.3,1.)*max(dh*.25-dk.a,0.)*(.6+.4*sin(uT*1.7))*.8*(1.+uBoost);
+  gl_FragColor=dk+(col+vec4(glow,0.))*(1.-dk.a);}`;
+function titleSpin(host, stage, bgImg, ringImg, diskImg) {        // -> true when the WebGL rings are running
+  let gl; const cv = document.createElement('canvas'); cv.className = 'tb-gl';
+  try { gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false }); } catch (e) {} if (!gl) return false;
+  const S = TITLE_SPIN, cx = S.c[0], cy = S.c[1]; let bands;
+  try { bands = titleRingBands(ringImg, cx, cy).slice(0, 8); } catch (e) { return false; } if (!bands.length) return false;
+  const sh = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; };
+  let pr; try { pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, TITLE_VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, TITLE_FS)); gl.linkProgram(pr); if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw gl.getProgramInfoLog(pr); } catch (e) { console.warn('title rings:', e); return false; }
+  gl.useProgram(pr); const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const al = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
+  gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+  const tex = (img, unit) => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
+    [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE)); [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.LINEAR));
+    if (img) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img); else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4)); };
+  try { tex(ringImg, 0); tex(diskImg, 1); } catch (e) { return false; }
+  const U = n => gl.getUniformLocation(pr, n), D = S.disk;
+  gl.uniform1i(U('uR'), 0); gl.uniform1i(U('uD'), 1); gl.uniform2f(U('uC'), cx, cy); gl.uniform1i(U('uN'), bands.length);
+  gl.uniform4fv(U('uRing'), new Float32Array(8 * 4).map((_, i) => { const q = bands[i >> 2]; return q ? [q.b0, q.b1, q.out, q.arc][i & 3] : 0; }));
+  gl.uniform4f(U('uDisk'), D.x, D.y, -D.tilt * Math.PI / 180, 0); gl.uniform2f(U('uDiskR'), D.rx, D.ry); gl.uniform3f(U('uHole'), S.hole[0], S.hole[1], S.hole[2] || .11);
+  const uPh = U('uPh'), uT = U('uT'), uAsp = U('uAsp'), uB = U('uBoost'), uGl = U('uGl'), uF = U('uFire'), uE = U('uEmb');
+  const ar = bgImg && bgImg.naturalWidth ? bgImg.naturalWidth / bgImg.naturalHeight : ringImg.naturalWidth / ringImg.naturalHeight;
+  gl.uniform1f(uAsp, ar);
+  const w = bands.map((q, i) => (2 * Math.PI / (S.turn[i] || S.turn[S.turn.length - 1])) * (S.rev[i] ? -1 : 1)), ph = new Float32Array(8);
+  stage.appendChild(cv); host.classList.add('spin');
+  let last = performance.now(), t = Math.random() * 100, gp = 0, boost = 0;
+  const title = $('title'), fit = () => { const r = stage.getBoundingClientRect(), k = Math.min(devicePixelRatio || 1, 1.5), sc = Math.min(1, 3000 / (r.width * k || 1));
+    const W = Math.max(2, Math.round(stage.offsetWidth * k * sc)), H = Math.max(2, Math.round(stage.offsetHeight * k * sc)); if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; gl.viewport(0, 0, W, H); } };
+  const frame = now => {
+    if (!cv.isConnected) return; requestAnimationFrame(frame);
+    const dt = Math.min(.1, (now - last) / 1000); last = now;
+    if (!title || title.classList.contains('hide') || document.hidden) return;
+    const calm = document.body.classList.contains('calm'), dive = title.classList.contains('dive');
+    boost += ((dive ? 1 : 0) - boost) * Math.min(1, dt * 2.5); const run = calm ? 0 : dt * (1 + boost * 5);
+    t += calm ? 0 : dt; gp += run * 2 * Math.PI / D.t; w.forEach((x, i) => ph[i] += x * run);
+    fit(); gl.uniform1fv(uPh, ph); gl.uniform1f(uT, t); gl.uniform1f(uB, boost); gl.uniform1f(uGl, gp); gl.uniform1f(uF, S.fire); gl.uniform1f(uE, calm ? 0 : S.embers);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+  requestAnimationFrame(frame); window.__titleBands = bands;
+  return true;
+}
 async function titleBg() {
   const host = $('title-bg'); if (!host || host.dataset.done) return; host.dataset.done = 1;
   const a = await findAsset(`${ANIM.base}/ui/title_bg`); if (!a || !['jpg', 'png', 'webp'].includes(a.ext)) return;
   const im = new Image(); im.src = a.url; await im.decode().catch(() => {});
+  const ra = await findAsset(`${ANIM.base}/ui/title_rings`);
+  if (ra && ['png', 'webp'].includes(ra.ext)) {          // layered art: background + turning rings + disk on top
+    const load = async x => { if (!x) return null; const i = new Image(); i.src = x.url; try { await i.decode(); return i; } catch (e) { return null; } };
+    const da = await findAsset(`${ANIM.base}/ui/title_disk`), [ri, di] = await Promise.all([load(ra), load(da && ['png', 'webp'].includes(da.ext) ? da : null)]);
+    const ar = im.naturalWidth && im.naturalHeight ? im.naturalWidth / im.naturalHeight : 2.36;
+    if (ri) { TITLE_DISK.x = TITLE_SPIN.hole[0]; TITLE_DISK.y = TITLE_SPIN.hole[1];
+      const spot = () => { let x, y; do { x = Math.random() * 100; y = Math.random() * 100; } while (Math.abs(x - 50) < 9 && Math.abs(y - 47) < 16); return [x, y]; };   // never inside the black hole
+      const tw = Array.from({ length: 22 }, () => { const [x, y] = spot(); return `<i class="tb-tw" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--tt:${(2.5 + Math.random() * 4).toFixed(1)}s;--td:${(-Math.random() * 6).toFixed(1)}s"></i>`; }).join('');
+      host.innerHTML = `<div class="tb-stage" style="--ar:${ar};--pic:url('${a.url}')"><div class="tb-pic"></div>${tw}</div>`;
+      const stage = host.firstChild;
+      if (!titleSpin(host, stage, im, ri, di)) stage.insertAdjacentHTML('beforeend', `<img class="tb-layer" src="${ra.url}" alt="">` + (di ? `<img class="tb-layer" src="${da.url}" alt="">` : ''));
+      return; }
+  }
   const ar = im.naturalWidth && im.naturalHeight ? im.naturalWidth / im.naturalHeight : 2.36, p = v => (v * 100).toFixed(2) + '%', D = TITLE_DISK;
   const tw = Array.from({ length: 26 }, () => `<i class="tb-tw" style="left:${(Math.random() * 100).toFixed(1)}%;top:${(Math.random() * 100).toFixed(1)}%;--tt:${(2.5 + Math.random() * 4).toFixed(1)}s;--td:${(-Math.random() * 6).toFixed(1)}s"></i>`).join('');
   host.innerHTML = `<div class="tb-stage" style="--ar:${ar};--pic:url('${a.url}')"><div class="tb-pic"></div>`
