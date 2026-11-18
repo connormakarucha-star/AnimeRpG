@@ -792,6 +792,42 @@ body.calm .gate .fslot.has::before,body.calm .gate .fslot.has::after{animation:n
 @keyframes mothFly{25%{transform:translate(14px,-10px)}50%{transform:translate(-6px,-22px)}75%{transform:translate(-16px,-6px)}}
 @keyframes mothWing{to{transform:scaleY(.3)}}
 body.calm .mothfx i{animation:none}
+.fogcv{position:absolute;pointer-events:none;margin:0;max-width:none}
+/* hunts: map + the River Troll */
+.qm-n.t-clue{background:radial-gradient(circle at 40% 35%,#d9c27a,#7a6630)}
+.qm-n .qm-wk,.qm-n .qm-trail{position:absolute;right:-.35em;top:-.35em;font-size:.62em;font-style:normal;filter:drop-shadow(0 1px 2px #000)}
+.qm-n .qm-trail{left:-.35em;right:auto}
+.qm-troll{position:absolute;translate:-50% -75%;font-size:clamp(34px,4.2vw,64px);pointer-events:none;opacity:0;transition:opacity .4s,left .5s,top .5s;filter:drop-shadow(0 0 10px #ff3b2f);z-index:5}
+.qm-troll.on{opacity:1;animation:trBob 1.6s ease-in-out infinite}@keyframes trBob{50%{translate:-50% -85%}}
+#qm-note{position:absolute;left:50%;top:clamp(70px,11vh,120px);translate:-50% 0;max-width:min(560px,86vw);padding:.6em 1em;border-radius:12px;background:rgba(10,14,10,.82);border:1px solid rgba(200,230,170,.35);color:#eef6e6;font-size:clamp(13px,1vw,16px);text-align:center;opacity:0;transition:opacity .4s;pointer-events:none;z-index:6}
+#qm-note.on{opacity:1}
+#battle-scene.swamp .combatant-card .figure{clip-path:inset(-40% -40% 13% -40%)}
+#battle-scene .combatant-card.tpart .figure{visibility:hidden}
+#battle-scene .combatant-card.tpart .hpbar,#battle-scene .combatant-card.tpart .hpnum,#battle-scene .combatant-card.tpart .chips{display:none}
+#battle-scene .combatant-card.tpart.dead{opacity:1}
+#battle-scene .combatant-card .figure{transition:translate .55s cubic-bezier(.5,0,.3,1),rotate .55s,opacity .55s}
+#battle-scene .combatant-card.drowned .figure{opacity:.5;filter:blur(1.4px) brightness(.5) sepia(.55) hue-rotate(55deg);rotate:-80deg;clip-path:none;z-index:0}
+#battle-scene .combatant-card.drowned .hpbar{box-shadow:0 0 0 2px #4fc3f7}
+#troll-layer{position:absolute;inset:0;pointer-events:none;z-index:0}
+#troll-layer svg{position:absolute;left:0;top:0;overflow:visible}
+#troll-layer .tl-part{transition:opacity .3s,filter .3s;transform-box:fill-box}
+#troll-layer .tl-part .crack{opacity:0;transition:opacity .3s}
+#troll-layer .tl-part.brk{filter:brightness(.55) saturate(.4)}#troll-layer .tl-part.brk .crack{opacity:.9}
+#troll-layer .tl-part.tg{filter:drop-shadow(0 0 8px #ffd54f) drop-shadow(0 0 3px #ffd54f)}
+#troll-layer .spew{opacity:0}
+#troll-layer[data-fx="spew"] .spew{animation:trSpew .7s ease-out}
+@keyframes trSpew{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+#troll-layer[data-fx="club"] .tl-club{animation:trSwing .7s ease-in-out;transform-origin:80% 10%}
+#troll-layer[data-fx="flail"] .tl-club,#troll-layer[data-fx="flail"] .tl-drown{animation:trSwing .7s ease-in-out;transform-origin:80% 10%}
+@keyframes trSwing{30%{transform:rotate(14deg)}60%{transform:rotate(-22deg) translateX(-6%)}}
+#troll-layer[data-fx="grab"] .tl-drown{animation:trGrab .7s ease-in}@keyframes trGrab{40%{transform:translateX(-18%) translateY(4%)}}
+#troll-layer[data-fx="regen"] .tl-body{animation:trRegen .9s ease-in-out}@keyframes trRegen{50%{filter:drop-shadow(0 0 22px #7dff8a) brightness(1.3)}}
+#troll-layer[data-fx="hurt"] svg{animation:trHurt .35s}@keyframes trHurt{30%{filter:brightness(1.8)}}
+#troll-layer.dead svg{animation:trDie 1.6s ease-in forwards}@keyframes trDie{to{transform:translateY(30%);opacity:0}}
+#troll-layer .bubbles circle{animation:trBub 1.8s linear infinite}@keyframes trBub{from{transform:translateY(0);opacity:.9}to{transform:translateY(-60px);opacity:0}}
+#troll-hud{position:absolute;left:50%;top:clamp(118px,15vh,150px);translate:-50% 0;width:min(520px,60vw);text-align:center;color:#eaf4e0;z-index:30;pointer-events:none;font-size:clamp(12px,.95vw,15px);text-shadow:0 1px 3px #000}
+#troll-hud b{display:block;letter-spacing:.06em}#troll-hud .th-bar{height:12px;border-radius:7px;background:rgba(0,0,0,.6);border:1px solid rgba(220,255,200,.4);overflow:hidden;margin:3px 0}
+#troll-hud .th-bar i{display:block;height:100%;background:linear-gradient(90deg,#4caf50,#9ccc65);transition:width .4s}
 .dmgmk{position:absolute;pointer-events:none;z-index:2;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .dmgmk svg{position:absolute;inset:0;width:100%;height:100%}
 .dmgmk.flip{-webkit-mask-position:center;mask-position:center}
@@ -1041,6 +1077,13 @@ body.calm .gb-bob,body.calm .gb-shadow,body.calm .gb-glow,body.calm .gb-motes{an
 .gb-flow .g b{color:#6b2a12}
 .gb-flow .g.good{border-left:3px solid #4f7a3a}.gb-flow .g.bad{border-left:3px solid #9a3a3a}
 .gb-flow a{color:#2a4f8a}
+.gb-flow h4 .gb-new{font-size:.62em;vertical-align:middle;margin-left:.5em;padding:.1em .45em;border-radius:99px;background:#7a1f2b;color:#fff3dc;letter-spacing:.06em}
+.gb-tabs button.new::after{content:'';position:absolute;right:.5em;top:.45em;width:.55em;height:.55em;border-radius:50%;background:#ffd36a;box-shadow:0 0 6px #ffb52a}
+.gb-flow .gb-hero{break-before:column}.gb-flow .gb-chap+.gb-hero{break-before:auto}.gb-flow .gb-col{break-before:column}   /* a hero = one spread: card and skills on the left, how she works on the right */
+.gb-flow .gb-hh{display:flex;align-items:baseline;justify-content:space-between;gap:.6em;border-bottom:2px solid rgba(122,31,43,.35);margin:.2em 0 .3em}
+.gb-flow .gb-hh b{font-size:1.35em;color:#5a1620;font-family:Georgia,serif}.gb-flow .gb-hh span{color:#6b4a2a;font-size:.9em}
+.gb-flow .gb-stats{color:#6b4a2a;font-size:.9em;margin:.1em 0 .4em}
+.gb-flow .gb-sk{margin:.3em 0;padding-left:.6em;border-left:2px solid rgba(122,31,43,.3)}.gb-flow .gb-sk b{color:#6b2a12}
 .gb-chap{text-align:center;margin:0 0 .4em;break-after:avoid;break-inside:avoid}
 .gb-chap b{display:block;font-size:2.1em;color:#5a1820;font-variant:small-caps;letter-spacing:.06em;line-height:1.1}
 .gb-chap span{display:block;font-size:1.6em}
@@ -2813,6 +2856,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
       <div class="row">
         <button onclick="showScene('party-select')">Back</button>
         <button class="primary" id="btn-dev-fight" onclick="startQuickBattle()">Fight!</button>
+ <button id="btn-dev-hunt" onclick="startHuntDev()" title="Prototype hunt: a big map, clues, edge elites and the River Troll (your picked heroes)">🧌 Hunt: River Troll</button>
         <button id="btn-dev-final" onclick="startFinalDev()" title="Two screens, two parties of 4, one shared boss (framework test)">☠️ Final Boss (8 heroes)</button>
       </div>
     </div>
@@ -3645,7 +3689,7 @@ Object.values(TRAIT).filter(t => t.kind === 'good' && !t.base).forEach(t => {
 });
 const isT2 = id => !!(TRAIT[id] && TRAIT[id].tier === 2);
 const isT3 = id => !!(TRAIT[id] && TRAIT[id].tier === 3);
-const questAct = id => { const g = QUEST_GROUPS.find(x => x.ids.includes(id)); return g && g.id === 'frost' ? 3 : g && g.id === 'coast' ? 2 : 1; };
+const questAct = id => { const hd = typeof HUNT_DEFS !== 'undefined' && HUNT_DEFS.find(x => x.id === id); if (hd) return hd.act; const g = QUEST_GROUPS.find(x => x.ids.includes(id)); return g && g.id === 'frost' ? 3 : g && g.id === 'coast' ? 2 : 1; };
 const heroElems = hid => { const h = HEROES.find(x => x.id === hid); return h ? [...new Set([...h.skills.map(k => k.el), ...(h.elems || [])].filter(Boolean))] : []; };
 const traitCount = (hid, kind) => ((game && game.traits && game.traits[hid]) || []).filter(id => TRAIT[id] && TRAIT[id].kind === kind).length;
 function rollTrait(kind, hid, pool) {                      // a random trait of that kind this hero can use; ones they already have are a little less likely
@@ -4133,7 +4177,9 @@ function punch(t, k) {
 /* ============ GUIDE ============ */
 let guideTab = 'options';
 const GUIDE_TABS = [['options', '⚙️ Options'], ['controls', '🎮 Controls'], ['credits', '🏷️ Credits']];          // the ⚙️ menu: settings only. The rules of the game live in the guide book in town (BOOK_TABS)
-const BOOK_TABS = [['basics', '📜', 'Basics'], ['elements', '🔥', 'Elements'], ['armour', '🛡️', 'Armour'], ['status', '✨', 'Buffs &amp; Debuffs'], ['traits', '💎', 'Traits &amp; Relics']];
+/* The guide book's chapters. Each chapter only shows the sections the player has reached (BOOK below); a chapter with nothing open yet is hidden. */
+const BOOK_TABS = [['basics', '📜', 'First Steps'], ['road', '🗺️', 'The Road'], ['armour', '🛡️', 'Armour'], ['elements', '🔥', 'Elements'], ['status', '✨', 'Buffs &amp; Debuffs'],
+  ['heroes', '👥', 'Heroes'], ['relics', '🏺', 'Relics'], ['growth', '💎', 'Growth'], ['endgame', '🌌', 'Endgame']];
 function openGuide(tab) { if (tab) guideTab = tab; renderGuide(); $('guide').classList.add('show'); }
 function refreshOptions() { const gd = document.getElementById('guide'); if (guideTab === 'options' && gd && gd.classList.contains('show')) { const gb = document.getElementById('guide-body'), y = gb.scrollTop; renderGuide(); gb.scrollTop = y; } }
 function saveFx() { try { localStorage.setItem('animeRpgFx', JSON.stringify(FX)); } catch (e) {} }
@@ -4213,9 +4259,11 @@ function bookFit() {          // the book is as big as the screen allows; a wide
   if (w > vw * .97) { bh *= vw * .97 / w; g.style.setProperty('--bh', bh + 'px'); }
 }
 function renderBook(reset) {
-  $('gb-tabs').innerHTML = BOOK_TABS.map(([k, ic, n], i) => `<button class="${k === bookTab ? 'sel' : ''}" style="--tc:${BOOK_TINT[i % BOOK_TINT.length]}" onclick="bookTabTo('${k}')"><span>${ic}</span>${n}</button>`).join('');
-  const t = BOOK_TABS.find(x => x[0] === bookTab) || BOOK_TABS[0];
-  $('gb-flow').innerHTML = `<div class="gb-chap"><span>${t[1]}</span><b>${t[2]}</b><i>❦</i></div>` + guideHtml(t[0]);
+  const tabs = bookTabsOpen(); if (!tabs.some(t => t[0] === bookTab)) bookTab = tabs[0][0];
+  $('gb-tabs').innerHTML = tabs.map(([k, ic, n], i) => `<button class="${k === bookTab ? 'sel' : ''}${k !== bookTab && bookNew(k).length ? ' new' : ''}" style="--tc:${BOOK_TINT[i % BOOK_TINT.length]}" onclick="bookTabTo('${k}')"><span>${ic}</span>${n}</button>`).join('');
+  const t = tabs.find(x => x[0] === bookTab) || tabs[0];
+  $('gb-flow').innerHTML = `<div class="gb-chap"><span>${t[1]}</span><b>${t[2]}</b><i>❦</i></div>` + bookChapterHtml(t[0]);
+  bookMarkSeen(t[0]);
   if (reset) bookSpread = 0;
   bookLayout(); bookShow();
 }
@@ -4247,16 +4295,16 @@ async function bookTurn(d) {
 }
 async function bookTabTo(k) {
   if (bookBusy || k === bookTab) return;
-  const d = BOOK_TABS.findIndex(t => t[0] === k) > BOOK_TABS.findIndex(t => t[0] === bookTab) ? 1 : -1;
+  const T = bookTabsOpen(), d = T.findIndex(t => t[0] === k) > T.findIndex(t => t[0] === bookTab) ? 1 : -1;
   bookBusy = true; sfx('swing'); bookLeaf(d); bookLeaf(d, 90); await sleep(FX.calm ? 0 : 300); bookTab = k; renderBook(true); await sleep(FX.calm ? 0 : 320); bookBusy = false;
 }
-function bookTabStep(d) { const i = BOOK_TABS.findIndex(t => t[0] === bookTab); bookTabTo(BOOK_TABS[(i + d + BOOK_TABS.length) % BOOK_TABS.length][0]); }
+function bookTabStep(d) { const T = bookTabsOpen(), i = T.findIndex(t => t[0] === bookTab); bookTabTo(T[(i + d + T.length) % T.length][0]); }
 document.addEventListener('keydown', e => { if (!bookOpen() || e.altKey || e.ctrlKey) return;
   if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); bookTurn(1); } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); bookTurn(-1); }
   else if (e.key === 'ArrowDown') { e.preventDefault(); bookTabStep(1); } else if (e.key === 'ArrowUp') { e.preventDefault(); bookTabStep(-1); } });
 addEventListener('resize', () => { if (bookOpen()) { bookFit(); bookLayout(); bookShow(); } });
 async function townGuideIcon() {        // the book icon in town: your picture if there is one, and a gentle pulse until the book has been opened once
-  const b = $('btn-guide'); if (!b) return; b.classList.toggle('new', !bookSeen());
+  const b = $('btn-guide'); if (!b) return; b.classList.toggle('new', !bookSeen() || bookNewAll() > 0);
   if (b.dataset.art) return; b.dataset.art = '1';
   const a = await findStill(`${ANIM.base}/ui/guide`); if (a) $('tg-ic').innerHTML = `<img src="${a.url}" alt="" draggable="false">`;
 }
@@ -4264,6 +4312,112 @@ function renderGuide() {
   if (!GUIDE_TABS.some(t => t[0] === guideTab)) guideTab = 'options';
   $('guide-tabs').innerHTML = GUIDE_TABS.map(([k, n]) => `<button class="${k === guideTab ? 'sel' : ''}" onclick="guideTabTo('${k}')">${n}</button>`).join('');
   $('guide-body').innerHTML = (guideTab === 'options' ? `<div class="g book-hint">📖 Looking for the rules? The <b>guiding angel</b> keeps the guide book in town (the book icon, top left).</div>` : '') + guideHtml(guideTab); $('guide-body').scrollTop = 0;
+}
+/* ---- THE GUIDE BOOK'S CONTENT ----
+   Ordered by when a player needs it. Every section has `when`: it stays hidden until then (always / after the first quest / the Tidelands open / ...),
+   so the book starts slim and grows with the game. A section the player hasn't read yet is marked NEW (and its chapter tab gets a dot; the town's book pulses).
+   game.guideSeen remembers what has been read. Hero pages: one per hero in the roster; their text is HERO_GUIDE (how she works + how to play her). */
+const anyCleared = () => !!(game && game.cleared && Object.keys(game.cleared).some(k => k !== 'final' && game.cleared[k]));
+const actOpen = n => n <= 1 || QUEST_GROUPS[n - 2].ids.every(questCleared);
+const ownsRelic = f => !!(game && (game.relics || []).some(id => RELICS[id] && f(id, RELICS[id])));
+const ownsWeapon = () => !!(game && (game.relics || []).some(id => WEAPONS[id]));
+const HERO_GUIDE = {
+  seria: { row: 'Front', how: () => `Every enemy attack aimed at her has a 20% chance to be answered at once with Shield Bash. <b>Shield Wall</b>: pick an ally; until Seria's next turn every attack aimed at them hits her instead, behind her own barrier. <b>Defiant Slam</b> taunts the target even through armour (its next attack must hit her) and cuts the damage she takes by 25% for 3 turns.`,
+    tip: `Keep her in the front row. Guard whoever the enemies are lining up (their target arrows show it), and Slam the hardest hitter so its next blow lands on her.` },
+  tyr: { row: 'Front', how: () => `<b>Rending Claws</b> heals her for half the damage dealt, and against a target that is already bleeding she gets a bonus turn. <b>Crimson Bite</b> taunts and cuts the damage she takes; on a bleeding target it bites deeper and heals her. <b>Undying Night</b> is passive: the first killing blow each battle leaves her at 1 HP, immortal (HP can't drop below 1) for 3 turns, and heals her.`,
+    tip: `Get bleed on a target first (Irae, Jean or her own Claws), then keep clawing it for bonus turns. Her immortal window is the moment to take risks.` },
+  aria: { row: 'Back', how: () => `The fastest support. <b>Ward</b> gives one ally a barrier and cleanses one ailment; <b>Aegis</b> gives the whole team a barrier (her too) and cleanses one ailment each. Barriers block break damage as well as HP, last until the end of the round, and never stack: only the bigger one counts.`,
+    tip: `She usually acts before the enemies, so put a barrier on whoever is about to be hit this round. Save Aegis for area attacks and a boss's phase changes.` },
+  jean: { row: 'Back', how: () => `The only true healer, at a price. <b>Tonic</b> heals, but ${Math.round(TONIC.repay * 100)}% of it comes back as poison that ignores armour (still a net heal). <b>Untested Potions</b>: the whole party deals +${Math.round(BREW.mult * 100)}% physical damage for ${BREW.dur} turns (more while poisoned), then everyone is poisoned. <b>Scalpel Slice</b> bleeds, but counts as physical for the potions.`,
+    tip: `Heal early rather than at the last second, since the poison still has to tick. Time the potions for a burst turn with Iris, Irae or Tyr, and have Aria ready to tidy up.` },
+  irae: { row: 'Front', how: () => `<b>Smoke Bomb</b> is a free action: she steps back and is stealthed for 3 of her turns. Her attacks bleed (+${STEALTH.brk} break), ${Math.round(EVADE.stealth * 100)}% of attacks on her miss and enemies rarely pick her; any damage ends it. <b>Backstab</b> hits ×1.7 with +40% crit from stealth and moves her to the front, and a kill or an armour break resets its cooldown. <b>Knife Throw</b> chips armour from range.`,
+    tip: `Smoke, then Backstab the weakest foe. A kill resets Backstab, so finish things off to keep the chain going. She's evasive, but fragile out of stealth.` },
+  iris: { row: 'Front', how: () => `<b>Iron Fist</b> is physical but chips armour. <b>Blazing Kick</b> burns and breaks armour fast. <b>Dragon's Wrath</b> powers up her next turn: Iron Fist and Blazing Kick both burn for +75% damage, and she throws a free Iron Fist as well.`,
+    tip: `Use Wrath the turn before a big target opens up, then cash it in. Her break damage opens foes for the rest of the party.` },
+  aneesah: { row: 'Back', how: () => `A glass-cannon storm mage. <b>Tempest Unbound</b> is the biggest single hit in the party, and then the storm throws 1–3 small extra strikes: odd ones at a random enemy, even ones at a random <b>friend</b>.`,
+    tip: `Keep her in the back. Unleash the storm when the party can take a stray bolt: barriers up and HP high. Aria's Aegis first is the classic combo.` },
+  vesper: { row: 'Back', how: () => `Fast, evasive and fragile. Breaking armour with her lightning <b>stuns</b> the target at once. <b>Spark Step</b> hits and dashes her to the back row; <b>Thunderstorm</b> hits every foe with no target to pick.`,
+    tip: `Break and stun the most dangerous enemy before it acts. Spark Step lets her strike from the front and get back to safety in one move.` }
+};
+function heroPage(id) {
+  const h = heroById(id); if (!h) return ''; const G = HERO_GUIDE[id] || {}, w = (a, ic) => (a || []).map(e => ICON[e]).join(' ') || '—';
+  return `<div class="gb-hero"><div class="gb-hh"><b>${h.name}</b><span>${HERO_ROLE[id] || ''}${G.row ? ' · ' + G.row + ' row' : ''}</span></div>
+    <div class="gb-stats">HP ${h.hp} · Speed ${h.spd} · Weak ${w(h.weak)} · Resists ${w(h.resist)}</div>
+    ${h.skills.map((sk, i) => `<div class="gb-sk"><b>${i + 1}. ${sk.n}</b>${sk.cd ? ` <small>(cooldown ${sk.cd})</small>` : ''}<br>${skillDesc(sk, h)}</div>`).join('')}
+    ${G.how ? `<h4 class="gb-col">How she works</h4><div class="g">${G.how()}</div>` : ''}${G.tip ? `<h4>Playing her</h4><div class="g good">${G.tip}</div>` : ''}</div>`;
+}
+const BOOK = {
+  basics: [
+    { k: 'turn', h: 'A turn', when: () => true, b: () => [`Fighters act in <b>speed</b> order, highest first (the bar at the top shows the order). On your turn pick a <b>skill</b>, then a target. Strong skills have a <b>cooldown</b>: they can't be used again for that many turns. You can also <b>Shift Line</b> (swap with the ally ahead; it ends your turn) or use a potion from your bag.`] },
+    { k: 'rows', h: 'Rows and range', when: () => true, b: () => [`Each side stands in a line. The first ${POS.front} are the <b>front row</b>, the rest the <b>back row</b>. ${RICON.melee} <b>Melee</b> skills hit the front row for <b>+${Math.round(POS.bonus * 100)}%</b> and the back row for <b>−${Math.round(POS.bonus * 100)}%</b>. ${RICON.ranged} <b>Ranged</b> skills are the reverse. When a fighter falls, the others step up.`] },
+    { k: 'crit', h: 'Critical hits', when: () => true, b: () => [`Every attack has a ${CRIT.base}% chance to crit for <b>+${CRIT.bonus}</b> damage. Hitting a <b>weakness</b> (⚠️) adds <b>+${CRIT.weak}%</b>; hitting something that <b>resists</b> (🛡️) takes off ${Math.abs(CRIT.resist)}%. The preview under an enemy shows the exact chance.`] },
+    { k: 'barrier', h: 'Barriers', when: () => true, b: () => [`A barrier soaks damage <b>and</b> protects armour from that hit's break damage. It disappears at the end of the round. Barriers <b>never stack</b>: only the bigger one counts. An enemy about to raise a barrier <b>hurries</b> (⚡ +5 speed that round).`] },
+    { k: 'fall', h: 'Falling and camp', when: () => true, b: () => [`A hero who falls isn't lost: she gets back up with 1 HP before the next fight. If the <b>whole party</b> falls, the quest ends and you keep half the gold you carried. At camp, eat <b>Field Rations</b> to heal everyone and use <b>Repair Kits</b> on armour. Buy both in the town Shop.`] },
+    { k: 'lap', h: 'Lapping', when: anyCleared, b: () => [`A fighter with at least <b>${LAP.min} speed</b> who is <b>${LAP.lead} or more</b> ahead of everyone else gets a <b>second turn</b> each round. Speed relics make it possible; enemies can do it too.`] }
+  ],
+  road: [
+    { k: 'map', h: 'Exploring', when: () => true, b: () => [`Every quest is a map. Moving to a neighbouring place costs <b>one move</b> of time, and arriving <b>burns away the fog</b> around it. Walking back through visited places costs a move per step.`,
+      `The <b>boss's lair</b> hides in the far part of the map. Get close and a red arrow on your party points toward it. Beat the boss to clear the quest, then head home or keep exploring.`,
+      `You can <b>leave</b> from the entrance or any camp you've visited: you keep your gold and items, but the quest isn't cleared.`] },
+    { k: 'tod', h: 'Day, twilight and night', when: () => true, b: () => [`The clock runs as you move. Fights grow tougher at <b>twilight</b> and much tougher at <b>night</b>, where they keep growing each move and elites turn up more often. They also pay more gold. Find the boss before dark, or push on for the extra gold.`] },
+    { k: 'places', h: 'What you find', when: () => true, b: () => [`⚔️ fights and 💀 elite fights · ❓ events (choices, good and bad) · ⛺ camps (rest, eat, repair; come back any time) · 🛒 the Shopkeeper's Wagon · ♨️ hot springs (heal${actOpen(3) ? ', and warm you against the cold' : ''}).`] }
+  ],
+  armour: [
+    { k: 'layers', h: 'Armour has two layers', when: () => true, b: () => [`<b>Armoured</b>: the outer layer is intact and the fighter is safe from every status. Elemental hits wear it down with their <b>break</b> damage.`,
+      `<b>Broken</b>: the outer layer is gone. Statuses now land, and more break damage wears down the second layer.`,
+      `<b>SUPER BROKEN</b> (heroes only): both layers are gone. It plays like broken, but it <b>can't be repaired</b> at camp until a fight resets it.`] },
+    { k: 'repair', h: 'Repairs', when: () => true, b: () => [`A <b>Repair Kit</b> restores ${Math.round(ITEMS.kit.pct * 100)}% of a hero's outer layer at camp. Some events and rests repair armour too.`] }
+  ],
+  elements: [
+    { k: 'els', h: 'The elements', when: () => true, b: () => Object.entries(ELEM).map(([el, e]) => `<b>${ICON[el]} ${ELEM_NAME[el]}</b> → <b>${e.status.toUpperCase()}</b>: ` + (e.dot ? `${e.dot} damage at the start of each of the victim's turns, for ${e.dur} turns.` : `the victim <b>skips its next turn</b>.`)) },
+    { k: 'land', h: 'How statuses land', when: () => true, b: () => [`A status only sticks to a fighter whose armour is <b>already broken</b>. Plain physical skills do no break damage and apply no status. Hitting the same element again renews it instead of stacking. ⚠️ <b>Weak</b> to an element: more crits against it. 🛡️ <b>Resists</b>: fewer. Check ⓘ on any fighter.`] },
+    { k: 'react', h: 'Reactions', when: anyCleared, b: () => [`Hit a broken foe that already carries a status of a <b>different</b> element and the two <b>react</b>: one hero sets it up, another cashes it in. The target and the skill glow with the reaction's name before you commit. <b>Enemies set off reactions on your heroes too.</b> Cores make their wearer's reactions hit harder. (No reactions in the Final Stand.)`]
+      .concat(REACTIONS.map(r => `<b>${r.icon} ${r.name}</b> (${r.els.map(e => ICON[e]).join(' + ')}): ${r.desc}`)), good: true }
+  ],
+  status: [
+    { k: 'debuffs', h: 'Debuffs', bad: true, when: () => true, b: () => Object.entries(ELEM).map(([el, e]) => `${ICON[el]} <b>${e.status.toUpperCase()}</b>: ` + (e.dot ? `${e.dot} damage per turn for ${e.dur} turns.` : `skips the next turn.`)) },
+    { k: 'buffs', h: 'Buffs', good: true, when: () => true, b: () => [`🛡️ <b>Barrier</b>: soaks HP and break damage until the end of the round.`, `🎯 <b>Taunt</b>: the target's next attack must hit the taunter. 🤝 <b>Guard</b>: one fighter takes the hits meant for another. ✨ <b>Cleanse</b>: removes ailments. (Each hero's page has the details.)`, `<b>Immunity</b> (some relics, Unyielding elites): ignores the listed statuses.`] },
+    { k: 'elites', h: 'Elite enemies ★', when: () => true, b: () => Object.values(ELITE.mods).map(m => `${m.icon} <b>${m.name}</b>: ${m.desc}`) },
+    { k: 'charm', h: 'Charm', bad: true, when: () => actOpen(2), b: () => [`💘 <b>Charm</b>: only a broken fighter can be charmed. Its next attack hits a random friend. Cleanse removes it.`] },
+    { k: 'numb', h: 'The cold', bad: true, when: () => actOpen(3), b: () => [`❄️ <b>Numb</b>: in a blizzard with no torch lit, heroes slowly chill. A chilled hero can still act, but attacks can miss, down to a 50% hit chance when fully numb. Broken armour and ice hits chill faster. Light a <b>Torch</b> from the Items button to warm everyone up.`] }
+  ],
+  heroes: [],              // filled per hero (see bookSections)
+  relics: [
+    { k: 'basics', h: 'Relics', when: () => true, b: () => [`Each hero wears up to ${RELIC.slots} relics, set in the Dorm (locked during a quest). They come from the Shop (restocked after every run), the Wagon and boss drops. Rarity: common, rare, epic. Each relic exists only once.`] },
+    { k: 'tiers', h: 'Tier II and III', when: () => actOpen(2), b: () => [`Stronger versions of the same relics (Iron Band II, III…) appear as the story goes on: Tier II from the Tidelands, Tier III in the Frostbound Peaks, in the Shop and in drops.`] },
+    { k: 'cursed', h: 'Cursed relics', bad: true, when: () => ownsRelic((id, r) => r.cursed), b: () => [`A <b>cursed</b> relic is powerful but always costs something: read both halves before you wear it. Some curses work on the whole party, not just the wearer. Curses can't be lifted; take the relic off to be rid of it.`] },
+    { k: 'named', h: 'Named relics', good: true, when: () => ownsRelic(id => NAMED_RELICS.includes(id)), b: () => [`Relics of legend (Achilles' Greaves, the Golden Fleece…) are one of a kind and have no tiers.`] },
+    { k: 'weapons', h: 'Mythic weapons', good: true, when: ownsWeapon, b: () => [`A mythic weapon gives its wearer a <b>fourth skill</b> (the extra tile, key 6 / RB) with its own cooldown. A hero can carry only one. A few weapons refuse certain heroes (the Dorm says who). No weapon trivialises the final foe: it is too powerful for some of their tricks.`] }
+  ],
+  growth: [
+    { k: 'traits', h: 'Perks and flaws', when: anyCleared, b: () => [`Clearing a quest gives each hero who went a random <b>perk</b>; the Training Ground sells more (up to ${TRAITS.maxGood}). A hero who falls may pick up a <b>flaw</b> (up to ${TRAITS.maxBad}); the Spa removes them. Repeats stack. Each hero's perks and flaws are on her Dorm page.`] },
+    { k: 'tier2', h: 'Tier II perks', good: true, when: () => QUEST_GROUPS[1].ids.some(questCleared), b: () => [`Clearing a <b>Tidelands</b> quest upgrades a perk the hero already has (Hardy → Hardy II, about 1.75× as strong) instead of giving a new one.`] },
+    { k: 'beach', h: 'Beach volleyball', when: () => typeof beachOpen === 'function' && beachOpen(), b: () => [`Win <b>Beach Volleyball</b> (${VB.cost}g a game) to trade a Tier II perk for any Tier I perk.`] },
+    { k: 'potential', h: 'Potential', good: true, when: () => LAKE.regionOpen.some(questCleared), b: () => [`Survive the <b>polar dip</b> at the Frozen Lake: steer, your attack fires by itself, pick upgrades on level-up, and every kill earns ❄️ <b>Frost Crystals</b> (kept even if you fall). A hero's first dive awakens her <b>Potential</b> (her Dorm page).`,
+      `Three tiers: tiers 1 and 2 offer three options, tier 3 one special one. Buy an option once with crystals, then equip it in the Dorm; one option is active per tier. Tiers unlock with the Mountain Pass, the Frozen Valley and the Ice Queen's Castle.`] }
+  ],
+  endgame: [
+    { k: 'phases', h: 'Boss phases', when: anyCleared, b: () => [`Bosses change tactics as their HP drops (ⓘ shows when): they hit harder, learn new skills, raise barriers or call allies.`] },
+    { k: 'final', h: 'The Final Stand', when: () => QUEST_GROUPS[2].ids.every(questCleared), b: () => [`All eight heroes, on two fronts, against one foe. There are no camps and no gold: you bring your bag. The shopkeeper helps between rounds, and a stranger may lend a hand. If everyone falls, time rolls back to before you set out and nothing is lost.`] },
+    { k: 'ngp', h: 'New Game+', when: () => QUEST_GROUPS.every(g => g.ids.every(questCleared)), b: () => [`Once every quest is cleared, the whole game opens again, harder: more enemy HP and damage, more elites, more gold and better boss drops; from NG+2 bosses also make a last stand at 25% HP. You keep every hero, relic, perk and skin. Pick the difficulty on the quest screen.`] }
+  ]
+};
+function bookSections(ch) {
+  if (ch === 'heroes') return (game && game.roster || []).filter(id => heroById(id)).map(id => ({ k: id, hero: id, when: () => true }));
+  return (BOOK[ch] || []).filter(x => { try { return x.when(); } catch (e) { return false; } });
+}
+const bookTabsOpen = () => { const t = BOOK_TABS.filter(([k]) => bookSections(k).length); return t.length ? t : [BOOK_TABS[0]]; };
+const bookSeenSet = () => new Set(game && game.guideSeen || []);
+const bookNew = ch => { if (!game || !game.guideSeen) return []; const S = bookSeenSet(); return bookSections(ch).filter(x => !S.has(ch + '.' + x.k)); };
+const bookNewAll = () => BOOK_TABS.reduce((n, [k]) => n + bookNew(k).length, 0);
+function bookMarkSeen(ch) {        // reading a chapter marks its open sections read (the very first opening marks everything, so a new player isn't shown NEW everywhere)
+  if (!game) return; const first = !game.guideSeen, S = bookSeenSet();
+  (first ? BOOK_TABS.map(t => t[0]) : [ch]).forEach(c => bookSections(c).forEach(x => S.add(c + '.' + x.k)));
+  game.guideSeen = [...S]; try { writeSave(); } catch (e) {} townGuideIcon();
+}
+function bookChapterHtml(ch) {
+  const S = game && game.guideSeen ? bookSeenSet() : null, nw = x => S && !S.has(ch + '.' + x.k) ? '<span class="gb-new">NEW</span>' : '';
+  return bookSections(ch).map(x => x.hero ? heroPage(x.hero).replace('</b><span>', `${nw(x)}</b><span>`) : `<h4>${x.h}${nw(x)}</h4>` + x.b().map(t => `<div class="g ${x.good ? 'good' : x.bad ? 'bad' : ''}">${t}</div>`).join('')).join('');
 }
 function guideHtml(guideTab) {          // one section's text (used by the ⚙️ menu and by the guide book)
   const g = (t, c = '') => `<div class="g ${c}">${t}</div>`, pb = Math.round(POS.bonus * 100);
@@ -4967,7 +5121,73 @@ async function findAsset0(path) {
   }
   return findRaw(path);
 }
-async function findRaw(path) {            // checked once per file, then remembered
+/* ---- FOG CENSOR (super broken art). A picture in a "super broken" folder is only ever used when it has a matching mask next to it:
+   super broken/idle.png + super broken/idle_mask.png (same size; transparent except where the fog goes). No mask, or a video = that picture
+   is skipped and the hero falls back to the broken art. While one is on screen, a moving white/grey fog cloud is drawn over the masked areas
+   and follows the sprite. FOG knobs (signed off in the mockup): grey = how much grey mixes in (0-1); outline = strength of the see-through ring
+   around each patch (0-1); blur = how soft the solid edge is; speed = drift speed; res = working size of the fog (pixels tall). ---- */
+const FOG = { grey: .1, outline: 1, blur: 7, speed: 2, res: 240 };
+const FOG_MASK = {};                       // picture url -> its mask url
+async function findRaw(path) {
+  if (!path.includes('/super broken/') || path.endsWith('_mask')) return findRaw1(path);
+  const k = path + '#fog'; if (k in animCache) return animCache[k];
+  const a = await findRaw1(path), still = a && ['png', 'webp', 'jpg', 'jpeg'].includes(a.ext), m = still ? await findRaw1(path + '_mask') : null;
+  if (m) FOG_MASK[a.url] = m.url;
+  return animCache[k] = m ? a : null;
+}
+const fogField = {};                        // mask url -> promise of { w, h, hard, soft, halo, box }
+function fogPrep(url) {
+  return fogField[url] || (fogField[url] = new Promise(res => { const im = new Image(); im.onload = () => {
+    const h = Math.max(16, Math.min(FOG.res, im.naturalHeight)), w = Math.max(8, Math.round(h * im.naturalWidth / im.naturalHeight)), sc = h / 633;
+    const field = (blur, reps) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true });
+      x.filter = `blur(${Math.max(.5, blur * sc)}px)`; for (let i = 0; i < reps; i++) x.drawImage(im, 0, 0, w, h); const d = x.getImageData(0, 0, w, h).data, o = new Float32Array(w * h); for (let i = 0; i < o.length; i++) o[i] = d[i * 4 + 3] / 255; return o; };
+    const hard = field(FOG.blur, 3), soft = field(6, 4), halo = field(15, 5); let x0 = w, x1 = -1, y0 = h, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (halo[y * w + x] > .02) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    res({ w, h, sc, hard, soft, halo, box: x1 < 0 ? null : [x0, x1, y0, y1] }); }; im.onerror = () => res(null); im.src = url; }));
+}
+const FOG_P = (() => { const P = new Uint8Array(512), p = [...Array(256).keys()]; for (let i = 255; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [p[i], p[j]] = [p[j], p[i]]; } for (let i = 0; i < 512; i++) P[i] = p[i & 255]; return P; })();
+function fogVn(x, y) { const P = FOG_P, xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), hv = (a, b) => P[P[a & 255] + (b & 255)] / 255;
+  const a = hv(xi, yi), b = hv(xi + 1, yi), c = hv(xi, yi + 1), d = hv(xi + 1, yi + 1); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+const fogFbm = (x, y) => fogVn(x, y) * .55 + fogVn(x * 2.1 + 7.3, y * 2.1 + 1.7) * .3 + fogVn(x * 4.3 + 3.1, y * 4.3 + 9.2) * .15;
+function fogDraw(F, g, img, t) {          // one frame of fog into this canvas (the mask's working size)
+  if (!F.box) return; const [x0, x1, y0, y1] = F.box, { w, sc } = F, k = 1 / sc; let id = g.__id; if (!id) id = g.__id = g.createImageData(F.w, F.h); const D = id.data;
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = y * w + x, o = F.halo[i], q = i * 4; if (o < .02) { D[q + 3] = 0; continue; }
+    const X = x * k, Y = y * k, a = fogFbm(X * .034 + t * .3, Y * .045 - t * .1), b = fogFbm(X * .06 - t * .2 + 11, Y * .055 + t * .16 + 4), c = fogFbm(X * .022 + t * .12 + 30, Y * .026 - t * .08);
+    const lite = Math.min(1, Math.max(0, (a * .6 + b * .4 - .32) * 2.4)), dark = Math.max(0, (c - .55) * 3) * FOG.grey;
+    const L = Math.max(120, Math.min(255, 200 + 55 * lite - 60 * FOG.grey * (1 - lite) - 55 * dark)); D[q] = L * .98; D[q + 1] = L * .96; D[q + 2] = L;
+    const edge = Math.min(1, F.soft[i] * 1.4) * (.4 + .7 * b), ring = Math.min(1, o * 1.6) * (.2 + .45 * a) * FOG.outline;
+    D[q + 3] = 255 * Math.min(1, Math.max(F.hard[i], edge, ring)); }
+  g.putImageData(id, 0, 0);
+}
+const fogOn = new Map();                  // img -> { cv, g, F, url }
+let fogT = 0, fogLast = 0, fogRun = false;
+function fogTick(now) {
+  const imgs = [...document.querySelectorAll('img[src*="super%20broken"],img[src*="super broken"]')];
+  const dt = Math.min(.05, (now - (fogLast || now)) / 1000); fogLast = now; if (!document.body.classList.contains('calm')) fogT += dt * FOG.speed;
+  const hide = im => { if (im.style.visibility !== 'hidden') { im.style.visibility = 'hidden'; im.dataset.fogHid = 1; } }, show = im => { if (im.dataset.fogHid) { im.style.visibility = ''; delete im.dataset.fogHid; } };
+  fogOn.forEach((o, im) => { if (!im.isConnected || !imgs.includes(im)) { o.cv.remove(); fogOn.delete(im); show(im); } });
+  imgs.forEach(im => {
+    const rel = decodeURIComponent(im.getAttribute('src') || ''), mu = FOG_MASK[rel] || FOG_MASK[im.getAttribute('src')];
+    let o = fogOn.get(im);
+    if (!mu) { if (o) o.cv.style.display = 'none'; hide(im); return; }     // no mask known for it: never show it bare
+    if (!o) { o = { url: mu, src: im.src, F: null, cv: document.createElement('canvas') }; o.cv.className = 'fogcv'; fogOn.set(im, o); fogPrep(mu).then(F => { o.F = F; if (F) { o.cv.width = F.w; o.cv.height = F.h; o.g = o.cv.getContext('2d'); } }); }
+    if (o.src !== im.src) { o.src = im.src; o.url = mu; o.F = null; fogPrep(mu).then(F => { o.F = F; if (F) { o.cv.width = F.w; o.cv.height = F.h; o.g = o.cv.getContext('2d'); o.g.__id = null; } }); }
+    if (!o.F || !im.complete || !im.naturalWidth) { hide(im); return; }   // hold the picture back until its fog is ready
+    if (o.cv.previousSibling !== im) im.after(o.cv);
+    const par = im.offsetParent; if (!par) { o.cv.style.display = 'none'; return; }
+    const P = par.getBoundingClientRect(), R = im.getBoundingClientRect(), kk = par.offsetWidth ? P.width / par.offsetWidth : 1, cs = getComputedStyle(im);
+    const ar = im.naturalWidth / im.naturalHeight; let cw = R.width, ch = R.height;
+    if (cs.objectFit === 'contain' || cs.objectFit === 'scale-down') { cw = Math.min(R.width, R.height * ar); ch = cw / ar; }
+    const bottom = /bottom/.test(cs.objectPosition) || /100%$/.test(cs.objectPosition), cx = R.left + (R.width - cw) / 2, cy = R.top + (bottom ? R.height - ch : (R.height - ch) / 2);
+    const m = cs.transform, flip = m && m !== 'none' && parseFloat(m.slice(m.indexOf('(') + 1)) < 0;
+    Object.assign(o.cv.style, { display: cs.display === 'none' ? 'none' : '', left: (cx - P.left) / kk + 'px', top: (cy - P.top) / kk + 'px', width: cw / kk + 'px', height: ch / kk + 'px', opacity: cs.opacity, zIndex: cs.zIndex, transform: flip ? 'scaleX(-1)' : 'none' });
+    fogDraw(o.F, o.g, im, fogT); show(im);
+  });
+  if (imgs.length || fogOn.size) requestAnimationFrame(fogTick); else fogRun = false;
+}
+function fogWake() { if (!fogRun) { fogRun = true; fogLast = 0; requestAnimationFrame(fogTick); } }
+new MutationObserver(() => { if (document.querySelector('img[src*="super%20broken"],img[src*="super broken"]')) fogWake(); }).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['src'] });
+async function findRaw1(path) {            // checked once per file, then remembered
   if (path in animCache) return animCache[path];
   await manifestReady;
   if (path in animCache) return animCache[path];
@@ -5191,6 +5411,7 @@ function skullFx(u) {                                   // a big skull flashes o
   const k = document.createElement('div'); k.className = 'skull-fx'; k.innerHTML = SVGD.skull(); el.appendChild(k); setTimeout(() => k.remove(), 1000);
 }
 function armourBreak(u, big) {                          // dark armour shards explode outward fast
+  if (u.trollPart) trollPartBroken(u);
   const el = figs.get(u); if (!el) return;
   sfx('shatter', big);
   el.classList.add('tint-shatter'); setTimeout(() => el.classList.remove('tint-shatter'), 260);
@@ -6445,6 +6666,7 @@ function bump(u, cls) {          // quick visual nudge on a unit's figure: 'hurt
 /* Rough stage backgrounds drawn in code (layered SVG silhouettes + drifting particles), used whenever there is no picture in assets/ui/.
    One look per quest id; the fight number shifts the layout and the boss fight burns a little hotter. */
 const BGT = {
+  hunt_troll: { sky: ['#0b130e', '#1f3324', '#4f6a3e'], far: '#16241a', mid: '#0e1811', ground: ['#1d2a1a', '#070b07'], glow: '#a9d36a', fx: 'wisps' },
   ruins: { sky: ['#1d1119', '#5a2f2c', '#d98a45'], far: '#3a2229', mid: '#24161c', ground: ['#3a2a2a', '#0f0a0e'], glow: '#ffb15c', fx: 'dust' },
   cove:  { sky: ['#050f18', '#0d3446', '#2f8793'], far: '#0a2a38', mid: '#071a24', ground: ['#0d2a36', '#03090d'], glow: '#7fe3ff', fx: 'rain' },
   crypt: { sky: ['#0a0810', '#1e1830', '#46405e'], far: '#1c1729', mid: '#120d1b', ground: ['#1e1c26', '#07060a'], glow: '#9be21b', fx: 'wisps' },
@@ -6682,6 +6904,7 @@ function card(u, team, i) {
   if (u.stealth > 0 && alive) c.push('stealth');
   if (blizz.on && alive && team === 'p' && u.chill >= 1) c.push('chilled');
   if (u.mod) c.push('elite', 'elite-' + u.mod);
+  if (u.trollPart) c.push('tpart', 'tp-' + u.trollPart); if (u.drowned) c.push('drowned');
   if (u.final) c.push('fbboss');                 // the final boss's HP is hidden: only the break bar shows
   if (spot.length) c.push(spot.includes(u) ? 'spot' : 'bg');
   const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
@@ -6705,8 +6928,8 @@ function card(u, team, i) {
     <div class="floor"></div>
     <div class="stats-info">
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
-      <div class="tags">${u.chill >= 1 && blizz.on && isAlive(u) ? `<span class="stealth-tag" style="background:#1f3a5c;color:#bfe3ff" title="Cold slows you: your attacks can miss">❄️ hit ${Math.round(numbHit(u) * 100)}%</span>` : ''}${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
-      <div class="bar-container${bfx.lethal ? ' lethal' : ''}"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div>${bfx.hp}</div>
+      <div class="tags">${u.trollPart && u.state !== 'armoured' && isAlive(u) ? `<span class="stealth-tag" style="background:#3a2a12;color:#ffd9a0" title="Its armour grows back after this many of the troll's turns">🦴 regrows in ${u.regrow}</span>` : ''}${u.chill >= 1 && blizz.on && isAlive(u) ? `<span class="stealth-tag" style="background:#1f3a5c;color:#bfe3ff" title="Cold slows you: your attacks can miss">❄️ hit ${Math.round(numbHit(u) * 100)}%</span>` : ''}${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
+      <div class="bar-container hpbar${bfx.lethal ? ' lethal' : ''}"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div>${bfx.hp}</div>
       <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of the round">🛡️ ${u.barrier}</span>` : ''}</div>
       <div class="arm">${bfx.armTxt}</div>
       <div class="bar-container"><div class="${bfx.armCls}" style="width:${bfx.armPct}%"></div>${bfx.arm}</div>
@@ -6860,7 +7083,7 @@ function dmgMarksAll() {
   });
 }
 function render() {
-  requestAnimationFrame(dmgMarksAll);
+  requestAnimationFrame(dmgMarksAll); requestAnimationFrame(trollLayer); trollHud();
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
   if (FB) fbHud();
@@ -7430,7 +7653,7 @@ async function hit(u, t, s) {
   }
   const r = rollDamage(s, t, u), m = matchup(s, t); let rxOut = null;
   const b = t.barrier || 0, soak = Math.min(b, r.amount), brkIn = (s.el || s.chip) ? (s.brk || 0) + (u.rel && u.rel.mothBrk && u.state === 'super' ? u.rel.mothBrk : 0) : 0, brk = brkIn - Math.min(b, brkIn);
-  const dmg = r.amount - soak, bled = !!(s.bite && (t.statuses || []).some(x => x.type === 'bleed'));
+  const dmg = t.troll && s.splash ? 0 : r.amount - soak, bled = !!(s.bite && (t.statuses || []).some(x => x.type === 'bleed'));      // the troll: an area attack's HP damage counts once (other parts take break only)
   qStat(u, t, dmg, r.crit); if (s.el === 'ice' && t.team === 'p') addChill(t, BLIZ.frostHit);
   if (t.rel && t.rel.dance && t.team !== u.team && r.mod < 0 && t.evasive > 1 && !t.danceBuff) { t.danceBuff = true; floatText(t, '⚡ DANCING', 'tag'); }      // Storm Dancer also procs off Evasive
   t.barrier = b - soak;
@@ -7537,7 +7760,7 @@ async function useItem(u, id, t) {          // using an item takes the hero's tu
 const ALL_RIPPLE = 70;
 function allFoes(u, t) {
   const own = t && t.team === u.team;
-  return (own ? (u.team === 'p' ? party : enemies).filter(e => e !== u) : (u.team === 'p' ? enemies : party)).filter(isAlive);
+  return (own ? (u.team === 'p' ? party : enemies).filter(e => e !== u) : (u.team === 'p' ? enemies : party)).filter(x => isAlive(x) && !x.drowned);
 }
 async function allHit(u, s, t, dash) {
   const foes = allFoes(u, t), cq = [];
@@ -7546,7 +7769,7 @@ async function allHit(u, s, t, dash) {
     if (k) await sleep(dspd(ALL_RIPPLE * k));
     if (!isAlive(e)) return;
     if (dash && dash.zap) dash.zap(e);                                                           // its charm bursts as the hit lands
-    await hit(u, e, { ...s, noDodge: true, cq });
+    await hit(u, e, { ...s, noDodge: true, cq, splash: k > 0 && e.troll && foes.slice(0, k).some(f => f.troll) });
   }));
   for (const e of cq) if (isAlive(e) && isAlive(u) && !stunned(e)) await counterAttack(e, u);
 }
@@ -7609,7 +7832,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
     if (s.aoe && !s.all && isAlive(u)) {                            // a sweep: everyone else on the other side is caught in it too
       const others = (u.team === 'p' ? enemies : party).filter(e => isAlive(e) && e !== target);
       if (others.length) log(`🌩️ ${s.n} sweeps over ${others.map(e => e.name).join(', ')}!`, 'log-status');
-      for (const e of others) if (isAlive(e)) { if (dash && dash.zap) dash.zap(e); await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)), noDodge: true }); }
+      for (const e of others) if (isAlive(e)) { if (dash && dash.zap) dash.zap(e); await hit(u, e, { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)), noDodge: true, splash: !!(e.troll && target && target.troll) }); }
     }
     if (u.rel && u.rel.chain && !s.aoe && !s.storm && !countering && isAlive(u) && u.team === 'p') {            // Potential: Chaining
       const others = enemies.filter(e => isAlive(e) && e !== target);
@@ -7698,13 +7921,14 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
 }
 
 function weightedHero() {
-  const al = party.filter(isAlive), w = [55, 25, 12, 8].slice(0, al.length).map((x, i) => al[i].stealth > 0 ? x * STEALTH.weight : x);       // line position sets the odds; stealth cuts them
+  const al0 = party.filter(x => isAlive(x) && !x.drowned), al = al0.length ? al0 : party.filter(isAlive), w = [55, 25, 12, 8].slice(0, al.length).map((x, i) => al[i].stealth > 0 ? x * STEALTH.weight : x);       // line position sets the odds; stealth cuts them
   let roll = Math.random() * w.reduce((a, b) => a + b, 0);
   for (let i = 0; i < al.length; i++) { roll -= w[i]; if (roll <= 0) return al[i]; }
   return al[0];
 }
 
 function enemyChoose(u, ahead = false) {      // ahead = planning for its coming turn: cooldowns tick down by 1 first
+  if (u.noTurn) return null; if (u.trollCore) return trollChoose(u);
   const ready = u.skills.map((s, i) => i).filter(i => u.cd[i] <= (ahead ? 1 : 0));
   const wardI = ready.find(i => isWard(u.skills[i]));
   if (wardI !== undefined) {                  // barrier whenever it can: the most wounded ally that has none yet
@@ -7730,6 +7954,7 @@ function resolveIntent(u) {
 }
 const stunned = u => !!(u.statuses && u.statuses.some(x => x.stun));
 function intentText(u) {
+  if (u.trollCore) return trollIntent(u);
   const it = u.intent; if (!it) return '';
   if (FB && u.final) return stunned(u) || FB.stun > 0 ? '💤 stunned' : it.skip ? '' : u.skills[it.i].aoe ? '⚠️ The boss is winding up for a powerful attack!' : `▶ The boss targets ${it.target.short}`;       // the final fight hides what it will do
   if (stunned(u)) return '💤 stunned, skips its turn';
@@ -7970,6 +8195,8 @@ function tickBuffs(u) {
   }
 }
 async function takeTurn(u, bonus = false) {      // bonus: an extra action inside the same turn (no cooldown / ailment / buff ticks)
+  if (u.trollCore && !bonus) return trollTurn(u);
+  if (u.drowned) { log(`🌊 ${u.name} struggles under the water and can't act!`, 'log-status'); floatText(u, '🌊 HELD UNDER', 'tag hurt'); render(); await sleep(450); return; }
   if (!bonus && u.holdBarrier) { u.holdBarrier = false; u.barrier = 0; }                  // Shield Wall's barrier ends with the guard
   if (!bonus) party.forEach(x => { if (x.guardedBy === u) x.guardedBy = null; });     // Shield Wall ends when its caster's next turn begins
   if (bonus) { setSpot([]); say(''); }          // the previous attack's spotlight would leave everyone but the old target blurred
@@ -8089,7 +8316,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
 // Quest rules: win a fight = +gold, camp, next fight. Win the boss = all gold goes home.
 // Whole party down = quest over, only HALF the carried gold goes home.
 function checkEnd() {
-  const won = !enemies.some(isAlive), lost = !party.some(isAlive);
+  const won = !enemies.some(isAlive), lost = !party.some(x => isAlive(x) && !x.drowned);
   if (!won && !lost) return false;
   setSpot([]); over = true; actor = null; cur = null; waiting = null; blizzStop();
   party.forEach(u => { if (u.immortalLook) immortalEnd(u); });                 // Tyr's immortal look steams off when the fight ends
@@ -8186,7 +8413,7 @@ async function battle() {
     enemies.forEach(e => { const m = ELITE.mods[e.mod]; if (m && m.barrier && isAlive(e) && round % 2 === 1) e.barrier = Math.max(e.barrier || 0, m.barrier); });     // Warded elites
     enemies.forEach(e => { e.intent = isAlive(e) ? enemyChoose(e, true) : null; });      // telegraph this round's moves (chosen BEFORE the turn order: a barrier caster hurries)
     enemies.forEach(e => { e.rush = wardRush(e); });
-    order = [...party, ...enemies].filter(isAlive).sort((a, b) => turnSpd(b) - turnSpd(a) || Math.random() - 0.5);
+    order = [...party, ...enemies].filter(x => isAlive(x) && !x.noTurn).sort((a, b) => turnSpd(b) - turnSpd(a) || Math.random() - 0.5);
     order.slice().forEach(x => { const sp = turnSpd(x), rest = order.filter(o => o !== x).map(turnSpd); if (sp >= LAP.min && rest.length && sp >= Math.max(...rest) + LAP.lead) order.push(x); });      // so fast they lap everyone: a second turn at the end of the round
     if (enemies.some(e => e.rush)) setTimeout(() => enemies.forEach(e => { if (e.rush && isAlive(e)) floatText(e, `⚡ +${e.rush} SPD`, 'tag'); }), 250);
     const seen = new Set();
@@ -8204,6 +8431,169 @@ async function battle() {
   }
 }
 
+/* ============ THE RIVER TROLL (hunt beast, multipart) ============
+   One beast across all four enemy slots. Each slot is a PART you target: Club Arm and Drowning Arm in front (melee reaches them), Head and Body behind (ranged).
+   The parts share one HP pool (TROLL.hp, scaled like any fight); it dies from HP, not from losing parts. Each part has its own small armour (TROLL.armour):
+   breaking it shuts that part's skill off for TROLL.regrow of the troll's turns, then the armour grows back. While a part is broken, statuses land through it
+   (they tick on the troll's turn). No stun from breaking; ice/shock still stun, but never two of its turns in a row (it shakes the second off).
+   Skills: Club (club arm) · Bile (head: poison at everyone) · Regenerate (body: below TROLL.regenAt HP, at most every TROLL.regenEvery turns, never while burning)
+   · Flail (always in the rotation). Area attacks against it: the HP damage counts once (the other parts take the break only).
+   Grab: after any attack that hit a broken hero, if the drowning arm is intact and nobody is held, it grabs the frontmost one and holds her under the water.
+   She's out of the fight and takes TROLL.drown each of its turns. Break the drowning arm to free her.
+   Weaknesses (TROLL.weak) come from the hunt's edge elites. Art: stand-in drawn in code for now. */
+const TROLL = { hp: 1000, spd: 7, regrow: 2, regenAt: .7, regenEvery: 3, regen: .08, drown: 14,
+  armour: { club: 34, drown: 34, head: 30, body: 44 },
+  weak: {
+    nest:  { icon: '🔥', name: 'Torched nest', clue: 'Scorched reeds and a smell of smoke: its nest is near.', fx: 'its body starts the fight broken (no early regeneration, burns land at once)' },
+    fish:  { icon: '🐟', name: 'Spoiled fishing grounds', clue: 'Rotten fish heaped by the water: its larder.', fx: 'its head starts the fight broken (no Bile at first)' },
+    wound: { icon: '🩸', name: 'Old wound', clue: 'Dried black blood on a broken spear: someone hurt it once.', fx: 'both arms have 40% less armour' },
+    bones: { icon: '🦴', name: 'Scattered bone pile', clue: 'A trophy pile of bones, picked clean.', fx: '12% less HP' }
+  } };
+const TROLL_PARTS = [
+  { k: 'club', name: 'Club Arm', tag: 'CLUB', skill: { n: 'Club', t: 'dmg', r: 'melee', d: [24, 29], chip: true, brk: 22, cd: 0 } },
+  { k: 'drown', name: 'Drowning Arm', tag: 'GRAB', skill: { n: 'Grab', t: 'grab', cd: 0 } },
+  { k: 'head', name: 'Head', tag: 'HEAD', skill: { n: 'Bile', t: 'dmg', r: 'ranged', d: [10, 12], el: 'poison', brk: 20, cd: 2, all: true } },
+  { k: 'body', name: 'Body', tag: 'BODY', skill: { n: 'Regenerate', t: 'regen', cd: 0 } }];
+const TROLL_FLAIL = { n: 'Flail', t: 'dmg', r: 'melee', d: [14, 17], chip: true, brk: 12, cd: 0 };
+const TROLL_SK = { club: 0, bile: 1, flail: 2, regen: 3 };          // the body's (the troll's) skill list
+function trollBuild(sc, h) {
+  const W = (h && h.weak) || [], T = { hp: 0, maxHp: 0, parts: [], held: null, stunLast: false, regenCd: 0 };
+  const parts = TROLL_PARTS.map(P => {
+    const core = P.k === 'body', sk = core ? [TROLL_PARTS[0].skill, TROLL_PARTS[2].skill, TROLL_FLAIL, P.skill] : [P.skill];
+    const u = make({ id: 'e_troll_' + P.k, boss: true, name: 'Troll · ' + P.name, short: P.name, tag: P.tag, hp: TROLL.hp * (W.includes('bones') ? .88 : 1), brk: 1, spd: TROLL.spd, weak: ['fire'], resist: ['poison'], skills: sk }, 'e', sc);
+    u.maxBreak = u.breakBar = Math.max(1, Math.round(TROLL.armour[P.k] * ((P.k === 'club' || P.k === 'drown') && W.includes('wound') ? .6 : 1)));
+    u.troll = T; u.trollPart = P.k; u.noTurn = !core; u.trollCore = core; u.regrow = 0;
+    if ((P.k === 'body' && W.includes('nest')) || (P.k === 'head' && W.includes('fish'))) { u.state = 'broken'; u.breakBar = 0; u.regrow = TROLL.regrow; }
+    return u; });
+  T.maxHp = parts[0].maxHp; T.hp = T.maxHp; T.parts = parts;
+  parts.forEach(u => Object.defineProperty(u, 'hp', { get: () => T.hp, set: v => { T.hp = Math.max(0, Math.min(T.maxHp, Math.round(v))); }, enumerable: true, configurable: true }));
+  return parts;
+}
+const trollPart = (T, k) => T.parts.find(p => p.trollPart === k);
+const trollOk = (T, k) => trollPart(T, k).state === 'armoured';
+function trollChoose(u) {                     // its move this round (shown above the body)
+  const T = u.troll, opts = [], burning = T.parts.some(p => p.statuses.some(x => x.type === 'burn'));
+  if (trollOk(T, 'body') && T.hp < T.maxHp * TROLL.regenAt && !T.regenCd && !burning && Math.random() < .75) return { i: TROLL_SK.regen, target: null };
+  if (trollOk(T, 'club')) opts.push([TROLL_SK.club, 3]);
+  if (trollOk(T, 'head') && u.cd[TROLL_SK.bile] <= 1) opts.push([TROLL_SK.bile, 2]);
+  opts.push([TROLL_SK.flail, opts.length ? 1 : 3]);
+  let r = Math.random() * opts.reduce((a, o) => a + o[1], 0), i = opts[0][0]; for (const [k, w] of opts) { r -= w; if (r < 0) { i = k; break; } }
+  return { i, target: u.skills[i].all ? null : weightedHero() };
+}
+function trollIntent(u) {
+  const it = u.intent; if (!it) return ''; if (stunned(u) || u.troll.parts.some(stunned)) return '💤 stunned';
+  const s = u.skills[it.i]; return s.t === 'regen' ? '▶ 💚 Regenerate' : s.all ? `▶ ${s.n} (everyone)` : `▶ ${s.n} → ${it.target ? it.target.short : '?'}`;
+}
+async function trollTurn(u) {
+  const T = u.troll;
+  u.cd = u.cd.map(c => Math.max(0, c - 1)); T.regenCd = Math.max(0, T.regenCd - 1);
+  for (const p of T.parts) for (const st of p.statuses.filter(x => x.dot)) {          // ailments on any part hurt the whole beast, on its turn
+    if (!isAlive(u)) break; const tick = st.dot; p.hp = lethalGuard(p, p.hp - tick);
+    log(`The troll's ${p.short.toLowerCase()} takes ${tick} damage from ${st.type}!`, 'log-status'); render(); floatText(p, tick, 'dot'); sfx('hit', STATUS_FX[st.type] || 'phys', false, false, true); trollFx('hurt'); await sleep(380);
+    if (--st.dur <= 0) p.statuses = p.statuses.filter(x => x !== st);
+    if (!isAlive(p)) { await fall(p); return; }
+  }
+  if (T.parts.some(stunned)) {
+    T.parts.forEach(p => { p.statuses = p.statuses.filter(x => !x.stun); });
+    if (T.stunLast) { T.stunLast = false; log(`💢 The troll shakes off the stun!`, 'log-status'); floatText(u, '💢 SHAKES IT OFF', 'tag'); await sleep(350); }
+    else { T.stunLast = true; log(`The troll is stunned and loses its turn!`, 'log-status'); floatText(u, '💤 STUNNED', 'tag'); trollFx('hurt'); render(); await sleep(500); await trollDrownTick(T); trollRegrow(T); render(); return; }
+  } else T.stunLast = false;
+  await trollDrownTick(T); if (!isAlive(u) || over) return;
+  let it = u.intent; u.intent = null;
+  const valid = it && (it.i === TROLL_SK.regen ? trollOk(T, 'body') : it.i === TROLL_SK.club ? trollOk(T, 'club') : it.i === TROLL_SK.bile ? trollOk(T, 'head') && !u.cd[it.i] : true) && (!it.target || (isAlive(it.target) && !it.target.drowned));
+  if (!valid) it = trollChoose(u);
+  if (it.i === TROLL_SK.regen && !(trollOk(T, 'body') && !T.parts.some(p => p.statuses.some(x => x.type === 'burn')))) it = { i: TROLL_SK.flail, target: weightedHero() };
+  const s = u.skills[it.i];
+  if (s.t === 'regen') {
+    const add = Math.round(T.maxHp * TROLL.regen), b0 = T.hp; u.hp = T.hp + add; T.regenCd = TROLL.regenEvery;
+    say('The troll regenerates'); trollFx('regen'); sfx('heal'); log(`💚 The troll's wounds knit shut: +${T.hp - b0} HP.`, 'log-heal'); floatText(u, '+' + (T.hp - b0), 'heal'); render(); await sleep(700);
+  } else {
+    if (!it.target) it.target = s.all ? party.find(x => isAlive(x) && !x.drowned) : weightedHero();
+    if (!it.target) { trollRegrow(T); return; }
+    trollFx(it.i === TROLL_SK.bile ? 'spew' : it.i === TROLL_SK.club ? 'club' : 'flail');
+    const hitList = s.all ? party.filter(x => isAlive(x) && !x.drowned) : [it.target];
+    await perform(u, it.i, it.target);
+    if (!T.held && trollOk(T, 'drown') && isAlive(u) && !over) {                    // the grab: the frontmost broken hero it just hit
+      const c = hitList.filter(x => isAlive(x) && !x.drowned && x.state !== 'armoured').sort((a, b) => party.indexOf(a) - party.indexOf(b));
+      if (c.length) await trollGrab(T, c[0]);
+    }
+  }
+  trollRegrow(T); render();
+}
+function trollRegrow(T) {                    // at the end of each of its turns, broken parts count down and grow their armour back
+  T.parts.forEach(p => { if (p.state !== 'broken') return; if (p.regrow > 0) p.regrow--;
+    if (p.regrow <= 0) { p.state = 'armoured'; p.breakBar = p.maxBreak; floatText(p, '🦴 REGROWN', 'tag'); log(`The troll's ${p.short.toLowerCase()} hardens again: ${p.skills[0].n === 'Regenerate' || p.trollCore ? 'Regenerate' : p.skills[0].n} is back.`, 'log-status'); } });
+}
+function trollPartBroken(p) {                // hook from the armour-break code
+  const T = p.troll; p.regrow = TROLL.regrow;
+  log(`🦴 The troll's ${p.short.toLowerCase()} is broken: ${p.trollCore ? 'no Regenerate' : 'no ' + p.skills[0].n} for ${TROLL.regrow} of its turns.`, 'log-player');
+  if (p.trollPart === 'drown' && T.held) trollFree(T);
+}
+async function trollGrab(T, h) {
+  T.held = h; h.drowned = true; h.statuses = h.statuses.filter(x => !x.stun); h.stealth = 0;
+  trollFx('grab'); sfx('hit', 'phys', true); shake(2);
+  log(`🌊 <strong>The troll seizes ${h.name} and drags her under the water!</strong> Break its Drowning Arm to free her.`, 'log-status'); floatText(h, '🌊 DROWNING', 'tag hurt');
+  render(); await sleep(700);
+}
+function trollFree(T) {
+  const h = T.held; T.held = null; if (!h) return; h.drowned = false;
+  log(`💨 ${h.name} breaks the surface, gasping. She's free!`, 'log-heal'); setTimeout(() => floatText(h, '💨 FREED', 'tag'), 200); render();
+}
+async function trollDrownTick(T) {
+  const h = T.held; if (!h) return; if (!isAlive(h)) { T.held = null; h.drowned = false; return; }
+  h.hp = lethalGuard(h, h.hp - TROLL.drown); log(`🌊 ${h.name} is held under: -${TROLL.drown} HP.`, 'log-status'); floatText(h, TROLL.drown, 'hurt'); render(); await sleep(380);
+  if (!isAlive(h)) { T.held = null; h.drowned = false; await fall(h); }
+}
+// ---- the stand-in troll, drawn across the four enemy slots ----
+let trollFxT = 0;
+function trollFx(kind) { const L = document.querySelector('#troll-layer'); if (!L) return; L.dataset.fx = kind; clearTimeout(trollFxT); trollFxT = setTimeout(() => { delete L.dataset.fx; }, kind === 'regen' ? 900 : 700); }
+function trollLayer() {
+  const bf = document.querySelector('#battle-scene .battlefield'), T = enemies.length && enemies[0].troll || (enemies.find(e => e.troll) || {}).troll;
+  let L = document.querySelector('#troll-layer');
+  if (!T || !bf) { if (L) L.remove(); return; }
+  if (!L) { L = document.createElement('div'); L.id = 'troll-layer'; bf.appendChild(L); }
+  const B = bf.getBoundingClientRect(), k = bf.offsetWidth ? B.width / bf.offsetWidth : 1, cards = $('enemy-cards').children;
+  if (!B.width || !$('battle-scene').classList.contains('show')) return;
+  const at = key => { const p = trollPart(T, key), c = cards[enemies.indexOf(p)], f = c && (c.querySelector('.floor') || c); if (!f) return null; const r = f.getBoundingClientRect(); return { x: (r.left + r.width / 2 - B.left) / k, y: (r.top + r.height / 2 - B.top) / k, c }; };
+  const A = at('club'), D = at('drown'), Hd = at('head'), Bd = at('body'); if (!A || !D || !Hd || !Bd) return;
+  const S = Math.abs(Bd.x - A.x) / 3 || 120, G = Math.max(A.y, D.y, Hd.y, Bd.y) - S * .15, dir = Bd.x > A.x ? 1 : -1, W = bf.offsetWidth, Ht = bf.offsetHeight;
+  const tx = (Hd.x + Bd.x) / 2 + dir * S * .1, ty = G - S * 1.35, hx = Hd.x - dir * S * .05, hy = G - S * 2.55, sh1 = [Hd.x - dir * S * .35, G - S * 2.05], sh2 = [Hd.x + dir * S * .05, G - S * 1.9];
+  const grip = [D.x, G - S * .12], clubH = [A.x + dir * S * .15, G - S * 1.05], st = key => trollPart(T, key).state === 'armoured' ? '' : ' brk', held = !!T.held;
+  const dead = !isAlive(enemies.find(e => e.troll) || {}), hl = key => { const p = trollPart(T, key), c = cards[enemies.indexOf(p)]; return c && c.classList.contains('targetable') ? ' tg' : ''; };
+  L.className = (dead ? 'dead' : '') + (held ? ' holding' : '');
+  L.innerHTML = `<svg viewBox="0 0 ${W} ${Ht}" width="${W}" height="${Ht}">
+    <defs><radialGradient id="trSkin" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#6f8a55"/><stop offset=".6" stop-color="#3e5634"/><stop offset="1" stop-color="#1f2c1b"/></radialGradient></defs>
+    <g class="tl-part tl-body${st('body')}${hl('body')}"><ellipse cx="${tx}" cy="${ty}" rx="${S * 1.05}" ry="${S * 1.3}" fill="url(#trSkin)" stroke="#121a10" stroke-width="5"/>
+      <path d="M${tx - S * .5},${ty - S * .3} q${S * .2},${S * .25} ${S * .5},${S * .05} M${tx},${ty + S * .2} q${S * .3},${S * .2} ${S * .55},-${S * .05}" stroke="#2a3a22" stroke-width="6" fill="none" opacity=".7"/>
+      <path class="crack" d="M${tx - S * .2},${ty - S * .6} l${S * .15},${S * .3} l-${S * .1},${S * .25} l${S * .2},${S * .3}" stroke="#e6ffd0" stroke-width="4" fill="none"/></g>
+    <g class="tl-part tl-head${st('head')}${hl('head')}"><circle cx="${hx}" cy="${hy}" r="${S * .46}" fill="url(#trSkin)" stroke="#121a10" stroke-width="5"/>
+      <ellipse cx="${hx - dir * S * .2}" cy="${hy - S * .05}" rx="${S * .07}" ry="${S * .05}" fill="#ff3b2f"/><ellipse cx="${hx + dir * S * .02}" cy="${hy - S * .07}" rx="${S * .06}" ry="${S * .045}" fill="#ff3b2f"/>
+      <path d="M${hx - dir * S * .35},${hy + S * .2} q${dir * S * .2},${S * .12} ${dir * S * .4},0" stroke="#121a10" stroke-width="5" fill="none"/>
+      <path d="M${hx - dir * S * .3},${hy + S * .2} l${dir * S * .03},-${S * .14} l${dir * S * .05},${S * .12} M${hx - dir * S * .05},${hy + S * .24} l${dir * S * .03},-${S * .14} l${dir * S * .05},${S * .12}" fill="#e9e0c8" stroke="#3a3326" stroke-width="2"/>
+      <path class="crack" d="M${hx - S * .1},${hy - S * .4} l${S * .1},${S * .2} l-${S * .08},${S * .15}" stroke="#e6ffd0" stroke-width="4" fill="none"/><g class="spew"><path d="M${hx - dir * S * .3},${hy + S * .3} q${-dir * S * 1.4},${S * .4} ${-dir * S * 3},${S * 1.6}" stroke="#9ccc65" stroke-width="${S * .22}" fill="none" stroke-linecap="round" opacity=".75"/></g></g>
+    <g class="tl-part tl-drown${st('drown')}${hl('drown')}"><path d="M${sh2[0]},${sh2[1]} Q${(sh2[0] + grip[0]) / 2},${G - S * 1.9} ${grip[0]},${grip[1] - (held ? -S * .15 : S * .45)}" stroke="url(#trSkin)" stroke-width="${S * .34}" fill="none" stroke-linecap="round"/>
+      <path d="M${sh2[0]},${sh2[1]} Q${(sh2[0] + grip[0]) / 2},${G - S * 1.9} ${grip[0]},${grip[1] - (held ? -S * .15 : S * .45)}" stroke="#121a10" stroke-width="4" fill="none" opacity=".5"/>
+      <circle cx="${grip[0]}" cy="${grip[1] - (held ? -S * .15 : S * .45)}" r="${S * .24}" fill="#3e5634" stroke="#121a10" stroke-width="4"/><path class="crack" d="M${(sh2[0] + grip[0]) / 2},${G - S * 1.6} l${S * .12},${S * .2} l-${S * .1},${S * .18}" stroke="#e6ffd0" stroke-width="4" fill="none"/></g>
+    <g class="tl-part tl-club${st('club')}${hl('club')}"><path d="M${sh1[0]},${sh1[1]} Q${(sh1[0] + clubH[0]) / 2 + dir * S * .2},${G - S * 2.3} ${clubH[0]},${clubH[1]}" stroke="url(#trSkin)" stroke-width="${S * .36}" fill="none" stroke-linecap="round"/>
+      <path d="M${clubH[0]},${clubH[1]} L${clubH[0] - dir * S * .55},${clubH[1] - S * 1.15}" stroke="#4a3220" stroke-width="${S * .3}" stroke-linecap="round"/><circle cx="${clubH[0] - dir * S * .58}" cy="${clubH[1] - S * 1.2}" r="${S * .26}" fill="#5a3d26" stroke="#2a1a10" stroke-width="4"/>
+      <circle cx="${clubH[0]}" cy="${clubH[1]}" r="${S * .22}" fill="#3e5634" stroke="#121a10" stroke-width="4"/><path class="crack" d="M${(sh1[0] + clubH[0]) / 2},${G - S * 1.9} l${S * .12},${S * .2} l-${S * .1},${S * .18}" stroke="#e6ffd0" stroke-width="4" fill="none"/></g>
+    <rect class="tl-water" x="0" y="${G - S * .22}" width="${W}" height="${Ht - G + S * .22}" fill="#1f3326" opacity=".72"/>
+    <path d="M0,${G - S * .22} ${Array.from({ length: 24 }, (_, i) => `Q${(i + .5) * W / 24},${G - S * .22 - 6} ${(i + 1) * W / 24},${G - S * .22}`).join(' ')}" stroke="#a9c7a0" stroke-width="2" fill="none" opacity=".55"/>
+    ${held ? `<g class="bubbles">${[0, 1, 2, 3, 4].map(i => `<circle cx="${grip[0] + (i - 2) * S * .1}" cy="${G - S * .3}" r="${4 + (i % 3) * 3}" fill="none" stroke="#cfe8ff" stroke-width="2" style="animation-delay:${-i * .37}s"/>`).join('')}</g>` : ''}
+  </svg>`;
+  party.forEach(h => { const f = figs.get(h); if (!f) return; if (!h.drowned) { if (f.style.translate) f.style.translate = ''; return; }      // the held hero: carried to the arm and held under the surface
+    const ctr = () => { const r = f.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+    const prev = f.style.translate; f.style.transition = 'none'; f.style.translate = ''; const c0 = ctr(); f.style.translate = '100px 100px'; const c1 = ctr(), kx = (c1[0] - c0[0]) / 100 || 1, ky = (c1[1] - c0[1]) / 100 || 1;      // (the stage may be scaled by the camera)
+    f.style.translate = prev; f.getBoundingClientRect(); f.style.transition = '';
+    const want = [B.left + (grip[0] - dir * S * .45) * k, B.top + (G + S * .08) * k]; f.style.translate = `${Math.round((want[0] - c0[0]) / kx)}px ${Math.round((want[1] - c0[1]) / ky)}px`; });
+}
+
+function trollHud() {                        // one HP bar for the whole beast
+  let hb = document.getElementById('troll-hud'); const tp = enemies.find(e => e.troll);
+  if (!tp) { if (hb) hb.remove(); return; }
+  if (!hb) { hb = document.createElement('div'); hb.id = 'troll-hud'; $('battle-scene').appendChild(hb); }
+  const T = tp.troll; hb.innerHTML = `<b>🧌 ${(quest && quest.map && quest.map.hunt && quest.map.hunt.title) || 'River Troll'}</b><div class="th-bar"><i style="width:${Math.max(0, T.hp / T.maxHp * 100)}%"></i></div><span>${Math.max(0, T.hp)} / ${T.maxHp}${T.held ? ` · 🌊 ${T.held.short} is drowning` : ''}</span>`;
+}
 /* ============ FINAL BOSS (dev-only framework) ============
    Two fights at once on two screens: LEFT FRONT (party A faces right, boss body L on the right) and RIGHT FRONT (everything mirrored: party B faces left, boss body R on the left).
    Under the hood it is the normal battle engine: each screen swaps the globals `party` / `enemies` to that screen's 4 heroes + 1 boss body, so targeting, skills, effects and the HUD all work unchanged.
@@ -8550,6 +8940,7 @@ async function cannonFinale() {
 function fbEnd(won) {
   setSpot([]); over = true; actor = null; cur = null; waiting = null;
   const main = $('btn-end-main'), bad = FB.usedRevive, real = FB.real, back = () => { fbCleanup(); showScene(real ? 'hub' : 'dev-battle'); };
+  { const o = $('btn-end-alt'); if (o) o.remove(); }
   if (won) {
     $('turn-indicator').innerText = bad ? 'Victory… (BAD ENDING)' : 'VICTORY · GOOD ENDING';
     log(`<strong style="color:#4caf50">The final boss falls!</strong> ${bad ? '💀 You needed the second wind: BAD ENDING.' : '🌅 You never needed the second wind: GOOD ENDING.'}`, 'log-heal');
@@ -8562,6 +8953,11 @@ function fbEnd(won) {
       hubNote = bad ? 'The Final Stand is won, but at a cost.' : 'The Final Stand is won!';
       const ok = writeSave(); log(ok ? 'Progress saved.' : 'Could not save: browser storage is unavailable.', 'log-round');
       main.textContent = 'Return to Town'; main.onclick = back;
+      if (bad) {          // didn't like it? turn back time to the eve of battle (the same roll-back as a defeat) and try for the good ending
+        const snap = FB.snap, alt = document.createElement('button'); alt.id = 'btn-end-alt'; alt.textContent = '⏪ Turn back time'; alt.title = 'Undo this victory and return to the eve of battle, to try again without the second wind';
+        alt.onclick = () => { if (!devMode) { try { game = JSON.parse(snap); } catch (e) {} game.final = Object.assign({}, game.final, { badSeen: true }); writeSave(); }
+          hubNote = 'Time rolls back to the eve of battle. Nothing was lost, nothing was kept. One more try.'; fbCleanup(); showScene('hub'); };
+        main.after(alt); }
     } else { main.textContent = '⚡ Back to Quick Battle'; main.onclick = back; }
   } else {
     $('turn-indicator').innerText = 'Defeat';
@@ -8763,7 +9159,7 @@ async function fbBattle() {
     for (const side of [0, 1]) {
       if (!FB.units[side].some(isAlive)) continue;                      // that front has fallen: it waits for the shopkeeper
       if (FB.side !== side) await fbShow(side, false);
-      order = [...party, ...enemies].filter(isAlive).sort((a, b) => b.spd - a.spd || Math.random() - 0.5);
+      order = [...party, ...enemies].filter(x => isAlive(x) && !x.noTurn).sort((a, b) => b.spd - a.spd || Math.random() - 0.5);
       enemies.forEach(e => { e.intent = isAlive(e) && FB.stun <= 0 ? fbChoose(e, true) : null; });
       let comboDone = false;
       for (const u of order) {
@@ -9357,7 +9753,7 @@ function returnItems(won) {
 }
 function saveQuest() { if (quest && quest.final) return true; game.quest = snapshotQuest(); return writeSave(); }       // (the Final Stand is never checkpointed: quitting mid-fight just means you were never there)
 function restoreQuest(s) {
-  const def = s && QUESTS.find(q => q.id === s.id);
+  const def = s && (QUESTS.find(q => q.id === s.id) || HUNT_DEFS.find(q => q.id === s.id));
   if (!def || !Array.isArray(s.party) || !s.party.length || s.party.length > MAX_PARTY) return null;
   if (!Number.isInteger(s.node) || s.node < 0 || s.node >= def.nodes.length) return null;
   const members = [];
@@ -9489,7 +9885,10 @@ function startNode() {
   if (D.phase === 'night' && !quest.bonus && !node.boss && Array.isArray(ids) && !(mods || []).some(Boolean) && Math.random() < TOD.nightElite) {      // the night brings out the worst
     mods2 = ids.map(() => null); const sl = ids.map((id, i) => i).filter(i => !(enemyById(ids[i]) || {}).boss); if (sl.length) mods2[choose(sl, Math.random)] = choose(ELITE_KEYS, Math.random); }
   quest._sc = { hp: (qs.hp || 1) * (ns.hp || 1) * (T.hp || 1) * (quest.bonus && quest.bonus.hp || 1) * D.hp, atk: (qs.atk || 1) * (ns.atk || 1) * (T.atk || 1) * D.atk };
-  enemies = buildEnemies(ids, mods2, quest._sc);
+  enemies = node.troll && !quest.bonus ? trollBuild(quest._sc, quest.map && quest.map.hunt) : buildEnemies(ids, mods2, quest._sc);
+  party.forEach(u => { u.drowned = false; });
+  $('battle-scene').classList.toggle('swamp', !!(quest.def.hunt && node.troll && !quest.bonus));
+  if (node.troll && quest.ambush) { quest.ambush = false; party.filter(isAlive).forEach(u => { u.hp = Math.max(1, u.hp - Math.round(u.maxHp * HUNT.ambush)); }); setTimeout(() => { log(`<strong style="color:#ff5252">👁️ AMBUSH! The troll bursts from the river and catches the party off guard!</strong>`); party.forEach(u => floatText(u, '👁️ AMBUSHED', 'tag hurt')); }, 600); }
   if (partySum('piper') && enemyById('e_rat')) { const ok = enemies.map((e, i) => i).filter(i => !enemies[i].boss && !enemies[i].final && enemies[i].id !== 'e_rat');      // The Pied Piper: one foe becomes a rat
     if (ok.length) { const i = choose(ok, Math.random), was = enemies[i].name; enemies[i] = piperRat(); setTimeout(() => log(`🎶 The Piper plays: ${was} turns into a plague rat!`, 'log-status'), 400); } }
   quest.ratsCalled = 0; aegisArmed = null;
@@ -9738,12 +10137,9 @@ const TOD = { day: .55, dusk: .25,               // moves of daylight / twilight
   perMove: .04, cap: 1.6,                        // every move deeper into the night adds this much more (HP and damage), up to cap
   gold: { day: 1, dusk: 1.2, night: 1.4 },       // fight gold by phase: night is dangerous but pays
   nightElite: .35 };                             // at night a fight without an elite gets one this often
-const QM_ICON = { start: '🚩', fight: '⚔️', elite: '💀', event: '❓', camp: '⛺', wagon: '🛒', spring: '♨️', empty: '·', boss: '👹' };
-const QM_NAME = { spring: 'A hot spring', start: 'The entrance', fight: 'A fight', elite: 'An elite fight', event: 'Something strange', camp: 'A camp site', wagon: "The Shopkeeper's Wagon", empty: 'An empty road', boss: "The boss's lair" };
-function genMap(def, plan, rng = RAND.rng) {
-  const act = questAct(def.id), Q = { ...QMAP, ...(QMAP.act[act] || {}) };
-  const F = def.nodes.length - 1, C = (def.camps ?? 1) + Q.extraCamps, E = (def.events ?? 1) + Q.extraEvents, W = rng() < QMAP.wagon ? 1 : 0, S = rng() < SPRING.chance ? 1 : 0;
-  const X = Q.empty[0] + Math.floor(rng() * (Q.empty[1] - Q.empty[0] + 1)), N = 2 + F + C + E + W + S + X;
+const QM_ICON = { clue: '🔍', start: '🚩', fight: '⚔️', elite: '💀', event: '❓', camp: '⛺', wagon: '🛒', spring: '♨️', empty: '·', boss: '👹' };
+const QM_NAME = { clue: 'Signs of the beast', spring: 'A hot spring', start: 'The entrance', fight: 'A fight', elite: 'An elite fight', event: 'Something strange', camp: 'A camp site', wagon: "The Shopkeeper's Wagon", empty: 'An empty road', boss: "The boss's lair" };
+function mapLayout(N, rng) {               // N places on a loose grid, joined by roads that never cross (a spanning tree + a few loops); dist = steps from the entrance (place 0)
   const cols = Math.max(4, Math.ceil(Math.sqrt(N * 2.4))), rows = Math.max(3, Math.ceil(N * 1.25 / cols));
   const cells = []; for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) cells.push([c, r]);
   const startCell = [0, Math.floor(rows / 2)], pick = [startCell];
@@ -9761,6 +10157,13 @@ function genMap(def, plan, rng = RAND.rng) {
   const typical = edges.map(([a, b]) => d2(a, b)).sort((p, q) => p - q)[edges.length >> 1];
   for (const [d, a, b] of pairs) { if (d > typical * 1.7) break; if (adj[a].includes(b) || adj[a].length >= QMAP.maxDeg || adj[b].length >= QMAP.maxDeg || cross(a, b) || rng() > QMAP.links) continue; link(a, b); }   // a few loops, so there is more than one way around
   const dist = n.map(() => Infinity); dist[0] = 0; const qu = [0]; while (qu.length) { const a = qu.shift(); adj[a].forEach(b => { if (dist[b] > dist[a] + 1) { dist[b] = dist[a] + 1; qu.push(b); } }); }
+  return { n, adj, dist };
+}
+function genMap(def, plan, rng = RAND.rng) {
+  const act = questAct(def.id), Q = { ...QMAP, ...(QMAP.act[act] || {}) };
+  const F = def.nodes.length - 1, C = (def.camps ?? 1) + Q.extraCamps, E = (def.events ?? 1) + Q.extraEvents, W = rng() < QMAP.wagon ? 1 : 0, S = rng() < SPRING.chance ? 1 : 0;
+  const X = Q.empty[0] + Math.floor(rng() * (Q.empty[1] - Q.empty[0] + 1)), N = 2 + F + C + E + W + S + X;
+  const { n, adj, dist } = mapLayout(N, rng);
   const maxD = Math.max(...dist), far = n.map((_, i) => i).filter(i => i && dist[i] >= Math.max(2, Math.ceil(maxD * Q.bossFar)));
   const boss = far[Math.floor(rng() * far.length)] || N - 1;
   n[0].type = 'start'; n[0].seen = n[0].done = n[0].visited = true; n[boss].type = 'boss'; n[boss].fi = F;
@@ -9820,9 +10223,11 @@ async function qmGo(i) {
     { const k = partySum('fleece', quest.party); if (k) quest.party.forEach(u => { if (u.hp > 0 && !u.faustDead) u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.round(u.maxHp * k))); }); }      // The Golden Fleece
     if (!x.done && (x.type === 'empty' || x.type === 'start')) x.done = true;
     if (!x.visited) { x.visited = true; m.fresh = m.adj[step].filter(b => !m.n[b].seen); m.fresh.forEach(b => { m.n[b].seen = true; }); }
+    if (m.hunt && huntStep(m)) { renderMap(); break; }          // the party walked into the beast, or it found them
     renderMap(); await sleep(FX.calm ? 60 : QMAP.step);
   }
   qmBusy = false; saveQuest();
+  if (m.hunt && m.hunt.meet) { await sleep(FX.calm ? 0 : 400); return huntMeet(); }
   const x = m.n[m.at];
   if (x.done) return renderMap();
   await sleep(FX.calm ? 0 : 260);
@@ -9830,17 +10235,19 @@ async function qmGo(i) {
 }
 async function qmEnter() {               // what happens when the party arrives somewhere new
   const m = quest.map, x = m.n[m.at];
+  if (x.type === 'clue') { huntClue(m, x); x.done = true; saveQuest(); return renderMap(); }
   if (x.type === 'camp') { x.done = true; quest.party.forEach(u => { u.campHeal = 0; }); return goCamp(); }
   if (x.type === 'spring') return springEnter();
   if (x.type === 'event' || x.type === 'wagon') { quest.eventDone = false; quest.node = Math.min(quest.def.nodes.length - 2, quest.map.n.filter(y => (y.type === 'fight' || y.type === 'elite') && y.done).length); return openEvent(); }
   if (x.type === 'fight' || x.type === 'elite' || x.type === 'boss') { quest.node = x.fi; if (x.type === 'boss') await travel('boss'); return startNode(); }
   renderMap();
 }
-function qmDoneHere() { const m = quest && quest.map; if (m) { m.n[m.at].done = true; m.fresh = []; } }
+function qmDoneHere() { const m = quest && quest.map; if (m) { const x = m.n[m.at]; if (m.hunt && x.weak && !x.done && !m.hunt.weak.includes(x.weak)) { m.hunt.weak.push(x.weak); m.hunt.msg = `${TROLL.weak[x.weak].icon} <b>${TROLL.weak[x.weak].name}</b>: ${TROLL.weak[x.weak].fx}`; } x.done = true; m.fresh = []; } }
 const qmCanLeave = () => { const m = quest && quest.map; if (!m) return false; const x = m.n[m.at]; return m.bossDone || x.type === 'start' || x.type === 'camp'; };
 function qmLeave() {                     // walk home: keep everything you carry. Before the boss the quest is not cleared.
   const m = quest && quest.map; if (!m || !qmCanLeave() || qmBusy) return;
   if (m.bossDone) return finishQuestWin();
+  if (m.hunt) { game.gold += quest.gold; game.quest = null; const pn = returnItems(true); hubNote = `You gave up the hunt. You brought home ${quest.gold} gold.${pn}`; quest = null; writeSave(); return showScene('hub'); }
   game.gold += quest.gold; game.quest = null; game.shop = { stock: rollStock(game.relics) };
   const pn = returnItems(true), gz = gooseDies('Greed turned back early.');
   hubNote = `You left ${quest.def.name} before facing its boss. You brought home ${quest.gold} gold.${pn} The quest is not cleared.${gz}`;
@@ -9884,6 +10291,10 @@ function gooseDies(why) {                 // the greedy end of the fable
 }
 function bossCleared() {                 // the boss is down: the quest is cleared right now, whatever happens next
   const m = quest.map; m.bossDone = true; m.n[m.at].done = true;
+  if (quest.def.hunt) {                  // a hunt: gold, a guaranteed relic and a perk. Hunts never count as cleared quests.
+    game.stats.won++; game.hunts = (game.hunts || 0) + 1;
+    m.drop = rollDrop(quest.def, game.relics, 1); if (m.drop && midasEats(RELICS[m.drop])) m.drop = null;
+    awardTraits(true); return; }
   const coastWas = coastOpen(), beachWas = beachOpen(), frostWas = frostOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
   const qt = quest.tier || 0; game.tiers.cleared[quest.def.id] = Math.max(tierCleared(quest.def.id), qt); tierUnlock();
   game.stats.won++;
@@ -9907,6 +10318,112 @@ function finishQuestWin() {              // home with everything: gold, the boss
   hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold.${pn}${drop && RELICS[drop] ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
   quest = null; writeSave(); showScene('hub');
 }
+/* ============ HUNTS (side quests, dev-only prototype) ============
+   A bigger map with few fights. Clues sit toward the middle: each one shows which way the beast went (an arrow on the party for HUNT.hintMoves moves),
+   and some also reveal where an elite waits at the map's edge. Beat an edge elite and the beast starts the showdown weakened (TROLL.weak).
+   The beast itself is not a place: it stands on one (m.hunt.troll) and, depending on its temper, moves:
+     territorial = never moves · wandering = drifts to a neighbouring place now and then (HUNT.wander per party move) · aggressive = stays put by day, then from
+     twilight it stalks the party (HUNT.chase per party move) and attacks first if it reaches them (an ambush: everyone loses HUNT.ambush of their HP).
+   Every place it leaves keeps fresh tracks (🐾) that also point the way. It always moves less than once per party move, so it can be caught.
+   You see it when it is within 2 steps. Walk onto it to fight. Rewards: gold, a guaranteed relic, a perk. Leave from the entrance or a camp, like a quest. */
+const HUNT = { size: [28, 32], clues: 11, camps: 2, events: 4, elites: 3, hintMoves: 3, wander: .35, chase: .6, ambush: .12, see: 2,
+  temper: { territorial: 1, wandering: 1, aggressive: 1 } };
+const HUNT_TEMPER = { territorial: ['A Territorial', 'It guards its stretch of river and does not leave it.'], wandering: ['A Wandering', 'It roams: follow the fresh tracks.'],
+  aggressive: ['An Aggressive', 'By day it waits. From twilight it hunts YOU.'] };
+const HUNT_DEFS = [
+  { id: 'hunt_troll', hunt: 'troll', name: 'River Troll', act: 2, relicDrop: 1, camps: 2, events: 3,
+    nodes: [{ name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } }, { name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } },
+            { name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } }, { name: 'The River Troll', boss: true, troll: true, enemies: [], gold: 260 }] }
+];
+const HUNT_CLUE = ['Deep, clawed footprints in the mud.', 'A half-eaten fish, still twitching.', 'Snapped reeds, and a stink of rot.', 'Something huge slept here. The grass is still flat.',
+  'A boulder was rolled aside. Recently.', 'Green slime on the rocks, dripping.', 'Bones, gnawed clean and piled with care.', 'A heavy club dragged a furrow through the earth.', 'The birds have gone quiet here.'];
+function huntPlan(def) {                     // the edge elites: fights from the hunt's act, each with one elite
+  const g = QUEST_GROUPS[def.act - 1], pool = [];
+  QUESTS.filter(q => g.ids.includes(q.id)).forEach(q => q.nodes.forEach(n => { if (!n.boss && n.enemies && n.enemies.length) pool.push(n.enemies); }));
+  const nodes = [], mods = [];
+  def.nodes.forEach((n, k) => { if (n.troll) { nodes.push([]); mods.push([]); return; }
+    const ids = (choose(pool, RAND.rng) || n.enemies).slice(); nodes.push(ids);
+    const mm = ids.map(() => null), sl = ids.map((id, i) => i).filter(i => !(enemyById(ids[i]) || {}).boss); if (sl.length) mm[choose(sl, RAND.rng)] = choose(ELITE_KEYS, RAND.rng); mods.push(mm); });
+  return { nodes, mods, adds: [] };
+}
+function genHunt(def, rng = RAND.rng) {
+  const H = HUNT, N = H.size[0] + Math.floor(rng() * (H.size[1] - H.size[0] + 1)), { n, adj, dist } = mapLayout(N, rng);
+  const cx = n.reduce((a, x) => a + x.x, 0) / N, cy = n.reduce((a, x) => a + x.y, 0) / N, cen = n.map(x => Math.hypot((x.x - cx) * 16 / 9, x.y - cy)), maxD = Math.max(...dist);
+  n[0].type = 'start'; n[0].seen = n[0].done = n[0].visited = true;
+  let free = n.map((_, i) => i).filter(i => i);
+  const grab = (k, list) => { const out = []; for (const i of list) { if (out.length >= k) break; if (free.includes(i)) { out.push(i); free = free.filter(x => x !== i); } } return out; };
+  // edge elites: the outermost places, away from the entrance and from each other
+  const edge = free.filter(i => dist[i] >= 3).sort((a, b) => cen[b] - cen[a] + (rng() - .5) * .08), elites = [];
+  for (const i of edge) { if (elites.length >= H.elites) break; if (elites.some(j => adj[j].includes(i) || Math.hypot((n[i].x - n[j].x) * 16 / 9, n[i].y - n[j].y) < .35)) continue; elites.push(i); }
+  free = free.filter(i => !elites.includes(i));
+  const wk = Object.keys(TROLL.weak).sort(() => rng() - .5).slice(0, elites.length);
+  elites.forEach((i, k) => { n[i].type = 'elite'; n[i].fi = k; n[i].weak = wk[k]; });
+  // the beast: somewhere in the far part of the map
+  const far = free.filter(i => dist[i] >= Math.max(3, Math.ceil(maxD * .55))), troll = far.length ? choose(far, rng) : free[free.length - 1]; free = free.filter(i => i !== troll);
+  // clues: the most central places
+  const clues = grab(H.clues, free.slice().sort((a, b) => cen[a] - cen[b]));
+  clues.forEach(i => { n[i].type = 'clue'; });
+  clues.slice().sort(() => rng() - .5).slice(0, elites.length).forEach((i, k) => { n[i].reveal = elites[k]; });       // some clues point at an edge elite
+  grab(H.camps, free.filter(i => dist[i] >= 2).sort(() => rng() - .5)).forEach(i => { n[i].type = 'camp'; });
+  const used = []; grab(H.events, free.slice().sort(() => rng() - .5)).forEach(i => { n[i].type = 'event';
+    let pool = EVENTS.filter(e => e.id !== 'wagon' && (!e.only || e.only()) && !used.includes(e.id)); if (!pool.length) pool = EVENTS.filter(e => e.id !== 'wagon');
+    const ev = choose(pool, rng); used.push(ev.id); n[i].ev = { id: ev.id, seed: Math.floor(rng() * 1e9) }; });
+  adj[0].forEach(b => { n[b].seen = true; });
+  const tw = Object.entries(H.temper); let r = rng() * tw.reduce((a, [, w]) => a + w, 0), temper = { id: tw[0][0] }; for (const [id, w] of tw) { r -= w; if (r < 0) { temper = { id }; break; } }
+  return { n, adj, at: 0, t: 0, boss: troll, bossDone: false, drop: null, fresh: adj[0].slice(), day: TOD.day,
+    hunt: { troll, temper: temper.id, title: `${HUNT_TEMPER[temper.id][0]} ${def.name}`, weak: [], hint: -1, meet: null, msg: HUNT_TEMPER[temper.id][1], moved: 0 } };
+}
+async function startHunt(ids, hid = 'hunt_troll') {
+  const def = HUNT_DEFS.find(d => d.id === hid); if (!def || !ids.length) return;
+  quest = { def, node: 0, gold: 0, party: ids.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }), items: {} };
+  quest.tier = 0; quest.plan = huntPlan(def); quest.map = genHunt(def);
+  if (devMode) Object.defineProperty(quest, 'gold', { get: () => 999999, set: () => {}, enumerable: true, configurable: true });
+  Object.keys(ITEMS).forEach(id => { quest.items[id] = game.items[id] || 0; game.items[id] = 0; });
+  saveQuest(); showMap();
+}
+function startHuntDev() { const ids = picked.length ? picked.slice(0, 4) : game.roster.slice(0, 4); startHunt(ids); }
+function huntSteps(m, a, b) {                 // the shortest way between two places over every road (the beast knows its river): [a, ..., b]
+  const prev = new Map([[a, -1]]), q = [a]; while (q.length) { const x = q.shift(); if (x === b) break; for (const y of m.adj[x]) if (!prev.has(y)) { prev.set(y, x); q.push(y); } }
+  if (!prev.has(b)) return null; const out = []; for (let x = b; x !== -1; x = prev.get(x)) out.unshift(x); return out;
+}
+function huntStep(m) {                        // after each party step: did they find it? does it move? did it find them?
+  const h = m.hunt, x = m.n[m.at];
+  if (x.trail != null && !x.trailSeen) { x.trailSeen = true; h.hint = m.t + HUNT.hintMoves; h.msg = '🐾 <b>Fresh tracks!</b> They lead on.'; }
+  if (h.troll === m.at && !m.bossDone) { h.meet = 'found'; return true; }
+  if (m.bossDone) return false;
+  const T = todOf(m); let to = null;
+  if (h.temper === 'wandering' && Math.random() < HUNT.wander) { const o = m.adj[h.troll].filter(j => j && j !== m.at); if (o.length) to = choose(o, Math.random); }
+  if (h.temper === 'aggressive' && T.phase !== 'day' && Math.random() < HUNT.chase) { const path = huntSteps(m, h.troll, m.at); if (path && path.length > 1) to = path[1]; if (!h.hunting) { h.hunting = true; h.msg = '👁️ <b>Something is following you.</b> The troll is on the hunt.'; } }
+  if (to != null) { m.n[h.troll].trail = m.t; m.n[h.troll].trailSeen = false; h.troll = m.boss = to; h.moved++; }
+  if (h.troll === m.at) { h.meet = 'ambush'; return true; }
+  return false;
+}
+function huntClue(m, x) {
+  const h = m.hunt; h.hint = m.t + HUNT.hintMoves; let msg = `🔍 ${choose(HUNT_CLUE, Math.random)} The trail points onward.`;
+  if (x.reveal != null) { const e = m.n[x.reveal]; e.seen = true; e.revealed = true; const W = TROLL.weak[e.weak];
+    const dx = e.x - x.x, dy = e.y - x.y, dir = (Math.abs(dy) > Math.abs(dx) * .6 ? (dy < 0 ? 'north' : 'south') : '') + (Math.abs(dx) > Math.abs(dy) * .6 ? (dx < 0 ? 'west' : 'east') : '');
+    msg += `<br>${W.icon} ${W.clue} Something guards it to the <b>${dir || 'nearby'}</b> (${W.name}).`; }
+  h.msg = msg;
+}
+async function huntMeet() {                   // into the showdown
+  const m = quest.map, h = m.hunt, amb = h.meet === 'ambush'; h.meet = null; quest.ambush = amb;
+  quest.node = quest.def.nodes.findIndex(n => n.troll); saveQuest();
+  await travel('boss'); return startNode();
+}
+function huntBoard(m, box, pull) {             // the beast (when close), the clue arrow and the latest message
+  const h = m.hunt, here = m.at, d = huntSteps(m, here, h.troll), near = d ? d.length - 1 : 99;
+  let tr = box.querySelector('.qm-troll'); if (!tr) { tr = document.createElement('div'); tr.className = 'qm-troll'; tr.textContent = '🧌'; box.querySelector('.qm-nodes').after(tr); }
+  const vis = !m.bossDone && m.n[h.troll].seen && near <= HUNT.see;
+  tr.classList.toggle('on', vis); tr.style.left = (m.n[h.troll].x * 100) + '%'; tr.style.top = (m.n[h.troll].y * 100) + '%';
+  if (!m.bossDone && h.hint >= m.t) { const a = Math.atan2((m.n[h.troll].y - m.n[here].y) * 9, (m.n[h.troll].x - m.n[here].x) * 16); pull.style.setProperty('--a', a + 'rad'); pull.className = 'qm-pull on d' + Math.min(3, Math.max(1, near)); }
+  else pull.className = 'qm-pull';
+  let nt = $('qm-note'); if (!nt) { nt = document.createElement('div'); nt.id = 'qm-note'; $('qboard').appendChild(nt); }
+  nt.innerHTML = h.msg || ''; nt.classList.toggle('on', !!h.msg);
+}
+function huntTitle(m, T) {
+  const h = m.hunt, wk = h.weak.map(k => TROLL.weak[k].icon).join(' ');
+  return `<small>HUNT · ${h.title.toUpperCase()}${wk ? ' · weakened: ' + wk : ''}</small><b>${m.bossDone ? 'The beast is slain' : h.hunting ? 'It is hunting you…' : 'Track the beast'}</b>`;
+}
 // ---- drawing the board ----
 const QM_FLOOR = { lands: ['#3b4a2c', '#24301b', '#5b6a3e'], coast: ['#8a7a58', '#5c5038', '#a8986e'], frost: ['#c8d6e6', '#8fa2bb', '#eef4fb'] };
 function renderMap(first) {
@@ -9919,7 +10436,7 @@ function renderMap(first) {
     ln.push(`<line x1="${m.n[a].x * 1600}" y1="${m.n[a].y * 900}" x2="${m.n[b].x * 1600}" y2="${m.n[b].y * 900}" class="${walked ? 'walked' : ''}${m.fresh && (m.fresh.includes(a) || m.fresh.includes(b)) ? ' new' : ''}"/>`); }));
   const here = m.at, near = new Set(m.adj[here]);
   const nodes = m.n.map((x, i) => { if (!x.seen) return '';
-    const ic = x.type === 'boss' && !x.done ? QM_ICON.boss : x.done && x.type !== 'start' && x.type !== 'camp' ? '✓' : QM_ICON[x.type];
+    const ic = x.type === 'boss' && !x.done ? QM_ICON.boss : x.done && x.type !== 'start' && x.type !== 'camp' ? '✓' : QM_ICON[x.type] + (x.weak && !x.done ? `<i class="qm-wk">${TROLL.weak[x.weak].icon}</i>` : '') + (x.trail && !x.done ? '<i class="qm-trail">🐾</i>' : '');
     const reach = !!qmPath(m, i) && i !== here, cost = reach ? qmPath(m, i).length : 0;
     return `<button class="qm-n t-${x.type}${x.done ? ' done' : ''}${i === here ? ' here' : ''}${near.has(i) ? ' near' : ''}${m.fresh && m.fresh.includes(i) ? ' fresh' : ''}" style="${P(i)}" ${reach && !qmBusy ? '' : 'disabled'} onclick="qmGo(${i})"
       data-i="${i}" onmouseenter="qmTip(${i})" onfocus="qmTip(${i})" onmouseleave="qmTip(-1)" aria-label="${QM_NAME[x.type]}"><span>${ic}</span>${reach ? `<i class="cost">${cost}</i>` : ''}</button>`; }).join('');
@@ -9932,8 +10449,9 @@ function renderMap(first) {
     pt.querySelectorAll('.qm-pc').forEach(el => heroArt(el.dataset.hid).then(a => { if (a && el.isConnected) { const im = document.createElement('img'); im.src = a.url; im.draggable = false; el.querySelector('.ph').replaceWith(im); } })); }
   quest.party.slice(0, 4).forEach((u, k) => { const el = pt.children[k]; if (el) el.classList.toggle('down', u.hp <= 0); });
   // the boss's pull: an arrow toward the lair once it is close (and not yet found)
-  const bd = !m.n[m.boss].seen && !m.bossDone ? bossDist(m) : Infinity, pull = pt.querySelector('.qm-pull');
-  if (bd <= QMAP.hint) { const a = Math.atan2((m.n[m.boss].y - m.n[here].y) * 9, (m.n[m.boss].x - m.n[here].x) * 16); pull.style.setProperty('--a', a + 'rad'); pull.className = 'qm-pull on d' + bd; } else pull.className = 'qm-pull';
+  const bd = m.hunt ? Infinity : !m.n[m.boss].seen && !m.bossDone ? bossDist(m) : Infinity, pull = pt.querySelector('.qm-pull');
+  if (m.hunt) huntBoard(m, box, pull);
+  else if (bd <= QMAP.hint) { const a = Math.atan2((m.n[m.boss].y - m.n[here].y) * 9, (m.n[m.boss].x - m.n[here].x) * 16); pull.style.setProperty('--a', a + 'rad'); pull.className = 'qm-pull on d' + bd; } else pull.className = 'qm-pull';
   qmFog(m, first);
   qmHud(m, T, bd);
 }
@@ -9941,13 +10459,13 @@ function qmTip(i) {
   const m = quest && quest.map, el = $('qm-tip'); if (!m || !el) return;
   if (i < 0) { el.classList.remove('on'); return; }
   const x = m.n[i], path = i === m.at ? [] : qmPath(m, i), T = todOf(m), after = todOf({ ...m, t: m.t + (path ? path.length : 0) });
-  const what = x.done && x.type !== 'start' && x.type !== 'camp' ? (x.type === 'boss' ? 'The lair (cleared)' : 'Cleared') : QM_NAME[x.type];
+  const what = x.done && x.type !== 'start' && x.type !== 'camp' ? (x.type === 'boss' ? 'The lair (cleared)' : 'Cleared') : x.weak ? `An elite guards it: ${TROLL.weak[x.weak].name}` : QM_NAME[x.type] + (x.trail ? ' · fresh tracks' : '');
   el.innerHTML = `<b>${QM_ICON[x.type]} ${what}</b>${i === m.at ? '<span>You are here</span>' : path ? `<span>${path.length} move${path.length > 1 ? 's' : ''}${after.phase !== T.phase ? ` · arrives at ${TOD_NAME[after.phase].toLowerCase()}` : ''}</span>` : ''}`;
   el.style.left = (x.x * 100) + '%'; el.style.top = (x.y * 100) + '%'; el.classList.add('on');
 }
 function qmHud(m, T, bd) {
   const items = quest.items || {}, sky = $('qm-sky');
-  $('qm-title').innerHTML = `<small>${quest.def.name.toUpperCase()}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''}</small><b>${m.bossDone ? 'The boss is beaten' : bd <= 1 ? 'The lair is near…' : bd <= QMAP.hint ? 'Something dark pulls at you' : 'Find the boss'}</b>`;
+  $('qm-title').innerHTML = m.hunt ? huntTitle(m, T) : `<small>${quest.def.name.toUpperCase()}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''}</small><b>${m.bossDone ? 'The boss is beaten' : bd <= 1 ? 'The lair is near…' : bd <= QMAP.hint ? 'Something dark pulls at you' : 'Find the boss'}</b>`;
   $('qm-time').innerHTML = `<b>${TOD_NAME[T.phase]}</b><span>${T.phase === 'night' ? `Deep night${T.extra ? ` · foes +${Math.round((T.hp - 1) * 100)}%` : ''}` : `${T.left} move${T.left === 1 ? '' : 's'} until ${T.phase === 'day' ? 'twilight' : 'night'}`}</span>`;
   qmSky(sky, T);
   $('qm-party-hud').innerHTML = quest.party.map(u => `<div class="qm-hp${u.hp <= 0 ? ' down' : ''}"><b>${u.short}</b><i><em style="width:${Math.max(0, u.hp / u.maxHp * 100).toFixed(0)}%"></em></i><span>${Math.max(0, u.hp)}/${u.maxHp}${u.state !== 'armoured' ? ` · <s class="${u.state}">${u.state === 'super' ? 'SUPER BROKEN' : 'broken'}</s>` : ''}</span></div>`).join('')
