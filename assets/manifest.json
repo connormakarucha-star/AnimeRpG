@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-17 18:21",
+  "generated": "2026-11-17 22:48",
   "files": {
     "aneesah/armoured - winter gear/damaged": "png",
     "aneesah/armoured - winter gear/idle": "png",
@@ -219,6 +219,8 @@
     "ui/showerb": "png",
     "ui/spa_back": "png",
     "ui/title_bg": "png",
+    "ui/title_disk": "png",
+    "ui/title_rings": "png",
     "ui/tyr_camp": "png",
     "ui/vesper_camp": "png",
     "ui/warrior": "png",
