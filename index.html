@@ -508,6 +508,8 @@ body.dorm-dragging .dorm-room .seat[data-slot]{outline:2px dashed rgba(255,213,7
 /* developer mode */
 #dev-bar{display:none;position:fixed;right:6px;top:6px;z-index:120;background:#2a1020ee;border:1px solid #ff5c8a;border-radius:8px;padding:5px 8px;font-size:.68rem;gap:6px;flex-wrap:wrap;align-items:center;max-width:calc(100vw - 12px);box-sizing:border-box}
 body.dev:not(.in-battle) #dev-bar{display:flex}
+#dev-sb{display:none;position:fixed;right:130px;top:6px;z-index:120;background:#2a1020ee;border:1px solid #ff5c8a;border-radius:8px;padding:3px 9px;font-size:.68rem;min-height:0;color:#ffd6e2}
+body.dev.in-battle #dev-sb{display:block}
 #dev-bar button{padding:3px 8px;font-size:.68rem;min-height:0}
 #btn-quick{display:none}
 body.dev #btn-quick{display:inline-block}
@@ -828,9 +830,8 @@ body.calm .mothfx i{animation:none}
 #troll-hud{position:absolute;left:50%;top:clamp(118px,15vh,150px);translate:-50% 0;width:min(520px,60vw);text-align:center;color:#eaf4e0;z-index:30;pointer-events:none;font-size:clamp(12px,.95vw,15px);text-shadow:0 1px 3px #000}
 #troll-hud b{display:block;letter-spacing:.06em}#troll-hud .th-bar{height:12px;border-radius:7px;background:rgba(0,0,0,.6);border:1px solid rgba(220,255,200,.4);overflow:hidden;margin:3px 0}
 #troll-hud .th-bar i{display:block;height:100%;background:linear-gradient(90deg,#4caf50,#9ccc65);transition:width .4s}
-.dmgmk{position:absolute;pointer-events:none;z-index:2;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.dmgmk{position:absolute;pointer-events:none;z-index:2;animation:none;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .dmgmk svg{position:absolute;inset:0;width:100%;height:100%}
-.dmgmk.flip{-webkit-mask-position:center;mask-position:center}
 .tod-ov{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;z-index:0}
 .qm-pc.down img,.qm-pc.down .ph{filter:grayscale(1) brightness(.6);rotate:-8deg}
 @keyframes qmBob{50%{translate:0 -3px}}
@@ -2862,6 +2863,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
     </div>
   </div>
 </div>
+<button id="dev-sb" onclick="devSuper()" title="Dev: strip every living hero to SUPER BROKEN (press again to re-armour)">💥 Super broken</button>
 <div id="dev-bar"><b>🛠<span class="lbl"> DEV MODE · nothing is saved</span></b><button onclick="openParty()" title="Quick Battle">⚡<span class="lbl"> Quick Battle</span></button><button onclick="devFlaws()" title="Refill flaws">🔁<span class="lbl"> Refill flaws</span></button><button onclick="location.reload()" title="Exit">⏏<span class="lbl"> Exit</span></button></div>
 <div id="camp" class="scene">
   <div id="camp-bg"></div>
@@ -7065,8 +7067,8 @@ function dmgMarkSvg(u, lvl) {
     for (let k = 0; k < n; k++) { const ox = Math.cos(a + Math.PI / 2) * k * 1.6, oy = Math.sin(a + Math.PI / 2) * k * 1.1, l = L * (1 - k * .18);
       o.push(`<line x1="${(x + ox - Math.cos(a) * l / 2).toFixed(1)}" y1="${(y + oy - Math.sin(a) * l * .55).toFixed(1)}" x2="${(x + ox + Math.cos(a) * l / 2).toFixed(1)}" y2="${(y + oy + Math.sin(a) * l * .55).toFixed(1)}" stroke="${col}" stroke-width="${w}" stroke-opacity="${op}" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`); } };
   const ng = lvl >= 2 ? DMG_MARKS.nGrey[1] : DMG_MARKS.nGrey[0];
-  for (let i = 0; i < ng; i++) mark('#4a4652', 1.8, .8);
-  if (lvl >= 2) for (let i = 0; i < DMG_MARKS.nRed; i++) mark('#c3203a', 2.2, .85);
+  for (let i = 0; i < ng; i++) mark('#4a4652', 1, .8);
+  if (lvl >= 2) for (let i = 0; i < DMG_MARKS.nRed; i++) mark('#c3203a', 1.3, .85);
   return `<svg viewBox="0 0 100 100" preserveAspectRatio="none">${o.join('')}</svg>`;
 }
 function dmgMarksAll() {
@@ -7077,13 +7079,19 @@ function dmgMarksAll() {
     if (!lvl || !img || !img.complete || !img.naturalWidth) { if (ov) ov.remove(); return; }
     if (!ov) { ov = document.createElement('div'); ov.className = 'dmgmk'; fig.appendChild(ov); }
     const key = lvl + '|' + img.src; if (ov.dataset.k !== key) { ov.dataset.k = key; ov.innerHTML = dmgMarkSvg(u, lvl); ov.style.webkitMaskImage = ov.style.maskImage = `url("${img.src}")`; }
-    const F = fig.getBoundingClientRect(), r = img.getBoundingClientRect(), k = F.width && fig.offsetWidth ? F.width / fig.offsetWidth : 1; if (!r.width) return;
-    Object.assign(ov.style, { left: (r.left - F.left) / k + 'px', top: (r.top - F.top) / k + 'px', width: r.width / k + 'px', height: r.height / k + 'px' });
-    ov.classList.toggle('flip', getComputedStyle(img).transform.includes('-1') || fig.classList.contains('flip'));
+    // a twin of the sprite: same box, and every frame the same transform / translate / rotate / scale (breathing, lean, flip, lunges), so the marks move with it exactly
+    const cs = getComputedStyle(img);
+    Object.assign(ov.style, { left: img.offsetLeft + 'px', top: img.offsetTop + 'px', width: img.offsetWidth + 'px', height: img.offsetHeight + 'px',
+      transform: cs.transform, translate: cs.translate, rotate: cs.rotate, scale: cs.scale, transformOrigin: cs.transformOrigin, opacity: cs.opacity, visibility: cs.visibility, filter: cs.filter });
   });
 }
+let dmgRun = false;
+function dmgLoop() {                       // runs every frame while the battle is on screen and someone is marked
+  dmgMarksAll(); const on = $('battle-scene') && $('battle-scene').classList.contains('show') && document.querySelector('#battle-scene .dmgmk');
+  if (on) requestAnimationFrame(dmgLoop); else dmgRun = false;
+}
 function render() {
-  requestAnimationFrame(dmgMarksAll); requestAnimationFrame(trollLayer); trollHud();
+  if (!dmgRun) { dmgRun = true; requestAnimationFrame(dmgLoop); } requestAnimationFrame(trollLayer); trollHud();
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
   if (FB) fbHud();
@@ -9454,6 +9462,12 @@ function showNotice() {                      // pending pop-ups (saved, so they 
   $('notice-skills').textContent = `${h.name} · HP ${h.hp} · SPD ${h.spd} · ${h.skills.map(s => s.n).join(' · ')}`;
 }
 function dismissNotice() { if (game.notices.length) game.notices.shift(); writeSave(); showNotice(); }
+function devSuper() {                     // dev: toggle the whole party between super broken and fully armoured, mid-battle
+  if (!devMode || !$('battle-scene').classList.contains('show') || typeof party === 'undefined') { say('Start a battle first, then press 💥'); return; }
+  const strip = party.some(u => isAlive(u) && u.state !== 'super');
+  party.filter(isAlive).forEach(u => { if (strip) { u.state = 'super'; u.breakBar = 0; u.break2 = 0; } else { u.state = 'armoured'; u.breakBar = u.maxBreak; u.break2 = u.maxBreak2; } });
+  render();
+}
 function soon(place) { $('hub-msg').textContent = `${place} isn't open yet. Coming soon!`; }
 
 function openParty() {
@@ -9664,7 +9678,9 @@ function renderQuests(full) {
   const pq = pickedQuest === 'final' ? FINAL_QUEST : QUESTS.find(q => q.id === pickedQuest), isFinal = pq === FINAL_QUEST;
   const sup = Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 && !/s$/.test(it.name) ? 's' : ''}` : '').filter(Boolean).join(' · ');
   const fcard = () => { const n = finalSlots.filter(Boolean).length, done = game.cleared && game.cleared.final, e = game.final && game.final.ending; return `<div class="pick quest-pick on"><div><strong>🌌 ${pq.name}</strong><br>${pq.desc}<div class="sk">Two fronts · one boss · no gold, no camps · ${n}/8 heroes chosen${done ? ' · ✔ beaten' + (e === 'good' ? ' (good ending)' : e === 'bad' ? ' (bad ending)' : '') : ''}</div></div><div class="slot">✓</div></div>`; };
-  const bq = $('btn-start-quest'); if (bq && bq.parentElement !== $('em-map')) $('em-map').appendChild(bq);      // the Begin button lives in the quest card; park it while the card is rebuilt
+  let bq = $('btn-start-quest');
+  if (!bq) { bq = document.createElement('button'); bq.className = 'primary em-begin'; bq.id = 'btn-start-quest'; bq.onclick = beginQuest; }      // (a map rebuild can take the button with it: make a new one)
+  if (bq.parentElement !== $('em-map')) $('em-map').appendChild(bq);      // the Begin button lives in the quest card; park it while the card is rebuilt
   $('quest-detail').innerHTML = pq ? questCard(pq, isFinal, tbar) : '';
   bq.disabled = !pickedQuest || (isFinal ? finalSlots.includes(null) : !picked.length);
   bq.textContent = isFinal ? 'BEGIN THE FINAL STAND' : 'BEGIN QUEST';
@@ -13764,8 +13780,8 @@ const GP = (() => {
 
   function frame(now) {
     const pads = (navigator.getGamepads && navigator.getGamepads()) || []; const p = [...pads].find(x => x && x.connected);
-    if (p) tick(p, now || performance.now());
-    requestAnimationFrame(frame);
+    requestAnimationFrame(frame);           // scheduled first: an error in one tick must never stop the controller for good
+    if (p) try { tick(p, now || performance.now()); } catch (err) { console.warn('controller:', err); S.prev = {}; }
   }
   function tick(p, now) {
     const b = i => !!(p.buttons[i] && (p.buttons[i].pressed || p.buttons[i].value > .6)), ax = i => p.axes[i] || 0;
