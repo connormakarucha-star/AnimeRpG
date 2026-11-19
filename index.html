@@ -5176,13 +5176,15 @@ function fogTick(now) {
     if (o.src !== im.src) { o.src = im.src; o.url = mu; o.F = null; fogPrep(mu).then(F => { o.F = F; if (F) { o.cv.width = F.w; o.cv.height = F.h; o.g = o.cv.getContext('2d'); o.g.__id = null; } }); }
     if (!o.F || !im.complete || !im.naturalWidth) { hide(im); return; }   // hold the picture back until its fog is ready
     if (o.cv.previousSibling !== im) im.after(o.cv);
-    const par = im.offsetParent; if (!par) { o.cv.style.display = 'none'; return; }
-    const P = par.getBoundingClientRect(), R = im.getBoundingClientRect(), kk = par.offsetWidth ? P.width / par.offsetWidth : 1, cs = getComputedStyle(im);
-    const ar = im.naturalWidth / im.naturalHeight; let cw = R.width, ch = R.height;
-    if (cs.objectFit === 'contain' || cs.objectFit === 'scale-down') { cw = Math.min(R.width, R.height * ar); ch = cw / ar; }
-    const bottom = /bottom/.test(cs.objectPosition) || /100%$/.test(cs.objectPosition), cx = R.left + (R.width - cw) / 2, cy = R.top + (bottom ? R.height - ch : (R.height - ch) / 2);
-    const m = cs.transform, flip = m && m !== 'none' && parseFloat(m.slice(m.indexOf('(') + 1)) < 0;
-    Object.assign(o.cv.style, { display: cs.display === 'none' ? 'none' : '', left: (cx - P.left) / kk + 'px', top: (cy - P.top) / kk + 'px', width: cw / kk + 'px', height: ch / kk + 'px', opacity: cs.opacity, zIndex: cs.zIndex, transform: flip ? 'scaleX(-1)' : 'none' });
+    // a twin of the sprite: the same box (narrowed to the drawn picture if it's letterboxed) and, every frame, the same transform / translate / rotate / scale
+    // and origin, so the fog breathes, leans, flips and lunges exactly with it
+    if (!im.offsetParent) { o.cv.style.display = 'none'; return; }
+    const cs = getComputedStyle(im), bw = im.offsetWidth, bh = im.offsetHeight, ar = im.naturalWidth / im.naturalHeight;
+    let cw = bw, ch = bh; if ((cs.objectFit === 'contain' || cs.objectFit === 'scale-down') && bw && bh) { cw = Math.min(bw, bh * ar); ch = cw / ar; }
+    const bottom = /bottom|100%$/.test(cs.objectPosition), ox = (bw - cw) / 2, oy = bottom ? bh - ch : (bh - ch) / 2;
+    const [tox, toy] = cs.transformOrigin.split(' ').map(parseFloat);
+    Object.assign(o.cv.style, { display: cs.display === 'none' ? 'none' : '', left: im.offsetLeft + ox + 'px', top: im.offsetTop + oy + 'px', width: cw + 'px', height: ch + 'px',
+      transform: cs.transform, translate: cs.translate, rotate: cs.rotate, scale: cs.scale, transformOrigin: `${(tox || 0) - ox}px ${(toy || 0) - oy}px`, opacity: cs.opacity, zIndex: cs.zIndex });
     fogDraw(o.F, o.g, im, fogT); show(im);
   });
   if (imgs.length || fogOn.size) requestAnimationFrame(fogTick); else fogRun = false;
