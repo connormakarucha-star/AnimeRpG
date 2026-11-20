@@ -1182,6 +1182,11 @@ body.calm .gb-bob,body.calm .gb-shadow,body.calm .gb-glow,body.calm .gb-motes{an
 #finale .fn-fx{position:absolute;inset:0;z-index:3;pointer-events:none}
 #finale .fn-black,#finale .fn-white{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:9}
 #finale .fn-black{background:#000}#finale .fn-white{background:#fff}
+#finale .fn-inside{z-index:3;background-color:#2a1d16;background-image:linear-gradient(180deg,#3a2a1e,#1c140f)}
+#finale .fn-gabby{position:absolute;left:62%;bottom:18%;height:58%;transform:translateX(-50%)}#finale .fn-gabby img{height:100%;display:block}
+#finale .fn-desk{position:absolute;left:0;right:0;bottom:0;width:100%;pointer-events:none}
+#finale .fn-desk-drawn{height:26%;background:linear-gradient(180deg,#6b4a2e,#4a3220 12%,#3a2718);border-top:6px solid #8a6240;box-shadow:0 -6px 18px rgba(0,0,0,.5)}
+#finale .fn-bub{z-index:20;font-size:clamp(14px,1.4vw,26px);max-width:30vw;padding:.4em .8em}
 .fn-p{position:absolute;left:0;top:0;border-radius:50%;pointer-events:none}
 .fn-dust{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(205,190,170,.85),rgba(160,140,120,.5) 45%,rgba(120,100,90,0) 70%);transform:translate(-50%,-50%);pointer-events:none}
 .fn-rock{position:absolute;width:var(--s);height:var(--s);background:#5a4a40;border-radius:30%;pointer-events:none}
@@ -2258,6 +2263,30 @@ button:not(:disabled):active,.clk:active,.rc:active,.dcs:active{filter:brightnes
 .st-name{position:absolute;left:1.4em;top:0;transform:translateY(-55%);padding:.25em 1em;background:#e0a82e;color:#1b1424;font-weight:900;letter-spacing:.06em;border-radius:4px;font-size:.92em;box-shadow:0 3px 10px rgba(0,0,0,.4)}
 .st-name:empty{display:none}
 .st-box.narr .st-text{font-style:italic;color:#d9d2e6;text-align:center}
+.st-box.mc .st-name{background:#cfd6e6;color:#1b1f2c}      /* the player's own lines */
+.st-svgbg,.st-svgbg svg{position:absolute;inset:0;width:100%;height:100%}
+.st-wx{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s}
+.st-wx.rain{opacity:1;background:linear-gradient(180deg,rgba(30,40,60,.35),rgba(20,26,40,.2)),repeating-linear-gradient(105deg,transparent 0 9px,rgba(200,220,255,.22) 9px 10px,transparent 10px 23px);background-size:100% 100%,240px 240px;animation:stRain .45s linear infinite}
+@keyframes stRain{to{background-position:0 0,-60px 240px}}
+.st-wx.snow{opacity:1;background:radial-gradient(circle,rgba(255,255,255,.9) 0 2px,transparent 2.5px) 0 0/90px 90px,radial-gradient(circle,rgba(255,255,255,.6) 0 1.5px,transparent 2px) 40px 30px/60px 60px,linear-gradient(180deg,rgba(200,220,255,.18),rgba(255,255,255,.08));animation:stSnow 6s linear infinite}
+@keyframes stSnow{to{background-position:30px 90px,10px 90px,0 0}}
+.st-wx.sun{opacity:1;background:radial-gradient(ellipse 70% 50% at 80% 0%,rgba(255,236,170,.35),transparent 70%)}
+.st-ball{position:fixed;left:0;top:0;z-index:7;font-size:clamp(30px,4vw,64px);line-height:1;pointer-events:none;margin:-.5em 0 0 -.5em;filter:drop-shadow(0 4px 3px rgba(0,0,0,.5))}
+.st-actor.topple-l .figure{transition:transform .5s cubic-bezier(.5,0,.8,.4) .1s,translate .5s ease-in .35s;transform-origin:50% 100%;transform:rotate(-90deg);translate:0 60vh}
+.st-actor.topple-r .figure{transition:transform .5s cubic-bezier(.5,0,.8,.4) .1s,translate .5s ease-in .35s;transform-origin:50% 100%;transform:rotate(90deg);translate:0 60vh}
+.st-actor.ascend{filter:none!important;animation:stAscend 3.2s ease-in forwards}
+@keyframes stAscend{0%{filter:brightness(1)}35%{filter:brightness(1.5) drop-shadow(0 0 30px #ffd54f)}45%{filter:brightness(2.6) drop-shadow(0 0 60px #fff3b0);opacity:1}100%{filter:brightness(4) blur(14px) drop-shadow(0 0 80px #ffd54f);opacity:0;scale:1.06}}
+.st-glow{position:fixed;z-index:3;width:2vh;height:2vh;margin:-1vh 0 0 -1vh;border-radius:50%;background:radial-gradient(circle,#fff,#ffe58a 40%,rgba(255,213,79,0) 70%);animation:stGlow 3.2s ease-in forwards;pointer-events:none}
+@keyframes stGlow{0%{transform:scale(.2);opacity:0}30%{transform:scale(6);opacity:1}45%{transform:scale(30);opacity:1}100%{transform:scale(70);opacity:0}}
+.st-mote{position:fixed;left:0;top:0;z-index:3;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff3b0;box-shadow:0 0 10px #ffd54f;pointer-events:none}
+.st-choices{position:absolute;z-index:6;left:50%;bottom:calc(3.5vh + 10.5em);transform:translateX(-50%);width:min(560px,80vw);display:none;flex-direction:column;gap:.45em}
+.st-choices.on{display:flex;animation:stChIn .25s ease-out}
+@keyframes stChIn{from{opacity:0;translate:0 10px}}
+.st-ch{all:unset;box-sizing:border-box;display:flex;gap:.8em;align-items:center;padding:.62em 1.1em;border-radius:8px;cursor:pointer;background:rgba(14,12,24,.92);border:1px solid rgba(224,168,46,.35);color:#f2eef8;font-size:1.02em;box-shadow:0 4px 14px rgba(0,0,0,.45);transition:background .12s,border-color .12s}
+.st-ch b{flex:none;width:1.5em;height:1.5em;display:grid;place-items:center;border-radius:50%;background:#e0a82e;color:#1b1424;font-size:.8em}
+.st-ch.hl,.st-ch:focus-visible{background:rgba(70,52,20,.95);border-color:#ffd54f}
+.st-ch.used{opacity:.45;cursor:default}.st-ch.used b{background:#77708a}
+#story.choosing .st-next{opacity:0!important}
 .st-next{position:absolute;right:1.1em;bottom:.6em;font-size:.8em;color:#e0a82e;opacity:0;animation:stNext 1s ease-in-out infinite}
 .st-box.done .st-next{opacity:1}
 @keyframes stNext{50%{translate:0 4px}}
@@ -8936,8 +8965,22 @@ async function fbPhases() {
     if (ph.spd) other.spd += ph.spd;
   }
 }
-async function fbSecondWind() {      // hidden: all 8 are down in the last phase, everyone rises at full HP, once
-  FB.usedRevive = true; log('<strong style="color:#ffd54f">✨ A last light rekindles… everyone rises!</strong>', 'log-heal');
+const FINALE_SAY = { call: "They're down! Fire the cannon now!", gabby: 'Wh-whoa!? What was that?!', top: "WH... WHAT'S HAPPENING?!" };      // the finale's speech bubbles
+async function fbFireCall() {          // (the battle menu comes back with the next fight: fbEnd / a new battle clear fn-on)          // the boss is beaten: the shopkeeper pops on and calls for the cannon
+  const bf = document.querySelector('#battle-scene .battlefield'); if (!bf) return;
+  setSpot([]); actor = null; document.body.classList.add('fn-on'); const dia = $('dia'); if (dia) dia.style.visibility = 'hidden';      // no battle menu under his line
+  const art = await findAsset(`${ANIM.base}/ui/shopkeeper`), shop = document.createElement('div'); shop.className = 'fb-shop';
+  shop.innerHTML = art && ['png', 'webp', 'jpg'].includes(art.ext) ? `<img src="${art.url}" draggable="false">` : `<div class="fb-shopph">🧔<small>SHOPKEEPER</small></div>`;
+  bf.appendChild(shop); sfx('swing'); await sleep(450);
+  fbBubble(shop, FINALE_SAY.call, 'shop'); await sleep(1700);
+  shop.classList.add('out'); await sleep(380); shop.remove();
+}
+function fnBubble(stage, x, y, text, ms = 2600) {      // a speech bubble on the finale's stage (x, y = the tip, px)
+  const d = document.createElement('div'); d.className = 'fb-bub shop fn-bub'; d.textContent = text; d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.animationDuration = ms + 'ms';
+  stage.appendChild(d); setTimeout(() => d.remove(), ms); return d;
+}
+async function fbSecondWind() {      // hidden: all 8 are down in the last phase, everyone rises at full HP, once (Hana gives the last of herself: the bad ending)
+  FB.usedRevive = true; if (STORY.second_wind) await storyRun(STORY.second_wind); log('<strong style="color:#ffd54f">✨ A last light rekindles… everyone rises!</strong>', 'log-heal');
   banner('✨ SECOND WIND', 'phase', 'one more try'); flash('#ffe9a0', .5, 900);
   FB.units.forEach(a => { a.forEach(u => { u.hp = u.maxHp; u.fell = false; u.vanish = false; u.gone = false; u.statuses = []; u.barrier = 0; u.downSeq = 0; }); a.sort((x, y) => x.rank - y.rank); });
   sfx('heal'); render(); await sleep(1100);
@@ -8945,7 +8988,7 @@ async function fbSecondWind() {      // hidden: all 8 are down in the last phase
 async function fbCheckEnd() {        // true = the fight is over; 'again' = second wind, start the round over
   if (over) return true;
   const B = FB.bosses[0];
-  if (!isAlive(B)) { await cannonFinale(); fbEnd(true); return true; }
+  if (!isAlive(B)) { await fbFireCall(); await cannonFinale(); fbEnd(true); return true; }
   if (!fbAll().some(isAlive)) {
     if (!FB.usedRevive && B.hp <= FINAL.secondWindAt * B.maxHp) { await fbSecondWind(); return 'again'; }
     fbEnd(false); return true;
@@ -9054,6 +9097,23 @@ async function cannonFinale() {
   const ct = ground - box.foot * ch;                                                       // the bottom of the dirt (the picture's lowest opaque row) on the shop's ground line
   Object.assign(can.style, { left: cl + 'px', top: ct + 'px', width: cw + 'px', height: ch + 'px' });
   can.style.visibility = 'hidden';
+  if (!fnSkipped) {        // inside the shop first: Gabby minding the front desk when the whole place starts to shake
+    const ins = document.createElement('div'); ins.className = 'fn-stage fn-inside'; black.after(ins);
+    const room = await findAsset(`${ANIM.base}/ui/shop_room`), desk = await findAsset(`${ANIM.base}/ui/shop_counter`), gab = await findAsset(`${ANIM.base}/ui/assistant`), ok = a => a && ['png', 'jpg', 'webp'].includes(a.ext);
+    if (ok(room)) ins.style.backgroundImage = `url("${room.url}")`;
+    ins.innerHTML = `<div class="fn-gabby">${ok(gab) ? `<img src="${gab.url}" alt="" draggable="false">` : '<div class="fb-shopph">🙍<small>ASSISTANT</small></div>'}</div>${ok(desk) ? `<img class="fn-desk" src="${desk.url}" alt="" draggable="false">` : ok(room) ? '' : '<div class="fn-desk fn-desk-drawn"></div>'}`;
+    if (ok(room)) {          // she stands where the shopkeeper usually does, behind the painted counter (SHOP_ART.keeper; hidden below its back edge)
+      const K = SHOP_ART.keeper, g0 = ins.querySelector('.fn-gabby');
+      Object.assign(g0.style, { left: K.x * 100 + '%', bottom: (1 - K.bottom) * 100 + '%', height: K.h * 100 + '%', clipPath: `inset(-20% -50% ${((K.bottom - K.cut) / K.h * 100).toFixed(1)}% -50%)` });
+    }
+    await fnA(black, [{ opacity: 1 }, { opacity: 0 }], 380).finished.catch(() => {});
+    await fnWait(700); sfx('nerve.slam'); fnShake(ins, 12, 900);
+    const g = ins.querySelector('.fn-gabby'), gr = g.getBoundingClientRect(), ir = ins.getBoundingClientRect();
+    fnBubble(ins, gr.left - ir.left + gr.width / 2, gr.top - ir.top + gr.height * .12, FINALE_SAY.gabby, 2200);
+    g.animate([{ translate: '0 0' }, { translate: '0 -3%' }, { translate: '0 0' }], { duration: 260, iterations: 3 });
+    await fnWait(1900);
+    await fnA(black, [{ opacity: 0 }, { opacity: 1 }], 320).finished.catch(() => {}); ins.remove();
+  }
   await fnA(black, [{ opacity: 1 }, { opacity: 0 }], 420).finished.catch(() => {});
   // 2. the ground shakes, the dirt erupts over the shop, the cannon bursts up out of it and lands in its crater
   const baseX = cl + anchor * cw, dust = (n, spread, rise, big, delay = 0) => { for (let i = 0; i < n; i++) { const d = document.createElement('div'); d.className = 'fn-dust'; const s0 = SH * (big ? .1 + Math.random() * .14 : .06 + Math.random() * .08); Object.assign(d.style, { left: (baseX + (Math.random() - .5) * cw * spread) + 'px', top: (ground - Math.random() * SH * .06) + 'px', width: s0 + 'px', height: s0 + 'px' }); fx.appendChild(d);
@@ -9071,7 +9131,9 @@ async function cannonFinale() {
     { transform: 'translateY(0) scale(.99,1.02)', clipPath: 'inset(-30% -30% -30% -30%)', offset: .9 },
     { transform: 'translateY(0) scale(1,1)', clipPath: 'inset(-30% -30% -30% -30%)', offset: 1 }], T.rise, 'cubic-bezier(.3,.7,.4,1)');
   setTimeout(() => { if (fnSkipped) return; sfx('nerve.slam'); fnShake(st, 16, 500); dust(14, 1.25, .1, true); rocks(10); }, T.rise * .78);       // it lands
-  await rise.finished.catch(() => {}); await fnWait(T.settle);
+  await rise.finished.catch(() => {});
+  if (!fnSkipped) { const r = can.getBoundingClientRect(), sr0 = st.getBoundingClientRect(); fnBubble(st, r.left - sr0.left + r.width * anchor, r.top - sr0.top + r.height * .08, FINALE_SAY.top, T.settle + T.charge * .8); }      // Gabby, still inside the shop up top
+  await fnWait(T.settle);
   // 3. charge: the sky dims, light streams into the barrel, an orb swells, rings close in
   const cr = can.getBoundingClientRect(), sr = st.getBoundingClientRect(), MX = cr.left - sr.left + mz.x * cr.width, MY = cr.top - sr.top + mz.y * cr.height;
   dim.style.setProperty('--mx', MX + 'px'); dim.style.setProperty('--my', MY + 'px'); fnA(dim, [{ opacity: 0 }, { opacity: 1 }], T.charge * .7, 'ease-in');
@@ -9146,7 +9208,7 @@ async function cannonFinale() {
   bodies.forEach(f => f.getAnimations().forEach(a => a.cancel()));
   bfx.remove(); document.removeEventListener('keydown', esc, true);
   await fnWait(260);
-  document.body.classList.remove('fn-on');
+  document.body.classList.remove('fn-on'); { const dia = document.getElementById('dia'); if (dia) dia.style.visibility = ''; }
   await fnA(white, [{ opacity: 1 }, { opacity: 0 }], T.white, 'ease-out').finished.catch(() => {});
   ov.remove();
 }
@@ -9615,7 +9677,7 @@ function showNotice() {                      // pending pop-ups (saved, so they 
     const good = n.id !== 'bad';
     box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = good ? '🌅' : '💀'; $('notice-btn').textContent = 'The end… for now';
     $('notice-title').textContent = good ? '🌅 THE GOOD ENDING' : '💀 THE BAD ENDING';
-    $('notice-text').textContent = good ? 'The two halves of the boss fall together, and the heroes never needed a second chance. (The ending scene is still to be written.)' : 'The boss falls, but it took a second wind to do it. Something was lost on the way. (The ending scene is still to be written.)';
+    $('notice-text').textContent = good ? 'The fallen pair are gone, and nobody had to pay for it.' : 'The fallen pair are gone. So is Hana.';
     $('notice-skills').textContent = good ? 'Earned without the hidden second wind.' : 'Beat it without the second wind to earn the good ending.';
     return;
   }
@@ -10073,6 +10135,8 @@ function beginQuest() {
   if (!pickedQuest || !questOpen(pickedQuest)) return;
   if (pickedQuest === 'final') { if (finalSlots.includes(null)) return; finalSave(); return startFinalReal([...finalSlots]); }
   if (!picked.length) return;
+  const pre = 'pre_' + pickedQuest, S = storySave();      // a recruit's quest: her scene plays the first time you set out
+  if (STORY[pre] && S && !S.seen[pre] && !questCleared(pickedQuest)) { S.seen[pre] = 1; writeSave(); storyRun(STORY[pre]).then(() => beginQuest()); return; }
   game.lastParty = [...picked]; writeSave();
   startQuest([...picked], pickedQuest);
 }
@@ -10478,8 +10542,12 @@ function onward() { if (quest && quest.map) return showMap(); reviveAtCamp(); sa
    Beat the boss: the quest counts as cleared at once. Head home with everything, or keep exploring with your gold and the boss's drop at risk.
    What fills the map comes from the quest itself: its fights (nearer = easier, in the quest's own order), its camps and events (+1 of each), maybe the Shopkeeper's Wagon, and a few empty roads.
    Knobs: QMAP (layout), TOD (day / night). The Final Stand has no map. */
-const QMAP = { empty: [2, 3], extraEvents: 1, extraCamps: 1, wagon: .5, links: .55, maxDeg: 4, bossFar: .6, hint: 3, step: 340,
-  act: { 1: { empty: [1, 1], extraEvents: 0, bossFar: .5, day: .65 } } };      // per-act overrides: Act 1 maps are smaller, the boss sits a little closer and the day runs longer
+const QMAP = { empty: [2, 3], extraEvents: 1, extraCamps: 1, wagon: .5, links: .55, maxDeg: 4, bossFar: .6, hint: 3, step: 340, arrow: false,
+  /* FLOW LAYOUT (main quests): the entrance on the left, the lair on the far right, and the places between set out in columns joined into a web
+     (each column links to the next with roads that never cross, plus some roads up and down a column). The boss can't be reached in fewer than
+     minSteps moves; it comes into view one move before that at the earliest. rungs: chance of a road between neighbours in the same column. */
+  minSteps: 6, rungs: .45, bossLinks: 2,
+  act: { 1: { empty: [1, 1], extraEvents: 0, bossFar: .5, day: .65, minSteps: 5 }, 2: { minSteps: 6 }, 3: { minSteps: 7 } } };      // per-act overrides: Act 1 maps are smaller, the boss a little closer and the day runs longer      // per-act overrides: Act 1 maps are smaller, the boss sits a little closer and the day runs longer
 const TOD = { day: .55, dusk: .25,               // moves of daylight / twilight, as fractions of the number of places (about 10 and 4 on an 18-place map)
   hp:   { day: 1, dusk: 1.12, night: 1.25 },     // enemy max HP by phase
   atk:  { day: 1, dusk: 1.1,  night: 1.2 },      // enemy damage by phase
@@ -10508,13 +10576,36 @@ function mapLayout(N, rng) {               // N places on a loose grid, joined b
   const dist = n.map(() => Infinity); dist[0] = 0; const qu = [0]; while (qu.length) { const a = qu.shift(); adj[a].forEach(b => { if (dist[b] > dist[a] + 1) { dist[b] = dist[a] + 1; qu.push(b); } }); }
   return { n, adj, dist };
 }
+function mapFlow(N, rng, minSteps) {        // main quests: start (place 0) on the left, boss (place N-1) on the right, a web of columns between
+  const M = N - 2, K = Math.max(1, Math.min(minSteps - 1, M));      // K columns between start and boss: the shortest way is K + 1 moves
+  const sizes = Array(K).fill(1); let left = M - K;
+  const w = sizes.map((_, k) => 1 + Math.sin(Math.PI * (k + .5) / K));      // fuller in the middle, narrower at both ends (a diamond, like a map that opens up then closes on the lair)
+  while (left > 0) { let best = -1, bv = -1; sizes.forEach((sz, k) => { if (sz >= 4) return; const v = w[k] / sz + rng() * .15; if (v > bv) { bv = v; best = k; } }); if (best < 0) break; sizes[best]++; left--; }
+  if (left > 0) sizes[Math.floor(K / 2)] += left;      // (only on a tiny K: pile the rest in the middle)
+  const n = [{ x: .06, y: .5 }], cols = [];
+  sizes.forEach((sz, k) => { const col = [], x0 = .06 + .88 * (k + 1) / (K + 1), span = Math.min(.8, .2 * sz + .1);
+    for (let r = 0; r < sz; r++) { const y = .5 - span / 2 + span * (sz === 1 ? .5 : r / (sz - 1)) + (rng() - .5) * .06, x = x0 + (rng() - .5) * .5 / (K + 1); col.push(n.length); n.push({ x: +x.toFixed(4), y: +Math.max(.1, Math.min(.9, y)).toFixed(4) }); }
+    cols.push(col); });
+  const boss = n.length; n.push({ x: .94, y: +(.5 + (rng() - .5) * .2).toFixed(4) });
+  n.forEach(x => Object.assign(x, { type: 'empty', seen: false, done: false }));
+  const adj = n.map(() => []), edges = [], link = (a, b) => { if (a === b || adj[a].includes(b)) return; adj[a].push(b); adj[b].push(a); edges.push([a, b]); };
+  const cross = (a, b) => edges.some(([c, d]) => { if (a === c || a === d || b === c || b === d) return false;
+    const o = (p, q, r) => Math.sign((n[q].x - n[p].x) * (n[r].y - n[p].y) - (n[q].y - n[p].y) * (n[r].x - n[p].x)); return o(a, b, c) !== o(a, b, d) && o(c, d, a) !== o(c, d, b); });
+  const ladder = (A, B) => { let i = 0, j = 0; link(A[0], B[0]);      // join two columns top to bottom like a staircase: everyone gets a road, none cross
+    while (i < A.length - 1 || j < B.length - 1) { if (j === B.length - 1 || (i < A.length - 1 && (i + 1) / A.length <= (j + 1) / B.length)) i++; else j++; link(A[i], B[j]); } };
+  cols[0].forEach(b => link(0, b));
+  for (let k = 0; k < K - 1; k++) ladder(cols[k], cols[k + 1]);
+  const last = cols[K - 1].slice().sort((a, b) => Math.abs(n[a].y - n[boss].y) - Math.abs(n[b].y - n[boss].y)).slice(0, QMAP.bossLinks);
+  last.forEach(a => link(a, boss));
+  cols.forEach(col => { for (let r = 0; r + 1 < col.length; r++) if (rng() < QMAP.rungs && adj[col[r]].length < QMAP.maxDeg && adj[col[r + 1]].length < QMAP.maxDeg && !cross(col[r], col[r + 1])) link(col[r], col[r + 1]); });      // roads up and down a column: the web
+  const dist = n.map(() => Infinity); dist[0] = 0; const qu = [0]; while (qu.length) { const a = qu.shift(); adj[a].forEach(b => { if (dist[b] > dist[a] + 1) { dist[b] = dist[a] + 1; qu.push(b); } }); }
+  return { n, adj, dist, boss };
+}
 function genMap(def, plan, rng = RAND.rng) {
   const act = questAct(def.id), Q = { ...QMAP, ...(QMAP.act[act] || {}) };
   const F = def.nodes.length - 1, C = (def.camps ?? 1) + Q.extraCamps, E = (def.events ?? 1) + Q.extraEvents, W = rng() < QMAP.wagon ? 1 : 0, S = rng() < SPRING.chance ? 1 : 0;
   const X = Q.empty[0] + Math.floor(rng() * (Q.empty[1] - Q.empty[0] + 1)), N = 2 + F + C + E + W + S + X;
-  const { n, adj, dist } = mapLayout(N, rng);
-  const maxD = Math.max(...dist), far = n.map((_, i) => i).filter(i => i && dist[i] >= Math.max(2, Math.ceil(maxD * Q.bossFar)));
-  const boss = far[Math.floor(rng() * far.length)] || N - 1;
+  const { n, adj, dist, boss } = mapFlow(N, rng, Q.minSteps);      // (the old scatter layout, mapLayout, is kept for reference)
   n[0].type = 'start'; n[0].seen = n[0].done = n[0].visited = true; n[boss].type = 'boss'; n[boss].fi = F;
   let free = n.map((_, i) => i).filter(i => i && i !== boss);
   const take = (k, ok) => { const c = free.filter(ok); const out = []; while (out.length < k && c.length) { const i = c.splice(Math.floor(rng() * c.length), 1)[0]; out.push(i); free = free.filter(x => x !== i); } return out; };
@@ -10897,7 +10988,7 @@ function renderMap(first) {
   const bd = m.hunt ? Infinity : !m.n[m.boss].seen && !m.bossDone ? bossDist(m) : Infinity, pull = pt.querySelector('.qm-pull');
   if (!m.hunt) { $('qboard').classList.remove('hunt'); const tl = box.querySelector('.qm-terrain'); if (tl) tl.remove(); const tr = box.querySelector('.qm-troll'); if (tr) tr.remove(); const nt = $('qm-note'); if (nt) nt.classList.remove('on'); }
   if (m.hunt) huntBoard(m, box, pull);
-  else if (bd <= QMAP.hint) { const a = Math.atan2((m.n[m.boss].y - m.n[here].y) * 9, (m.n[m.boss].x - m.n[here].x) * 16); pull.style.setProperty('--a', a + 'rad'); pull.className = 'qm-pull on d' + bd; } else pull.className = 'qm-pull';
+  else if (QMAP.arrow && bd <= QMAP.hint) { const a = Math.atan2((m.n[m.boss].y - m.n[here].y) * 9, (m.n[m.boss].x - m.n[here].x) * 16); pull.style.setProperty('--a', a + 'rad'); pull.className = 'qm-pull on d' + bd; } else pull.className = 'qm-pull';
   qmFog(m, first);
   qmHud(m, T, bd);
 }
@@ -12283,70 +12374,313 @@ function lockerSync() {
      ['', 'Text.']                           narration (no name, italic, centred)
      ['aria', 'Text.', { as: 'Someone?', fx: 'shake' | 'flash', enter: ['vesper', 'right'], exit: 'iris' }]   extras: a different name tag, an
                                              effect, someone walking on (side) or off before the line
+     ['mc', 'Text.']                         the player talks: name tag "You", nobody on stage lights up
+     ['hana', 'A question?', { choices: [ ['Where am I?', [ ...lines ]], ['Why me?', [ ...lines ]], ['Let\'s go.'] ], again: 'Anything else?' }]
+                                             a choice menu after the line. An option with lines plays them, then the menu comes back with it greyed
+                                             out; an option with no lines moves on. Pick with the mouse, 1–9, ↑↓ + Enter, or the pad (d-pad + A).
+     [..., { if: 'asked' | 'none' }]         only if the player asked something at the last menu / skipped every question
+     [..., { bg: 'town1' | 'town2' | 'town3' | '<picture in assets/ui>' | '' }]   change the backdrop (town1–3 = the town as it looks in each act)
+     [..., { wx: 'rain' | 'snow' | 'sun' | '' }]   weather over the backdrop      [..., { skin: 'swimsuit' | 'winter' | '' }]   everyone changes outfit
+     [..., { title: ['ACT II', 'The Tidelands'] }]  a title card mid-scene (an empty text line just shows the card)
+     [..., { ball: 'keeper' }]                a volleyball flies in and knocks that actor over      [..., { ascend: 'angel' }]  she glows gold and shatters away
+     ['', 'Text.', { as: 'Offscreen' }]      a voice with a name tag but nobody on stage
+   Scenes can also run mid-battle or before a quest: await storyRun(STORY.key).
    A line spoken by a hero the player hasn't recruited yet is skipped, so scenes never spoil who joins.
    Dev: Alt+Y plays the scenes one after another (whether seen or not). */
-const STORY_ORDER = ['act1_open', 'act1_end', 'act2_open', 'act2_end', 'act3_open', 'act3_end', 'ending'];
+const STORY_ORDER = ['act1_open', 'join_vesper', 'join_irae', 'join_tyr', 'join_jean', 'act1_end', 'act2_end', 'act3_end', 'ending'];      // town arrivals. pre_<quest> plays at embark, beach_rain at the beach, second_wind mid-battle
+const STORY_JOIN = { join_vesper: 'ruins', join_irae: 'yokai', join_tyr: 'crypt', join_jean: 'plague' };
 const STORY = {
   // PLACEHOLDER SCRIPTS: short stand-ins written to show each moment working. Replace the lines with the real story.
-  act1_open: { title: ['ACT I', 'The Old Lands'], cast: { left: ['seria', 'aria'], right: ['iris', 'aneesah'] }, lines: [
-    ['', 'The roads out of town have gone quiet. Sentinels stir in the ruins, lanterns walk on their own at night, and the old crypt has stopped staying shut.'],
-    ['seria', 'Briefing. Four reports, four directions, one company. Us.'],
-    ['aria', 'Four fights! Finally, something to do.'],
-    ['aneesah', 'Four fights we haven\'t priced yet. I\'d like to know what we\'re walking into before we walk into it.'],
-    ['iris', 'We take it one road at a time. I\'ll keep the kettle on for when you\'re back.'],
-    ['seria', 'Then it\'s settled. Gear up. We leave at first light.'] ] },
-  act1_end: { cast: { left: ['seria', 'aria'], right: ['vesper', 'tyr'] }, lines: [
-    ['', 'The ruins are still. The parade has passed. The crypt is sealed, and the village can breathe again.'],
-    ['tyr', 'Ha! Four for four! Who\'s cooking?'],
-    ['vesper', '...Something followed the dead out of that crypt. It went west. Toward the sea.'],
-    ['aria', 'Then we follow it. Right?'],
-    ['seria', 'We rest first. Then we follow it.'] ] },
-  act2_open: { title: ['ACT II', 'The Tidelands'], cast: { left: ['aneesah', 'jean'], right: ['irae'] }, lines: [
-    ['', 'Storms roll in off the coast and do not roll out again. The lighthouse has gone dark, and ships stopped coming weeks ago.'],
-    ['jean', 'Damp air, cold nights, frightened sailors. Wonderful for research. Terrible for everyone else.'],
-    ['aneesah', 'A dark lighthouse, a cove nobody returns from, and a beach that\'s apparently too sunny. The odds are getting strange.'],
-    ['irae', 'Strange is fine. Strange bleeds like anything else.'] ] },
-  act2_end: { cast: { left: ['seria', 'iris'], right: ['siren'] }, lines: [
-    ['', 'The lighthouse burns again. The cove is calm. Out past the shallows, the tide has started singing a different song.'],
-    ['siren', 'Don\'t look so worried. The sea likes you now. Mostly.'],
-    ['iris', 'The snow on the far peaks came early this year. Far too early.'],
-    ['seria', 'Then that\'s where we\'re going next. Pack the warm gear.'] ] },
-  act3_open: { title: ['ACT III', 'The Frostbound Peaks'], cast: { left: ['aria', 'vesper'], right: ['tyr', 'irae'] }, lines: [
-    ['', 'Beyond the pass, winter does not end. Someone sits on a throne of ice and has decided it never should.'],
-    ['aria', 'It\'s so cold my sword is complaining.'],
-    ['tyr', 'Cold is just hungry weather. We\'ll warm up fighting!'],
-    ['vesper', 'Stay close in the blizzard. If you lose sight of the torches, you lose the path.'] ] },
-  act3_end: { cast: { left: ['seria', 'aneesah'], right: ['frigid'] }, lines: [
-    ['', 'The Ice Queen has fallen, and her court has thawed into silence. But the sky above the last peak has not cleared.'],
-    ['frigid', 'She was not the one keeping the winter here. She was guarding against something.'],
-    ['aneesah', 'Something with worse odds than her, then.'],
-    ['seria', 'Everyone rests tonight. Tomorrow, the Final Stand.', { fx: 'shake' }] ] },
-  ending_good: { title: ['THE END', 'Dawn over the town'], cast: { left: ['seria', 'aria', 'iris'], right: ['vesper', 'tyr'] }, lines: [
-    ['', 'The thing beyond the last peak is gone. For the first time in a long while, the sun comes up over a quiet town.', { fx: 'flash' }],
-    ['aria', 'We did it. We actually did it!'],
-    ['iris', 'And everyone came home.'],
-    ['seria', 'Good work, all of you. Briefing tomorrow. Late tomorrow.'] ] },
-  ending_bad: { title: ['THE END', 'A cold victory'], cast: { left: ['seria', 'iris'], right: ['vesper'] }, lines: [
-    ['', 'The thing beyond the last peak is gone. The town is safe. But it cost more than it should have.'],
-    ['iris', 'We won. It doesn\'t feel like it.'],
-    ['vesper', 'Next time, we finish it on our feet.'],
-    ['seria', 'Then there will be a next time. Rest. We go again.'] ] }
+  // THE OPENING (Connor's script, from the Lore Bible): you wake in the guild town and meet Hana. Optional questions, or straight in.
+  act1_open: { title: ['ACT I', 'The Old Lands'], bg: 'dorm_interior', cast: { right: ['angel'] }, lines: [
+    ['', 'A small room in the guild town, early morning. You wake on a cot. Someone is leaning over you.'],
+    ['hana', "Oh good, you're awake."],
+    ['hana', "Hi! I'm Hanathiel. Hana's fine. I'm your guiding angel."],
+    ['mc', 'Guardian angel? Did I die?'],
+    ['hana', "Guiding, not guardian! And no, you didn't die. I'm sure you have lots of questions though?", { again: 'Anything else?', choices: [
+      ['Where am I?', [
+        ['hana', 'Eral. Different world, similar sky, plus two archangels fighting in it. Elves, dwarves, things with too many teeth. I think people from your world are familiar with such places, right?'],
+        ['hana', "I pulled you here across time and space, but don't worry: when you go home, it'll be like you never left."],
+        ['hana', "Right now you're in a guild town in Postrovnia. Shop, dorm, spa. Basically a resort, with more swords."] ]],
+      ['Why me?', [
+        ['hana', "Honestly? Your world spends a frightening amount of time on games and spreadsheets. Inventory, gold, who equips what. You've been training for this your whole life."],
+        ['hana', "You don't have to fight. You just have to keep a team of very strong, very stubborn adventurers fed, equipped and alive. ...Okay?"],
+        ['mc', 'So do I get any cool powers or special skills?'],
+        ['hana', 'Uh, no? Think of yourself as my logistics specialist!'],
+        ['mc', 'Oh... ok.'] ]],
+      ["What's the war about?", [
+        ['hana', "Look up in the sky. The huge guy is the archangel Michael, and at night you'll see Lucifer on the other side. They're locked in a duel that could decide the fate of the universe and all mortal life."],
+        ['hana', 'The fallen think the universe is cruel and they could fix it. Forever. No pain, no choices, no more suffering, and no more free will along with it.'],
+        ['hana', "We think a world where nobody chooses anything isn't worth saving. This one's messy and it hurts. It's also yours to inherit."] ]],
+      ['Why am I here?', [
+        ['hana', 'Two fallen angels have moved into the Crasthie peaks up north. Low level, but they need to be dealt with.'],
+        ['mc', "So we're not taking on Lucifer himself?"],
+        ['hana', 'What!? How? Look up in the sky and tell me how exactly you plan to deal with the pinnacle of the choir of angels, hellbent on curving the universe to his will?'],
+        ['mc', "He doesn't even look like he's moving."],
+        ['hana', "Because he's so large the motion looks slow to us, but I assure you both he and Michael are moving at near the speed of light, and would vaporize this entire rock, you, me and everyone else if we even thought of posing a threat to them."],
+        ['mc', "So... it's on the to-do list for later then?"],
+        ['hana', "Heh... sure. When all's said and done we can go kill Lucifer, but first, Main Character, we need to focus."] ]],
+      ['What happened to your skin?', [
+        ['hana', "Oh, the cracks? Pulling a whole person across worlds takes it out of you. I'm fine. My angelic facade may start to waver if I exert much more of my strength though. I'm pretty close to my limit."],
+        ['mc', "You used up all your power just pulling me here? You don't seem very powerful."],
+        ['hana', "I never said I was. However, I'd like to see you try and pull off something like that! And I have plenty of strength left for our final fight with the fallen pair, don't worry!"] ]],
+      ["What's that hole in your chest?", [
+        ['hana', "Urk!... Don't you know it's rude to just ask a girl about her holes?", { fx: 'shake' }],
+        ['mc', "Hey, wait, don't make it sound so weird!"],
+        ['hana', "If you must know, it's a small singularity centred on my shard of divinity. Don't even think of trying to sneak a peek. It's trapped in there because even a glimpse of divine light would melt a mortal's face."],
+        ['hana', "So be careful what you say to me, or else I'll give you a peek at my chest."],
+        ['hana', '...Wait, not like that! That came out wrong!'] ]],
+      ["No questions. Let's go."] ] }],
+    ['hana', "None? Not one? Wow. Okay. I love that. Straight to business.", { if: 'none' }],
+    ['hana', "Great. Then let's get to work.", { if: 'asked' }],
+    ['hana', "Here's the team so far. I've managed to recruit a group I think you'll be familiar with. The conventional roles of tank, DPS, support, sub-DPS? My research shows that's a common party setup in your practice scenarios, the things you call RPGs?"],
+    ['hana', "Seria's our tank, Iris our DPS, Aria is our support, and Aneesah is... the best I could get."],
+    ['mc', "You've only got four?"],
+    ['hana', "I've got four more lined up, but each wants a favour first. A thief, a shrine keeper, a vampire and a plague doctor, and every one has something at home they won't leave unfinished. It's hard to convince people to just drop everything and go up a mountain to fight a rogue angel! You're free to try and recruit people."],
+    ['hana', "Oh, and you're in charge of the money. All of it. I've been living in divine comfort too long to know what to do with it anymore."],
+    ['hana', "Alright, let's get started. I'll always be in town if you have any questions or need help! I'm your guiding angel, after all."] ] },
+  // ---- THE RECRUITS (Lore Bible "Draft scenes"). pre_<quest> plays the first time you embark on it; join_<hero> back in town once she's joined.
+  // A line from a hero who hasn't joined yet is skipped, so the Act 1 meetings (Irae and Tyr...) land in whichever joining scene comes second.
+  pre_ruins: { bg: 'town1', cast: { left: ['seria'], right: ['angel'] }, lines: [
+    ['', 'The town gate at dusk. A woman steps out of a shadow nobody noticed was there.', { enter: ['vesper', 'right'] }],
+    ['hana', 'Everyone, this is Vesper. Vesper, this is everyone.'],
+    ['vesper', 'Please stop looking at me all at once.'],
+    ['hana', "Vesper's agreed to come north with us. On one condition."],
+    ['vesper', "The Sentinel Ruins. My old crew went in after the Warden's vault. I was the lookout. I'm the only one who came out."],
+    ['vesper', "Their tools and their take are still in that throne room. I don't leave a job unfinished. Not this one."],
+    ['seria', 'And you need us because...?'],
+    ['vesper', "Because you're loud. The sentinels will be busy looking at you. I'll be busy not being looked at."],
+    ['seria', "...That's fair."],
+    ['mc', "So we're the distraction?"],
+    ['vesper', "You're the very well-armed distraction. It's a compliment."] ] },
+  join_vesper: { cast: { left: ['aria', 'aneesah'], right: ['vesper', 'angel'] }, lines: [
+    ['vesper', 'They were still there...'],
+    ['aria', "I'm so sorry about your crew. Truly."],
+    ['vesper', '...Thanks.'],
+    ['hana', "A deal's a deal. Welcome to the guild, Vesper."],
+    ['vesper', "Fine. I'm in. But I'm not doing a speech, and nobody's allowed to make a fuss."],
+    ['aneesah', 'WELCOME, VESPER!', { fx: 'shake' }],
+    ['vesper', "I'm going to steal everything she owns."] ] },
+  pre_yokai: { bg: 'town1', cast: { left: ['aria', 'iris'], right: ['irae', 'angel'] }, lines: [
+    ['', 'The town square. Irae stands very straight, hands folded. She bows.'],
+    ['irae', 'I am Irae, keeper of the shrine road. Thank you for receiving me. I apologise for the hour.'],
+    ['hana', "It's noon."],
+    ['irae', 'I apologise for the noon.'],
+    ['aria', 'Oh, please, the honour is ours!'],
+    ['irae', 'No, the honour is mine.'],
+    ['aria', 'No, really, the honour is—'],
+    ['hana', "We're all honoured, anyway. Irae's family keep the road the Night Parade walks every year. They see it pass in peace."],
+    ['irae', 'Not this year. With Lucifer high in the night sky, the parade has turned wild, and the Oni Lord Shuten has taken the old hall at the end of the road.'],
+    ['irae', 'A keeper does not leave her post while her road is in chaos. My ancestors would never forgive me.'],
+    ['irae', 'Walk the parade with me. Put Shuten down, and my duty is done. Then I will follow your angel anywhere.'],
+    ['mc', 'Anywhere is a lot of places.'],
+    ['irae', 'I am aware. I have packed accordingly.'] ] },
+  join_irae: { cast: { left: ['aria', 'iris'], right: ['irae', 'angel'] }, lines: [
+    ['irae', 'The lanterns are lit again. The road can rest. Thank you, all of you.'],
+    ['hana', 'Welcome to the guild, Irae.'],
+    ['irae', 'I will serve it with honour.'],
+    ['aria', "It's our honour."],
+    ['iris', 'Oh, not again...'],
+    ['tyr', 'Well, well. Look at you, all buttoned up.', { enter: ['tyr', 'left'] }],
+    ['irae', '...Who is this shameless woman?', { need: 'tyr' }],
+    ['tyr', "Your new favourite person, sweetheart."],
+    ['irae', 'Ancestors, give me strength.', { need: 'tyr' }] ] },
+  pre_crypt: { bg: 'town1', cast: { left: ['aria', 'iris', 'seria'], right: ['angel'] }, lines: [
+    ['', 'Night, outside the catacombs. The crypt door swings open from the inside.', { enter: ['tyr', 'right'] }],
+    ['tyr', "Finally. Visitors who aren't made of bones. Hello, darlings."],
+    ['aria', 'G-good evening, madam.'],
+    ['tyr', 'Madam! I like this one. Can I keep her?'],
+    ['hana', 'No. Tyr, we talked about this.'],
+    ['tyr', "We talked about the angels. Big fight, good cause, very dramatic. I'm in. But first, my house guest."],
+    ['tyr', "I'd been asleep down there for decades. Lovely, quiet. Then some necromancer moves in, raises the neighbours, fills my halls with his little bone servants..."],
+    ['tyr', '...and then he tried to bind me. As a servant. Me.'],
+    ['iris', 'What happened?'],
+    ['tyr', "I woke up in a very bad mood. Now he's hiding in the deep vault, and I'd like him thrown out. Preferably in pieces."],
+    ['seria', "Why haven't you done it yourself?"],
+    ['tyr', "Because it's more fun with an audience. And because there are rather a lot of skeletons. Bring fire. The dead hate fire."],
+    ['mc', 'Why do you even care which side wins the war?'],
+    ['tyr', "The fallen want a perfect, orderly world. Do I look perfect and orderly to you? There'd be no room for me in it. I like my world messy."] ] },
+  join_tyr: { cast: { left: ['seria'], right: ['tyr', 'angel'] }, lines: [
+    ['tyr', 'Ha! Did you see his face? Well, his skull. Same thing at the end.'],
+    ['irae', 'You. You are the vampire.', { enter: ['irae', 'left'] }],
+    ['tyr', "And you're the one dressed for a funeral. Ooh, we're going to be such good friends.", { need: 'irae' }],
+    ['irae', 'We are not.', { need: 'tyr' }],
+    ['hana', "Welcome to the guild, Tyr. Please don't bite anyone."],
+    ['tyr', 'No promises, angel. I packed light: one coffin, one bottle, one very good outfit.'],
+    ['vesper', "The coffin's going on the wagon, isn't it?"],
+    ['seria', 'Absolutely not.'] ] },
+  pre_plague: { bg: 'town1', cast: { left: ['aria', 'aneesah'], right: ['angel'] }, lines: [
+    ['', 'The quarantine gate: a high wall of planks and warning signs. A figure in a beaked mask waits on the other side of a gap in the boards.', { enter: ['jean', 'right'] }],
+    ['jean', 'Do not come closer than that. Unless you want to. Then it is research.'],
+    ['hana', "Jean, it's us."],
+    ['jean', 'Ah, the angel and her collection. Bonjour. You have come about the mountains.'],
+    ['jean', 'My answer has not changed. I do not leave my patients. Not for an angel, not for a holy war.'],
+    ['aria', 'Then... is there anything we can do to help them?'],
+    ['jean', 'Oui. That is the right question. The plague does not come from the people. It comes from below.'],
+    ['jean', 'Something enormous breeds in the sewers under the granary. A Rat King. It spreads the sickness faster than I can cure it, and I cannot kill it alone.'],
+    ['jean', 'Come inside. Clear the market, the sick ward, the sewers. Kill the Rat King. Then my cure can take hold, and I will come with you, mask and all.'],
+    ['aneesah', 'Is it safe in there?'],
+    ['jean', 'Non. But I have a tonic for that.'] ] },
+  join_jean: { cast: { left: ['seria', 'iris'], right: ['jean', 'angel'] }, lines: [
+    ['jean', 'The fevers are breaking. The children are eating again. Merci. All of you.'],
+    ['seria', "Glad we could help. You're sure they'll be all right without you?"],
+    ['jean', 'I have left instructions, medicine for a month, and a very frightening note about hand washing.'],
+    ['iris', 'So... are you ever going to take the mask off?'],
+    ['jean', 'Non.'],
+    ['iris', 'Not even to eat?'],
+    ['jean', 'You will never see me eat. Or sleep. It is better this way.'],
+    ['tyr', 'A woman of mystery. I approve.', { enter: ['tyr', 'left'] }],
+    ['jean', 'And you are a woman of... iron deficiency? Come and see me later. I want a sample.', { need: 'tyr' }],
+    ['hana', 'Welcome to the guild, Jean.'],
+    ['jean', 'Merci, angel. Now, who would like to volunteer for my newest potion? It is perfectly safe.'],
+    ['jean', '...Ish.'] ] },
+  // ---- END OF ACT 1: the trek to the Tidelands (the town is already there)
+  act1_end: { bg: 'town1', wx: 'sun', cast: { left: ['seria', 'aneesah'], right: ['angel', 'keeper'] }, lines: [
+    ['', 'The sunny town, morning. Everyone is packed.'],
+    ['hana', "Four quests, four new friends. I'm proud of you. All of you."],
+    ['hana', 'Now the real road starts. North to the Crasthie peaks, and the only way there is along the coast. The Tidelands.'],
+    ['seria', 'How far?'],
+    ['hana', "A few days on foot. It's lovely this time of year, I'm told."],
+    ['murray', 'Off on your trip, then? Have a good one!'],
+    ['gabby', 'Bye.'],
+    ['', 'The road north. Sun turns to cloud, and cloud to pouring rain. The party trudges along a muddy coast road.', { bg: 'road_coast', wx: 'rain', exit: ['keeper', 'assistant'] }],
+    ['aneesah', 'Lovely this time of year!'],
+    ['hana', 'I said I was told.'],
+    ['aria', "My boots are full of water. I'm sorry. I know complaining is rude. But they are full."],
+    ['seria', 'Rust. I can feel it. Every joint in this plate is rusting as we speak.'],
+    ['tyr', "I love it. No sun for days. Best holiday I've had in a century.", { exit: 'aria' }],
+    ['vesper', "Rain's good. Nobody looks up when it's raining.", { exit: 'seria' }],
+    ['iris', 'If this storm wants a fight, it can have one.', { exit: 'tyr' }],
+    ['mc', "You can't punch weather."],
+    ['iris', 'Watch me.'],
+    ['', 'The rain-soaked coastal town comes into view.', { bg: 'town2', exit: ['iris', 'vesper', 'aneesah'], enter: ['keeper', 'right'] }],
+    ['murray', 'Oh, there you are. You lot took your time.', { enter: ['seria', 'left'] }],
+    ['seria', '...How are you here?'],
+    ['murray', 'Hm? Where else would I be?'],
+    ['aria', 'We walked for three days. We left you behind. I watched you wave.', { enter: ['aria', 'left'] }],
+    ['murray', 'First three rules of real estate: location, location, location!'],
+    ['aria', 'Yeah, but—?'],
+    ['gabby', "It's raining. It's going to rain all week. Nobody's going to come in. I can slack off!", { enter: ['assistant', 'right'] }],
+    ['', '', { title: ['ACT II', 'The Tidelands'] }] ] },
+  // ---- ACT 2: the first visit to the beach, in the rain (plays from the beach screen)
+  beach_rain: { bg: 'beach', wx: 'rain', cast: { left: ['angel', 'aneesah'], right: ['keeper', 'assistant'] }, lines: [
+    ['hana', 'Well! You two look excited for the beach.'],
+    ['murray', "I was. Packed the good towel and everything. The rain's dampened it somewhat."],
+    ['gabby', 'I like it. Keeps everyone else away.'],
+    ['murray', "That's not a good thing for a shop, kid."],
+    ['gabby', "It's a good thing for me."],
+    ['', 'Heads up!', { as: 'Offscreen', ball: 'keeper' }],
+    ['hana', "Oh! Is he okay? ...Well, it looks like the volleyball court's open. Go check it out, while we check Mr. Shopkeeper for a concussion."] ] },
+  // ---- END OF ACT 2: one last sunny beach day, then up the mountain (the town is already there)
+  act2_end: { bg: 'beach', wx: 'rain', cast: { left: ['aria', 'aneesah'], right: ['angel'] }, lines: [
+    ['', 'The rain stops. The clouds break, and the beach lights up in sunshine for the first time.', { bg: 'beach_act3', wx: 'sun' }],
+    ['aria', 'Is that... the sun?'],
+    ['aneesah', 'The storms are gone. We actually did it.'],
+    ['hana', 'You did. The coast is safe, and the peaks are right there.'],
+    ['hana', 'We leave in the morning.'],
+    ['iris', 'Then today, we go to the beach.', { enter: ['iris', 'left'] }],
+    ['hana', "...That's not what I..."],
+    ['seria', "One day. We've earned one day.", { enter: ['seria', 'right'] }],
+    ['hana', 'One day.'],
+    ['', 'The sunny beach. Everyone in swimsuits. Gabby sits in the shade with a book, looking betrayed.', { skin: 'swimsuit', exit: ['aria', 'aneesah', 'seria'], enter: ['assistant', 'right'] }],
+    ['gabby', 'It stopped raining. Why would it stop raining.'],
+    ['murray', "Cheer up, kid. Sun's good for you.", { enter: ['keeper', 'right'] }],
+    ['gabby', 'The sun is a giant ball of fire trying to kill me.'],
+    ['tyr', 'I agree.', { enter: ['tyr', 'left'] }],
+    ['vesper', 'I guess this is nice.', { exit: 'iris' }],
+    ['irae', 'This garment is... exceptionally mobile.', { exit: 'tyr' }],
+    ['mc', 'Is this really the time for a beach day?'],
+    ['hana', 'Tomorrow we march into the snow to fight two fallen angels. Today, I think it\'s exactly the time.'],
+    ['', 'Morning. Winter gear on. The party climbs a snowy mountain path into a blizzard.', { bg: 'road_mountain', wx: 'snow', skin: 'winter', exit: ['keeper', 'assistant', 'vesper', 'irae', 'angel'] }],
+    ['seria', "Can't feel my toes."],
+    ['aria', 'I grew up here. You stop feeling your toes after the first week. Then they come back. Mostly.'],
+    ['aneesah', '"Mostly" is doing a lot of work in that sentence.'],
+    ['', 'The snowy mountain town appears through the storm. The shop is lit.', { bg: 'town3', exit: ['aneesah'], enter: ['assistant', 'right'] }],
+    ['gabby', "Oh. You're here."],
+    ['seria', 'We climbed for two days.'],
+    ['gabby', "We got here yesterday. There's soup."],
+    ['', "Is that them? Tell them they're tracking snow in!", { as: 'The Shopkeeper (inside)' }],
+    ['aria', "I'm not even going to ask anymore."],
+    ['', '', { title: ['ACT III', 'The Frostbound Peaks'] }] ] },
+  // ---- END OF ACT 3: the night before the Final Stand. Murray volunteers; his old name comes out.
+  act3_end: { bg: 'town3', wx: 'snow', skin: 'winter', cast: { left: ['seria', 'aria', 'iris'], right: ['angel'] }, lines: [
+    ['', 'The snowy town at night. Lucifer burns red in the sky. The whole guild gathers around a fire in the square.'],
+    ['hana', "The Ice Queen was theirs. The last wall between us and the summit. They know we're coming now."],
+    ['hana', "The Reaper and the Seraph. Low level, by heaven's standards. Up here, they're the strongest things you'll ever face."],
+    ['hana', 'This fight needs everyone. All eight of you!'],
+    ['seria', 'Then we go together. Like we always do.'],
+    ['aria', "I'm frightened... But I'm coming."],
+    ['iris', 'Good. Being scared means you\'re paying attention.'],
+    ['mc', 'And you, Hana? You said you were saving your strength for this.'],
+    ['hana', "I am. Don't worry about me. Just do your part and make sure everyone is prepared. It's going to be all hands for this fight."],
+    ['', "Footsteps in the snow. The shopkeeper walks up in a battered old adventurer's coat nobody has seen before, a bandolier of potions across his chest.", { exit: ['aria'], enter: ['keeper', 'right'] }],
+    ['gabby', '...Boss? What are you wearing?', { enter: ['assistant', 'right'] }],
+    ['murray', 'Old coat. Still fits. Mostly.'],
+    ['murray', "I'm coming with you lot tomorrow. Somebody's got to keep you standing, and I'm not trusting it to the doctor's potions."],
+    ['jean', 'Rude.', { exit: 'iris' }],
+    ['seria', 'No offence, but you sell rope.'],
+    ['murray', "I didn't always."],
+    ['hana', "He's being modest. Everyone should know who's volunteering. Before he was a shopkeeper, he was Astortarius."],
+    ['', 'Silence.'],
+    ['gabby', '...No.'],
+    ['gabby', "No way. You're THE Astortarius? Slayer of the Demon King? He's in my textbooks. He's in three of my textbooks!", { fx: 'shake' }],
+    ['gabby', 'I failed my practical on your Demon King campaign!'],
+    ['murray', 'You should have asked me for help.', { as: 'Murray' }],
+    ['tyr', 'I knew I recognised that tail.', { exit: 'jean' }],
+    ['iris', 'I want to fight you after this.', { exit: 'seria' }],
+    ['murray', 'After this, kid, you can buy me a drink. Get some sleep. Big day tomorrow.', { as: 'Murray' }] ] },
+  // ---- THE SECOND WIND: plays mid-battle, just before everyone rises (fbSecondWind). Hana spends the last of herself.
+  second_wind: { cast: { right: ['angel'] }, lines: [
+    ['hana', "I led you here, and I won't let you fall now."],
+    ['', 'A brilliant golden glow pours from her chest...', { ascend: 'angel' }],
+    ['', '...and she is gone.'] ] },
+  // ---- THE ENDINGS (after the shopcannon finale). Picture: assets/ui/ending_good / ending_bad when they exist.
+  ending_good: { bg: 'ending_good', skin: 'winter', cast: { left: ['seria', 'aneesah', 'aria'], right: ['angel', 'keeper', 'assistant'] }, lines: [
+    ['hana', "It's done. The peaks are free. Nobody up here will ever know how close they came to losing their freedom."],
+    ['seria', "That's how it should be."],
+    ['aneesah', 'We fought two angels and won. I want that on a plaque. A big one.'],
+    ['murray', "I'll make you one. If you pay me.", { as: 'Murray' }],
+    ['gabby', 'How much?'],
+    ['murray', "We'll talk shop later.", { as: 'Murray' }],
+    ['mc', 'So what happens to me now?'],
+    ['hana', "Whenever you're ready, I'll send you home, and it'll be like you never left. Promise."],
+    ['hana', "But there's no rush. Stay a while. You've earned a few nights off the books."],
+    ['hana', 'Thank you. For believing in a world worth keeping messy.'],
+    ['', '', { title: ['THE END', 'A world worth keeping messy'] }] ] },
+  ending_bad: { bg: 'ending_bad', skin: 'winter', cast: { left: ['aria', 'seria', 'iris'], right: ['assistant', 'keeper'] }, lines: [
+    ['', "The celebration is quiet. Hana's place in the middle is empty. In the snow, a small scorch mark shaped like a pair of wings."],
+    ['aria', "She knew. She knew from the start, didn't she?"],
+    ['seria', 'She was saving it. All along. For us.'],
+    ['gabby', 'She never said a word.'],
+    ['murray', 'The good ones never do, kid.', { as: 'Murray' }],
+    ['mc', 'She promised she had plenty of strength left.'],
+    ['iris', 'She lied...'],
+    ['', 'A single warm light drifts down from the sky and settles on the snow, then fades.'],
+    ['', 'Without Hana to hold you here, Eral slowly fades, and you begin the long drift home.'],
+    ['', '', { title: ['THE END', 'A cold victory'] }] ] }
 };
 // the town's own people can speak in scenes too (id: name tag, picture, stand-in); rename them here
 const STORY_NPC = {
-  angel:     { name: 'The Guiding Angel', art: 'guidingangel/guide', tag: 'ANGEL', float: true },
+  angel:     { name: 'Hana', art: 'guidingangel/guide', tag: 'ANGEL', float: true },      // Hanathiel, the guiding angel (write her lines as 'hana' or 'angel')
   keeper:    { name: 'The Shopkeeper', art: 'ui/shopkeeper', tag: 'SHOPKEEPER' },
-  assistant: { name: 'The Assistant', art: 'ui/assistant', tag: 'ASSISTANT' }
+  assistant: { name: 'Gabby', art: 'ui/assistant', tag: 'ASSISTANT' }
 };
-const storyName = id => STORY_NPC[id] ? STORY_NPC[id].name : ((heroById(id) || ENEMIES.find(x => x.id === id) || {}).name || id);
+const STORY_ALIAS = { hana: 'angel', murray: 'keeper', shopkeeper: 'keeper', gabby: 'assistant' };
+const storyName = id => id === 'mc' ? 'You' : STORY_NPC[id] ? STORY_NPC[id].name : ((heroById(id) || ENEMIES.find(x => x.id === id) || {}).name || id);
 const storyQuestsDone = g => g.requires.every(id => questCleared(id) || (id === 'plague' && game && game.preJean));
-const STORY_WHEN = { act1_open: () => true, act1_end: () => storyQuestsDone(QUEST_GROUPS[1]), act2_open: () => storyQuestsDone(QUEST_GROUPS[1]),
+const STORY_WHEN = { ...Object.fromEntries(Object.entries(STORY_JOIN).map(([k, q]) => [k, () => questCleared(q)])), act1_open: () => true, act1_end: () => storyQuestsDone(QUEST_GROUPS[1]), act2_open: () => storyQuestsDone(QUEST_GROUPS[1]),
   act2_end: () => storyQuestsDone(QUEST_GROUPS[2]), act3_open: () => storyQuestsDone(QUEST_GROUPS[2]), act3_end: () => questCleared('castle'), ending: () => questCleared('final') };
 const storyKey = k => k === 'ending' ? ((game.final && game.final.last) === 'bad' ? 'ending_bad' : 'ending_good') : k;
 function storySave() {                  // story progress lives in the save; saves from before story scenes count what they've already passed as seen
   if (!game) return null;
   if (!game.story) { const fresh = !game.cleared || !Object.keys(game.cleared).length; game.story = { seen: {} }; if (!fresh) STORY_ORDER.forEach(k => { if (STORY_WHEN[k]()) game.story.seen[k] = 1; }); }
-  return game.story;
+  const S = game.story;
+  if (!S.v2) {          // saves from before the recruit / beach scenes: don't replay what they've already passed
+    S.v2 = 1;
+    Object.entries(STORY_JOIN).forEach(([k, q]) => { if (questCleared(q)) S.seen[k] = S.seen['pre_' + q] = 1; });
+    if (typeof frostOpen === 'function' && frostOpen()) S.seen.beach_rain = 1;
+  }
+  return S;
 }
 const ST = { on: false, scene: null, i: 0, typing: false, full: '', t: 0, done: null, queue: [], cast: {} };
 const storyOn = () => ST.on;
@@ -12368,18 +12702,81 @@ function storyEl() {
     <div class="st-box"><div class="st-name"></div><div class="st-text"></div><div class="st-next">▼</div></div>
     <div class="st-hint"><span class="st-keys"></span><button class="st-skip">Skip ▸▸</button></div>`;
   document.body.appendChild(el);
-  el.addEventListener('click', e => { if (e.target.closest('.st-skip')) { storySkip(); return; } storyAdvance(); });
+  el.addEventListener('click', e => { if (e.target.closest('.st-skip')) { storySkip(); return; } if (e.target.closest('.st-choices')) return; if (ST.choices && !ST.typing) return; storyAdvance(); });
   return el;
+}
+/* backdrops, weather and outfits that can change mid-scene */
+const STORY_TOWN = { town1: ['town', 'day'], town2: ['town_act2', 'coast'], town3: ['town_act3', 'frost'] };
+const STORY_DRAWN = {        // travel backdrops drawn in code until there's art (assets/ui/road_coast, road_mountain win when they exist)
+  road_coast: `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="srS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4250"/><stop offset="1" stop-color="#6b7480"/></linearGradient><linearGradient id="srR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3e34"/><stop offset="1" stop-color="#2e261f"/></linearGradient></defs>
+    <rect width="1600" height="900" fill="url(#srS)"/><path d="M0 420 L1600 400 L1600 520 L0 540Z" fill="#46566a"/><path d="M0 470 C300 455 600 480 900 462 C1200 446 1400 470 1600 458 L1600 520 L0 540Z" fill="#59697c" opacity=".7"/>
+    <path d="M0 520 C400 500 900 505 1600 488 L1600 900 L0 900Z" fill="#3e4a36"/><path d="M640 900 C700 720 760 600 820 505 L860 505 C980 600 1150 720 1320 900Z" fill="url(#srR)"/>
+    <g fill="#6d8095" opacity=".55"><ellipse cx="900" cy="760" rx="60" ry="10"/><ellipse cx="1040" cy="830" rx="80" ry="12"/><ellipse cx="840" cy="640" rx="34" ry="6"/></g>
+    <g stroke="#2c3826" stroke-width="5" stroke-linecap="round"><path d="M180 640 l-10 -40 M190 640 l4 -46 M200 640 l14 -36 M1420 700 l-10 -42 M1432 700 l5 -48 M1444 700 l14 -38"/></g></svg>`,
+  road_mountain: `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="smS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c8ca4"/><stop offset="1" stop-color="#c9d4e2"/></linearGradient></defs>
+    <rect width="1600" height="900" fill="url(#smS)"/><path d="M0 520 L260 230 L420 380 L640 120 L900 420 L1120 200 L1380 400 L1600 260 L1600 900 L0 900Z" fill="#a9b6c8"/>
+    <path d="M200 296 L260 230 L320 300 L290 290 L262 312 L232 290Z M580 190 L640 120 L700 200 L664 190 L640 214 L612 188Z M1060 268 L1120 200 L1180 272 L1146 262 L1120 290 L1094 262Z" fill="#fff" opacity=".9"/>
+    <path d="M0 640 C300 600 600 660 900 610 C1200 560 1400 620 1600 590 L1600 900 L0 900Z" fill="#e8eef6"/><path d="M560 900 C640 790 720 720 800 640 C860 680 980 780 1100 900Z" fill="#cfd8e4"/>
+    <g fill="#5a6b5e"><path d="M140 700 l40 -110 l40 110Z M1380 690 l34 -96 l34 96Z M1460 720 l30 -84 l30 84Z"/></g><g fill="#fff" opacity=".85"><path d="M150 672 l30 -72 l30 72Z M1388 666 l26 -62 l26 62Z"/></g></svg>`
+};
+function storyBg(key) {
+  const el = $('story'), bg = el.querySelector('.st-bg'), tok = ST.bgTok = (ST.bgTok || 0) + 1;
+  bg.style.backgroundImage = ''; bg.innerHTML = ''; bg.classList.remove('pic');
+  if (!key) return;
+  const T = STORY_TOWN[key], D = STORY_DRAWN[key];
+  findAsset(`${ANIM.base}/ui/${T ? T[0] : key}`).then(a => { if (tok !== ST.bgTok) return;
+    if (a && ['png', 'jpg', 'webp'].includes(a.ext)) { bg.style.backgroundImage = `url("${a.url}")`; bg.classList.add('pic'); }
+    else if (D) { bg.innerHTML = `<div class="st-svgbg">${D}</div>`; bg.classList.add('pic'); }
+    else if ((key === 'beach' || key === 'beach_act3') && typeof beachSVG === 'function') { bg.innerHTML = `<div class="st-svgbg">${beachSVG(false, key === 'beach_act3').replace(/id="([a-zA-Z])/g, 'id="stb$1').replace(/url\(#([a-zA-Z])/g, 'url(#stb$1')}</div>`; bg.classList.add('pic'); }      // the drawn beach (rainy / sunny)
+    else if (T && typeof townSVG === 'function') { bg.innerHTML = `<div class="st-svgbg">${townSVG(T[1]).replace(/(id="|url\(#)t([A-Z])/g, '$1stt$2')}</div>`; bg.classList.add('pic'); } });
+}
+function storyWx(kind) {
+  const el = $('story'); let w = el.querySelector('.st-wx'); if (!w) { w = document.createElement('div'); w.className = 'st-wx'; el.querySelector('.st-dim').after(w); }
+  w.className = 'st-wx' + (kind ? ' ' + kind : '');
+  try { if (kind === 'rain' && !sndMuted) rainStart('out'); else rainStop('out'); } catch (e) { }
+}
+const STORY_SKIN = { swimsuit: 'armoured - swimsuit', winter: 'armoured - winter gear' };
+function storyDress(a, id) {                // a hero actor in the scene's outfit (falls back to her normal look)
+  const f = a.querySelector('.figure'); if (!f) return; f.querySelectorAll('.spr').forEach(x => x.remove()); f.classList.remove('has-art');
+  const dir = STORY_SKIN[ST.skin];
+  if (!dir) { fillHeroArt(a); return; }
+  findAsset(`${ANIM.base}/${id}/${dir}/idle`).then(r => { if (!a.isConnected) return;
+    if (r && ['png', 'webp', 'jpg'].includes(r.ext)) { f.insertAdjacentHTML('afterbegin', `<img class="spr" src="${r.url}" alt="" draggable="false">`); f.classList.add('has-art'); } else fillHeroArt(a); });
+}
+function storyBall(id) {                     // a volleyball flies in from offscreen and knocks someone over
+  const c = ST.cast[id]; if (!c) return; const el = $('story'), r = c.el.getBoundingClientRect(), side = c.side === 'right' ? -1 : 1;
+  const b = document.createElement('div'); b.className = 'st-ball'; b.textContent = '🏐'; el.appendChild(b);
+  const x1 = r.left + r.width / 2, y1 = r.top + r.height * .14, x0 = side > 0 ? innerWidth + 60 : -60, y0 = innerHeight * .1;
+  b.animate([{ transform: `translate(${x0}px,${y0}px) rotate(0)` }, { transform: `translate(${(x0 + x1) / 2}px,${y1 - innerHeight * .2}px) rotate(300deg)`, offset: .5 }, { transform: `translate(${x1}px,${y1}px) rotate(600deg)` }],
+    { duration: 650, easing: 'linear', fill: 'forwards' }).finished.then(() => {
+    try { sfx('hit'); } catch (e) { }
+    b.animate([{ transform: `translate(${x1}px,${y1}px) rotate(600deg)` }, { transform: `translate(${x1 - side * innerWidth * .25}px,${y1 - innerHeight * .3}px) rotate(900deg)`, opacity: 0 }], { duration: 700, easing: 'ease-out', fill: 'forwards' }).finished.then(() => b.remove());
+    c.el.classList.add(c.side === 'right' ? 'topple-r' : 'topple-l');
+    setTimeout(() => { if (ST.cast[id] && ST.cast[id].el === c.el) { delete ST.cast[id]; } c.el.remove(); storyLayout(); }, 1100);
+  }).catch(() => b.remove());
+}
+function storyAscend(id) {                   // Hana gives the last of herself: a golden glow from her chest, then she shatters into light
+  const c = ST.cast[id]; if (!c) return; const el = $('story'), r = c.el.getBoundingClientRect();
+  c.el.classList.add('ascend'); try { sfx('heal'); } catch (e) { }
+  const cx = r.left + r.width / 2, cy = r.top + r.height * .32;
+  const glow = document.createElement('div'); glow.className = 'st-glow'; glow.style.left = cx + 'px'; glow.style.top = cy + 'px'; el.appendChild(glow);
+  setTimeout(() => { for (let i = 0; i < 46; i++) { const m = document.createElement('i'); m.className = 'st-mote'; el.appendChild(m); const a = Math.random() * Math.PI * 2, d = innerHeight * (.1 + Math.random() * .35);
+      m.animate([{ transform: `translate(${cx + (Math.random() - .5) * r.width * .6}px,${r.top + Math.random() * r.height * .8}px) scale(1)`, opacity: 1 }, { transform: `translate(${cx + Math.cos(a) * d}px,${cy + Math.sin(a) * d - innerHeight * .15}px) scale(.2)`, opacity: 0 }],
+        { duration: 1400 + Math.random() * 900, easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'forwards' }).finished.then(() => m.remove()); }
+    try { sfx('shatter.big'); } catch (e) { } el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 700); }, 1300);
+  setTimeout(() => { glow.remove(); if (ST.cast[id] && ST.cast[id].el === c.el) delete ST.cast[id]; c.el.remove(); storyLayout(); }, 3200);
+}
+function storyRun(sc) {                      // play one scene now (mid-battle, before a quest...) and resolve when it's over
+  return new Promise(res => { if (!sc) { res(); return; } if (ST.on) storySkip(); ST.queue = []; ST.done = res; storyPlay(sc); });
 }
 const storyHas = id => !!STORY_NPC[id] || !heroById(id) || !game || !game.roster || game.roster.includes(id);       // heroes must be recruited; anyone else (bosses) always shows
 async function storyPlay(sc) {
-  const el = storyEl(); ST.on = true; ST.scene = sc; ST.i = 0; ST.cast = {};
+  const el = storyEl(); ST.on = true; ST.scene = sc; ST.i = 0; ST.cast = {}; ST.lines = null; ST.used = new Map(); ST.asked = false; ST.choices = null; storyChoicesOff();
   el.classList.add('on'); el.classList.remove('box');
   el.querySelector('.st-stage').innerHTML = ''; el.querySelector('.st-text').textContent = ''; el.querySelector('.st-name').textContent = '';
   const pad = document.body.classList.contains('gp'), G = typeof PAD_GLYPH !== 'undefined' ? PAD_GLYPH[padFamily()] : ['A'];
   el.querySelector('.st-keys').textContent = pad ? `${G[0]} next · Start skip` : 'Click / Space: next · Esc: skip';
-  const bg = el.querySelector('.st-bg'); bg.classList.remove('pic'); bg.style.backgroundImage = '';
-  if (sc.bg) findAsset(`${ANIM.base}/ui/${sc.bg}`).then(a => { if (a && ST.scene === sc) { bg.style.backgroundImage = `url("${a.url}")`; bg.classList.add('pic'); } });
+  ST.skin = sc.skin || ''; ST.titled = new Set(); storyBg(sc.bg || ''); storyWx(sc.wx || '');
   const c = sc.cast || {}; (c.left || []).forEach(id => storyEnter(id, 'left')); (c.right || []).forEach(id => storyEnter(id, 'right'));
   if (sc.title) {
     const t = el.querySelector('.st-title'); t.innerHTML = `<small>${sc.title[0]}</small><b>${sc.title[1]}</b><i></i>`; t.classList.add('on');
@@ -12407,45 +12804,93 @@ function storyEnter(id, side) {
       if (r && ['png', 'webp', 'jpg'].includes(r.ext)) f.insertAdjacentHTML('afterbegin', `<img class="spr" src="${r.url}" alt="" draggable="false">`);
       else if (id === 'angel' && typeof ANGEL_SVG !== 'undefined') f.insertAdjacentHTML('afterbegin', `<div class="spr st-svg">${ANGEL_SVG}</div>`); else return;
       f.classList.add('has-art'); });
-  } else fillHeroArt(a);
+  } else storyDress(a, id);
   a.style.left = side === 'left' ? '-20%' : '120%'; storyLayout(); requestAnimationFrame(() => a.classList.add('in'));
 }
 function storyExit(id) { const c = ST.cast[id]; if (!c) return; c.el.classList.remove('in'); c.el.style.left = c.side === 'left' ? '-20%' : '120%'; delete ST.cast[id]; setTimeout(() => c.el.remove(), 500); storyLayout(); }
 function storyLine() {
   const el = $('story'), sc = ST.scene; if (!sc) return;
-  let ln = sc.lines[ST.i];
-  while (ln && ln[0] && heroById(ln[0]) && !storyHas(ln[0])) ln = sc.lines[++ST.i];       // a hero not recruited yet: skip their line
+  const L = ST.lines || sc.lines, skip = l => l && ((l[0] && heroById(l[0]) && !storyHas(l[0]))       // a hero not recruited yet: skip their line
+    || (l[2] && l[2].if === 'asked' && !ST.asked) || (l[2] && l[2].if === 'none' && ST.asked)
+    || (l[2] && l[2].need && !storyHas(l[2].need)));      // { need: 'tyr' }: only if she has joined (for replies to a hero who might not be here yet)      // lines that depend on the last question menu
+  let ln = L[ST.i];
+  while (skip(ln)) ln = L[++ST.i];
   if (!ln) { storyNextScene(); return; }
-  const [who, text, o = {}] = ln, box = el.querySelector('.st-box');
-  if (o.exit) [].concat(o.exit).forEach(storyExit);
-  if (o.enter) storyEnter(o.enter[0], o.enter[1] || 'right');
-  if (who && !ST.cast[who]) storyEnter(who, Object.values(ST.cast).filter(c => c.side === 'left').length <= Object.values(ST.cast).filter(c => c.side === 'right').length ? 'left' : 'right');
+  storyChoicesOff();
+  let [who, text, o = {}] = ln; const box = el.querySelector('.st-box');
+  if (o.title && !ST.titled.has(ln)) {        // a title card mid-scene: show it, then carry on with this line (an empty line just shows the card)
+    ST.titled.add(ln); el.classList.remove('box'); const t = el.querySelector('.st-title');
+    t.innerHTML = `<small>${o.title[0]}</small><b>${o.title[1]}</b><i></i>`; t.classList.add('on'); ST.titleUp = true;
+    new Promise(r => { ST.titleGo = r; setTimeout(r, 2600); }).then(async () => { ST.titleUp = false; t.classList.remove('on'); await sleep(350); if (ST.scene !== sc) return;
+      if (!text) { ST.i++; } el.classList.add('box'); storyLine(); });
+    return;
+  }
+  if ('bg' in o) storyBg(o.bg);
+  if ('wx' in o) storyWx(o.wx);
+  if ('skin' in o && o.skin !== ST.skin) { ST.skin = o.skin; Object.entries(ST.cast).forEach(([id, c]) => { if (heroById(id)) storyDress(c.el, id); }); }
+  if (o.ball) setTimeout(() => storyBall(STORY_ALIAS[o.ball] || o.ball), 150);
+  if (o.ascend) storyAscend(STORY_ALIAS[o.ascend] || o.ascend);
+  who = STORY_ALIAS[who] || who; const mc = who === 'mc';
+  if (mc) who = '';
+  if (o.exit) [].concat(o.exit).map(x => STORY_ALIAS[x] || x).forEach(storyExit);
+  if (o.enter) storyEnter(STORY_ALIAS[o.enter[0]] || o.enter[0], o.enter[1] || 'right');
+  if (who && !mc && !ST.cast[who]) storyEnter(who, Object.values(ST.cast).filter(c => c.side === 'left').length <= Object.values(ST.cast).filter(c => c.side === 'right').length ? 'left' : 'right');
   Object.entries(ST.cast).forEach(([id, c]) => c.el.classList.toggle('talk', id === who));
   if (!who) Object.values(ST.cast).forEach(c => c.el.classList.remove('talk'));
-  const name = o.as || (who ? storyName(who) : '');
-  el.querySelector('.st-name').textContent = name; box.classList.toggle('narr', !who);
+  const name = o.as || (mc ? 'You' : who ? storyName(who) : '');
+  el.querySelector('.st-name').textContent = name; box.classList.toggle('narr', !who && !mc && !o.as); box.classList.toggle('mc', mc);
+  ST.choices = o.choices || null;
   if (o.fx) { el.classList.remove(o.fx); void el.offsetWidth; el.classList.add(o.fx); setTimeout(() => el.classList.remove(o.fx), 700); if (o.fx === 'shake') try { thunder(.6); } catch (e) { } }
   ST.full = text; ST.typing = true; box.classList.remove('done');
   const tx = el.querySelector('.st-text'), t0 = performance.now(), cps = FX.calm ? 1e9 : 52; clearInterval(ST.t);
   ST.t = setInterval(() => { const n = Math.floor((performance.now() - t0) / 1000 * cps); tx.textContent = text.slice(0, n); if (n >= text.length) storyFinishLine(); }, 16);
   try { uiTick(.7); } catch (e) { }
 }
-function storyFinishLine() { clearInterval(ST.t); ST.typing = false; const el = $('story'); el.querySelector('.st-text').textContent = ST.full; el.querySelector('.st-box').classList.add('done'); }
+function storyFinishLine() { clearInterval(ST.t); ST.typing = false; const el = $('story'); el.querySelector('.st-text').textContent = ST.full; el.querySelector('.st-box').classList.add('done'); if (ST.choices) storyChoicesOn(); }
+/* Dialogue choices: the menu sits above the text box. An option with lines plays them and comes back to the menu (that option greyed out);
+   an option with no lines (e.g. "Let's go.") carries on with the scene. ST.asked = something was asked at the last menu (for { if } lines). */
+function storyChoicesOn() {
+  const el = $('story'), key = ST.choices, used = (ST.used.get(key) || new Set());
+  let c = el.querySelector('.st-choices'); if (!c) { c = document.createElement('div'); c.className = 'st-choices'; el.appendChild(c); }
+  c.innerHTML = ST.choices.map((o, k) => `<button class="st-ch${used.has(k) ? ' used' : ''}" data-k="${k}"><b>${k + 1}</b>${o[0]}</button>`).join('');
+  c.onclick = e => { const b = e.target.closest('.st-ch'); if (b) { e.stopPropagation(); storyPick(+b.dataset.k); } };
+  c.onmousemove = e => { const b = e.target.closest('.st-ch'); if (b) storyChoiceFocus(+b.dataset.k); };
+  ST.chFocus = -1; storyChoiceFocus(ST.choices.findIndex((o, k) => !used.has(k))); c.classList.add('on'); el.classList.add('choosing'); ST.chAt = performance.now();
+}
+function storyChoicesOff() { const el = $('story'), c = el && el.querySelector('.st-choices'); if (c) { c.classList.remove('on'); c.innerHTML = ''; } if (el) el.classList.remove('choosing'); ST.chFocus = -1; }
+function storyChoiceFocus(k) { const bs = [...$('story').querySelectorAll('.st-ch')]; if (!bs.length) return; k = (k + bs.length) % bs.length; ST.chFocus = k; bs.forEach((b, j) => b.classList.toggle('hl', j === k)); if (k >= 0) try { uiTick(.5); } catch (e) { } }
+function storyChoiceStep(d) { if (ST.chFocus < 0) ST.chFocus = 0; storyChoiceFocus(ST.chFocus + d); }
+function storyPick(k) {
+  const L = ST.lines || ST.scene.lines, ln = L[ST.i], key = ST.choices, opt = key && key[k]; if (!opt) return;
+  const used = ST.used.get(key) || new Set(); if (used.has(k) && opt[1]) return;      // asked already
+  storyChoicesOff();
+  if (!opt[1] || !opt[1].length) { ST.choices = null; ST.i++; storyLine(); return; }      // move on
+  used.add(k); ST.used.set(key, used); ST.asked = true;
+  const lines = L.slice(); lines.splice(ST.i + 1, 0, ['mc', opt[0]], ...opt[1], [ln[0], (ln[2] && ln[2].again) || 'Anything else?', ln[2]]);      // you ask it, they answer, then back to the same menu (with a short re-prompt: { again: '...' })
+  ST.lines = lines; ST.choices = null; ST.i++; storyLine();
+}
 function storyAdvance() {
   if (!ST.on) return;
   if (ST.titleUp) { ST.titleGo && ST.titleGo(); return; }
   if (ST.typing) { storyFinishLine(); return; }
+  if (ST.choices) { if (ST.chFocus >= 0 && performance.now() - (ST.chAt || 0) > 400) storyPick(ST.chFocus); return; }      // (a short guard so a fast double-tap doesn't pick one by accident)      // a menu is up: Enter / A picks the highlighted option
   ST.i++; storyLine();
 }
-function storySkip() { if (!ST.on) return; clearInterval(ST.t); if (ST.titleGo) ST.titleGo(); ST.scene = null; storyNextScene(); }
+function storySkip() { if (!ST.on) return; clearInterval(ST.t); storyChoicesOff(); ST.choices = null; if (ST.titleGo) ST.titleGo(); ST.scene = null; storyNextScene(); }
 function storyClose() {
-  const el = $('story'); clearInterval(ST.t); ST.on = false; ST.scene = null;
+  const el = $('story'); clearInterval(ST.t); ST.on = false; ST.scene = null; try { rainStop('out'); if (typeof townWxSync === 'function') townWxSync(); } catch (e) { }
+  if (el) { const w = el.querySelector('.st-wx'); if (w) w.className = 'st-wx'; }
   if (el) { el.classList.remove('box'); el.querySelector('.st-dim').style.opacity = 0; setTimeout(() => { el.classList.remove('on'); el.querySelector('.st-dim').style.opacity = ''; }, 350); }
   const d = ST.done; ST.done = null; if (d) setTimeout(d, 380);
 }
 addEventListener('keydown', e => {          // the scene takes the keyboard while it plays
   if (!ST.on) return;
   if (e.key === 'Escape') { storySkip(); e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if (ST.choices && !ST.typing) {      // a question menu: ↑↓ / W S move, 1–9 pick, Enter / Space picks the highlighted one
+    if (['ArrowUp', 'w', 'W'].includes(e.key)) { storyChoiceStep(-1); e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (['ArrowDown', 's', 'S'].includes(e.key)) { storyChoiceStep(1); e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (/^[1-9]$/.test(e.key)) { storyPick(+e.key - 1); e.preventDefault(); e.stopImmediatePropagation(); return; }
+  }
   if ([' ', 'Enter', 'ArrowRight'].includes(e.key) && !e.repeat) { storyAdvance(); e.preventDefault(); e.stopImmediatePropagation(); return; }
   if (!(devMode && e.altKey)) { e.stopImmediatePropagation(); }
 }, true);
@@ -13770,7 +14215,8 @@ function bFig(id, flip) {
   });
   return el;
 }
-function openBeach() { if (!beachOpen()) return; showScene('beach'); }
+function openBeach() { if (!beachOpen()) return; showScene('beach');
+  const S = storySave(); if (S && !S.seen.beach_rain && STORY.beach_rain && !frostOpen()) { S.seen.beach_rain = 1; writeSave(); setTimeout(() => storyRun(STORY.beach_rain), 700); } }      // first visit in the rain: the volleyball gag
 function renderBeach() {
   $('beach-gold').textContent = `Gold: ${game.gold}`;
   { const t = $('beach-gold').parentNode.firstChild; if (t && t.nodeType === 3) t.nodeValue = beachSunny() ? 'The Sunlit Shore' : 'The Grey Shore'; }      // the name follows the weather
@@ -14267,7 +14713,8 @@ const GP = (() => {
     const hk = L.scene === 'battle-scene' && diaOn() ? 'dia' : L.scene;
     if (S.active && S.hk !== hk) { S.hk = hk; const G = PAD_GLYPH[padFamily()]; hint.innerHTML = hk === 'dia' ? `<b>${G[0]} ${G[2]} ${G[3]}</b>Skills<b>${G[1]}</b>Items / Back<b>◀▶</b>Target<b>${G[4]}</b>Shift<b>${G[5]}</b>Weapon<b>Start</b>Pause` : L.scene === 'party-select' ? '<b>◀▶</b>Quest<b>▲▼</b>Move<b>A</b>Select<b>X</b>Roster<b>Y</b>Info / Party<b>LB/RB</b>Difficulty<b>Start</b>Pause<b>B</b>Town' : L.scene === 'qboard' ? '<b>◀▶▲▼</b>Pick a place<b>A</b>Go there<b>B</b>Back to the party<b>X</b>Make camp<b>Y</b>To the Leave button<b>Start</b>Pause' : (innerWidth < 700 ? HINTS_S : HINTS); }
     if (typeof storyOn === 'function' && storyOn()) {      // a story scene: A / B next, Start or Y skips
-      if (!wake) { if (edge('A') || edge('B')) storyAdvance(); else if (edge('START') || edge('Y')) storySkip(); }
+      if (!wake) { if (ST.choices && !ST.typing && rep('up')) storyChoiceStep(-1); else if (ST.choices && !ST.typing && rep('dn')) storyChoiceStep(1);
+        else if (edge('A') || (edge('B') && !ST.choices)) storyAdvance(); else if (edge('START') || edge('Y')) storySkip(); }
       S.prev = down; return;
     }
     if (L.root && L.root.id === 'dive' && typeof dv !== 'undefined' && dv && dv.running && !dv.over && !$('dv-choose').classList.contains('on') && !$('dv-end').classList.contains('on')) {      // Polar Dip: Start / Select pauses; while paused B resumes
