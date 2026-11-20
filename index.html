@@ -10131,14 +10131,16 @@ function placeQuestCard() {               // beside the chosen quest's pin, on w
   card.style.left = x + 'px'; card.style.top = y + 'px'; card.classList.remove('pin-l', 'pin-r');
 }
 addEventListener('resize', () => { if ($('party-select') && $('party-select').classList.contains('show')) placeQuestCard(); });
+let questLaunchAt = -1e9;
 function beginQuest() {
   if (!pickedQuest || !questOpen(pickedQuest)) return;
-  if (pickedQuest === 'final') { if (finalSlots.includes(null)) return; finalSave(); return startFinalReal([...finalSlots]); }
+  if (storyOn() || !$('party-select').classList.contains('show') || performance.now() - questLaunchAt < 4000) return;      // only once: a second press (click, Enter, pad Start) while a quest is launching would start it again and empty the bag
+  if (pickedQuest === 'final') { if (finalSlots.includes(null)) return; finalSave(); questLaunchAt = performance.now(); return startFinalReal([...finalSlots]); }
   if (!picked.length) return;
   const pre = 'pre_' + pickedQuest, S = storySave();      // a recruit's quest: her scene plays the first time you set out
   if (STORY[pre] && S && !S.seen[pre] && !questCleared(pickedQuest)) { S.seen[pre] = 1; writeSave(); storyRun(STORY[pre]).then(() => beginQuest()); return; }
   game.lastParty = [...picked]; writeSave();
-  startQuest([...picked], pickedQuest);
+  questLaunchAt = performance.now(); startQuest([...picked], pickedQuest);
 }
 
 /* ============ QUEST & CAMP ============ */
@@ -12441,7 +12443,7 @@ const STORY = {
     ['hana', "Alright, let's get started. I'll always be in town if you have any questions or need help! I'm your guiding angel, after all."] ] },
   // ---- THE RECRUITS (Lore Bible "Draft scenes"). pre_<quest> plays the first time you embark on it; join_<hero> back in town once she's joined.
   // A line from a hero who hasn't joined yet is skipped, so the Act 1 meetings (Irae and Tyr...) land in whichever joining scene comes second.
-  pre_ruins: { bg: 'town1', cast: { left: ['seria'], right: ['angel'] }, lines: [
+  pre_ruins: { guests: ['vesper'], bg: 'town1', cast: { left: ['seria'], right: ['angel'] }, lines: [
     ['', 'The town gate at dusk. A woman steps out of a shadow nobody noticed was there.', { enter: ['vesper', 'right'] }],
     ['hana', 'Everyone, this is Vesper. Vesper, this is everyone.'],
     ['vesper', 'Please stop looking at me all at once.'],
@@ -12461,7 +12463,7 @@ const STORY = {
     ['vesper', "Fine. I'm in. But I'm not doing a speech, and nobody's allowed to make a fuss."],
     ['aneesah', 'WELCOME, VESPER!', { fx: 'shake' }],
     ['vesper', "I'm going to steal everything she owns."] ] },
-  pre_yokai: { bg: 'town1', cast: { left: ['aria', 'iris'], right: ['irae', 'angel'] }, lines: [
+  pre_yokai: { guests: ['irae'], bg: 'town1', cast: { left: ['aria', 'iris'], right: ['irae', 'angel'] }, lines: [
     ['', 'The town square. Irae stands very straight, hands folded. She bows.'],
     ['irae', 'I am Irae, keeper of the shrine road. Thank you for receiving me. I apologise for the hour.'],
     ['hana', "It's noon."],
@@ -12485,7 +12487,7 @@ const STORY = {
     ['irae', '...Who is this shameless woman?', { need: 'tyr' }],
     ['tyr', "Your new favourite person, sweetheart."],
     ['irae', 'Ancestors, give me strength.', { need: 'tyr' }] ] },
-  pre_crypt: { bg: 'town1', cast: { left: ['aria', 'iris', 'seria'], right: ['angel'] }, lines: [
+  pre_crypt: { guests: ['tyr'], bg: 'town1', cast: { left: ['aria', 'iris', 'seria'], right: ['angel'] }, lines: [
     ['', 'Night, outside the catacombs. The crypt door swings open from the inside.', { enter: ['tyr', 'right'] }],
     ['tyr', "Finally. Visitors who aren't made of bones. Hello, darlings."],
     ['aria', 'G-good evening, madam.'],
@@ -12509,7 +12511,7 @@ const STORY = {
     ['tyr', 'No promises, angel. I packed light: one coffin, one bottle, one very good outfit.'],
     ['vesper', "The coffin's going on the wagon, isn't it?"],
     ['seria', 'Absolutely not.'] ] },
-  pre_plague: { bg: 'town1', cast: { left: ['aria', 'aneesah'], right: ['angel'] }, lines: [
+  pre_plague: { guests: ['jean'], bg: 'town1', cast: { left: ['aria', 'aneesah'], right: ['angel'] }, lines: [
     ['', 'The quarantine gate: a high wall of planks and warning signs. A figure in a beaked mask waits on the other side of a gap in the boards.', { enter: ['jean', 'right'] }],
     ['jean', 'Do not come closer than that. Unless you want to. Then it is research.'],
     ['hana', "Jean, it's us."],
@@ -12769,7 +12771,7 @@ function storyAscend(id) {                   // Hana gives the last of herself: 
 function storyRun(sc) {                      // play one scene now (mid-battle, before a quest...) and resolve when it's over
   return new Promise(res => { if (!sc) { res(); return; } if (ST.on) storySkip(); ST.queue = []; ST.done = res; storyPlay(sc); });
 }
-const storyHas = id => !!STORY_NPC[id] || !heroById(id) || !game || !game.roster || game.roster.includes(id);       // heroes must be recruited; anyone else (bosses) always shows
+const storyHas = id => !!STORY_NPC[id] || !heroById(id) || !game || !game.roster || game.roster.includes(id) || !!(ST.scene && (ST.scene.guests || []).includes(id));       // { guests: ['vesper'] }: a recruit who appears before she has joined       // heroes must be recruited; anyone else (bosses) always shows
 async function storyPlay(sc) {
   const el = storyEl(); ST.on = true; ST.scene = sc; ST.i = 0; ST.cast = {}; ST.lines = null; ST.used = new Map(); ST.asked = false; ST.choices = null; storyChoicesOff();
   el.classList.add('on'); el.classList.remove('box');
