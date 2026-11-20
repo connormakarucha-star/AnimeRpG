@@ -640,6 +640,15 @@ body.dev #btn-quick{display:inline-block}
 /* Map pins never move: no press/hover scaling on any map node (a moving button can slide out from under the cursor and lose the click) */
 .qm-n,.qm-n:active,.qm-n:hover,.mnode:active,.mnode:hover{scale:none!important}
 .qm-n:active{translate:-50% -50%!important}
+/* Embark party panel: heroes stand on one shared road. No frames, arches or torches; a soft shadow under each hero, outlines only while picking/swapping */
+#party-select .gate .fslot{background:none!important;backdrop-filter:none;border:1px solid transparent;border-radius:14px}
+#party-select .gate .fslot::before,#party-select .gate .fslot::after{display:none}
+#party-select .gate .fslot.has{background:radial-gradient(ellipse 34% 7% at 50% 90%,rgba(0,0,0,.5),transparent 100%)!important}
+#party-select .gate .fslot.has:hover{border-color:rgba(217,180,106,.35)}
+#party-select .gate .fslot.sel{border-color:#ffd54f;box-shadow:0 0 14px rgba(255,213,79,.35)}
+#party-select .gate .fslot.over{border-color:#7ed6ff;background:rgba(60,90,130,.25)!important}
+#party-select .gate .fslot .empty{border:2px dashed rgba(220,200,170,.28);color:rgba(230,215,190,.55);background:rgba(10,8,18,.25)}
+#party-select .gate .fslot:not(.has) .pos{background:rgba(58,52,80,.6)}
 /* ===== Embark: quest card + guild board + lit arches ===== */
 @media (min-width:900px) and (min-height:480px){
   #party-select .em-map #quest-detail{position:static;width:auto;margin:0}
@@ -1650,7 +1659,7 @@ body.fs .qmap{margin:0}
   #party-select .qmap .mworld{inset:auto;left:0;top:0;width:100%;height:auto;aspect-ratio:16/9}
   #party-select .qmap img.mart{-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
   #party-select .qm-title{left:11em;top:1.6%}
-  #party-select .qm-hint{top:1.6%;right:1.4%}
+  #party-select .qm-hint{top:1.6%;right:18px;max-width:calc(100% - 430px);box-sizing:border-box}
   #party-select .em-back{position:absolute;top:1.6%;left:1.2%;z-index:50;margin:0;padding:.5em 1em;background:rgba(10,8,20,.78);font-size:.85rem}
   #party-select .em-begin{position:absolute;right:1.4%;bottom:14px;width:clamp(300px,24%,400px);z-index:50;margin:0;padding:.75em 1.8em;font-size:1.1rem;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.55)}
   #party-select #quest-detail{position:absolute;right:1.4%;bottom:74px;width:clamp(300px,24%,400px);z-index:45;margin:0}
@@ -2774,7 +2783,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
         <button class="primary em-begin" id="btn-start-quest" onclick="beginQuest()">Begin Quest ▶</button>
       </section>
       <section class="em-party">
-        <div class="gate" id="party-gate"><svg class="gate-bg" viewBox="0 0 1600 560" preserveAspectRatio="xMidYMid slice" id="gate-bg"></svg><div class="slots" id="party-slots"></div></div>
+        <div class="gate" id="party-gate"><svg class="gate-bg" viewBox="0 0 1600 560" preserveAspectRatio="xMidYMax slice" id="gate-bg"></svg><div class="slots" id="party-slots"></div></div>
       </section>
       <aside class="rside em-roster">
         <div class="rs-h">⚔️ Guild</div>
@@ -7889,7 +7898,7 @@ async function hit(u, t, s) {
       t.breakBar -= brk;
       log(brk ? `${t.name}'s armour takes ${brk} break damage.` : `${t.name}'s barrier shields the armour.`, 'log-status');
       if (t.breakBar <= 0) {
-        t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2); speak(t, 'broken'); if (t.team === 'p') t.cine = breakCine(t, 'armoured', 'broken');
+        t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2); if (t.team === 'p') t.cine = breakCine(t, 'armoured', 'broken').catch(() => {}).then(() => speak(t, 'broken')); else speak(t, 'broken');      // her line comes after the close-up, not over it
         log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
         armourBreak(t, false);
         if (s.stunOnBreak && s.el && isAlive(t)) applyStatus(t, s.el, u);       // Vesper: a shock that breaks the armour stuns at once
@@ -7905,7 +7914,7 @@ async function hit(u, t, s) {
         t.break2 -= brk;
         log(brk ? `${t.name}'s damaged armour takes ${brk} break damage.` : `${t.name}'s barrier shields the damaged armour.`, 'log-status');
         if (t.break2 <= 0) {
-          t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3); flash('#ff1744', .3, 520); speak(t, 'super'); if (t.team === 'p') t.cine = breakCine(t, 'broken', 'super');
+          t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3); flash('#ff1744', .3, 520); if (t.team === 'p') t.cine = breakCine(t, 'broken', 'super').catch(() => {}).then(() => speak(t, 'super')); else speak(t, 'super');
           if (t.team === 'p' && FX.spicy) setTimeout(() => { const o = party.filter(x => x !== t && isAlive(x) && (VOICE[x.id] || {}).seeSuper); if (o.length) speak(choose(o, Math.random), 'seeSuper'); }, 1100);      // someone else notices
           log(`<strong style="color:#ff1744">${t.name} is SUPER BROKEN!</strong>`);
           armourBreak(t, true);
@@ -9929,7 +9938,7 @@ const MAP_SVG = (() => {
 })();
 function mapCam(stage) { const c = MAP_CAMS[stage], sc = 100 / c.w; return { t: `scale(${sc}) translate(${-c.x}%,${-c.y}%)`, inv: (1 / sc).toFixed(4) }; }
 const MAP_VIEW = { 1: { cx: 24, cy: 84, w: 56 }, 2: { cx: 56, cy: 64, w: 104 }, 3: { cx: 58, cy: 50, w: 150 } };      // wide screens: centre (% of the picture) and how much of its width is on screen; w over 100 shows open sea around the world
-const MAP_FIT = { card: 380, side: 110, top: 80, bottom: 60 };      // wide screens: room kept for the quest card (right strip) and for the place names around the edges, in px
+const MAP_FIT = { card: 380, edge: 18, gap: 14, pin: 46, name: 26, zoom: 1 };      // wide screens, in px: the quest card's strip on the right, a margin at the edges, room for a pin (radius) and its name under it. zoom: allow up to this × the stage's view
 const mapWide = () => window.matchMedia('(min-width:900px) and (min-height:480px)').matches;
 function mapApply(box, stage) {
   const world = box.querySelector('.mworld'), cw = box.clientWidth, ch = box.clientHeight; box.dataset.stage = stage;
@@ -9939,19 +9948,23 @@ function mapApply(box, stage) {
   const mx = W * .04, my = H * .09;      // the view may drift a little past the picture's edge (the sea goes on), so labels near the edge stay on screen
   cx = vw < W ? Math.max(vw / 2 - mx, Math.min(W - vw / 2 + mx, cx)) : W / 2; cy = vh < H ? Math.max(vh / 2 - my, Math.min(H - vh / 2 + my, cy)) : H / 2;
   let tx = cw / 2 - z * cx, ty = ch / 2 - z * cy;
-  /* Keep every open place on screen and clear of the quest card: the card gets a strip down the right side (MAP_FIT.card),
-     and the camera zooms out / slides just enough that all the pins (and their names) fit in the rest. */
+  /* Frame the open places: centred in the free area (left of the quest card's strip, below the title and the hint), zoomed to fill it
+     but never closer than this stage's view (MAP_VIEW). The card always sits in that strip on the right. */
   const inView = id => id === 'final' ? stage >= 3 : QUEST_GROUPS.findIndex(g => g.ids.includes(id)) < stage;      // only places this stage's view is meant to show (a newly opened area zooms out to them)
-  const pts = [...box.querySelectorAll('.mnode')].filter(n => inView(n.dataset.q)).map(n => [+n.style.getPropertyValue('--x') / 100 * W, +n.style.getPropertyValue('--y') / 100 * H]);
-  if (pts.length) {
-    const F = MAP_FIT, L = F.side, R = cw - F.card - F.side, T = F.top, B = ch - F.bottom;
-    const x0 = Math.min(...pts.map(p => p[0])), x1 = Math.max(...pts.map(p => p[0])), y0 = Math.min(...pts.map(p => p[1])), y1 = Math.max(...pts.map(p => p[1]));
-    const zf = Math.min(z, x1 > x0 ? (R - L) / (x1 - x0) : z, y1 > y0 ? (B - T) / (y1 - y0) : z);
-    if (zf < z) { tx = cw / 2 - zf * cx; ty = ch / 2 - zf * cy; }
-    const zz = Math.min(z, zf);
-    tx = Math.min(L - zz * x0, Math.max(R - zz * x1, tx)) ; ty = Math.min(T - zz * y0, Math.max(B - zz * y1, ty));
-    if (zz * (x1 - x0) > R - L) tx = L - zz * x0; if (zz * (y1 - y0) > B - T) ty = T - zz * y0;
-    z = zz;
+  const ns = [...box.querySelectorAll('.mnode')].filter(n => inView(n.dataset.q));
+  if (ns.length) {
+    const F = MAP_FIT, hint = box.querySelector('.qm-hint'), ttl = box.querySelector('.qm-title'), bx = box.getBoundingClientRect();
+    if (hint && ttl) hint.style.maxWidth = Math.max(220, bx.right - ttl.getBoundingClientRect().right - 40) + 'px';      // the hint never runs under the title
+    const top = Math.max(ttl ? ttl.getBoundingClientRect().bottom - bx.top : 0, hint ? hint.getBoundingClientRect().bottom - bx.top : 0) + F.gap;
+    // each place keeps room for its own name (names stay the same size on screen at any zoom): fit every pair, then centre
+    const P = ns.map(n => { const l = n.querySelector('.nm'); return { x: +n.style.getPropertyValue('--x') / 100 * W, y: +n.style.getPropertyValue('--y') / 100 * H, h: Math.max(F.pin, l ? l.offsetWidth / 2 + 6 : 60) }; });
+    const L = F.edge, R = cw - F.card - F.edge, T = top + F.pin, B = ch - F.edge - F.pin - F.name;
+    let zx = Infinity, zy = Infinity;
+    P.forEach(a => P.forEach(b => { if (b.x > a.x) zx = Math.min(zx, (R - L - a.h - b.h) / (b.x - a.x)); if (b.y > a.y) zy = Math.min(zy, (B - T) / (b.y - a.y)); }));
+    z = Math.max(.2, Math.min(z * F.zoom, zx, zy));
+    const txLo = Math.max(...P.map(a => L + a.h - z * a.x)), txHi = Math.min(...P.map(a => R - a.h - z * a.x));
+    const tyLo = Math.max(...P.map(a => T - z * a.y)), tyHi = Math.min(...P.map(a => B - z * a.y));
+    tx = (txLo + txHi) / 2; ty = (tyLo + tyHi) / 2;
   }
   world.style.transform = `translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${z.toFixed(4)})`;
   box.querySelectorAll('.mnode').forEach(n => n.style.setProperty('--inv', (1 / z).toFixed(4)));
@@ -10050,17 +10063,10 @@ function qcBoss(pq) {                     // the boss's own picture in the card'
 function placeQuestCard() {               // beside the chosen quest's pin, on whichever side has room; clamped inside the map
   const card = document.querySelector('#quest-detail .qc'), node = document.querySelector('#qmap .mnode.on'), map = $('em-map');
   if (!card || !map) return;
-  if (!mapWide() || !node) { card.style.left = card.style.top = ''; card.classList.remove('pin-l', 'pin-r'); return; }
-  const M = map.getBoundingClientRect(), n = node.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight, gap = 26;
-  const pins = [...document.querySelectorAll('#qmap .mnode:not(.on) .pin')].map(p => p.getBoundingClientRect()).map(r => [r.left - M.left, r.top - M.top, r.width, r.height]);
-  const covers = (x, y) => pins.reduce((a, [px, py, pw, ph]) => a + (px + pw > x && px < x + w && py + ph > y && py < y + h ? 1 : 0), 0);      // other quests' pins the card would hide (they couldn't be clicked)
-  const cy = n.top - M.top + n.height / 2, ys = [cy - h / 2, cy - h * .2, cy - h * .8, cy - h * .05, cy - h * .95];
-  let best = null;
-  [['pin-r', n.right - M.left + gap], ['pin-l', n.left - M.left - gap - w], ['', M.width - w - 10]].forEach(([sd, x0], si) => { const x = Math.max(10, Math.min(M.width - w - 10, x0));
-    ys.forEach((y0, yi) => { const y = Math.max(56, Math.min(M.height - h - 10, y0)), c = covers(x, y) * 100 + si * 2 + yi + (x !== x0 ? 5 : 0); if (!best || c < best.c) best = { c, x, y, side: sd }; }); });
-  const { x, y, side } = best;      // pinned beside the quest when that hides no other place; otherwise docked in the clear strip on the right
-  card.style.left = x + 'px'; card.style.top = y + 'px'; card.classList.remove('pin-l', 'pin-r'); if (side) card.classList.add(side);
-  card.style.setProperty('--py', Math.max(18, Math.min(h - 18, n.top - M.top + n.height / 2 - y)) + 'px');
+  if (!mapWide()) { card.style.left = card.style.top = ''; card.classList.remove('pin-l', 'pin-r'); return; }
+  const M = map.getBoundingClientRect(), w = card.offsetWidth, h = card.offsetHeight, hint = document.querySelector('#qmap .qm-hint');
+  const x = M.width - w - MAP_FIT.edge, y = Math.max(MAP_FIT.edge, Math.min(M.height - h - MAP_FIT.edge, hint ? hint.getBoundingClientRect().bottom - M.top + MAP_FIT.gap : 56));      // always the same spot: the right-hand strip the camera keeps clear
+  card.style.left = x + 'px'; card.style.top = y + 'px'; card.classList.remove('pin-l', 'pin-r');
 }
 addEventListener('resize', () => { if ($('party-select') && $('party-select').classList.contains('show')) placeQuestCard(); });
 function beginQuest() {
@@ -12684,15 +12690,22 @@ async function titleBg() {
 /* ============ TRAINING GROUND ============ */
 let trainHero = null, trainBusy = false;
 
-const GATE_SVG = `<defs><linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10122a"/><stop offset="1" stop-color="#3a2a3e"/></linearGradient><radialGradient id="gTor" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffb35a" stop-opacity=".8"/><stop offset="1" stop-color="#ffb35a" stop-opacity="0"/></radialGradient></defs>
-  <rect width="1600" height="560" fill="url(#gSky)"/>${Array.from({ length: 28 }, (_, i) => `<circle cx="${(i * 233) % 1600}" cy="${(i * 97) % 220 + 10}" r="${i % 3 ? 1.5 : 2.5}" fill="#fff" opacity=".6"/>`).join('')}
-  <path d="M0 330 L160 250 L300 320 L460 230 L640 330 L820 250 L1000 330 L1180 240 L1340 320 L1480 260 L1600 330 V560 H0Z" fill="#1a1830"/>
-  <g><rect x="480" y="120" width="70" height="440" fill="#3a3648"/><rect x="1050" y="120" width="70" height="440" fill="#3a3648"/><path d="M470 150 Q800 -30 1130 150 V220 Q800 60 470 220Z" fill="#46405a"/>${Array.from({ length: 9 }, (_, i) => `<path d="M${520 + i * 66} 100 l8 -30 l8 30Z" fill="#2a2638"/>`).join('')}
-   <rect x="552" y="250" width="496" height="310" fill="#0d0b16"/><path d="M552 250 Q800 130 1048 250Z" fill="#0d0b16"/></g>
-  <g class="gate-torch"><circle cx="420" cy="260" r="110" fill="url(#gTor)"/><rect x="414" y="270" width="12" height="70" fill="#4a3022"/><ellipse cx="420" cy="258" rx="14" ry="26" fill="#ffc34a"/></g>
-  <g class="gate-torch" style="animation-delay:1.2s"><circle cx="1180" cy="260" r="110" fill="url(#gTor)"/><rect x="1174" y="270" width="12" height="70" fill="#4a3022"/><ellipse cx="1180" cy="258" rx="14" ry="26" fill="#ffc34a"/></g>
-  <path d="M0 470 Q800 400 1600 470 V560 H0Z" fill="#2a2430"/><path d="M640 560 L760 410 H840 L960 560Z" fill="#4a4050" opacity=".75"/>
-  ${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${60 + i * 270}" y="${500 + (i % 2) * 14}" width="40" height="14" rx="3" fill="#3a3440" opacity=".7"/>`).join('')}`;
+const GATE_SVG = (() => {      // the party panel on the embark screen: one quiet road the four heroes stand on, back (left) to front (right)
+  const rnd = (k => () => (k = (k * 16807) % 2147483647) / 2147483647)(7);
+  const stones = Array.from({ length: 26 }, () => { const x = rnd() * 1600, y = 410 + rnd() * 110, r = 2 + rnd() * 4; return `<ellipse cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" rx="${(r * 1.6).toFixed(1)}" ry="${r.toFixed(1)}" fill="#6a5a4a" opacity="${(.25 + rnd() * .3).toFixed(2)}"/>`; }).join('');
+  const tufts = Array.from({ length: 22 }, (_, k) => { const x = rnd() * 1600, y = k % 2 ? 392 + rnd() * 10 : 532 + rnd() * 14; return `<path d="M${x.toFixed(0)} ${y.toFixed(0)} l-5 -14 M${x.toFixed(0)} ${y.toFixed(0)} l1 -18 M${x.toFixed(0)} ${y.toFixed(0)} l7 -12" stroke="#3c4a34" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>`; }).join('');
+  return `<defs><linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121628"/><stop offset=".75" stop-color="#2a2238"/><stop offset="1" stop-color="#3a2a36"/></linearGradient>
+    <linearGradient id="gRoad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3e36"/><stop offset=".5" stop-color="#5c4c3e"/><stop offset="1" stop-color="#4a3c32"/></linearGradient>
+    <linearGradient id="gFade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0e0c16" stop-opacity=".55"/><stop offset=".18" stop-color="#0e0c16" stop-opacity="0"/><stop offset=".82" stop-color="#0e0c16" stop-opacity="0"/><stop offset="1" stop-color="#0e0c16" stop-opacity=".55"/></linearGradient></defs>
+  <rect width="1600" height="560" fill="url(#gSky)"/>
+  ${Array.from({ length: 18 }, (_, i) => `<circle cx="${(i * 233) % 1600}" cy="${(i * 97) % 200 + 14}" r="${i % 4 ? 1.2 : 2}" fill="#fff" opacity=".35"/>`).join('')}
+  <path d="M0 330 C200 290 340 310 520 300 C720 288 880 318 1080 302 C1260 288 1420 312 1600 296 V560 H0Z" fill="#1e1a2c"/>
+  <path d="M0 370 C260 352 520 366 800 358 C1080 350 1340 366 1600 356 V560 H0Z" fill="#26202e"/>
+  <path d="M0 400 C400 392 1200 392 1600 400 V545 C1200 552 400 552 0 545Z" fill="url(#gRoad)"/>
+  <path d="M0 440 C400 434 1200 434 1600 440 M0 500 C400 506 1200 506 1600 500" stroke="#6e5c4a" stroke-width="6" fill="none" opacity=".35"/>
+  ${stones}${tufts}
+  <rect width="1600" height="560" fill="url(#gFade)"/>`;
+})();
 const SPA_DOOR = [360, 170, 190, 450];       // the door on the spa front desk, in the 1600 x 900 picture (the click area follows it)
 function bannerSpa() {
   const el = $('spa-banner'); if (!el || el.dataset.b) return; el.dataset.b = 1;
