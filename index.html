@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1100, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Mote">
-<meta name="theme-color" content="#0c0c14"><link rel="manifest" href="manifest.webmanifest">
+<meta name="viewport" content="width=1100">
 <script>
-/* PHONES (landscape): the game is laid out on a virtual screen at least 1100 px wide; on a short, wide phone screen (browser bars showing) that
-   would leave a layout under ~520 px tall and drop into the cramped small-screen layouts. So the virtual width grows with the screen's shape
-   to keep the layout at least MOBILE_FIT.h tall. Desktop browsers ignore this. */
-(function () {
+/* PHONES & TABLETS ONLY (touch screens). PC never runs any of this: it keeps the plain width=1100 layout above.
+   Grows the virtual width to fit short, wide phone screens (so the layout stays at least MOBILE_FIT.h tall) and adds the home-screen app tags. */
+if (matchMedia('(pointer:coarse)').matches) (function () {
   const MOBILE_FIT = { w: 1100, h: 540 }, m = document.querySelector('meta[name=viewport]'); let last = 0;
+  [['mobile-web-app-capable', 'yes'], ['apple-mobile-web-app-capable', 'yes'], ['apple-mobile-web-app-status-bar-style', 'black-translucent'], ['apple-mobile-web-app-title', 'Mote'], ['theme-color', '#0c0c14']]
+    .forEach(([n, c]) => { const t = document.createElement('meta'); t.name = n; t.content = c; document.head.appendChild(t); });
+  const l = document.createElement('link'); l.rel = 'manifest'; l.href = 'manifest.webmanifest'; document.head.appendChild(l);
   const fit = () => { const vv = window.visualViewport, iw = vv ? vv.width * vv.scale : innerWidth, ih = vv ? vv.height * vv.scale : innerHeight; if (!iw || !ih) return;
     const w = Math.max(MOBILE_FIT.w, Math.ceil(MOBILE_FIT.h * iw / ih)); if (Math.abs(w - last) < 6) return; last = w;
     m.setAttribute('content', `width=${w}, viewport-fit=cover, user-scalable=no`); };
-  if (matchMedia('(pointer:coarse)').matches) { fit(); addEventListener('resize', () => setTimeout(fit, 60)); addEventListener('orientationchange', () => setTimeout(fit, 250)); if (window.visualViewport) visualViewport.addEventListener('resize', () => setTimeout(fit, 60)); }
+  fit(); addEventListener('resize', () => setTimeout(fit, 60)); addEventListener('orientationchange', () => setTimeout(fit, 250)); if (window.visualViewport) visualViewport.addEventListener('resize', () => setTimeout(fit, 60));
 })();
 </script>
 <title>Mote in the Celestial Fire</title>
@@ -1323,14 +1322,6 @@ body.cb .float.heal{color:#56b4e9}body.cb .float.hurt{color:#e69f00}
 #weather.lantern{background:radial-gradient(circle at 12% 34%,rgba(255,180,90,.2),transparent 9%),radial-gradient(circle at 38% 62%,rgba(255,170,80,.16),transparent 8%),radial-gradient(circle at 63% 30%,rgba(255,190,100,.18),transparent 9%),radial-gradient(circle at 88% 58%,rgba(255,170,80,.18),transparent 9%);animation:lantern 3.2s ease-in-out infinite alternate;mix-blend-mode:screen}
 @keyframes lantern{from{opacity:.65}to{opacity:1}}
 body.calm #weather{display:none}
-/* phones & tablets */
-html.touch,html.touch body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-text-size-adjust:100%}
-html.touch body{-webkit-user-select:none;user-select:none}html.touch input,html.touch textarea{-webkit-user-select:text;user-select:text}
-html.touch img{-webkit-user-drag:none;-webkit-touch-callout:none}
-#fs-btn{display:none;position:fixed;left:max(8px,env(safe-area-inset-left));bottom:max(8px,env(safe-area-inset-bottom));z-index:9000;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(10,10,20,.7);color:#fff;font-size:1.3rem;padding:0;min-height:0}
-#fs-btn.on{display:block}
-#lp-tip{position:fixed;z-index:99990;translate:-50% -100%;max-width:min(420px,80vw);padding:8px 12px;border-radius:10px;background:rgba(14,12,24,.95);border:1px solid rgba(255,255,255,.25);color:#f0eaff;font-size:.9rem;line-height:1.35;pointer-events:none;opacity:0;transition:opacity .15s;white-space:pre-line}
-#lp-tip.on{opacity:1}
 #rotate{display:none;position:fixed;inset:0;z-index:99999;background:#0c0c14;color:#e0e0e6;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-size:1.6rem;gap:14px}
 #rotate b{font-size:4rem;display:block;animation:rot 2s ease-in-out infinite}@keyframes rot{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}
 @media (orientation:portrait) and (pointer:coarse){#rotate{display:flex}}
@@ -2595,7 +2586,6 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
 <div id="pause" onclick="if (event.target === this) pauseClose()"><div class="pz"><div class="pz-h"></div><button class="primary" onclick="pauseClose()">▶ Resume</button><button onclick="pauseClose();openGuide()">⚙️ Options &amp; Guide</button><button id="pz-title" onclick="pauseAskTitle(true)">🏠 Return to Title</button><div class="pz-ask" id="pz-ask"><span>🏠 ?</span><button class="danger" onclick="location.reload()">✔ Yes</button><button class="primary" onclick="pauseAskTitle(false)">✖ No</button></div></div></div>
 <div id="film"></div>
 <div id="fade"></div>
-<button id="fs-btn" onclick="goFullscreen()" title="Full screen">⛶</button>
 <div id="rotate"><b>📱</b>Turn your phone sideways<small style="font-size:1rem;color:#9a9ab8">The game is played in landscape</small></div>
 <div id="guide" onclick="if (event.target === this) closeGuide()">
   <div class="guide-box">
@@ -4269,7 +4259,6 @@ function optToggle(k) {
   else if (k === 'text') { FX.text = (FX.text + 1) % 3; saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'calm') { FX.calm = !FX.calm; if (FX.calm) { FX.shake = false; FX.flash = false; } saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'cb') { FX.cb = !FX.cb; saveFx(); applyFxLook(); refreshOptions(); }
-  else if (k === 'fullscreen') { FX.fullscreen = FX.fullscreen === false; saveFx(); if (FX.fullscreen) goFullscreen(); else if (isFS() && document.exitFullscreen) document.exitFullscreen().catch(() => {}); fsButton(); refreshOptions(); }
   else if (k === 'spicy') { FX.spicy = !FX.spicy; saveFx(); applyFxLook(); refreshOptions(); }
   else if (k === 'ui') { FX.ui = { dia: 'bar', bar: 'classic', classic: 'dia' }[FX.ui] || 'dia'; saveFx(); applyFxLook(); refreshOptions(); }
   else toggleFx(k);
@@ -4277,22 +4266,49 @@ function optToggle(k) {
 let asfx = null;      // sound-effect bus (all effects and the wind go through it; music has its own slider)
 function setSfx(v) { FX.sfx = Math.max(0, Math.min(1, v)); saveFx(); if (asfx && actx) asfx.gain.setTargetAtTime(FX.sfx, actx.currentTime, 0.05); document.querySelectorAll('#film video, #cutin video, #spa-cutin video').forEach(m => { m.volume = FX.sfx; }); }      // skill videos follow the sound-effects slider too
 function setVol(v) { FX.vol = Math.max(0, Math.min(1, v)); saveFx(); if (typeof musicVol === 'function') musicVol(); }
-/* ---- PHONES & TABLETS: full screen, landscape lock, touch hygiene, long-press tooltips ----
-   Full screen: the first tap anywhere asks the browser for full screen (and locks landscape where the browser allows it). If the player leaves full
-   screen, a ⛶ button appears (bottom left) to go back. The "Full screen" option turns this off. iPhones have no full-screen API for web pages:
-   there the way is Share → "Add to Home Screen" (manifest.webmanifest + the apple meta tags make it open full screen, landscape).
-   Long-press anything with a tooltip (a title) to read it, since there's no hover on touch screens. */
-const TOUCH = matchMedia('(pointer:coarse)').matches;
-const canFS = () => !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
-const isFS = () => !!(document.fullscreenElement || document.webkitFullscreenElement) || matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone;
-function goFullscreen() {
-  if (isFS() || !canFS()) return; const d = document.documentElement, rq = d.requestFullscreen || d.webkitRequestFullscreen;
-  try { const pr = rq.call(d, { navigationUI: 'hide' }); if (pr && pr.then) pr.then(() => { try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }).catch(() => {}); } catch (e) {}
-}
-function fsButton() { const b = $('fs-btn'), h = $('hub'); if (b) b.classList.toggle('on', TOUCH && canFS() && !isFS() && FX.fullscreen !== false && !!h && h.classList.contains('show')); }      // (in town only: never over a fight or the board)
-if (TOUCH) {
+const OPTIONS = [
+  ['snd', '🔊 Sound', 'Sound effects. Off by default on phones.', () => !sndMuted],
+  ['numbers', '💥 Hit numbers', 'The damage numbers that pop up over units.', () => FX.numbers],
+  ['shake', '📳 Screen shake', 'Camera shake on heavy hits. Turn off if it bothers you.', () => FX.shake],
+  ['speed', '⏩ Battle speed', 'Faster animations and pauses in battle: 1× normal, 1.5×, 2×. Also on the battle bar.', () => FX.speed > 1, () => speedLabel()],
+  ['flash', '⚡ Screen flashes', 'Colour flashes on kills, crits and boss phases, and the red pulse when a hero is nearly down. Turn off if flashing bothers you.', () => FX.flash],
+  ['text', '🔤 Text size', 'Makes all text bigger: Normal, Large, Extra large.', () => FX.text > 0, () => ['Normal', 'Large', 'Extra large'][FX.text]],
+  ['calm', '🕊️ Reduced motion', 'Turns off weather, screen shake, flashes and the fade between scenes. Calmer on the eyes.', () => FX.calm],
+  ['ui', '🖥️ Battle menu (PC)', 'Diamond: on your turn the hero\'s skills pop up beside them, laid out like a controller\'s buttons. Bar: a bottom bar with slanted skill buttons. Classic: the old fixed panel.', () => FX.ui !== 'classic', () => ({ dia: 'Diamond', bar: 'Bar', classic: 'Classic' })[FX.ui]],
+  ['travel', '🚶 Travel scenes', 'A short walking scene between fights, camps and events during a quest. Click or press a key to skip any of them.', () => FX.travel],
+  ['cb', '🎨 Colour-blind palette', 'Safer colours for the element numbers (blue, orange and yellow instead of red and green tints).', () => FX.cb],
+  ['talk', '💬 Battle chatter', 'Heroes talk in little speech bubbles: crits, kills, broken armour, boss phases and gag lines.', () => FX.talk],
+  ['spicy', '🔥 Fanservice', 'On: super broken heroes use their own (fog-censored) art, and everyone reacts to being stripped in their own way. Off: super broken heroes keep their broken look, and the chatter stays tame.', () => FX.spicy]
+];
+/* ---- PHONES & TABLETS ONLY: full screen, landscape lock, touch hygiene, long-press tooltips ----
+   Everything here runs only on touch screens (pointer:coarse). On PC this whole block is skipped, so the PC game is exactly as before.
+   Full screen: the first tap asks the browser for full screen (and locks landscape where allowed). If the player leaves it, a ⛶ button shows in town.
+   The "Full screen" option (phones only) turns this off. iPhones have no full-screen API for pages: Share → "Add to Home Screen" (manifest.webmanifest).
+   Long-press anything with a tooltip to read it, since there's no hover on touch screens. */
+if (matchMedia('(pointer:coarse)').matches) (function () {
+  const canFS = () => !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+  const isFS = () => !!(document.fullscreenElement || document.webkitFullscreenElement) || matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone;
+  const goFS = () => { if (isFS() || !canFS()) return; const d = document.documentElement, rq = d.requestFullscreen || d.webkitRequestFullscreen;
+    try { const pr = rq.call(d, { navigationUI: 'hide' }); if (pr && pr.then) pr.then(() => { try { screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }).catch(() => {}); } catch (e) {} };
+  const st = document.createElement('style'); st.textContent = `html.touch,html.touch body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-text-size-adjust:100%}
+html.touch body{-webkit-user-select:none;user-select:none}html.touch input,html.touch textarea{-webkit-user-select:text;user-select:text}
+html.touch img{-webkit-user-drag:none;-webkit-touch-callout:none}
+#fs-btn{display:none;position:fixed;left:max(8px,env(safe-area-inset-left));bottom:max(8px,env(safe-area-inset-bottom));z-index:9000;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(10,10,20,.7);color:#fff;font-size:1.3rem;padding:0;min-height:0}
+#fs-btn.on{display:block}
+#lp-tip{position:fixed;z-index:99990;translate:-50% -100%;max-width:min(420px,80vw);padding:8px 12px;border-radius:10px;background:rgba(14,12,24,.95);border:1px solid rgba(255,255,255,.25);color:#f0eaff;font-size:.9rem;line-height:1.35;pointer-events:none;opacity:0;transition:opacity .15s;white-space:pre-line}
+#lp-tip.on{opacity:1}`; document.head.appendChild(st);
   document.documentElement.classList.add('touch');
-  let asked = false; const first = () => { if (asked) return; asked = true; if (FX.fullscreen !== false) goFullscreen(); setTimeout(fsButton, 800); };      // only the very first tap; after that, the ⛶ button
+  const btn = document.createElement('button'); btn.id = 'fs-btn'; btn.title = 'Full screen'; btn.textContent = '⛶'; btn.addEventListener('click', goFS); document.body.appendChild(btn);
+  const fsButton = () => { const h = $('hub'); btn.classList.toggle('on', canFS() && !isFS() && FX.fullscreen !== false && !!h && h.classList.contains('show')); };      // in town only
+  // the option, its toggle and the scene hook are added here (wrapping the PC functions) so the PC code stays untouched
+  const ci = OPTIONS.findIndex(o => o[0] === 'calm');
+  OPTIONS.splice(ci < 0 ? OPTIONS.length : ci, 0, ['fullscreen', '⛶ Full screen', canFS() ? 'Go full screen (landscape) on the first tap. If you leave it, tap ⛶ in town to go back.' : 'This browser can\'t go full screen from a web page (iPhone). Use Share → "Add to Home Screen" and open the game from there: it runs full screen.', () => FX.fullscreen !== false]);
+  const pcOpt = optToggle;
+  optToggle = k => { if (k !== 'fullscreen') return pcOpt(k);
+    FX.fullscreen = FX.fullscreen === false; saveFx(); if (FX.fullscreen) goFS(); else if (isFS() && document.exitFullscreen) document.exitFullscreen().catch(() => {}); fsButton(); refreshOptions(); };
+  const pcScene = showScene;
+  showScene = function (name) { const r = pcScene.apply(this, arguments); setTimeout(() => { try { fsButton(); } catch (e) {} }, 50); return r; };
+  let asked = false; const first = () => { if (asked) return; asked = true; if (FX.fullscreen !== false) goFS(); setTimeout(fsButton, 800); };      // only the very first tap
   addEventListener('click', first, { capture: true }); addEventListener('touchend', first, { capture: true, passive: true });
   ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, fsButton));
   document.addEventListener('contextmenu', e => { if (!/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) e.preventDefault(); });
@@ -4302,23 +4318,8 @@ if (TOUCH) {
     lpT = setTimeout(() => { const tx = tipOf(lpEl); if (!tx) return; lpShown = true; let b = $('lp-tip'); if (!b) { b = document.createElement('div'); b.id = 'lp-tip'; document.body.appendChild(b); }
       b.textContent = tx; b.style.left = Math.min(innerWidth - 20, Math.max(20, lpX)) + 'px'; b.style.top = Math.max(30, lpY - 18) + 'px'; b.classList.add('on'); if (navigator.vibrate) try { navigator.vibrate(12); } catch (er) {} }, 480); }, { passive: true });
   document.addEventListener('touchmove', e => { const t = e.touches[0]; if (Math.hypot(t.clientX - lpX, t.clientY - lpY) > 12) clearTimeout(lpT); }, { passive: true });
-  document.addEventListener('touchend', e => { clearTimeout(lpT); const b = $('lp-tip'); if (b && lpShown) { setTimeout(() => b.classList.remove('on'), 1400); e.preventDefault(); } }, { passive: false });      // a long-press only shows the tip; it doesn't also tap
-}
-const OPTIONS = [
-  ['snd', '🔊 Sound', 'Sound effects. Off by default on phones.', () => !sndMuted],
-  ['numbers', '💥 Hit numbers', 'The damage numbers that pop up over units.', () => FX.numbers],
-  ['shake', '📳 Screen shake', 'Camera shake on heavy hits. Turn off if it bothers you.', () => FX.shake],
-  ['speed', '⏩ Battle speed', 'Faster animations and pauses in battle: 1× normal, 1.5×, 2×. Also on the battle bar.', () => FX.speed > 1, () => speedLabel()],
-  ['flash', '⚡ Screen flashes', 'Colour flashes on kills, crits and boss phases, and the red pulse when a hero is nearly down. Turn off if flashing bothers you.', () => FX.flash],
-  ['text', '🔤 Text size', 'Makes all text bigger: Normal, Large, Extra large.', () => FX.text > 0, () => ['Normal', 'Large', 'Extra large'][FX.text]],
-  ...(TOUCH ? [['fullscreen', '⛶ Full screen', canFS() ? 'Phones and tablets: go full screen (landscape) on the first tap. If you leave it, tap ⛶ (bottom left) to go back.' : 'This browser can\'t go full screen from a web page (iPhone). Use Share → "Add to Home Screen" and open the game from there: it runs full screen.', () => FX.fullscreen !== false]] : []),
-  ['calm', '🕊️ Reduced motion', 'Turns off weather, screen shake, flashes and the fade between scenes. Calmer on the eyes.', () => FX.calm],
-  ['ui', '🖥️ Battle menu (PC)', 'Diamond: on your turn the hero\'s skills pop up beside them, laid out like a controller\'s buttons. Bar: a bottom bar with slanted skill buttons. Classic: the old fixed panel.', () => FX.ui !== 'classic', () => ({ dia: 'Diamond', bar: 'Bar', classic: 'Classic' })[FX.ui]],
-  ['travel', '🚶 Travel scenes', 'A short walking scene between fights, camps and events during a quest. Click or press a key to skip any of them.', () => FX.travel],
-  ['cb', '🎨 Colour-blind palette', 'Safer colours for the element numbers (blue, orange and yellow instead of red and green tints).', () => FX.cb],
-  ['talk', '💬 Battle chatter', 'Heroes talk in little speech bubbles: crits, kills, broken armour, boss phases and gag lines.', () => FX.talk],
-  ['spicy', '🔥 Fanservice', 'On: super broken heroes use their own (fog-censored) art, and everyone reacts to being stripped in their own way. Off: super broken heroes keep their broken look, and the chatter stays tame.', () => FX.spicy]
-];
+  document.addEventListener('touchend', e => { clearTimeout(lpT); const b = $('lp-tip'); if (b && lpShown) { setTimeout(() => b.classList.remove('on'), 1400); e.preventDefault(); } }, { passive: false });      // a long-press only shows the tip
+})();
 function closeGuide() { $('guide').classList.remove('show'); }
 function guideTabTo(t) { guideTab = t; renderGuide(); }
 
@@ -9395,9 +9396,7 @@ const heroById = id => HEROES.find(h => h.id === id);
 const elIcons = h => [...new Set([...h.skills.map(s => s.el), ...(h.elems || [])].filter(Boolean))].map(e => ICON[e]).join('');
 
 const FS_SCENES = ['hub', 'beach', 'vb', 'gear', 'spa-select', 'train-select', 'party-select', 'shop'];
-function showSceneFS() { setTimeout(() => { try { fsButton(); } catch (e) {} }, 50); }
 function showScene(name) {
-  showSceneFS();
   if (name === 'quest-select') name = 'party-select';           // choosing the party and the quest is one screen now       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
   if (name !== 'battle-scene' && typeof talkClear === 'function') talkClear();
   if (name !== 'battle-scene' && FB) fbCleanup();
