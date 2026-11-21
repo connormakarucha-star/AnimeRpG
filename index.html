@@ -2740,6 +2740,21 @@ body.calm #battle-scene .combatant-card.dg-low .figure,body.calm .dg-skull{anima
 .aims .ai.wk{color:#7dff9a;font-weight:900}.aims .ai.rs{color:#ff8a8a;font-weight:900}
 .aims .ai.rx{box-shadow:0 0 0 2px var(--rc),0 0 8px var(--rc)}
 .aims .ai.none{opacity:.6}
+/* tally marks + intent portraits (rings mode) */
+.threat{position:absolute;z-index:7;width:6em;font-size:clamp(14px,1vw,22px);translate:-50% -100%;pointer-events:none;filter:drop-shadow(0 0 3px rgba(0,0,0,.9)) drop-shadow(0 0 8px rgba(200,0,20,.55));animation:tgIn .35s ease-out}
+.threat svg{position:relative;display:block;width:100%;height:auto;overflow:visible}
+.threat .tg-under{position:absolute;left:50%;top:50%;translate:-50% -54%;font-size:3.4em;line-height:1;opacity:.9}
+.threat .tg-under.skull{filter:drop-shadow(0 0 8px #ff1a1a) brightness(.95);animation:dgSkull 1s ease-in-out infinite}
+.threat .tg-under.safe{filter:drop-shadow(0 0 8px #5cff9a)}
+.threat.lethal{filter:drop-shadow(0 0 3px #000) drop-shadow(0 0 12px rgba(255,0,20,.85))}
+@keyframes tgIn{0%{opacity:0;scale:1.4}100%{opacity:1;scale:1}}
+body.calm .threat,body.calm .threat .tg-under{animation:none}
+.ii{display:inline-flex;align-items:center;gap:.22em;padding:.12em .4em .12em .25em;border-radius:999px;background:rgba(10,8,16,.82);box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+.ii .ii-i{font-size:1.25em;line-height:1;font-style:normal}.ii .ii-i.all{font-size:1.35em}.ii .ii-i.rush{color:#ffd54f}
+.ii .ii-arrow{color:#ff8a80;font-weight:900;font-size:1.2em}
+.ii .ip{display:inline-grid;place-items:center;width:2.6em;height:2.6em;border-radius:50%;border:2px solid #ff5252;background:#1a1420;font:700 1em system-ui;color:transparent;box-shadow:0 0 8px rgba(255,60,60,.6)}
+.ii .ip.ward{border-color:#b388ff;box-shadow:0 0 8px rgba(179,136,255,.6)}.ii .ip.charm{border-color:#ff7ac8}
+.ii.charge{box-shadow:0 0 0 2px #ff6d00,0 0 14px rgba(255,109,0,.8);animation:pulse 1s infinite alternate}
 </style>
 </head>
 <body>
@@ -4356,6 +4371,16 @@ function toggleFx(k) { FX[k] = !FX[k]; try { localStorage.setItem('animeRpgFx', 
 // The crop: the sprite is enlarged to PORTRAIT.zoom x the frame's width, then shifted up by PORTRAIT.up % of the sprite's height (bigger = lower on the body) and sideways by PORTRAIT.x %.
 // If your heads sit higher or lower than the stand-ins: raise/lower `up` first, then `zoom`. byId lets one unit have its own crop, e.g. byId: { e_oni: { zoom: 2, up: 14 } }.
 const PORTRAIT = { zoom: 2.4, up: 0, x: 0, byId: {} };
+/* Each hero's face on her armoured idle, locked in: [centre across, centre down, frame width], fractions of the picture. Every portrait (turn order, party select,
+   camp, the battle intent portraits...) is cut from this box, so a skin drawn on the same canvas frames the same way; the tally marks sit just above it.
+   Tuned on the idles of 2026-11-21. A hero not listed falls back to PORTRAIT / PORTRAIT.byId. */
+const HEADS = { aneesah: [.51, .1, .19], aria: [.53, .09, .32], irae: [.57, .1, .27], iris: [.56, .11, .62], jean: [.55, .11, .48], seria: [.55, .13, .27], tyr: [.52, .105, .2], vesper: [.47, .14, .34] };
+function headVars(m, id) {
+  const H = HEADS[id]; if (!H) return;
+  const set = () => { const w = m.naturalWidth || m.videoWidth, h = m.naturalHeight || m.videoHeight; if (!w || !h) return; const [cx, cy, sz] = H, ar = w / h;
+    m.style.setProperty('--pz', (1 / sz).toFixed(3)); m.style.setProperty('--py', ((cy - .5 * sz * ar) * 100).toFixed(2)); m.style.setProperty('--px', ((.5 - cx) * 100).toFixed(2)); };
+  if (m.naturalWidth || m.videoWidth) set(); else m.addEventListener(m.tagName === 'VIDEO' ? 'loadedmetadata' : 'load', set, { once: true });
+}
 const unitArtCache = {};
 function applyPortraitVars() { const r = document.documentElement.style; r.setProperty('--pz', PORTRAIT.zoom); r.setProperty('--py', PORTRAIT.up); r.setProperty('--px', PORTRAIT.x); }
 function fillPortraits(root = document) {
@@ -4367,7 +4392,8 @@ function fillPortraits(root = document) {
     const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
     m.className = 'pimg'; m.src = a.url; m.draggable = false;
     if (vid) { m.muted = true; m.loop = true; m.autoplay = true; m.playsInline = true; }
-    const o = PORTRAIT.byId[id]; if (o) { if (o.zoom) m.style.setProperty('--pz', o.zoom); if (o.up !== undefined) m.style.setProperty('--py', o.up); if (o.x !== undefined) m.style.setProperty('--px', o.x); }
+    if (HEADS[id]) headVars(m, id);
+    const o = !HEADS[id] && PORTRAIT.byId[id]; if (o) { if (o.zoom) m.style.setProperty('--pz', o.zoom); if (o.up !== undefined) m.style.setProperty('--py', o.up); if (o.x !== undefined) m.style.setProperty('--px', o.x); }
     el.textContent = ''; el.appendChild(m); el.classList.add('has-port');
   });
 }
@@ -7205,7 +7231,7 @@ function barFx(u, sk) {
   const armTxt = armoured ? `Armour: ${Math.max(0, u.breakBar)}/${u.maxBreak}`
     : u.state === 'super' ? '<span class="super-tag">SUPER BROKEN</span>'
     : hero ? `<span class="broken-tag">Broken</span>: ${Math.max(0, u.break2)}/${u.maxBreak2}` : '<span class="broken-tag">BROKEN</span>';
-  const none = { hp: '', arm: '', lethal: false, armPct, armCls: lay.cls, armTxt };
+  const none = { hp: '', arm: '', lethal: false, dMid: 0, armPct, armCls: lay.cls, armTxt };
   if (!isAlive(u)) return none;
   const wardSk = sk && (sk.t === 'barrier' || (sk.t === 'barrierAll' && (u !== cur || sk.self))) && hero && sk.p ? sk : null, ward = wardSk ? wardSk.p : 0, B = u.barrier || 0, ghost = ward > B;
   // telegraphed attacks on this hero (incomingHits), in turn order: the barrier soaks each one's damage first and shields the armour from that hit's break damage (as hit() does).
@@ -7227,7 +7253,7 @@ function barFx(u, sk) {
     return h;
   };
   const hpP = Math.max(0, u.hp / u.maxHp * 100), shown = Math.max(B, ward);
-  return { ...none, lethal: dHi > 0 && dHi >= u.hp && !(u.immortal > 0),
+  return { ...none, lethal: dHi > 0 && dHi >= u.hp && !(u.immortal > 0), dMid: (dLo + dHi) / 2,
     hp: chunks(hpP, u.maxHp, shown, dLo, dHi),
     arm: lay.m && u.state !== 'super' ? chunks(armPct, lay.m, shown, kLo, kHi) : '' };
 }
@@ -7265,6 +7291,47 @@ function ringSvg(u, bfx, sk) {
   if (B > 0 || ward > B) g += `<path d="${ell(97, 22)}" fill="none" stroke="#b388ff" stroke-width="${B > 0 ? 4 : 3}" pathLength="100" class="shd${B > 0 ? '' : ' ghost'}"${B > 0 ? '' : ' stroke-dasharray="3 2"'}/>`;
   return `<svg class="ring${u._trail && performance.now() - u._trail.t0 < 600 ? ' flare' : ''}" viewBox="0 0 200 52" style="--rc:${hideHp ? '#9aa' : hc}">${g}</svg>`;
 }
+function intentIcons(u) {          // rings mode: the enemy's move as icons, and the portrait of whoever it will really land on (taunts and Shield Wall included)
+  if (u.trollCore || (FB && u.final)) return `<span class="intent">${intentText(u)}</span>`;
+  const it = u.intent; if (!it) return ''; if (stunned(u)) return '<span class="ii" title="Stunned: skips its turn"><b class="ii-i">💤</b></span>'; if (it.skip) return '';
+  const s = u.skills[it.i], q = u.rush ? `<b class="ii-i rush" title="Hurrying: +${u.rush} speed this round">⚡</b>` : '';
+  const P = (t, cls) => t ? `<span class="ip port-box ${cls}" data-port="${t.id}" title="${t.name}">${(t.short || t.name || '').slice(0, 2)}</span>` : '', ALL = '<b class="ii-i all" title="Everyone">👥</b>';
+  let ic, tgt;
+  if (s.t === 'barrierAll') { ic = '🛡️'; tgt = ALL; }
+  else if (s.t === 'barrier') { ic = '🛡️'; tgt = P(it.target, 'ward'); }
+  else if (s.t === 'charm') { ic = '💘'; tgt = P(it.target, 'charm'); }
+  else if (hasCharm(u)) { ic = '💘'; tgt = '<b class="ii-i" title="Charmed: it hits one of its own">❓</b>'; }
+  else { ic = (s.el ? ICON[s.el] : '') + RICON[rangeOf(s)]; tgt = s.all ? ALL : P(protectTarget(u, it.target), 'atk') + (s.aoe ? '<b class="ii-i sw" title="Splashes the others too">🌐</b>' : ''); }
+  return `<span class="ii" title="${s.n}">${q}<b class="ii-i">${ic}</b><span class="ii-arrow">›</span>${tgt}</span>`;
+}
+/* Tally marks over a hero's head (rings mode): how hard this round's telegraphed attacks will hit her, one bloody mark per 10% of her max HP they should take
+   (1 = a scratch, 5 = half her health or more, the fifth slashed across). Over a skull when they could kill her. While a Ward is being picked, the marks it would
+   soak turn faint violet, and a skull it would prevent becomes a shield. */
+const tallyN = (u, d) => d > 0 ? Math.min(5, Math.max(1, Math.ceil(d / u.maxHp * 10 - 1e-9))) : 0;
+function tallySvg(T) {
+  const cnt = Math.min(4, Math.max(T.n, T.was)), x0 = 31 - (cnt - 1) * 6.5;      // the marks sit centred over her head
+  const mark = (i, col) => { const x = x0 + i * 13, l = [0, 1.2, -.8, .9][i] || 0;          // a hand-cut brush stroke with a drip running off it
+    return `<path d="M ${x - 4.6 + l} 5 C ${x - 2 + l} 1 ${x + 2.6 + l} 1 ${x + 4.8 + l} 4.5 L ${x + 3.4} 29 C ${x + 2.8} 35 ${x + 1.8} 39 ${x + 1} 45 C ${x + .1} 40 ${x - .6} 36 ${x - 1.2} 33 L ${x - 3.8} 30 Z" fill="${col}" stroke="#3a0006" stroke-width=".7"/>`; };
+  const slash = col => `<path d="M 1 33 Q 14 30 32 20 Q 46 12 58 4 L 60 8.5 Q 48 17 34 25 Q 16 35 3 38.5 Z" fill="${col}" stroke="#3a0006" stroke-width=".7"/>`;
+  let g = '';
+  for (let i = 0; i < Math.max(T.n, T.was); i++) { const ghost = i >= T.n, col = ghost ? 'url(#tgV)' : 'url(#tgR)'; g += i < 4 ? mark(i, col) : slash(col); }
+  const under = T.saved ? '<span class="tg-under safe">🛡️</span>' : T.lethal ? '<span class="tg-under skull">💀</span>' : '';
+  return `${under}<svg viewBox="0 0 62 46"><defs><linearGradient id="tgR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4a4a"/><stop offset=".55" stop-color="#c10f1d"/><stop offset="1" stop-color="#6a0410"/></linearGradient><linearGradient id="tgV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9c2ff"/><stop offset="1" stop-color="#8e63e0"/></linearGradient></defs>${g}</svg>`;
+}
+function syncThreats() {            // put each hero's tally just above her head (HEADS), in her figure so it moves with her
+  party.forEach(u => {
+    const f = figs.get(u); if (!f || !f.isConnected) return; let el = f.querySelector(':scope > .threat'); const T = isAlive(u) && u._threat;
+    if (!T || (!T.n && !T.was && !T.lethal && !T.saved)) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement('div'); el.className = 'threat'; f.appendChild(el); }
+    const key = [T.n, T.was, T.lethal, T.saved].join('|'); if (el.dataset.k !== key) { el.dataset.k = key; el.innerHTML = tallySvg(T); el.classList.toggle('lethal', !!T.lethal); el.title = T.lethal ? `${u.name} could go down this round` : T.saved ? 'This barrier would keep her standing' : `Expected damage this round: about ${T.n * 10}% of her health`; }
+    const im = f.querySelector('.spr'), fr = f.getBoundingClientRect(), z = f.offsetWidth ? fr.width / f.offsetWidth : 1;
+    let x = fr.left + fr.width / 2, y = fr.top + fr.height * .1;
+    if (im) { const r = im.getBoundingClientRect(), H = HEADS[u.id], flip = f.classList.contains('flip'); x = r.left + r.width / 2; y = r.top;
+      if (H && r.width) { x = r.left + (flip ? 1 - H[0] : H[0]) * r.width; y = r.top + H[1] * r.height - H[2] * r.width * .55; } }
+    el.style.left = ((x - fr.left) / z).toFixed(1) + 'px'; el.style.top = ((y - fr.top) / z).toFixed(1) + 'px';
+  });
+}
+addEventListener('resize', () => { try { if (document.body.classList.contains('in-battle')) syncThreats(); } catch (e) {} });
 function aimIcons(sk, u, m, rx) {         // what the picked skill would do to this enemy, as icons: 💀 kill (💀? maybe), 💥 break its armour, ▲ weak / ▼ resists, a reaction
   const [lo, hi] = adjRange(sk, u), B = u.barrier || 0, dLo = Math.max(0, lo - B), dHi = Math.max(0, hi - B) + (critChance(sk, u) > 0 ? Math.max(0, num(CRIT.bonus)) : 0);
   const brk = Math.max(0, ((sk.el || sk.chip) ? (sk.brk || 0) : 0) - B), ic = [];
@@ -7282,6 +7349,7 @@ function hpTrail(u) {            // a pale strip that hangs where the HP was for
   return `<div class="hp-trail" style="--from:${T.from.toFixed(2)}%;--to:${T.to.toFixed(2)}%;animation-delay:${-el.toFixed(0)}ms"></div>`;
 }
 function card(u, team, i) {
+  const RG = FX.rings !== false;                      // health rings mode (see ringSvg)
   const c = ['combatant-card', 'team-' + team], alive = isAlive(u), front = i < POS.front;
   if (alive) c.push(front ? 'row-front' : 'row-back');
   if (u === actor && alive) c.push('active-turn');
@@ -7304,15 +7372,14 @@ function card(u, team, i) {
     const rx = reactFor(u, sk.el, cur);
     if (FX.rings !== false) extra = aimIcons(sk, u, m, rx); else
     extra = `<span>${rx ? `<span class="rxprev" style="--rc:${rx.col}" title="${rx.desc}">${rx.icon} ${rx.name}</span>` : ''}<span class="dmgprev">${lo === hi ? lo : lo + '–' + hi}</span>${pmTag(pm)}<span class="crit ${m || ''}">Crit ${critChance(sk, u)}%${m === 'weak' ? ' ▲weak' : m === 'resist' ? ' ▼resists' : ''}</span></span>`;
-  } else if (team === 'e' && alive && u.charging) extra = `<span class="intent charge">💥 ${BOSS_CHARGE.names[u.id] || 'Devastating Blow'} → ALL</span>`;      // charging: the next move hits everyone
-  else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
+  } else if (team === 'e' && alive && u.charging) extra = RG ? `<span class="ii charge" title="${BOSS_CHARGE.names[u.id] || 'Devastating Blow'}: hits the whole party">${'<b class="ii-i">💥</b><span class="ii-arrow">›</span><b class="ii-i all">👥</b>'}</span>` : `<span class="intent charge">💥 ${BOSS_CHARGE.names[u.id] || 'Devastating Blow'} → ALL</span>`;      // charging: the next move hits everyone
+  else if (team === 'e' && alive && u.intent) extra = RG ? intentIcons(u) : `<span class="intent">${intentText(u)}</span>`;
   const inc = team === 'p' && alive && !FB ? incoming(u) : 0;
   const bfx = barFx(u, sk), low = alive && u.hp / u.maxHp <= .25;
   if (team === 'p' && alive && (bfx.lethal || low)) c.push('bars-hot');                     // quiet bars: these stay bright (see the battle bars CSS)
-  const RG = FX.rings !== false, saved = RG && team === 'p' && alive && !bfx.lethal && isWard(sk) && barFx(u, null).lethal;      // a Ward being picked would save her
-  if (RG && team === 'p' && alive && !FB) { if (bfx.lethal) c.push('dg-lethal'); else if (saved) c.push('dg-saved'); else if (inc) c.push('dg-hit'); }      // threat outlines on the sprite
-  const incTxt = RG ? (team !== 'p' || !alive ? '' : bfx.lethal ? `<span class="dg-skull" title="The attacks aimed at ${u.name} could take her down">💀</span>` : saved ? `<span class="dg-safe" title="This barrier would keep ${u.name} standing">🛡️</span>` : '')
-    : inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
+  const saved = RG && team === 'p' && alive && !bfx.lethal && isWard(sk) && barFx(u, null).lethal;      // a Ward being picked would save her
+  if (team === 'p') u._threat = RG && alive && !FB ? { n: tallyN(u, bfx.dMid), was: isWard(sk) ? tallyN(u, barFx(u, null).dMid) : tallyN(u, bfx.dMid), lethal: bfx.lethal, saved } : null;      // tally marks over her head (syncThreats)
+  const incTxt = RG ? '' : inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
   const mt = (u.weak && u.weak.length ? `<span class="mt" title="Weak to">⚠️${elemIcons(u.weak)}</span>` : '') + (u.resist && u.resist.length ? `<span class="mt" title="Resists">🛡️${elemIcons(u.resist)}</span>` : '');
   return `<div class="${c.join(' ')}" onclick="pick('${team}',${i})">
     <div class="bubble">${extra}${incTxt}</div>
@@ -7489,7 +7556,7 @@ function render() {
   if (FB) fbHud();
   $('party-cards').innerHTML = party.map((u, i) => card(u, 'p', i)).join('');
   $('enemy-cards').innerHTML = enemies.map((u, i) => card(u, 'e', i)).join('');
-  mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e');
+  mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e'); syncThreats(); requestAnimationFrame(() => { try { syncThreats(); } catch (e) {} });
   [...party, ...enemies].forEach(syncAmbient);
   $('order').innerHTML = order.length ? `Round ${roundNo} · Turn order: ` + order.map(u =>
     `<span class="oq ${u.team}${u === actor ? ' act' : ''}${isAlive(u) ? '' : ' dead'}${u.team === 'e' && u.rush ? ' rush' : ''}"${u.team === 'e' && u.rush ? ` title="Hurrying to shield: +${u.rush} speed this round"` : ''}><span class="mini-sprite port-box" data-port="${u.id}">${u.tag}</span>${u === actor ? `<b>${u.short}</b>` : u.short}</span>`).join('›') : '';
