@@ -938,26 +938,51 @@ body.calm .qm-n,body.calm .qm-pc img,body.calm .qm-pull::after{animation:none!im
 /* ===== hot springs / bathhouse ===== */
 #spring.show{position:fixed;inset:0;z-index:5;margin:0;overflow:hidden;background:#0a0a12;display:block}
 #spring-stage{position:absolute;inset:0;overflow:hidden}
-.hs-box .hs-art{position:absolute;inset:0;background:center/cover no-repeat}
-.hs-box{--sh:34}
-.bath-seat .sp>img,.bath-seat .sp>video{-webkit-mask-image:linear-gradient(to bottom,#000 calc(var(--wl,.62) * 100% - 2%),rgba(0,0,0,.35) calc(var(--wl,.62) * 100% + 2%),transparent calc(var(--wl,.62) * 100% + 14%));mask-image:linear-gradient(to bottom,#000 calc(var(--wl,.62) * 100% - 2%),rgba(0,0,0,.35) calc(var(--wl,.62) * 100% + 2%),transparent calc(var(--wl,.62) * 100% + 14%))}
-.bath-seat:not(.stand-in) .sp>img,.bath-seat:not(.stand-in) .sp>video{-webkit-mask-image:none;mask-image:none}
-.bath-seat.npc .sp>img{height:calc(100% * 1.6)}
-.bath-seat .sf::after{content:'';position:absolute;left:12%;right:12%;top:calc(var(--wl,.62) * 100% + 2%);height:10%;border-radius:50%;border:2px solid rgba(220,255,250,.45);box-shadow:0 0 12px rgba(200,255,250,.3);animation:hsRing 3s ease-in-out infinite}
-@keyframes hsRing{50%{transform:scaleX(1.08);opacity:.55}}
-.hs-surface{position:absolute;left:0;right:0;top:78%;bottom:0;background:linear-gradient(rgba(90,190,190,.12),rgba(30,90,100,.35));pointer-events:none;z-index:200}
-.hs-steam{position:absolute;left:calc(var(--x) * 1%);bottom:12%;width:calc(180px * var(--s));height:calc(180px * var(--s));border-radius:50%;background:radial-gradient(rgba(255,255,255,.32),transparent 70%);filter:blur(10px);z-index:210;pointer-events:none;animation:hsSteam var(--t) ease-in infinite;animation-delay:var(--d)}
-@keyframes hsSteam{0%{transform:translate(-50%,0) scale(.6);opacity:0}25%{opacity:.85}100%{transform:translate(-30%,-55vh) scale(1.6);opacity:0}}
+/* painted bath (town spa) + quest spring: see HOT SPRINGS + THE TOWN SPA BATH in the script */
+#spa-select.show{position:fixed;inset:0;z-index:5;margin:0;overflow:hidden;background:#0a0a12;display:block}
+#spa-stage{position:absolute;inset:0;overflow:hidden}
+.sb-stage{position:absolute;overflow:visible}
+.sb-cam{position:absolute;inset:0;transform-origin:0 0;transition:transform .55s cubic-bezier(.3,.7,.2,1)}
+.sb-cam>div{position:absolute;inset:0}
+.sb-bg,.sb-snow{background:center/100% 100% no-repeat}.sb-bg>svg{width:100%;height:100%}
+.sb-grade{mix-blend-mode:multiply;pointer-events:none;z-index:900}
+.sb-steamL{pointer-events:none;z-index:1}
+.sb-heroes{z-index:2;pointer-events:none}
+.sb-wx{position:absolute;pointer-events:none;z-index:3}
+.sb-hero{all:unset;position:absolute;display:block;pointer-events:none}
+.sb-hero img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;user-select:none;-webkit-user-drag:none;transition:filter .2s}
+.sb-hero.flip img{transform:scaleX(-1)}
+.sb-ghost{opacity:.32;filter:blur(.8px) saturate(.55) brightness(.8) sepia(.25) hue-rotate(140deg);animation:sbWob 3.2s ease-in-out infinite}
+@keyframes sbWob{50%{translate:2px 1px}}
+.sb-hero.hov .sb-main,body.gp .sb-hero.gp-focus .sb-main{filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 10px rgba(255,220,150,.75))}
+.sb-hero.sel .sb-main{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 14px rgba(255,210,120,.9))}
+.sb-hero,.sb-hero.sel,.sb-hero:hover,body.gp .sb-hero.gp-focus{outline:none!important;box-shadow:none!important;background:none!important;border:0!important;padding:0!important;scale:none!important}
+.sb-fx{position:absolute;inset:0;pointer-events:none}
+.sb-fx i{position:absolute;font-style:normal}
+.sb-rip{border:2px solid rgba(255,255,255,.55);border-radius:50%;transform:translate(-50%,-50%);animation:sbRip 2.6s ease-out infinite;opacity:0}.sb-rip.b{animation-delay:1.3s}
+@keyframes sbRip{0%{opacity:.75;scale:.8}100%{opacity:0;scale:1.45}}
+.sb-foam{height:6px;transform:translateY(-50%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,.75),rgba(255,255,255,0) 70%);filter:blur(1px)}
+.sb-ws{transform:translate(-50%,-70%);border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,.45),rgba(255,255,255,0) 65%);filter:blur(4px);animation:sbWs 5s ease-in-out infinite}
+@keyframes sbWs{0%,100%{opacity:.55}50%{opacity:.9;translate:3px -4px}}
+.sb-dot{width:14px;height:14px;border-radius:50%;background:#ff3b47;box-shadow:0 0 0 2px #fff,0 0 12px #ff3b47;transform:translate(-50%,-50%);animation:sbDot 1.6s ease-in-out infinite}
+@keyframes sbDot{50%{scale:1.25}}
+.sb-steam{position:absolute;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,var(--o)) 0,rgba(255,255,255,0) 68%);filter:blur(6px);animation:sbRise var(--t) linear infinite;animation-delay:var(--d);opacity:0}
+@keyframes sbRise{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% - var(--dy))) scale(1.5)}}
+body.calm .sb-steam,body.calm .sb-rip,body.calm .sb-ghost,body.calm .sb-ws,body.calm .sb-dot{animation:none}body.calm .sb-steam{opacity:.45}
+#spa-select #spa-intro{position:absolute;z-index:20;left:18px;top:16px}
+#spa-select .sb-back{position:absolute;z-index:20;left:18px;bottom:18px;padding:10px 20px;border-radius:999px;background:rgba(18,52,58,.8);border:1px solid #9ff0e2;color:#eafffb;font-weight:700}
+#spa-select #spa-flaws{display:block;position:absolute;z-index:25;top:50%;left:auto;right:auto;width:min(380px,32vw);transform:translateY(-50%);opacity:0;pointer-events:none;transition:opacity .3s,translate .3s}
+#spa-select #spa-flaws.r{right:3vw;translate:20px 0}#spa-select #spa-flaws.l{left:3vw;translate:-20px 0}
+#spa-select #spa-flaws.on{opacity:1;pointer-events:auto;translate:0 0}
+#spa-select .sf-card .spa-btns button small{display:block;color:#9a9ab8;font-size:.78em}
+#spa-select .sf-ok{padding:12px 2px;font-size:1.05rem;color:#bfe9c8}
+#spa-select .sf-x{float:none;display:block;margin:10px 0 0 auto;padding:5px 12px}
 .hs-heal{position:absolute;left:50%;top:10%;translate:-50% 0;font:800 1.4rem system-ui;color:#9cff9a;text-shadow:0 2px 4px #000;animation:hsHeal 1.6s ease-out forwards;font-style:normal}
 @keyframes hsHeal{to{transform:translateY(-40px);opacity:0}}
 #spring-ui{position:absolute;z-index:250;left:50%;bottom:22px;translate:-50% 0}
 .hs-card{display:flex;align-items:center;gap:16px;padding:12px 14px 12px 20px;border-radius:999px;background:rgba(12,22,26,.72);border:1px solid rgba(160,240,225,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#eafffb;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .hs-card b{font-size:1rem;white-space:nowrap}.hs-card span{font-size:.82rem;color:#c8ece6;max-width:520px}
 .hs-card button{white-space:nowrap;border-radius:999px;padding:9px 18px}
-.bath-btn{position:absolute;z-index:30;left:28px;bottom:22px;padding:10px 20px;border-radius:999px;background:rgba(18,52,58,.78);border:1px solid #9ff0e2;color:#eafffb;font-weight:700;box-shadow:0 0 16px rgba(140,240,220,.35)}
-.bath-btn:hover{background:rgba(30,90,96,.85)}
-body.calm .hs-steam,body.calm .bath-seat .sf::after{animation:none}
-body.calm .hs-steam{opacity:.4}
 .qm-n.t-spring{background:radial-gradient(circle at 40% 35%,#3a8a8a,#0e2a2e);border-color:#9ff0e2}
 
 #event.show{position:fixed;inset:0;z-index:5;margin:0;flex-direction:row;justify-content:flex-end;align-items:stretch;overflow:hidden;background:#0e0e14}
@@ -2833,17 +2858,11 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
   </div>
 </div>
 
-<div id="spa-select" class="scene fsr">
-  <div class="hub-wrap">
-    <div class="hub-hall">
-      <div class="fs-chip gold-chip" id="spa-intro"></div>
-      <div class="fsbox" id="spa-box"><div class="hall-banner fscov left" id="spa-banner"></div></div>
-      <button class="bath-btn" onclick="showBath()">♨️ Visit the bath</button>
-      <div id="spa-flaws"></div>
-      <aside class="rside"><div class="rs-h">♨️ Spa</div><div class="rlist" id="spa-list"></div></aside>
-      <button class="narrow-back" onclick="showScene('hub')">Back to Town</button>
-    </div>
-  </div>
+<div id="spa-select" class="scene">
+  <div id="spa-stage"></div>
+  <div class="fs-chip gold-chip" id="spa-intro"></div>
+  <div id="spa-flaws"></div>
+  <button class="sb-back" onclick="showScene('hub')">⬅ Back to Town</button>
 </div>
 
 <div id="spa" class="scene">
@@ -5308,12 +5327,13 @@ const FOG = { grey: .1, outline: 1, blur: 7, speed: 2, res: 240 };
 const FOG_MASK = {};                       // picture url -> its mask url
 /* Tyr's immortal form (assets/tyr/armoured - immortal/) uses the same masks (idle.png + idle_mask.png), but its fog is black with red
    wisps (FOG_BLOOD) instead of white/grey. Unlike super broken, an immortal picture with no mask still shows as it is. */
-const FOG_DIRS = ['super broken', 'armoured - immortal'], FOG_SEL = FOG_DIRS.flatMap(d => [`img[src*="${d.replace(/ /g, '%20')}"]`, `img[src*="${d}"]`]).join(',');
+const FOG_DIRS = ['super broken', 'armoured - immortal', 'ui/spa/'], FOG_SEL = FOG_DIRS.flatMap(d => [`img[src*="${d.replace(/ /g, '%20')}"]`, `img[src*="${d}"]`]).join(',');      // ui/spa/: the bath sprites (white steam)
+const fogStrict = url => /super(%20| )broken/.test(url);       // only super broken art is never shown without its mask
 const FOG_BLOOD = { base: [8, 2, 4], red: [150, 8, 18], hot: [235, 40, 40] };   // shadow, blood red, the brightest wisps
 const fogBlood = url => { try { url = decodeURIComponent(url); } catch (e) {} return url.includes('armoured - immortal'); };
 async function findRaw(path) {
   const strict = path.includes('/super broken/');
-  if (!(strict || path.includes('/armoured - immortal/')) || path.endsWith('_mask')) return findRaw1(path);
+  if (!(strict || path.includes('/armoured - immortal/') || (path.includes('/ui/spa/') && path.endsWith('_spa'))) || path.endsWith('_mask')) return findRaw1(path);
   const k = path + '#fog'; if (k in animCache) return animCache[k];
   const a = await findRaw1(path), still = a && ['png', 'webp', 'jpg', 'jpeg'].includes(a.ext), m = still ? await findRaw1(path + '_mask') : null;
   if (m) FOG_MASK[a.url] = m.url;
@@ -5348,7 +5368,7 @@ function fogDraw(F, g, img, t, blood) {   // one frame of fog into this canvas (
 const fogOn = new Map();                  // img -> { cv, g, F, url }
 let fogT = 0, fogLast = 0, fogRun = false;
 function fogTick(now) {
-  const imgs = [...document.querySelectorAll(FOG_SEL)].filter(im => !fogBlood(im.getAttribute('src') || '') || FOG_MASK[decodeURIComponent(im.getAttribute('src'))] || FOG_MASK[im.getAttribute('src')]);
+  const imgs = [...document.querySelectorAll(FOG_SEL)].filter(im => fogStrict(im.getAttribute('src') || '') || FOG_MASK[decodeURIComponent(im.getAttribute('src'))] || FOG_MASK[im.getAttribute('src')]);
   const dt = Math.min(.05, (now - (fogLast || now)) / 1000); fogLast = now; if (!document.body.classList.contains('calm')) fogT += dt * FOG.speed;
   const hide = im => { if (im.style.visibility !== 'hidden') { im.style.visibility = 'hidden'; im.dataset.fogHid = 1; } }, show = im => { if (im.dataset.fogHid) { im.style.visibility = ''; delete im.dataset.fogHid; } };
   fogOn.forEach((o, im) => { if (!im.isConnected || !imgs.includes(im)) { o.cv.remove(); fogOn.delete(im); show(im); } });
@@ -5368,7 +5388,7 @@ function fogTick(now) {
     const bottom = /bottom|100%$/.test(cs.objectPosition), ox = (bw - cw) / 2, oy = bottom ? bh - ch : (bh - ch) / 2;
     const [tox, toy] = cs.transformOrigin.split(' ').map(parseFloat);
     Object.assign(o.cv.style, { display: cs.display === 'none' ? 'none' : '', left: im.offsetLeft + ox + 'px', top: im.offsetTop + oy + 'px', width: cw + 'px', height: ch + 'px',
-      transform: cs.transform, translate: cs.translate, rotate: cs.rotate, scale: cs.scale, transformOrigin: `${(tox || 0) - ox}px ${(toy || 0) - oy}px`, opacity: cs.opacity, zIndex: cs.zIndex });
+      maskImage: im.style.maskImage || '', webkitMaskImage: im.style.webkitMaskImage || '', transform: cs.transform, translate: cs.translate, rotate: cs.rotate, scale: cs.scale, transformOrigin: `${(tox || 0) - ox}px ${(toy || 0) - oy}px`, opacity: cs.opacity, zIndex: cs.zIndex });
     fogDraw(o.F, o.g, im, fogT, fogBlood(rel)); show(im);
   });
   if (imgs.length || fogOn.size) requestAnimationFrame(fogTick); else fogRun = false;
@@ -11218,28 +11238,190 @@ function qmFog(m, first) {               // dark everywhere except around the pl
 document.addEventListener('gpfocus', e => { const t = e.target; if (t && t.classList && t.classList.contains('qm-n')) qmTip(+t.dataset.i); else if ($('qm-tip')) $('qm-tip').classList.remove('on'); });
 addEventListener('resize', () => { if (quest && quest.map && $('qboard') && $('qboard').classList.contains('show')) { quest.map.fresh = []; renderMap(true); } });
 
-/* ============ HOT SPRINGS ============
+/* ============ HOT SPRINGS + THE TOWN SPA BATH ============
    On a quest map: a hot spring (♨️) is a free rest stop. The party soaks: everyone heals SPRING.heal of max HP and the fallen get up. In the Frostbound Peaks the soak also
    leaves them warmed through: in the next blizzard fight numbness builds SPRING.warm times as fast (much slower). One soak per spring.
-   In town: the Spa's "Visit the bath" is a bigger bath where the whole guild lounges about (and sometimes the shopkeeper, his assistant or the angel), just to look at.
-   Art (all optional): assets/ui/hotspring (the quest spring) and assets/ui/bath (the town bath) backgrounds; assets/ui/<Name>_bath (e.g. Aria_bath.png): a hero sitting in
-   the water, drawn like the camp sprite (until it exists the camp sprite stands in, sunk to the chest). SPRING.waterline = how much of the sprite shows above the water. */
-const SPRING = { heal: .5, warm: .35, waterline: .62, npc: .35, chance: .75 };
-const bathCache = {};
-async function bathSpr(id) {
-  if (id in bathCache) return bathCache[id];
-  const h = heroById(id), names = [...new Set([((h && h.name) || '').split(' ')[0], id.charAt(0).toUpperCase() + id.slice(1), id])].filter(Boolean);
-  for (const n of names) { const a = await findAsset(`${ANIM.base}/ui/${n}_bath`); if (a) return bathCache[id] = { a, own: true }; }
-  const c = await campSpr(id); return bathCache[id] = c ? { a: c, own: false } : null;
+   In town: the Spa opens straight onto the big bath. Every unlocked hero sits in her own seat (a seat stays empty until she joins); a red dot = flaws to treat.
+   Pick her (click, or d-pad + A): the view leans in and her card lists her flaws; pick one to start the massage.
+   Art, all in assets/ui/spa/: spa (the town bath) and hotspring (the quest spring), sky cut out (the sky, rain and snow are drawn per Act behind / over it);
+   <id>_spa (e.g. seria_spa.png: the hero sitting; untrimmed is fine) + <id>_spa_mask (steam over the masked parts, the super broken fog); optional
+   spa_snow / hotspring_snow (Act 3: snow on the roofs and treetops, laid over the picture). A hero with no _spa picture (Siren, Frigid) sits on a spare rock on her camp sprite.
+   Placement (tuned in spa_bath_mockup.html → ✏️ Edit seats → 📋 Numbers): a seat is { x, y, S, w, flip } in % of the picture: x, y = where she sits; S = her sitting height
+   (top of her hair to the seat); w = the water surface there (null = a dry rock: no cut); flip = face left. SB.sit[id] = where she sits on her own sprite
+   [across, down] as fractions of the sprite trimmed to its visible pixels. The hot spring has its own sit points, so the two places can be tuned apart. */
+const SPRING = { heal: .5, warm: .35, chance: .75 };
+const SB = {
+  sit: {
+    spa:    { aria: [.11, .96], seria: [.37, .79], aneesah: [.69, .70], iris: [.26, .86], irae: [.33, .51], vesper: [.31, .50], tyr: [.58, .84], jean: [.84, .98] },
+    spring: { aria: [.11, .96], seria: [.37, .79], aneesah: [.69, .70], iris: [.26, .86], irae: [.33, .51], vesper: [.31, .50], tyr: [.58, .84], jean: [.84, .98] }
+  },
+  spa: {
+    aria:    { x: 44.5, y: 61,   S: 11.5, w: 55.5, flip: false },
+    seria:   { x: 32,   y: 60.2, S: 10.5, w: null, flip: false },
+    aneesah: { x: 57.2, y: 54.6, S: 10.2, w: 53.8, flip: false },
+    iris:    { x: 35,   y: 46,   S: 9.5,  w: 42.5, flip: false },
+    irae:    { x: 77.3, y: 52.4, S: 10.2, w: 57.5, flip: false },
+    vesper:  { x: 39.9, y: 71.1, S: 12.1, w: 76.9, flip: true },
+    tyr:     { x: 75.5, y: 78.1, S: 13.8, w: 74.2, flip: true },
+    jean:    { x: 69.1, y: 68.8, S: 13.6, w: 62.4, flip: false }
+  },
+  spare: [{ x: 14, y: 64, S: 10, w: null, flip: false }, { x: 88, y: 57, S: 9.5, w: null, flip: true }],      // heroes without spa art (camp sprite, on a rock)
+  spring: [
+    { x: 32.3, y: 68.4, S: 11,   w: 87.4, flip: false },
+    { x: 61.7, y: 73.6, S: 13.9, w: 67.1, flip: true },
+    { x: 50.9, y: 74.7, S: 13.9, w: 69.2, flip: false },
+    { x: 67.6, y: 80.5, S: 12.9, w: 75.4, flip: true }
+  ],
+  standIn: [.5, .92],                      // where a camp sprite stand-in sits on itself
+  steam: { spa: [[39, 44, 18], [17, 68, 21], [51, 64, 27], [30, 83, 23], [81, 74, 20], [81, 58, 11]], spring: [[58, 72, 26], [55, 66, 14]] },   // [x, y, width] over each pool
+  sky: { day: { 1: ['#4f97d8', '#a9d3f2', '#eaf4fa'], 2: ['#3b4656', '#5d6a7a', '#8a96a2'], 3: ['#8c9cb2', '#c3cedb', '#e8edf3'] },
+    dusk: { 1: ['#2a1238', '#a8384a', '#ff9a5a'], 2: ['#241a30', '#5a3a4a', '#8a5a5a'], 3: ['#3a3458', '#9a7a98', '#e0b8b0'] },
+    night: { 1: ['#03030c', '#141236', '#2a1a3a'], 2: ['#030308', '#10141e', '#1c222c'], 3: ['#0a0e1e', '#1e2a44', '#3a4864'] } },
+  grade: { day: { 1: null, 2: ['#5a6e8e', .45], 3: ['#b4c6e0', .3] }, dusk: { 1: ['#ff8a6a', .32], 2: ['#a06a7a', .45], 3: ['#c890a0', .35] }, night: { 1: ['#2a3a8a', .55], 2: ['#202a5a', .62], 3: ['#2a3a7a', .55] } },
+  zoom: 1.55, ar: 2752 / 1536
+};
+const sbSprCache = {};
+function sbSprite(id) {                   // { url, own, ar, bb (visible box, fractions), w, h, d (small alpha copy for hit tests / ripple width) }
+  return sbSprCache[id] || (sbSprCache[id] = (async () => {
+    let a = await findAsset(`${ANIM.base}/ui/spa/${id}_spa`), own = true;
+    if (!a || !['png', 'webp', 'jpg', 'jpeg', 'gif'].includes(a.ext)) { a = await campSpr(id); own = false; }
+    if (!a) return null;
+    return new Promise(res => { const im = new Image(); im.onload = () => {
+      const k = Math.min(1, 256 / Math.max(im.naturalWidth, im.naturalHeight)), w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
+      let d = null; try { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0, w, h); d = g.getImageData(0, 0, w, h).data; } catch (e) {}
+      let x0 = w, y0 = h, x1 = -1, y1 = -1;
+      if (d) for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 60) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      res({ url: a.url, own, ar: im.naturalWidth / im.naturalHeight, bb: x1 < 0 ? [0, 0, 1, 1] : [x0 / w, y0 / h, (x1 + 1) / w, (y1 + 1) / h], w, h, d });
+    }; im.onerror = () => res(null); im.src = a.url; });
+  })());
 }
-function fillBath(root) {
-  root.querySelectorAll('[data-bath]').forEach(el => bathSpr(el.dataset.bath).then(b => {
-    if (!b || !el.isConnected) return; const sp = el.querySelector('.sp'), vid = b.a.ext === 'mp4' || b.a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
-    m.src = b.a.url; m.draggable = false; if (vid) { m.loop = m.muted = m.autoplay = m.playsInline = true; }
-    sp.textContent = ''; sp.appendChild(m); el.classList.add('has-art'); el.classList.toggle('stand-in', !b.own);
-  }));
+const sbAlpha = (sp, fx, fy) => { if (!sp.d) return 255; const x = Math.floor(fx * sp.w), y = Math.floor(fy * sp.h); return x < 0 || y < 0 || x >= sp.w || y >= sp.h ? 0 : sp.d[(y * sp.w + x) * 4 + 3]; };
+function sbSpan(sp, fy) {                 // the body's left / right edge on this row (fractions of the picture)
+  if (!sp.d) return [.3, .7]; const y = Math.max(0, Math.min(sp.h - 1, Math.floor(fy * sp.h))); let l = -1, r = -1;
+  for (let x = 0; x < sp.w; x++) if (sp.d[(y * sp.w + x) * 4 + 3] > 100) { if (l < 0) l = x; r = x; }
+  return l < 0 ? null : [l / sp.w, (r + 1) / sp.w];
 }
-const bathSeat = (id, x, y, o = {}) => seatHtml(id, x, y, { ...o, cls: 'bath-seat' + (o.cls ? ' ' + o.cls : ''), attr: `data-bath="${id}"` }).replace(' data-seat="' + id + '"', '');
+function sbPlace(sp, s, sit, W, H) {      // the sprite's box in px on the stage
+  const [bx0, by0, bx1, by1] = sp.bb, AX0 = bx0 + sit[0] * (bx1 - bx0), AY = by0 + sit[1] * (by1 - by0), AX = s.flip ? 1 - AX0 : AX0;
+  const h = s.S / 100 * H / Math.max(.05, AY - by0), w = h * sp.ar;
+  return { left: s.x / 100 * W - AX * w, top: s.y / 100 * H - AY * h, w, h };
+}
+// kind: 'spa' (town: everyone, pickable) | 'spring' (quest: the party). o = { act, tod, pick }
+async function sbOpen(host, kind, ids, o = {}) {
+  const tok = {}; host._sbTok = tok;
+  host.innerHTML = `<div class="sb-stage"><div class="sb-cam"><div class="sb-sky"></div><div class="sb-bg"></div><div class="sb-snow"></div><div class="sb-steamL"></div><div class="sb-heroes"></div><div class="sb-grade"></div></div><canvas class="sb-wx"></canvas></div>`;
+  const S = host._sb = { kind, act: o.act || 1, tod: o.tod || 'day', pick: !!o.pick, ar: SB.ar, sel: null, list: [], bg: null, snow: null };
+  const pic = kind === 'spa' ? 'spa' : 'hotspring';
+  const [bg, snow] = await Promise.all([findAsset(`${ANIM.base}/ui/spa/${pic}`), S.act === 3 ? findAsset(`${ANIM.base}/ui/spa/${pic}_snow`) : null]);
+  if (host._sbTok !== tok) return;
+  if (bg && ['png', 'webp', 'jpg', 'jpeg'].includes(bg.ext)) { S.bg = bg.url; await new Promise(r => { const im = new Image(); im.onload = () => { S.ar = im.naturalWidth / im.naturalHeight; r(); }; im.onerror = r; im.src = bg.url; }); }
+  else S.bgSvg = springSvg(kind === 'spa' ? 'bath' : 'spring', S.tod);
+  if (snow && ['png', 'webp'].includes(snow.ext)) S.snow = snow.url;
+  let spare = 0;
+  const rows = await Promise.all(ids.map(async (id, i) => { const sp = await sbSprite(id); if (!sp) return null;
+    let seat = kind === 'spa' ? (sp.own && SB.spa[id]) : SB.spring[i % SB.spring.length];
+    if (!seat) { seat = SB.spare[spare++ % SB.spare.length]; }
+    const sit = sp.own ? (SB.sit[kind][id] || [.5, .9]) : SB.standIn;
+    return { id, sp, seat: { ...seat, w: sp.own ? seat.w : null }, sit }; }));
+  if (host._sbTok !== tok) return;
+  S.list = rows.filter(Boolean).sort((a, b) => a.seat.y - b.seat.y);          // back to front
+  sbBuild(host); sbWx(host);
+  return S;
+}
+function sbBuild(host) {
+  const S = host._sb, st = host.querySelector('.sb-stage'); if (!S || !st) return;
+  const sk = SB.sky[S.tod][S.act] || SB.sky.day[1], gr = SB.grade[S.tod][S.act];
+  st.querySelector('.sb-sky').style.background = `linear-gradient(180deg,${sk[0]},${sk[1]} 55%,${sk[2]})`;
+  const bgEl = st.querySelector('.sb-bg'); if (S.bg) bgEl.style.backgroundImage = `url("${S.bg}")`; else bgEl.innerHTML = S.bgSvg || '';
+  if (S.snow) st.querySelector('.sb-snow').style.backgroundImage = `url("${S.snow}")`;
+  const g = st.querySelector('.sb-grade'); g.style.background = gr ? gr[0] : 'transparent'; g.style.opacity = gr ? gr[1] : 0;
+  const o = S.act === 3 ? .55 : .38; let s = '';
+  (SB.steam[S.kind] || []).forEach(([x, y, w]) => { for (let k = 0; k < Math.round(w / 2.2); k++) { const px = x + (Math.random() - .5) * w * .9, sz = w * (.25 + Math.random() * .3);
+    s += `<i class="sb-steam" style="left:${px.toFixed(1)}%;top:${(y + (Math.random() - .5) * 3).toFixed(1)}%;width:${sz.toFixed(1)}%;aspect-ratio:1.8;--o:${o};--t:${(7 + Math.random() * 6).toFixed(1)}s;--d:${(-Math.random() * 12).toFixed(1)}s;--dx:${((Math.random() - .5) * 60).toFixed(0)}px;--dy:${(40 + Math.random() * 70).toFixed(0)}px"></i>`; } });
+  st.querySelector('.sb-steamL').innerHTML = s;
+  const hl = st.querySelector('.sb-heroes');
+  hl.innerHTML = S.list.map(r => { const tag = S.pick ? 'button' : 'div';
+    return `<${tag} class="sb-hero${S.pick ? " dp" : ""}${r.seat.flip ? ' flip' : ''}" data-id="${r.id}"${S.pick ? ` onclick="spaPick('${r.id}')" aria-label="${(heroById(r.id) || {}).name || r.id}"` : ''}><img class="sb-ghost" src="${r.sp.url}" alt="" draggable="false"><img class="sb-main" src="${r.sp.url}" alt="" draggable="false"><span class="sb-fx"></span></${tag}>`; }).join('');
+  sbLayout(host);
+}
+function sbLayout(host) {                 // sizes everything to the window (the picture covers the screen)
+  const S = host._sb, st = host.querySelector('.sb-stage'); if (!S || !st) return;
+  const r = host.getBoundingClientRect(); if (!r.width || !r.height) return;
+  const W = Math.max(r.width, r.height * S.ar), H = W / S.ar; S.W = W; S.H = H;
+  Object.assign(st.style, { width: W + 'px', height: H + 'px', left: (r.width - W) / 2 + 'px', top: (r.height - H) / 2 + 'px' });
+  const cv = st.querySelector('.sb-wx'); cv.width = Math.round(r.width); cv.height = Math.round(r.height); Object.assign(cv.style, { left: -(r.width - W) / 2 + 'px', top: -(r.height - H) / 2 + 'px', width: r.width + 'px', height: r.height + 'px' });
+  const flaws = id => S.kind === 'spa' && (game.traits[id] || []).some(t => TRAIT[t] && TRAIT[t].kind === 'bad');
+  S.list.forEach(row => {
+    const el = st.querySelector(`.sb-hero[data-id="${row.id}"]`); if (!el) return;
+    const b = row.box = sbPlace(row.sp, row.seat, row.sit, W, H), s = row.seat;
+    Object.assign(el.style, { left: b.left + 'px', top: b.top + 'px', width: b.w + 'px', height: b.h + 'px', zIndex: Math.round(s.y * 10) });
+    const main = el.querySelector('.sb-main'), ghost = el.querySelector('.sb-ghost'), fx = el.querySelector('.sb-fx'); let html = '';
+    const cut = s.w == null ? 1e9 : s.w / 100 * H - b.top, wet = cut < b.h;
+    const mk = (e, v) => { e.style.webkitMaskImage = v; e.style.maskImage = v; };
+    mk(main, wet ? `linear-gradient(180deg,#000 ${cut - 4}px,transparent ${cut + 1}px)` : 'none');
+    ghost.style.display = wet ? '' : 'none'; if (wet) mk(ghost, `linear-gradient(180deg,transparent ${cut}px,#000 ${cut + 3}px,transparent ${cut + b.h * .3}px)`);
+    if (wet) { let sp = sbSpan(row.sp, Math.max(0, cut - 2) / b.h);
+      if (sp) { if (s.flip) sp = [1 - sp[1], 1 - sp[0]]; const cx = (sp[0] + sp[1]) / 2 * b.w, ww = Math.max(18, (sp[1] - sp[0]) * b.w);
+        html += `<i class="sb-foam" style="left:${cx - ww * .6}px;width:${ww * 1.2}px;top:${cut}px"></i><i class="sb-rip" style="left:${cx}px;top:${cut}px;width:${ww * 1.3}px;height:${ww * .32}px"></i><i class="sb-rip b" style="left:${cx}px;top:${cut}px;width:${ww * 1.3}px;height:${ww * .32}px"></i><i class="sb-ws" style="left:${cx}px;top:${cut}px;width:${ww * 1.8}px;height:${ww * .7}px"></i>`; } }
+    if (flaws(row.id)) { const t = row.sp.bb[1] * b.h, xm = ((row.sp.bb[0] + row.sp.bb[2]) / 2) * b.w; html += `<i class="sb-dot" style="left:${s.flip ? b.w - xm : xm}px;top:${t - 4}px"></i>`; }
+    fx.innerHTML = html;
+  });
+  sbCamera(host);
+}
+function sbCamera(host) {
+  const S = host._sb, cam = host.querySelector('.sb-cam'); if (!S || !cam) return;
+  const row = S.sel && S.list.find(r => r.id === S.sel);
+  host.querySelectorAll('.sb-hero').forEach(e => e.classList.toggle('sel', !!row && e.dataset.id === row.id));
+  if (!row || !row.box) { cam.style.transform = ''; return; }
+  const b = row.box, z = SB.zoom, W = S.W, H = S.H, right = sbCardRight(S);
+  let tx = W * (right ? .36 : .64) - z * (b.left + b.w / 2), ty = H * .55 - z * (b.top + b.h * .55);
+  tx = Math.min(0, Math.max(W - z * W, tx)); ty = Math.min(0, Math.max(H - z * H, ty));
+  cam.style.transform = `translate(${tx}px,${ty}px) scale(${z})`;
+}
+const sbCardRight = S => { const r = S.sel && S.list.find(x => x.id === S.sel); return !r || r.seat.x < 55; };
+function sbHit(host, e) {                 // the hero whose visible pixels are under the pointer (front first)
+  const S = host._sb; if (!S) return null;
+  for (const row of S.list.slice().reverse()) {
+    const im = host.querySelector(`.sb-hero[data-id="${row.id}"] .sb-main`); if (!im) continue; const r = im.getBoundingClientRect(); if (!r.width) continue;
+    let fx = (e.clientX - r.left) / r.width; const fy = (e.clientY - r.top) / r.height; if (row.seat.flip) fx = 1 - fx;
+    if (fx < 0 || fx > 1 || fy < 0 || fy > 1) continue;
+    const cut = row.seat.w == null || !row.box ? 2 : (row.seat.w / 100 * S.H - row.box.top) / row.box.h; if (fy > cut + .02) continue;
+    if (sbAlpha(row.sp, fx, fy) > 40) return row.id;
+  }
+  return null;
+}
+function sbWx(host) {                     // rain (Act 2) and snow (Act 3) over the picture
+  const S = host._sb, cv = host.querySelector('.sb-wx'); if (!S || !cv || S.act === 1) return;
+  const drops = Array.from({ length: S.act === 2 ? 260 : 130 }, () => ({ x: Math.random(), y: Math.random(), s: .6 + Math.random() * .8, r: Math.random() }));
+  const g = cv.getContext('2d');
+  const step = () => {
+    if (!cv.isConnected) return; requestAnimationFrame(step);
+    if (!cv.offsetParent) return; g.clearRect(0, 0, cv.width, cv.height);
+    const calm = document.body.classList.contains('calm');
+    if (S.act === 2) { g.strokeStyle = 'rgba(200,215,235,.42)'; g.lineWidth = 1.2; g.beginPath();
+      drops.forEach(d => { if (!calm) { d.y += .022 * d.s; d.x -= .004 * d.s; } if (d.y > 1) { d.y -= 1.05; d.x = Math.random() * 1.1; } const x = d.x * cv.width, y = d.y * cv.height; g.moveTo(x, y); g.lineTo(x - 5 * d.s, y + 18 * d.s); }); g.stroke(); }
+    else { g.fillStyle = 'rgba(255,255,255,.85)';
+      drops.forEach(d => { if (!calm) { d.y += .0018 * d.s; d.x += Math.sin(performance.now() / 1400 + d.r * 9) * .0006; } if (d.y > 1) { d.y -= 1.02; d.x = Math.random(); } g.beginPath(); g.arc(d.x * cv.width, d.y * cv.height, 1.2 + d.s * 1.6, 0, 7); g.fill(); }); }
+  };
+  requestAnimationFrame(step);
+}
+addEventListener('resize', () => ['spring-stage', 'spa-stage'].forEach(id => { const h = $(id); if (h && h._sb && h.offsetParent) sbLayout(h); }));
+
+function springEnter() {                                      // the party reaches a hot spring on the map: soak, heal, (Act 3) warm up
+  const q = quest, healed = [];
+  reviveAtCamp();
+  q.party.forEach(u => { if (u.faustDead) return; const h0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * SPRING.heal)); if (u.hp > h0) healed.push([u, u.hp - h0]); });
+  const warm = questAct(q.def.id) === 3; if (warm) q.warm = true;
+  qmDoneHere(); saveQuest();
+  showBathScene('spring', q.party.map(u => u.id), [], `<b>♨️ A hot spring</b><span>Everyone soaks${healed.length ? ' and heals' : ''}: +${Math.round(SPRING.heal * 100)}% HP.${warm ? ' Warmed through to the bone: the next blizzard will barely touch you.' : ''}</span>`, '🗺️ Back to the map', 'showMap()', healed);
+}
+function showBathScene(kind, ids, npcs, text, btn, act, healed) {
+  const st = $('spring-stage');
+  $('spring-ui').innerHTML = `<div class="hs-card">${text}<button class="primary" onclick="${act}">${btn}</button></div>`;
+  showScene('spring'); sfx('heal');
+  sbOpen(st, 'spring', ids, { act: quest ? questAct(quest.def.id) || 1 : 1, tod: quest && quest.map ? todOf().phase : 'day' }).then(() => setTimeout(() => (healed || []).forEach(([u, n]) => {
+    const el = st.querySelector(`.sb-hero[data-id="${u.id}"] .sb-fx`); if (el) { const f = document.createElement('i'); f.className = 'hs-heal'; f.textContent = '+' + n; el.appendChild(f); } }), 300));
+}
 function springSvg(kind, phase) {
   const sky = phase === 'night' ? ['#05060f', '#141838', '#2a2240'] : phase === 'dusk' ? ['#2a1238', '#a8384a', '#ff9a5a'] : kind === 'bath' ? ['#1a1428', '#3a2a40', '#6a4a50'] : ['#4f8fc8', '#9fc8e8', '#e6f0f6'];
   let r = 7; const R = () => (r = (r * 16807) % 2147483647) / 2147483647, rocks = [];
@@ -11254,38 +11436,6 @@ function springSvg(kind, phase) {
     <radialGradient id="hsW" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#7fd8d0"/><stop offset=".7" stop-color="#3a9aa0"/><stop offset="1" stop-color="#1e5a66"/></radialGradient></defs>
     ${wall}<rect y="${kind === 'bath' ? 520 : 540}" width="1600" height="400" fill="${kind === 'bath' ? '#5a4a40' : '#3a3a34'}"/>
     <ellipse cx="800" cy="720" rx="${kind === 'bath' ? 760 : 640}" ry="${kind === 'bath' ? 190 : 170}" fill="url(#hsW)"/>${rocks.join('')}</svg>`;
-}
-function bathScene(kind, ids, npcs) {                        // kind: 'spring' (quest) | 'bath' (town)
-  const box = document.createElement('div'); box.className = 'cover169 hs-box';
-  const phase = kind === 'spring' && quest && quest.map ? todOf().phase : 'night';
-  box.innerHTML = springSvg(kind, phase) + `<div class="hs-art"></div>`;
-  const spots = kind === 'bath' ? [[22, 84], [34, 90], [47, 86], [60, 90], [73, 85], [85, 89], [29, 78], [66, 78], [78, 78], [41, 78], [54, 79]] : [[30, 88], [43, 92], [57, 92], [70, 88]];
-  const sh = kind === 'bath' ? spots.slice().sort(() => Math.random() - .5) : spots;
-  const html = ids.map((id, i) => { const [x, y] = sh[i % sh.length]; return bathSeat(id, x, y, { flip: x > 50, sc: y < 82 ? .78 : .92 }); });
-  (npcs || []).forEach((n, k) => { const [x, y] = sh[(ids.length + k) % sh.length]; html.push(`<div class="seat bath-seat npc${x > 50 ? ' flip' : ''}" data-npc="${n}" style="--x:${x};--y:${y};--sc:${y < 82 ? .78 : .92};--sa:${CAMP.aspect};--cs:${CAMP.scale};--bd:${(-Math.random() * 4).toFixed(2)}s;--bt:4.6s"><div class="sf"><div class="sp"><div class="seat-ph"><div class="mini-sprite">${STORY_NPC[n].tag}</div></div></div></div></div>`); });
-  box.insertAdjacentHTML('beforeend', html.join('') + `<div class="hs-surface"></div>${Array.from({ length: 14 }, (_, i) => `<i class="hs-steam" style="--x:${(8 + Math.random() * 84).toFixed(1)};--d:${(-Math.random() * 9).toFixed(1)}s;--t:${(7 + Math.random() * 6).toFixed(1)}s;--s:${(.7 + Math.random() * .9).toFixed(2)}"></i>`).join('')}`);
-  fillBath(box);
-  box.querySelectorAll('[data-npc]').forEach(el => findStill(`${ANIM.base}/${STORY_NPC[el.dataset.npc].art}`).then(a => { if (a && el.isConnected) { const sp = el.querySelector('.sp'); sp.innerHTML = `<img src="${a.url}" alt="" draggable="false">`; el.classList.add('has-art', 'stand-in'); } }));
-  findAsset(`${ANIM.base}/ui/${kind === 'bath' ? 'bath' : 'hotspring'}`).then(a => { if (a && box.isConnected && ['png', 'jpg', 'webp'].includes(a.ext)) { box.querySelector('.dr-svg').remove(); box.querySelector('.hs-art').style.backgroundImage = `url("${a.url}")`; } });
-  return box;
-}
-function springEnter() {                                      // the party reaches a hot spring on the map: soak, heal, (Act 3) warm up
-  const q = quest, healed = [];
-  reviveAtCamp();
-  q.party.forEach(u => { if (u.faustDead) return; const h0 = u.hp; u.hp = Math.min(u.maxHp, u.hp + Math.round(u.maxHp * SPRING.heal)); if (u.hp > h0) healed.push([u, u.hp - h0]); });
-  const warm = questAct(q.def.id) === 3; if (warm) q.warm = true;
-  qmDoneHere(); saveQuest();
-  showBathScene('spring', q.party.map(u => u.id), [], `<b>♨️ A hot spring</b><span>Everyone soaks${healed.length ? ' and heals' : ''}: +${Math.round(SPRING.heal * 100)}% HP.${warm ? ' Warmed through to the bone: the next blizzard will barely touch you.' : ''}</span>`, '🗺️ Back to the map', 'showMap()', healed);
-}
-function showBath() {                                         // the town bath: everyone, for the view
-  const ids = game.roster.filter(id => heroById(id)), npcs = Object.keys(STORY_NPC).filter(() => Math.random() < SPRING.npc);
-  showBathScene('bath', ids, npcs, `<b>♨️ The bathhouse</b><span>${npcs.length ? 'Busy tonight.' : 'Steam, quiet, and nowhere to be.'}</span>`, '🚪 Back to the spa', "showScene('spa-select')", []);
-}
-function showBathScene(kind, ids, npcs, text, btn, act, healed) {
-  const st = $('spring-stage'); st.innerHTML = ''; st.appendChild(bathScene(kind, ids, npcs));
-  $('spring-ui').innerHTML = `<div class="hs-card">${text}<button class="primary" onclick="${act}">${btn}</button></div>`;
-  showScene('spring'); sfx('heal');
-  setTimeout(() => (healed || []).forEach(([u, n]) => { const el = st.querySelector(`[data-bath="${u.id}"]`); if (el) { const f = document.createElement('i'); f.className = 'hs-heal'; f.textContent = '+' + n; el.appendChild(f); } }), 400);
 }
 
 /* ---- time of day in battle: the code-drawn skies shift toward day blue / twilight red / night, Big Mike crosses the sky by day and the bigger, redder,
@@ -13480,20 +13630,26 @@ async function revealPerk(o) {
 let spaGame = null;     // { hero, cells, placed, strikes, over, safeLeft, nerves, cols, rows }
 
 function openSpa() { showScene('spa-select'); }
-let spaSel = null;           // the hero whose flaws are showing on the front desk
-function spaPick(id) { spaSel = spaSel === id ? null : id; renderSpaSelect(); }
-function renderSpaSelect() {
-  bannerSpa();
+let spaSel = null;           // the hero whose card is open in the bath
+function spaPick(id) { spaSel = id && spaSel !== id ? id : null; const h = $('spa-stage'); if (h._sb) { h._sb.sel = spaSel; sbCamera(h); } spaCard(); }
+const spaFlaws = id => [...new Set((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad'))];
+function renderSpaSelect() {               // the town spa: the bath with everyone in it (see HOT SPRINGS + THE TOWN SPA BATH)
   $('spa-intro').innerHTML = goldChip(SPA.cost);
-  const flaws = id => [...new Set((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad'))];
-  $('spa-list').innerHTML = game.roster.filter(id => heroById(id)).map(id => { const bad = flaws(id);
-    return rcard(id, { cls: 'click' + (spaSel === id ? ' sel' : '') + (bad.length ? '' : ' off'), onclick: `spaPick('${id}')`, sub: bad.length ? `<span class="fl-ic" title="${bad.map(t => TRAIT[t].name).join(', ')}">${bad.map(t => TRAIT[t].icon).join(' ')}</span>` : '✨ Spotless', badge: bad.length || null }); }).join('');
-  const box = $('spa-flaws'), h = spaSel && heroById(spaSel);
-  box.classList.toggle('on', !!h);
+  const host = $('spa-stage'), v = townVariant();
+  sbOpen(host, 'spa', game.roster.filter(id => heroById(id)), { act: v === 'frost' ? 3 : v === 'coast' ? 2 : 1, tod: 'day', pick: true });
+  if (!host.dataset.wired) { host.dataset.wired = 1;
+    host.addEventListener('click', e => { if (!host._sb || !host._sb.pick) return; const id = sbHit(host, e); spaPick(id || null); });
+    host.addEventListener('pointermove', e => { if (!host._sb) return; const id = sbHit(host, e); host.querySelectorAll('.sb-hero').forEach(x => x.classList.toggle('hov', x.dataset.id === id)); host.style.cursor = id ? 'pointer' : ''; }); }
+  spaCard();
+}
+function spaCard() {
+  const box = $('spa-flaws'), h = spaSel && heroById(spaSel), S = $('spa-stage')._sb;
+  box.className = h ? 'on ' + (!S || sbCardRight(S) ? 'r' : 'l') : '';
   if (!h) { box.innerHTML = ''; return; }
-  const bad = flaws(spaSel), poor = game.gold < SPA.cost, all = (game.traits[spaSel] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad');
-  box.innerHTML = `<div class="sf-card"><button class="sf-x" onclick="spaPick('${spaSel}')">✕</button><h3>${h.name} ${elIcons(h)}<span class="sf-cost${poor ? ' poor' : ''}">🪙 ${SPA.cost}</span></h3>
-    ${bad.length ? `<div class="spa-btns">${bad.map(t => `<button onclick="startSpa('${spaSel}','${t}')" ${poor ? 'disabled' : ''}>${TRAIT[t].icon} ${TRAIT[t].name}<small style="display:block;color:#9a9ab8">${TRAIT[t].desc}</small></button>`).join('')}</div>` : '<div class="sk">✨ Spotless.</div>'}</div>`;
+  const bad = spaFlaws(spaSel), poor = game.gold < SPA.cost;
+  box.innerHTML = `<div class="sf-card"><h3>${h.name} ${elIcons(h)}<span class="sf-cost${poor ? ' poor' : ''}">🪙 ${SPA.cost}</span></h3>
+    ${bad.length ? `<div class="spa-btns">${bad.map(t => `<button onclick="startSpa('${spaSel}','${t}')" ${poor ? 'disabled' : ''}>${TRAIT[t].icon} ${TRAIT[t].name}<small>${TRAIT[t].desc}</small></button>`).join('')}</div>` : '<div class="sf-ok">✨ Spotless</div>'}
+    <button class="sf-x" onclick="spaPick(null)">✕ Close</button></div>`;
 }
 
 function spaNeighbors(g, i) {
