@@ -3535,7 +3535,7 @@ const QUESTS = [{
   camps: 2,                    // two camps and two random events (the Tidelands are the hard group)
   events: 2,
   unlocks: 'siren',            // first boss win adds this hero to the roster
-  scale: { hp: 1.29, atk: 1.46 },          // (the +5% tried on 2026-11-20 was taken back: the fight-lined direct route adds the wear instead)
+  scale: { hp: 1.34, atk: 1.52 },          // +4% on 2026-11-21 (Connor's playthrough: Act 2 was a breeze, cleared first try; keep it below Act 3)
   nodes: [
     { name: 'Tidal Shallows',   enemies: ['e_jelly', 'e_crab', 'e_jelly'],                gold: 40 },
     { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly', 'e_crab'],      gold: 50 },
@@ -3545,7 +3545,7 @@ const QUESTS = [{
     { name: 'Drowned Harbour',  enemies: ['e_crab', 'e_eel', 'e_jelly', 'e_tide'],        gold: 70, bg: 3, scale: { hp: 1.12, atk: 1.12 } },     // added with the Tidelands: it shares the Wreck's picture (battle_cove_3)
     { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, bg: 4, scale: { hp: 1.2, atk: 1.15 } },
     { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, bg: 5, scale: { hp: 1.25, atk: 1.12 } },
-    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, bg: 6, boss: true, scale: { hp: 1.18, atk: 1.05 } }      // Act 2 bosses eased 2026-11-20 (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
+    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, bg: 6, boss: true, scale: { hp: 1.25, atk: 1.08 } }      // Act 2 bosses: eased to 1.18/1.05 on 2026-11-20 (bot), back up to 1.25/1.08 on 2026-11-21 (Connor cleared Act 2 with no losses) (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
   ]
 }, {
   id: 'lighthouse', name: 'The Stormwatch Lighthouse',
@@ -3554,7 +3554,7 @@ const QUESTS = [{
   pool: ['e_eel', 'e_ray', 'e_urchin', 'e_jelly', 'e_tide'],
   camps: 2,
   events: 2,
-  scale: { hp: 1.36, atk: 1.55 },
+  scale: { hp: 1.41, atk: 1.61 },          // +4% (2026-11-21)
   nodes: [
     { name: 'Rocky Causeway',     enemies: ['e_eel', 'e_urchin', 'e_eel'],                  gold: 45 },
     { name: "Keeper's Cottage",   enemies: ['e_ray', 'e_jelly', 'e_urchin', 'e_eel'],       gold: 55 },
@@ -3564,7 +3564,7 @@ const QUESTS = [{
     { name: 'Foghorn Gallery',    enemies: ['e_ray', 'e_eel', 'e_jelly', 'e_tide'],         gold: 80, bg: 5, scale: { hp: 1.15, atk: 1.12 } },
     { name: 'The Lamp Room',      enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 95, bg: 6, scale: { hp: 1.2, atk: 1.15 } },
     { name: 'Storm Balcony',      enemies: ['e_eel', 'e_ray', 'e_jelly', 'e_tide'],         gold: 110, bg: 7, scale: { hp: 1.25, atk: 1.15 } },
-    { name: "The Keeper's Lantern", enemies: ['e_ray', 'e_keeper', 'e_eel'],                gold: 160, bg: 8, boss: true, scale: { hp: 1.18, atk: 1.05 } }      // Act 2 bosses eased 2026-11-20 (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
+    { name: "The Keeper's Lantern", enemies: ['e_ray', 'e_keeper', 'e_eel'],                gold: 160, bg: 8, boss: true, scale: { hp: 1.25, atk: 1.08 } }      // Act 2 bosses: eased to 1.18/1.05 on 2026-11-20 (bot), back up to 1.25/1.08 on 2026-11-21 (Connor cleared Act 2 with no losses) (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
   ]
 }, {
   id: 'beach', name: 'The Sunbaked Shoals',
@@ -3573,7 +3573,7 @@ const QUESTS = [{
   pool: ['e_crab', 'e_jelly', 'e_urchin', 'e_tide', 'e_ray'],
   camps: 2,
   events: 2,
-  scale: { hp: 1.22, atk: 1.36 },
+  scale: { hp: 1.27, atk: 1.41 },          // +4% (2026-11-21)
   nodes: [
     { name: 'Tide Pools',         enemies: ['e_crab', 'e_urchin', 'e_jelly'],               gold: 45 },
     { name: 'Driftwood Cove',     enemies: ['e_crab', 'e_jelly', 'e_urchin', 'e_ray'],      gold: 55 },
@@ -3583,7 +3583,7 @@ const QUESTS = [{
     { name: 'Shipwreck Beach',    enemies: ['e_crab', 'e_crab', 'e_urchin', 'e_tide'],      gold: 80, bg: 5, scale: { hp: 1.15, atk: 1.12 } },
     { name: 'The Boardwalk',      enemies: ['e_ray', 'e_crab', 'e_jelly', 'e_tide'],        gold: 95, bg: 6, scale: { hp: 1.2, atk: 1.15 } },
     { name: 'Sunset Dunes',       enemies: ['e_crab', 'e_ray', 'e_urchin', 'e_tide'],       gold: 110, bg: 7, scale: { hp: 1.25, atk: 1.15 } },
-    { name: "The Carapace King's Throne", enemies: ['e_crab', 'e_crabking', 'e_jelly'],     gold: 160, bg: 8, boss: true, scale: { hp: 1.18, atk: 1.05 } }      // Act 2 bosses eased 2026-11-20 (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
+    { name: "The Carapace King's Throne", enemies: ['e_crab', 'e_crabking', 'e_jelly'],     gold: 160, bg: 8, boss: true, scale: { hp: 1.25, atk: 1.08 } }      // Act 2 bosses: eased to 1.18/1.05 on 2026-11-20 (bot), back up to 1.25/1.08 on 2026-11-21 (Connor cleared Act 2 with no losses) (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
   ]
 }, {
   id: 'pass', name: 'The Shattered Pass',
