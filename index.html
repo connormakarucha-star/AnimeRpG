@@ -12609,7 +12609,7 @@ const LOCKER = {
   every: [16000, 38000], odds: [.3, .25, .25, .2],
   stand: { x: .3 }                     // where the hero stands: on the floor between the lockers and the bench (x of their centre, fraction of the picture)
 };
-RAIN_SND.shower = { hp: 450, lp: 6500, hiss: .07, f: [700, 4200], q: [1, 4], amp: [.012, .045], every: [8, 40] };
+RAIN_SND.shower = { hp: 450, lp: 5000, hiss: .02, f: [700, 4200], q: [1, 4], amp: [.004, .014], every: [8, 40] };     // turned down to about a third (2026-11-21: too loud on the hero page)
 let lkPic, lkLook = false, lkWx = null, lkArt = {};
 const lkS = { who: '', next: 0, puffT: 0 };
 const lkOn = () => wide() && !!dormHero;
@@ -14138,31 +14138,209 @@ function weatherFor(name) {
 }
 function weatherSet(name) { const w = document.getElementById('weather'); if (w) w.className = FX.calm ? '' : weatherFor(name); }
 
-// Music: a quiet generated pad per area (no audio files). Follows the Sound switch and the Music volume option.
+// Music: a small generated soundtrack (no audio files), written as note patterns and played by synth voices. Follows the Sound switch and the Music volume option.
+// Songs: town (Act-agnostic, two levels: 0 = indoors, 1 = out in town / the beach), quest (0 = camp / events / springs, 1 = the quest map),
+// battle (0 = opening, 1 = the fight, 2 = it's going badly or a boss is hurt: the level only moves on a 2-bar line, through a fill going up or a breakdown going down)
+// and final (one level per boss phase, faster and higher each time; the third is the frantic one).
+// Pattern text: one token per 16th note. Melody: a note (C5, F#4, Bb3) starts, '-' holds it, '.' is a rest. Bass: R root, F fifth, T third, O octave up, L octave down.
+// Arp: digits pick chord tones (0 1 2 = the triad, 3 4 5 = an octave up, 6 = two up). Drums: x hit, o soft hit, . nothing.
+// To make a song quieter / louder: its parts' v. To replace a song with a recording later: drop the generated one from MUSIC_AREA and play a file instead.
+const MUS_CH = { '': [0, 4, 7], m: [0, 3, 7], dim: [0, 3, 6], sus: [0, 5, 7], 7: [0, 4, 7, 10], m7: [0, 3, 7, 10] };
+const MUS_NOTE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+const musMidi = n => { const m = /^([A-G])([#b]?)(-?\d)$/.exec(n); return m ? 12 * (+m[3] + 1) + MUS_NOTE[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) : null; };
+const musChord = c => { const m = /^([A-G])([#b]?)(.*)$/.exec(c); return { root: MUS_NOTE[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0), iv: MUS_CH[m[3]] || MUS_CH[''] }; };
 const MUSIC = {
-  town:   { notes: [262, 330, 392, 440, 523], wave: 'triangle', lp: 900,  every: 2600 },
-  beach:  { notes: [220, 262, 330, 392],       wave: 'sine',     lp: 700,  every: 3400, waves: true },
-  camp:   { notes: [196, 247, 294, 392],       wave: 'sine',     lp: 600,  every: 3000, crackle: true },
-  battle: { notes: [110, 131, 147, 165, 196],  wave: 'sawtooth', lp: 420,  every: 2200 }
+  town: {
+    bpm: 100, chords: ['C', 'G', 'Am', 'F', 'F', 'G', 'C', 'C'],
+    parts: [
+      { i: 'pad', v: .32, lv: [0, 1] },
+      { i: 'bass', v: .55, lv: [0, 1], p: 'R . . . . . F . R . . . O . F .' },
+      { i: 'pluck', v: .5, lv: [0, 1], mel: [
+        'E5 - - G5 - - E5 - D5 - C5 - D5 - E5 -', 'D5 - - B4 - - G4 - A4 - B4 - D5 - - -', 'C5 - - E5 - - A5 - G5 - E5 - D5 - C5 -', 'A4 - - C5 - - F5 - E5 - - - D5 - - -',
+        'F5 - - E5 - - C5 - A4 - C5 - F5 - A5 -', 'G5 - - F5 - - D5 - B4 - D5 - G5 - - -', 'E5 - - G5 - - C6 - B5 - G5 - E5 - - -', 'C5 - - - - - - - . . . . . . . .'] },
+      { i: 'bell', v: .22, lv: [1, 1], mel: ['. . . . . . . . . . . . G5 - - -', '. . . . . . . . . . . . B5 - - -', '. . . . . . . . . . . . C6 - - -', '. . . . . . . . . . . . A5 - - -',
+        '. . . . . . . . . . . . A5 - - -', '. . . . . . . . . . . . B5 - - -', '. . . . . . . . . . . . . . . .', '. . . . G5 - - - E5 - - - C6 - - -'] },
+      { i: 'hat', v: .16, lv: [1, 1], p: '. . x . . . x . . . x . . . x x' },
+      { i: 'kick', v: .35, lv: [1, 1], p: 'x . . . . . . . x . . . . . . .' },
+      { i: 'snap', v: .22, lv: [1, 1], p: '. . . . x . . . . . . . x . . .' }
+    ]
+  },
+  quest: {
+    bpm: 108, chords: ['Dm', 'C', 'Bb', 'C', 'Dm', 'C', 'Bb', 'A'],
+    parts: [
+      { i: 'pad', v: .42, lv: [0, 1] },
+      { i: 'arp', v: .28, lv: [0, 1], p: '0 . 1 . 2 . 3 . 2 . 1 . 2 . 4 .' },
+      { i: 'bass', v: .55, lv: [1, 1], p: 'R . R . R . O . R . R . F . R .' },
+      { i: 'horn', v: .42, lv: [1, 1], mel: [
+        'D5 - - - A4 - - - D5 - E5 - F5 - - -', 'E5 - - - C5 - - - G4 - - - C5 - - -', 'D5 - - - F5 - - - Bb5 - A5 - G5 - - -', 'A5 - - - - - - - G5 - E5 - C5 - - -',
+        'D5 - - - A4 - - - D5 - E5 - F5 - G5 -', 'A5 - - - G5 - - - E5 - - - C5 - - -', 'F5 - - - D5 - - - Bb4 - C5 - D5 - - -', 'C#5 - - - - - - - E5 - - - A4 - - -'] },
+      { i: 'kick', v: .4, lv: [1, 1], p: 'x . . . . . . x x . . . . . . .' },
+      { i: 'snare', v: .18, lv: [1, 1], p: '. . . . x . . . . . . . x . . o' },
+      { i: 'hat', v: .12, lv: [1, 1], p: 'x . x . x . x . x . x . x . x .' }
+    ]
+  },
+  battle: {
+    bpm: 140, chords: ['Am', 'F', 'C', 'G', 'Am', 'F', 'G', 'E'],
+    heat() { return battleHeat(); },
+    parts: [
+      { i: 'pad', v: .3, lv: [0, 2] },
+      { i: 'bass', v: .6, lv: [0, 0], p: 'R - - - . . R . R - - - . . F .' },
+      { i: 'bass', v: .6, lv: [1, 1], p: 'R . R . R . O . R . R . F . O .' },
+      { i: 'bass', v: .65, lv: [2, 2], p: 'R O R O R O R O R O R O F O F O' },
+      { i: 'hat', v: .13, lv: [0, 0], p: '. . x . . . x . . . x . . . x .' },
+      { i: 'hat', v: .14, lv: [1, 1], p: 'x . x . x . x . x . x . x . x .' },
+      { i: 'hat', v: .14, lv: [2, 2], p: 'x o x o x o x o x o x o x o x x' },
+      { i: 'kick', v: .55, lv: [1, 1], p: 'x . . . . . . . x . x . . . . .' },
+      { i: 'kick', v: .6, lv: [2, 2], p: 'x . . . x . . . x . . . x . x .' },
+      { i: 'snare', v: .4, lv: [1, 2], p: '. . . . x . . . . . . . x . . .' },
+      { i: 'arp', v: .17, lv: [1, 2], p: '0 1 2 3 2 1 0 1 2 3 4 3 2 1 0 1' },
+      { i: 'lead', v: .38, lv: [2, 2], mel: [
+        'A4 - - - E4 - A4 - C5 - B4 - A4 - G4 -', 'A4 - - - F4 - - - C4 - F4 - A4 - C5 -', 'G4 - - - E4 - G4 - C5 - D5 - E5 - D5 -', 'B4 - - - - - G4 - D4 - G4 - B4 - D5 -',
+        'E5 - - - C5 - - - A4 - C5 - E5 - A5 -', 'F5 - - - E5 - C5 - A4 - - - F4 - A4 -', 'G4 - - - B4 - D5 - G5 - F5 - D5 - B4 -', 'G#4 - - - B4 - - - E5 - - - - - - -'] }
+    ]
+  },
+  final: {
+    bpm: [148, 156, 172], tr: [0, 0, 1], chords: ['Dm', 'Bb', 'C', 'A', 'Dm', 'Bb', 'Gm', 'A'],
+    heat() { const b = typeof FB !== 'undefined' && FB && enemies[0]; return b ? Math.min(2, b.phase || 0) : 0; },
+    rise: true,                                     // a level change here is a phase change: a riser into a big hit
+    parts: [
+      { i: 'choir', v: .36, lv: [0, 2] },
+      { i: 'bass', v: .62, lv: [0, 0], p: 'R . R . R . R . R . R . O . R .' },
+      { i: 'bass', v: .62, lv: [1, 1], p: 'R R O R R R O R R R O R F F O F' },
+      { i: 'bass', v: .66, lv: [2, 2], p: 'R R O R R O R R O R R O F O F O' },
+      { i: 'kick', v: .6, lv: [0, 0], p: 'x . . . x . . . x . . . x . . .' },
+      { i: 'kick', v: .62, lv: [1, 1], p: 'x . . x x . . . x . . x x . x .' },
+      { i: 'kick', v: .66, lv: [2, 2], p: 'x . x . x . x x x . x . x . x x' },
+      { i: 'tom', v: .35, lv: [0, 0], p: '. . . . . . . . . . . . . . x x' },
+      { i: 'snare', v: .38, lv: [0, 1], p: '. . . . x . . . . . . . x . . .' },
+      { i: 'snare', v: .4, lv: [2, 2], p: '. . . . x . . o . . . . x . x x' },
+      { i: 'hat', v: .12, lv: [0, 0], p: 'x . x . x . x . x . x . x . x .' },
+      { i: 'hat', v: .13, lv: [1, 2], p: 'x x x x x x x x x x x x x x x x' },
+      { i: 'arp', v: .16, lv: [1, 1], p: '0 1 2 3 0 1 2 3 0 1 2 3 4 3 2 1' },
+      { i: 'arp', v: .18, lv: [2, 2], p: '0 3 1 4 2 5 3 6 5 4 3 2 5 4 3 1' },
+      { i: 'lead', v: .4, lv: [1, 1], mel: [
+        'D5 - - D5 - - F5 - A5 - - - G5 - F5 -', 'F5 - - - D5 - - - Bb4 - D5 - F5 - Bb5 -', 'A5 - - - G5 - - - E5 - G5 - C6 - Bb5 -', 'A5 - - - - - - - C#6 - - - E6 - - -',
+        'D6 - - - A5 - - - F5 - A5 - D6 - E6 -', 'F6 - - - E6 - D6 - Bb5 - - - D6 - F6 -', 'G5 - Bb5 - D6 - G6 - F6 - D6 - Bb5 - G5 -', 'A5 - C#6 - E6 - A6 - - - - - - - - -'] },
+      { i: 'lead', v: .42, lv: [2, 2], mel: [
+        'D5 F5 A5 D6 - - F5 - A5 D6 F6 - E6 - D6 -', 'F5 Bb5 D6 F6 - - D6 - Bb5 - D6 - F6 - Bb6 -', 'E5 G5 C6 E6 - - G5 - C6 E6 G6 - F6 - E6 -', 'C#6 E6 A6 - - - E6 - C#6 - A5 - E5 - A5 -',
+        'D6 - - - A5 D6 F6 - A6 - G6 - F6 - E6 -', 'F6 - E6 - D6 - Bb5 - D6 - F6 - Bb6 - A6 -', 'G6 - F6 - D6 - Bb5 - G5 - Bb5 - D6 - G6 -', 'A6 - - - E6 - C#6 - A5 - C#6 - E6 - A6 -'] }
+    ]
+  }
 };
-let musicArea = '', musicTimer = null, mGain = null;
-const areaFor = n => ({ hub: 'town', shop: 'town', gear: 'town', 'train-select': 'town', 'train-method': 'town', spa: 'beach', 'spa-select': 'town', 'party-select': 'town', 'quest-select': 'town', beach: 'beach', 'beach-pick': 'beach', vb: 'beach', camp: 'camp', event: 'camp', qboard: 'camp', spring: 'camp', 'battle-scene': 'battle', lake: 'beach', dive: 'battle' })[n] || '';
-function musicVol() { if (mGain && actx) mGain.gain.setTargetAtTime(sndMuted ? 0 : FX.vol * 0.35, actx.currentTime, 0.3); if (!sndMuted && FX.vol > 0 && !musicTimer && musicArea) musicSet(musicArea, true); }
+// where each screen goes: [song, level] (level 'auto' = the song decides)
+const MUSIC_AREA = {
+  town: ['town', 1], indoor: ['town', 0], beach: ['town', 1], camp: ['quest', 0], quest: ['quest', 1], title: ['quest', 0],
+  battle: ['battle', 'auto'], final: ['final', 'auto'], dive: ['battle', 1]
+};
+const areaFor = n => ({ hub: 'town', shop: 'indoor', gear: 'indoor', 'train-select': 'indoor', 'train-method': 'indoor', spa: 'indoor', 'spa-select': 'town', 'party-select': 'indoor', 'quest-select': 'indoor',
+  beach: 'beach', 'beach-pick': 'beach', vb: 'beach', lake: 'beach', camp: 'camp', event: 'camp', spring: 'camp', qboard: 'quest', dive: 'dive',
+  'battle-scene': typeof FB !== 'undefined' && FB ? 'final' : 'battle' })[n] || '';
+function battleHeat() {           // 1 = a fight; 2 = someone is down or hurting, a hero is super broken, or a boss is below half
+  if (!party.length || !enemies.length) return 1;
+  const hpf = party.reduce((a, u) => a + Math.max(0, u.hp) / u.maxHp, 0) / party.length;
+  const hot = hpf < .55 || party.some(u => !isAlive(u) || u.state === 'super') || enemies.some(e => e.boss && isAlive(e) && e.hp < e.maxHp * .5);
+  return hot ? 2 : 1;
+}
+let musicArea = '', musicTimer = null, mGain = null, mRev = null, mus = null;
+function musicVol() { if (mGain && actx) mGain.gain.setTargetAtTime(sndMuted ? 0 : FX.vol * 0.28, actx.currentTime, 0.3); if (!sndMuted && FX.vol > 0 && !musicTimer && musicArea) musicSet(musicArea, true); }
+function musBus() {
+  if (mGain) return;
+  mGain = actx.createGain(); mGain.gain.value = 0; mGain.connect(amaster);
+  mRev = actx.createConvolver(); const n = actx.sampleRate * 2.2, ir = actx.createBuffer(2, n, actx.sampleRate);           // a generated hall
+  for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3.2); }
+  mRev.buffer = ir; const rg = actx.createGain(); rg.gain.value = .32; mRev.connect(rg); rg.connect(mGain);
+}
 function musicSet(area, force) {
-  if (area === musicArea && !force) return; musicArea = area;
-  clearInterval(musicTimer); musicTimer = null;
-  if (!area || !MUSIC[area] || sndMuted || FX.vol <= 0 || !ac()) return;
-  if (!mGain) { mGain = actx.createGain(); mGain.gain.value = 0; mGain.connect(amaster); }
-  mGain.gain.setTargetAtTime(FX.vol * 0.35, actx.currentTime, 0.4);
-  const M = MUSIC[area], note = () => {
-    if (sndMuted || FX.vol <= 0 || musicArea !== area || document.hidden) return;
-    const t = actx.currentTime, f = M.notes[Math.floor(Math.random() * M.notes.length)] * (Math.random() < .25 ? .5 : 1), dur = 5 + Math.random() * 3;
-    [0, 1.003].forEach(d => { const o = actx.createOscillator(), g = actx.createGain(), lp = actx.createBiquadFilter(); o.type = M.wave; o.frequency.value = f * (d || 1); lp.type = 'lowpass'; lp.frequency.value = M.lp;
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.09, t + 1.6); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(lp); lp.connect(g); g.connect(mGain); o.start(t); o.stop(t + dur + .1); });
-    if (M.waves) { const s = actx.createBufferSource(), g = actx.createGain(), lp = actx.createBiquadFilter(); s.buffer = anoise; lp.type = 'lowpass'; lp.frequency.value = 500; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.06, t + 2); g.gain.exponentialRampToValueAtTime(0.0001, t + 5); s.connect(lp); lp.connect(g); g.connect(mGain); s.start(t); s.stop(t + 5.2); }
-    if (M.crackle) for (let i = 0; i < 5; i++) { const s = actx.createBufferSource(), g = actx.createGain(), hp = actx.createBiquadFilter(), at = t + Math.random() * 3; s.buffer = anoise; hp.type = 'highpass'; hp.frequency.value = 3000; g.gain.setValueAtTime(0.03, at); g.gain.exponentialRampToValueAtTime(0.0001, at + .04); s.connect(hp); hp.connect(g); g.connect(mGain); s.start(at); s.stop(at + .06); }
-  };
-  note(); musicTimer = setInterval(note, M.every);
+  if (area === musicArea && !force && musicTimer) return; musicArea = area;
+  const A = MUSIC_AREA[area];
+  if (!A || sndMuted || FX.vol <= 0 || !ac()) { musFade(); clearInterval(musicTimer); musicTimer = null; return; }
+  musBus(); mGain.gain.setTargetAtTime(FX.vol * 0.28, actx.currentTime, 0.4);
+  const [song, lv] = A;
+  if (mus && mus.song === song && !mus.dead) { mus.fixed = lv === 'auto' ? null : lv; }             // same song: just move to the new level (on the next line)
+  else { musFade(); const t = actx.currentTime + .08;
+    const out = actx.createGain(); out.gain.value = 1; out.connect(mGain); const send = actx.createGain(); send.gain.value = 1; send.connect(mRev);
+    mus = { song, S: MUSIC[song], fixed: lv === 'auto' ? null : lv, level: lv === 'auto' ? 0 : lv, next: null, step: 0, t, out, send, open: 2 };
+    if (lv === 'auto' && song === 'battle') mus.level = 0; }
+  if (!musicTimer) musicTimer = setInterval(musTick, 25);
+}
+function musFade() { if (!mus || !actx) return; const o = mus; o.dead = true; try { o.out.gain.setTargetAtTime(0, actx.currentTime, .35); o.send.gain.setTargetAtTime(0, actx.currentTime, .35); setTimeout(() => { try { o.out.disconnect(); o.send.disconnect(); } catch (e) {} }, 2500); } catch (e) {} mus = null; }
+function musTick() {
+  if (!mus || sndMuted || !actx) return;
+  if (document.hidden) { mus.t = actx.currentTime + .1; return; }
+  if (mus.t < actx.currentTime - .2) mus.t = actx.currentTime + .05;          // fell behind (a stall): pick up from now
+  while (mus.t < actx.currentTime + .15) {
+    const M = mus, S = M.S, s16 = M.step % 16, bar = Math.floor(M.step / 16) % S.chords.length;
+    if (s16 === 0) musBar(M, bar);
+    musStep(M, bar, s16, M.t);
+    const bpm = Array.isArray(S.bpm) ? S.bpm[M.level] : S.bpm;
+    M.t += 60 / bpm / 4; M.step++;
+  }
+}
+function musBar(M, bar) {                // the start of a bar: settle level changes on 2-bar lines (a fill / breakdown bar leads into them)
+  const S = M.S;
+  if (M.next != null) { const up = M.next > M.level; M.level = M.next; M.next = null; M.fill = 0; if (up) musHit(M, M.t, S.rise ? 1.4 : .7); return; }
+  if (musicArea === 'battle' && typeof FB !== 'undefined' && FB && M.song === 'battle') { musicSet('final', true); return; }
+  if (M.open > 0) M.open--;
+  const want = M.fixed != null ? M.fixed : M.open > 0 ? M.level : Math.max(0, Math.min(2, S.heat ? S.heat() : 0));
+  if (want !== M.level && (bar % 2 === 1 || M.fixed != null || S.rise)) { M.next = want; M.fill = want > M.level ? 1 : -1; }
+}
+function musStep(M, bar, s, t) {
+  const S = M.S, tr = (S.tr ? S.tr[M.level] : 0), ch = musChord(S.chords[bar]), root = ch.root + tr, st = 60 / (Array.isArray(S.bpm) ? S.bpm[M.level] : S.bpm) / 4;
+  const tok = (p, i) => { const a = p.trim().split(/\s+/); return a[i % a.length]; };
+  const holdLen = (a, i) => { let n = 1; while (i + n < a.length && a[i + n] === '-') n++; return n; };
+  for (const P of S.parts) {
+    if (M.level < P.lv[0] || M.level > P.lv[1]) continue;
+    if (M.fill === -1 && s >= 8 && ['kick', 'snare', 'hat', 'tom', 'snap'].includes(P.i)) continue;       // breakdown: the drums drop out for the second half
+    const v = P.v;
+    if (P.i === 'pad' || P.i === 'choir') { if (s === 0) musVoice(P.i, t, ch.iv.map(x => 60 + ((root + x) % 12) + (((root + x) % 12) > 7 ? -12 : 0)), st * 16, v, M); continue; }
+    if (P.mel) { const a = P.mel[bar].trim().split(/\s+/), n = a[s]; if (!n || n === '-' || n === '.') continue; const m = musMidi(n); if (m != null) musVoice(P.i, t, [m + tr], st * holdLen(a, s) * .95, v, M); continue; }
+    const k = tok(P.p, s); if (k === '.' || k === '-') continue;
+    if (['kick', 'snare', 'hat', 'tom', 'snap'].includes(P.i)) { musVoice(P.i, t, null, st, k === 'o' ? v * .5 : v, M); continue; }
+    if (P.i === 'bass') { const a = P.p.trim().split(/\s+/), off = { R: 0, F: 7, T: ch.iv[1], O: 12, L: -12 }[k]; if (off == null) continue; musVoice('bass', t, [36 + ((root % 12 + 12) % 12) + off], st * holdLen(a, s) * .9, v, M); continue; }
+    if (P.i === 'arp') { const d = +k; if (isNaN(d)) continue; const tones = ch.iv.slice(0, 3), m = 60 + ((root % 12 + 12) % 12) + tones[d % 3] + 12 * Math.floor(d / 3); musVoice('arp', t, [m], st * .9, v, M); }
+  }
+  if (M.fill === 1 && s >= 12) musVoice('snare', t, null, st, .22 + (s - 12) * .06, M);                     // going up: a snare run
+  if (M.fill === 1 && s === 0) musVoice('riser', t, null, st * 16, S.rise ? .5 : .3, M);
+  if (M.fill === -1 && s === 0) musVoice('sweep', t, null, st * 16, .3, M);
+}
+function musHit(M, t, v) { musVoice('crash', t, null, 1.6, .3 * v, M); musVoice('kick', t, null, .3, .7 * v, M); }
+const musF = m => 440 * Math.pow(2, (m - 69) / 12);
+function musEnv(g, t, a, peak, d, rel = .05) { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + a); g.gain.setTargetAtTime(0.0001, t + Math.max(a, d), rel); }
+function musVoice(kind, t, notes, dur, v, M) {
+  try {
+    const out = M.out, send = M.send, X = actx, osc = (type, f) => { const o = X.createOscillator(); o.type = type; o.frequency.value = f; return o; };
+    const lp = f => { const b = X.createBiquadFilter(); b.type = 'lowpass'; b.frequency.value = f; return b; }, gain = () => X.createGain();
+    const noise = (t0, len, type, f, q, peak, dec, dest) => { const s = X.createBufferSource(), b = X.createBiquadFilter(), g = gain(); s.buffer = anoise; b.type = type; b.frequency.value = f; b.Q.value = q || .7;
+      g.gain.setValueAtTime(peak, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + dec); s.connect(b); b.connect(g); g.connect(dest || out); s.start(t0, Math.random() * .5, len); return b; };
+    const end = t + dur + .6;
+    if (kind === 'pad' || kind === 'choir') { const g = gain(), f = lp(kind === 'choir' ? 1600 : 1100); musEnv(g, t, .5, v * .16, dur - .3, .35);
+      notes.forEach(m => [-7, 7].forEach(c => { const o = osc(kind === 'choir' ? 'sawtooth' : 'sawtooth', musF(m)); o.detune.value = c; o.connect(f); o.start(t); o.stop(end + 1); }));
+      if (kind === 'choir') { const l = osc('sine', .3), lg = gain(); lg.gain.value = 300; l.connect(lg); lg.connect(f.frequency); l.start(t); l.stop(end + 1); }
+      f.connect(g); g.connect(out); g.connect(send); return; }
+    if (kind === 'bass') { const m = notes[0], g = gain(), f = lp(M.song === 'town' || M.song === 'quest' ? 500 : 750), o = osc(M.song === 'town' ? 'triangle' : 'sawtooth', musF(m)), o2 = osc('sine', musF(m));
+      f.frequency.setValueAtTime(f.frequency.value * 2.2, t); f.frequency.setTargetAtTime(f.frequency.value, t, .06);
+      musEnv(g, t, .01, v * .5, dur, .04); o.connect(f); o2.connect(f); f.connect(g); g.connect(out); o.start(t); o2.start(t); o.stop(end); o2.stop(end); return; }
+    if (kind === 'pluck' || kind === 'bell' || kind === 'arp') { const m = notes[0], g = gain(), f = lp(kind === 'arp' ? 2200 : 3200);
+      const o = osc(kind === 'arp' ? 'square' : kind === 'bell' ? 'sine' : 'triangle', musF(m)), o2 = osc('sine', musF(m) * (kind === 'bell' ? 2.76 : 2));
+      const g2 = gain(); g2.gain.value = kind === 'bell' ? .5 : .25; const dec = kind === 'bell' ? 1.6 : kind === 'arp' ? .12 : Math.min(.9, dur + .2);
+      g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(v * .32, t + .004); g.gain.exponentialRampToValueAtTime(.0001, t + dec);
+      o.connect(f); o2.connect(g2); g2.connect(f); f.connect(g); g.connect(out); if (kind !== 'arp') g.connect(send); o.start(t); o2.start(t); o.stop(t + dec + .1); o2.stop(t + dec + .1); return; }
+    if (kind === 'lead' || kind === 'horn') { const m = notes[0], g = gain(), f = lp(kind === 'horn' ? 1500 : 2600), o = osc(kind === 'horn' ? 'sawtooth' : 'square', musF(m)), o2 = osc('sawtooth', musF(m));
+      o2.detune.value = 9; const vib = osc('sine', 5.5), vg = gain(); vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(musF(m) * .006, t + .25); vib.connect(vg); vg.connect(o.frequency); vg.connect(o2.frequency);
+      musEnv(g, t, kind === 'horn' ? .05 : .015, v * .22, dur, .07); o.connect(f); o2.connect(f); f.connect(g); g.connect(out); g.connect(send);
+      [o, o2, vib].forEach(x => { x.start(t); x.stop(t + dur + .5); }); return; }
+    if (kind === 'kick') { const o = osc('sine', 150), g = gain(); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(42, t + .12); g.gain.setValueAtTime(v * .9, t); g.gain.exponentialRampToValueAtTime(.0001, t + .32);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + .35); return; }
+    if (kind === 'tom') { const o = osc('sine', 120), g = gain(); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(70, t + .2); g.gain.setValueAtTime(v * .8, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3);
+      o.connect(g); g.connect(out); g.connect(send); o.start(t); o.stop(t + .32); return; }
+    if (kind === 'snare' || kind === 'snap') { noise(t, .25, 'bandpass', kind === 'snap' ? 2400 : 1800, .8, v * .5, kind === 'snap' ? .09 : .18, out); if (kind === 'snare') { const o = osc('triangle', 190), g = gain(); g.gain.setValueAtTime(v * .35, t); g.gain.exponentialRampToValueAtTime(.0001, t + .1); o.connect(g); g.connect(out); g.connect(send); o.start(t); o.stop(t + .12); } return; }
+    if (kind === 'hat') { noise(t, .06, 'highpass', 7500, .7, v * .35, .045, out); return; }
+    if (kind === 'crash') { noise(t, 1.5, 'highpass', 5000, .5, v, 1.4, out); return; }
+    if (kind === 'riser') { const s = X.createBufferSource(), b = X.createBiquadFilter(), g = gain(); s.buffer = anoise; s.loop = true; b.type = 'bandpass'; b.Q.value = 4; b.frequency.setValueAtTime(300, t); b.frequency.exponentialRampToValueAtTime(6000, t + dur);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v * .25, t + dur); s.connect(b); b.connect(g); g.connect(out); g.connect(send); s.start(t); s.stop(t + dur + .02); return; }
+    if (kind === 'sweep') { const s = X.createBufferSource(), b = X.createBiquadFilter(), g = gain(); s.buffer = anoise; s.loop = true; b.type = 'lowpass'; b.frequency.setValueAtTime(5000, t); b.frequency.exponentialRampToValueAtTime(200, t + dur);
+      g.gain.setValueAtTime(v * .15, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); s.connect(b); b.connect(g); g.connect(send); s.start(t); s.stop(t + dur + .02); return; }
+  } catch (e) {}
 }
 document.addEventListener('pointerdown', () => { if (!sndMuted && !musicTimer && musicArea) musicSet(musicArea, true); }, { passive: true });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !sndMuted && !musicTimer && musicArea) musicSet(musicArea, true); });
