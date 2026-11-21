@@ -2086,6 +2086,26 @@ body.gp #dia .gl.p{display:grid}
 #dia .dsh.dham.sel{box-shadow:0 0 14px rgba(255,224,102,.8)}
 #dia .dsh.dham.oncd{opacity:.5}
 #dia .dsh.dham .cdov{margin-left:4px;font-size:.7rem;color:#ffd54f}
+/* a mythic weapon that is ready: bigger, glowing in its element's colour, a light running round the rim and sparks drifting off it */
+@property --wa{syntax:'<angle>';inherits:false;initial-value:0deg}
+#dia .dsh.dham .wi{display:inline-block;font-size:1.15em;transition:font-size .2s}
+#dia .dsh.dham.ready{scale:1.16;border-color:var(--wc);color:#fff;background:linear-gradient(90deg,color-mix(in srgb,var(--wc) 34%,#141022),rgba(16,18,32,.94));box-shadow:0 0 10px var(--wc),0 0 24px color-mix(in srgb,var(--wc) 50%,transparent),inset 0 0 10px color-mix(in srgb,var(--wc) 30%,transparent);animation:wpPop .45s ease-out,wpGlow 1.8s ease-in-out .45s infinite}
+#dia .dsh.dham.ready:not(:disabled):hover{scale:1.22}
+#dia .dsh.dham.ready .wi{font-size:1.65em;filter:drop-shadow(0 0 5px var(--wc));animation:wpIcon 1.8s ease-in-out infinite}
+#dia .dsh.dham.ready::before{content:'';position:absolute;inset:-2px;border-radius:inherit;padding:2px;background:conic-gradient(from var(--wa),transparent 0 62%,var(--wc) 80%,#fff 84%,transparent 92%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:wpRim 2.4s linear infinite;pointer-events:none}
+#dia .dsh.dham.ready::after{content:'';position:absolute;left:4%;right:4%;top:-26px;bottom:2px;pointer-events:none;opacity:.9;
+  background:radial-gradient(circle,var(--wc) 0 1.6px,transparent 2.6px) 12% 100%/22% 26px no-repeat,radial-gradient(circle,#fff 0 1.2px,transparent 2.2px) 46% 100%/20% 30px no-repeat,radial-gradient(circle,var(--wc) 0 1.8px,transparent 2.8px) 78% 100%/22% 24px no-repeat,radial-gradient(circle,var(--wc) 0 1.3px,transparent 2.3px) 30% 100%/18% 34px no-repeat;
+  animation:wpSpark 1.4s linear infinite}
+#dia .dsh.dham.ready[data-el="ice"]::after{animation-duration:2.6s}
+#dia .dsh.dham.ready[data-el="shock"]::after{animation:wpSpark .9s steps(6) infinite}
+#dia .dsh.dham.ready[data-el="bleed"]::after,#dia .dsh.dham.ready[data-el="poison"]::after{top:2px;bottom:-26px;animation:wpDrip 1.8s linear infinite}
+@keyframes wpPop{0%{scale:1}55%{scale:1.32}100%{scale:1.16}}
+@keyframes wpGlow{50%{box-shadow:0 0 16px var(--wc),0 0 36px color-mix(in srgb,var(--wc) 70%,transparent),inset 0 0 14px color-mix(in srgb,var(--wc) 45%,transparent)}}
+@keyframes wpIcon{50%{transform:scale(1.12) rotate(-7deg)}}
+@keyframes wpRim{to{--wa:360deg}}
+@keyframes wpSpark{0%{background-position:12% 100%,46% 100%,78% 100%,30% 100%;opacity:0}15%{opacity:.95}100%{background-position:16% 0%,42% 0%,82% 0%,26% 0%;opacity:0}}
+@keyframes wpDrip{0%{background-position:12% 0%,46% 0%,78% 0%,30% 0%;opacity:0}15%{opacity:.9}100%{background-position:12% 100%,46% 100%,78% 100%,30% 100%;opacity:0}}
+body.calm #dia .dsh.dham.ready,body.calm #dia .dsh.dham.ready .wi,body.calm #dia .dsh.dham.ready::before,body.calm #dia .dsh.dham.ready::after{animation:none}
 #dia.picking .dsh.dham.sel{opacity:1;scale:1;pointer-events:auto}
 .mj-fly{position:fixed;left:0;top:0;z-index:70;font-size:58px;pointer-events:none;filter:drop-shadow(0 0 10px #ffe066) drop-shadow(0 0 22px rgba(160,200,255,.8))}
 .mj-fly.spear,.mj-fly.arrow{font-size:46px;color:#fff;text-shadow:0 0 10px #fff,0 0 20px var(--c,#ffd54f)}
@@ -2654,6 +2674,38 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
 
 #battle-scene .figure.floaty{position:relative;top:calc(var(--figH) * var(--fbB,1) * -.1);animation:fbBob 3.4s ease-in-out infinite}
 @keyframes fbBob{0%,100%{top:calc(var(--figH) * var(--fbB,1) * -.10)}50%{top:calc(var(--figH) * var(--fbB,1) * -.135)}}
+/* battle bars, styled (2026-11-21): a dark inset track, a glossy fill with 10% notches, green for heroes and crimson for enemies, turning amber at half and
+   red (pulsing) at a quarter; a pale trail hangs where the HP was for a moment and drains down after a hit. Armour: steel-cyan, then orange once broken. */
+#battle-scene .combatant-card .stats-info .bar-container{background:linear-gradient(180deg,#07070d,#191927);box-shadow:inset 0 1px 3px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.1),0 1px 2px rgba(0,0,0,.6);border:0}
+#battle-scene .combatant-card .stats-info .hpbar{border-radius:7px}
+#battle-scene .combatant-card .stats-info .hpbar::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.05) 45%,rgba(0,0,0,0) 55%,rgba(0,0,0,.22)),repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(0,0,0,.38) calc(10% - 1px) 10%)}
+#battle-scene .hp-fill{position:relative;z-index:1;border-radius:inherit;background:linear-gradient(180deg,#a8f58a,#5bcf4f 40%,#2f9a37 60%,#45b545);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),2px 0 6px rgba(120,255,120,.35)}
+#battle-scene .team-e .hp-fill{background:linear-gradient(180deg,#ff9a8a,#e0473f 40%,#a1201f 60%,#c33331);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),2px 0 6px rgba(255,90,80,.35)}
+#battle-scene .team-p .hpbar.mid .hp-fill{background:linear-gradient(180deg,#fff09a,#f3c43f 40%,#c98a14 60%,#e0a92a)}
+#battle-scene .team-p .hpbar.low .hp-fill{background:linear-gradient(180deg,#ffb3a6,#ff5a4a 40%,#c0201a 60%,#e2392f);animation:hpLow 1s ease-in-out infinite}
+@keyframes hpLow{50%{filter:brightness(1.35) saturate(1.2)}}
+#battle-scene .hp-trail{position:absolute;left:0;top:0;bottom:0;z-index:0;background:linear-gradient(180deg,#fff,#ffe2c8);opacity:.75;width:var(--from);animation:hpTrail .9s linear forwards}
+@keyframes hpTrail{0%,30%{width:var(--from)}100%{width:var(--to);opacity:.4}}
+#battle-scene .hp-dmg,#battle-scene .bar-shield{z-index:2}
+#battle-scene .break-fill{background:linear-gradient(180deg,#bff6ff,#3fd0e8 45%,#0f8fa8);box-shadow:0 0 5px rgba(80,220,255,.45)}
+#battle-scene .break2-fill{background:linear-gradient(180deg,#ffd8a0,#ff9b2f 45%,#c25d06);box-shadow:0 0 5px rgba(255,150,60,.45)}
+body.calm #battle-scene .team-p .hpbar.low .hp-fill{animation:none}
+/* quiet bars (2026-11-21): the bars sit back so your eyes stay on the fight. Dim while things play out, half-bright on your turn, full on hover, on whoever is
+   acting or being hit, on targets you're picking, and on a hero in danger (could die this round, or below a quarter HP). */
+#battle-scene .combatant-card .stats-info .bar-container{opacity:.4;filter:saturate(.55);transition:opacity .25s,filter .25s}
+body.bt-wait #battle-scene .combatant-card .stats-info .bar-container{opacity:.75;filter:saturate(.85)}
+#battle-scene .combatant-card:is(:hover,.active-turn,.targetable,.spot,.bars-hot,.aoe-mark) .stats-info .bar-container{opacity:1;filter:none}
+/* try-out (Options → Danger on sprites): the danger shows on the hero's sprite */
+#battle-scene .combatant-card.dg-hit:not(.targetable) .figure{filter:drop-shadow(0 0 2px rgba(255,170,60,.95)) drop-shadow(0 0 10px rgba(255,140,40,.5))}
+#battle-scene .combatant-card.dg-lethal:not(.targetable) .figure{animation:dgLethal 1s ease-in-out infinite}
+#battle-scene .combatant-card.dg-low:not(.dg-lethal):not(.dg-hit):not(.targetable) .figure{animation:dgLow 1.8s ease-in-out infinite}
+@keyframes dgLethal{0%,100%{filter:drop-shadow(0 0 2px #ff3030) drop-shadow(0 0 10px rgba(255,40,40,.6))}50%{filter:drop-shadow(0 0 4px #ff3030) drop-shadow(0 0 24px rgba(255,40,40,.95))}}
+@keyframes dgLow{0%,100%{filter:none}50%{filter:drop-shadow(0 0 8px rgba(255,50,50,.6))}}
+.dg-skull{display:inline-block;font-size:1.9em;line-height:1;filter:drop-shadow(0 0 6px #ff2020);animation:dgSkull 1s ease-in-out infinite}
+@keyframes dgSkull{50%{transform:scale(1.15)}}
+body.calm #battle-scene .combatant-card.dg-lethal .figure{animation:none;filter:drop-shadow(0 0 3px #ff3030) drop-shadow(0 0 16px rgba(255,40,40,.8))}
+body.calm #battle-scene .combatant-card.dg-low .figure,body.calm .dg-skull{animation:none}
 </style>
 </head>
 <body>
@@ -3680,6 +3732,7 @@ const PIGS = { mult: [.4, .85, 1.6], names: ['straw', 'sticks', 'stone'] };     
 /* MYTHIC WEAPONS: named relics that give their wielder a FOURTH move (the bottom-right tile of the skill diamond, key 6, RB on a pad). One weapon per hero.
    cannot = who the weapon refuses (lore: Mjolnir only lifts for the worthy, Excalibur will not serve a creature of the night). kind = how it strikes (see weaponStrike).
    They only come from bosses and road finds, never the Shop. Each is one of a kind. */
+const WEAPON_GLOW = { fire: '#ff8a3d', ice: '#8fd8ff', shock: '#ffe066', bleed: '#ff4d6d', poison: '#9be35a', artemis: '#cfe0ff', aegis: '#ffd54f', harpe: '#c9a7ff', ruyi: '#ffb347', def: '#ffd54f' };      // a ready weapon's glow
 const WEAPONS = {
   mjolnir:   { icon: '🔨', name: 'Mjolnir', kind: 'throw', el: 'shock', d: [24, 30], brk: 22, cd: 3, cannot: ['tyr', 'vesper', 'aneesah'], why: 'strains and heaves, but Mjolnir will not budge. Not worthy.',
                desc: 'Throw the hammer: heavy lightning damage at any enemy, then it flies back' },
@@ -4238,7 +4291,7 @@ const hasKind = (h, k) => h.skills.some(s => s.t === 'dmg' && (k === 'physical' 
 const FX = { spicy: true, numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5, sfx: 1, ui: 'dia', uiV: 2, travel: true };
 try {
   const saved = JSON.parse(localStorage.getItem('animeRpgFx') || 'null');
-  if (saved) { FX.pcfs = saved.pcfs === true; if (saved.fullscreen === false) FX.fullscreen = false; FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.travel = saved.travel !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; FX.sfx = typeof saved.sfx === 'number' ? Math.max(0, Math.min(1, saved.sfx)) : 1; FX.ui = saved.ui === 'classic' ? 'classic' : saved.ui === 'bar' && saved.uiV === 2 ? 'bar' : 'dia'; }      // (the button diamond replaced the bar as the default)
+  if (saved) { FX.pcfs = saved.pcfs === true; FX.dgspr = saved.dgspr === true; if (saved.fullscreen === false) FX.fullscreen = false; FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.travel = saved.travel !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; FX.sfx = typeof saved.sfx === 'number' ? Math.max(0, Math.min(1, saved.sfx)) : 1; FX.ui = saved.ui === 'classic' ? 'classic' : saved.ui === 'bar' && saved.uiV === 2 ? 'bar' : 'dia'; }      // (the button diamond replaced the bar as the default)
   else if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) FX.shake = false;
 } catch (e) {}
 /* ============ BATTLE SPEED (1x / 1.5x / 2x) ============ */
@@ -4348,6 +4401,7 @@ const OPTIONS = [
   ['calm', '🕊️ Reduced motion', 'Turns off weather, screen shake, flashes and the fade between scenes. Calmer on the eyes.', () => FX.calm],
   ['ui', '🖥️ Battle menu (PC)', 'Diamond: on your turn the hero\'s skills pop up beside them, laid out like a controller\'s buttons. Bar: a bottom bar with slanted skill buttons. Classic: the old fixed panel.', () => FX.ui !== 'classic', () => ({ dia: 'Diamond', bar: 'Bar', classic: 'Classic' })[FX.ui]],
   ['travel', '🚶 Travel scenes', 'A short walking scene between fights, camps and events during a quest. Click or press a key to skip any of them.', () => FX.travel],
+  ['dgspr', '🩸 Danger on sprites (try-out)', 'Heroes show their danger on the sprite itself: an orange glow when an attack is coming at them, a pulsing red glow and a skull when it could kill them, a faint red pulse below a quarter HP.', () => FX.dgspr],
   ['cb', '🎨 Colour-blind palette', 'Safer colours for the element numbers (blue, orange and yellow instead of red and green tints).', () => FX.cb],
   ['talk', '💬 Battle chatter', 'Heroes talk in little speech bubbles: crits, kills, broken armour, boss phases and gag lines.', () => FX.talk],
   ['spicy', '🔥 Fanservice', 'On: super broken heroes use their own (fog-censored) art, and everyone reacts to being stripped in their own way. Off: super broken heroes keep their broken look, and the chatter stays tame.', () => FX.spicy]
@@ -7119,15 +7173,12 @@ function barFx(u, sk) {
     : hero ? `<span class="broken-tag">Broken</span>: ${Math.max(0, u.break2)}/${u.maxBreak2}` : '<span class="broken-tag">BROKEN</span>';
   const none = { hp: '', arm: '', lethal: false, armPct, armCls: lay.cls, armTxt };
   if (!isAlive(u)) return none;
-  const ward = sk && sk.t === 'barrier' && hero && sk.p ? sk.p : 0, B = u.barrier || 0, ghost = ward > 0 && !B;
-  // telegraphed attacks on this hero, taken in turn: the barrier soaks each one's damage first, and shields the armour from that hit's break damage (as hit() does)
-  const hits = hero && !FB ? enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && !hasCharm(e) && e.intent.target === u && e.skills[e.intent.i].t === 'dmg').map(e => e.skills[e.intent.i]) : [];
-  const run = (high, b0) => { let b = b0, dmg = 0, brk = 0; hits.forEach(s => { const [a, z] = adjRange(s, u), d = high ? z : a, soak = Math.min(b, d), bi = (s.el || s.chip) ? (s.brk || 0) : 0; dmg += d - soak; brk += bi - Math.min(b, bi); b -= soak; }); return [dmg, brk]; };
-  let [dLo, kLo] = run(false, B + ward), [dHi, kHi] = run(true, B + ward);
-  if (ward && hits.length) {                         // a Ward only stops hits that land after the cast (see windowRange)
-    const [a, z] = incomingRange(u), [c2, d] = windowRange(u, cur);
-    dLo = Math.max(0, a - c2 + Math.max(0, c2 - ward) - B); dHi = Math.max(0, z - d + Math.max(0, d - ward) - B);
-  }
+  const wardSk = sk && (sk.t === 'barrier' || (sk.t === 'barrierAll' && (u !== cur || sk.self))) && hero && sk.p ? sk : null, ward = wardSk ? wardSk.p : 0, B = u.barrier || 0, ghost = ward > B;
+  // telegraphed attacks on this hero (incomingHits), in turn order: the barrier soaks each one's damage first and shields the armour from that hit's break damage (as hit() does).
+  // A Ward being picked only joins in for hits that land after the caster acts, and barriers don't stack (the bigger one counts).
+  const hits = hero && !FB ? incomingHits(u) : [], ic = cur ? order.indexOf(cur) : -1;
+  const run = high => { let b = B, dmg = 0, brk = 0, cast = !ward; hits.forEach(x => { if (!cast && x.at > ic) { b = Math.max(b, ward); cast = true; } const d = high ? x.hi : x.lo, soak = Math.min(b, d); dmg += d - soak; brk += x.brk - Math.min(b, x.brk); b -= soak; }); return [dmg, brk]; };
+  const [dLo, kLo] = run(false), [dHi, kHi] = run(true);
   const pc = x => +Math.max(0, x).toFixed(2);
   const shield = (fill, max, amt) => { const w = Math.min(fill, amt / max * 100); return w > 0.4 ? `<div class="bar-shield${ghost ? ' ghost' : ''}" style="left:${pc(fill - w)}%;width:${pc(w)}%"></div>` : ''; };
   // the end of the bar, working leftwards: [barrier chunk][yellow = what still gets through]
@@ -7141,10 +7192,17 @@ function barFx(u, sk) {
     }
     return h;
   };
-  const hpP = Math.max(0, u.hp / u.maxHp * 100);
-  return { ...none, lethal: dHi > 0 && dHi >= u.hp,
-    hp: chunks(hpP, u.maxHp, B + ward, dLo, dHi),
-    arm: lay.m && u.state !== 'super' ? chunks(armPct, lay.m, B + ward, kLo, kHi) : '' };
+  const hpP = Math.max(0, u.hp / u.maxHp * 100), shown = Math.max(B, ward);
+  return { ...none, lethal: dHi > 0 && dHi >= u.hp && !(u.immortal > 0),
+    hp: chunks(hpP, u.maxHp, shown, dLo, dHi),
+    arm: lay.m && u.state !== 'super' ? chunks(armPct, lay.m, shown, kLo, kHi) : '' };
+}
+function hpTrail(u) {            // a pale strip that hangs where the HP was for a moment, then drains down to the new value
+  const p = Math.max(0, u.hp / u.maxHp * 100), now = performance.now();
+  if (u._hpShown == null || p > u._hpShown) { u._hpShown = p; u._trail = null; return ''; }
+  if (p < u._hpShown - .01) { const T = u._trail, t0 = T ? (now - T.t0) / 900 : 1, from = T && t0 < 1 ? T.from - (T.from - T.to) * Math.max(0, (t0 - .3) / .7) : u._hpShown; u._trail = { from, to: p, t0: now }; u._hpShown = p; }
+  const T = u._trail; if (!T) return ''; const el = now - T.t0; if (el > 900) { u._trail = null; return ''; }
+  return `<div class="hp-trail" style="--from:${T.from.toFixed(2)}%;--to:${T.to.toFixed(2)}%;animation-delay:${-el.toFixed(0)}ms"></div>`;
 }
 function card(u, team, i) {
   const c = ['combatant-card', 'team-' + team], alive = isAlive(u), front = i < POS.front;
@@ -7171,8 +7229,11 @@ function card(u, team, i) {
   } else if (team === 'e' && alive && u.charging) extra = `<span class="intent charge">💥 ${BOSS_CHARGE.names[u.id] || 'Devastating Blow'} → ALL</span>`;      // charging: the next move hits everyone
   else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
   const inc = team === 'p' && alive && !FB ? incoming(u) : 0;
-  const incTxt = inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
-  const bfx = barFx(u, sk);
+  const bfx = barFx(u, sk), low = alive && u.hp / u.maxHp <= .25;
+  if (team === 'p' && alive && (bfx.lethal || low)) c.push('bars-hot');                     // quiet bars: these stay bright (see the battle bars CSS)
+  if (FX.dgspr && team === 'p' && alive && !FB) { if (bfx.lethal) c.push('dg-lethal'); else if (inc) c.push('dg-hit'); if (low) c.push('dg-low'); }      // try-out: danger shown on the sprite
+  const incTxt = FX.dgspr && bfx.lethal && team === 'p' ? `<span class="dg-skull" title="The attacks aimed at ${u.name} could take her down">💀</span>`
+    : inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
   const mt = (u.weak && u.weak.length ? `<span class="mt" title="Weak to">⚠️${elemIcons(u.weak)}</span>` : '') + (u.resist && u.resist.length ? `<span class="mt" title="Resists">🛡️${elemIcons(u.resist)}</span>` : '');
   return `<div class="${c.join(' ')}" onclick="pick('${team}',${i})">
     <div class="bubble">${extra}${incTxt}</div>
@@ -7181,7 +7242,7 @@ function card(u, team, i) {
     <div class="stats-info">
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
       <div class="tags">${u.trollPart && u.state !== 'armoured' && isAlive(u) ? `<span class="stealth-tag" style="background:#3a2a12;color:#ffd9a0" title="Its armour grows back after this many of the troll's turns">🦴 regrows in ${u.regrow}</span>` : ''}${u.chill >= 1 && blizz.on && isAlive(u) ? `<span class="stealth-tag" style="background:#1f3a5c;color:#bfe3ff" title="Cold slows you: your attacks can miss">❄️ hit ${Math.round(numbHit(u) * 100)}%</span>` : ''}${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
-      <div class="bar-container hpbar${bfx.lethal ? ' lethal' : ''}"><div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div>${bfx.hp}</div>
+      <div class="bar-container hpbar${bfx.lethal ? ' lethal' : ''}${u.hp / u.maxHp <= .25 ? ' low' : u.hp / u.maxHp <= .5 ? ' mid' : ''}">${hpTrail(u)}<div class="hp-fill" style="width:${Math.max(0, u.hp / u.maxHp * 100)}%"></div>${bfx.hp}</div>
       <div class="hpnum">HP: ${Math.max(0, u.hp)}/${u.maxHp}${u.barrier ? ` <span class="shield" title="Absorbs damage and armour damage until the end of the round">🛡️ ${u.barrier}</span>` : ''}</div>
       <div class="arm">${bfx.armTxt}</div>
       <div class="bar-container"><div class="${bfx.armCls}" style="width:${bfx.armPct}%"></div>${bfx.arm}</div>
@@ -7341,6 +7402,7 @@ function dmgLoop() {                       // runs every frame while the battle 
   if (on) requestAnimationFrame(dmgLoop); else dmgRun = false;
 }
 function render() {
+  document.body.classList.toggle('bt-wait', !!waiting);          // your turn: the quiet battle bars come up a little
   if (!dmgRun) { dmgRun = true; requestAnimationFrame(dmgLoop); } requestAnimationFrame(trollLayer); trollHud();
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
@@ -7476,7 +7538,9 @@ function renderDia() {
     b.disabled = !waiting || !ok; b.classList.toggle('oncd', cd > 0); b.classList.toggle('sel', !!waiting && sel === t.k);
   });
   const sh = $('dia-shift'); if (sh) { sh.disabled = !waiting || party.filter(isAlive).length < 2; put(sh.querySelector('.gl.p'), G[4]); }
-  const mj = $('dia-3'); if (mj) { const has = !!(cur.skills[3] && cur.skills[3].hammer), cd = cur.cd[3] || 0; mj.style.display = has ? '' : 'none'; if (has) { mj.disabled = !waiting || !usable(cur, 3); mj.classList.toggle('sel', !!waiting && sel === 3); mj.classList.toggle('oncd', cd > 0); put(mj.querySelector('.gl.p'), G[5]); { const W = WEAPONS[cur.skills[3].weapon] || {}; put(mj.querySelector('.wn'), `${W.icon || '🔨'} ${W.name || 'Mjolnir'}`); } put(mj.querySelector('.cdov'), cd > 0 ? String(cd) : ''); } }
+  const mj = $('dia-3'); if (mj) { const has = !!(cur.skills[3] && cur.skills[3].hammer), cd = cur.cd[3] || 0; mj.style.display = has ? '' : 'none'; if (has) { mj.disabled = !waiting || !usable(cur, 3); mj.classList.toggle('sel', !!waiting && sel === 3); mj.classList.toggle('oncd', cd > 0); put(mj.querySelector('.gl.p'), G[5]); { const W = WEAPONS[cur.skills[3].weapon] || {}; put(mj.querySelector('.wn'), `<span class="wi">${W.icon || '🔨'}</span> ${W.name || 'Mjolnir'}`); } put(mj.querySelector('.cdov'), cd > 0 ? String(cd) : '');
+      const W = WEAPONS[cur.skills[3].weapon] || {}, ready = !!waiting && cd === 0 && usable(cur, 3);          // ready: glows in its element's colour, the icon grows, sparks drift off it
+      mj.style.setProperty('--wc', WEAPON_GLOW[W.el] || WEAPON_GLOW[cur.skills[3].weapon] || WEAPON_GLOW.def); mj.dataset.el = W.el || 'none'; mj.classList.toggle('ready', ready); } }
   d.classList.toggle('picking', !!waiting && (sel !== null || invOpen || !!selItem));
   if (!waiting) diaHov = null;
   diaTag();
@@ -8228,26 +8292,34 @@ function intentText(u) {
   if (hasCharm(u)) return `▶ ${s.n} → 💘 hits its own friend`;
   return `<span title="${s.n}">▶ ${s.el ? ICON[s.el] : ''}${RICON[rangeOf(s)]} → ${it.target.short}</span>`;       // the damage itself is drawn on the target's HP bar
 }
-const incoming = h => enemies.filter(e => isAlive(e) && e.intent && !e.intent.skip && !stunned(e) && !hasCharm(e) && e.intent.target === h && e.skills[e.intent.i].t === 'dmg').length;
-// Telegraphed damage a barrier cast on h by `caster` could still absorb: attacks by enemies who haven't acted yet this round (a barrier fades when the round ends).
-function windowRange(h, caster) {
-  let lo = 0, hi = 0; const ic = order.indexOf(caster);
+/* What the enemies' telegraphed moves will do to this hero this round, as they will really land: the move as the enemy will cast it (effSkill), pulled onto a taunter or a
+   Shield Wall guard (protectTarget), sweeps (aoe: everyone else on that side takes the aoe share) and all-hitting moves, and a boss's charged blow on everyone.
+   Stunned / charmed / skipping enemies do nothing. Each entry: { e, s, lo, hi, brk } in turn order (barriers soak them one by one in that order). */
+function incomingHits(h) {
+  if (!h || !isAlive(h) || h.drowned) return [];
+  const out = [], heroes = party.filter(x => isAlive(x) && !x.drowned);
   enemies.forEach(e => {
-    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || hasCharm(e) || e.intent.target !== h) return;
-    const s = e.skills[e.intent.i]; if (s.t !== 'dmg') return;
-    const ie = order.indexOf(e);
-    if (ie > ic) { const [a, b] = adjRange(s, h); lo += a; hi += b; }
+    if (!isAlive(e)) return;
+    if (e.charging && e.boss) { const ds = e.skills.filter(x => x.t === 'dmg' && x.d), avg = ds.length ? ds.reduce((a, x) => a + (x.d[0] + x.d[1]) / 2, 0) / ds.length : 15;
+      const s = { n: 'charge', t: 'dmg', r: 'ranged', d: [Math.round(avg * BOSS_CHARGE.mult * .9), Math.round(avg * BOSS_CHARGE.mult * 1.1)], el: (ds.find(x => x.el) || {}).el, brk: BOSS_CHARGE.brk };
+      out.push({ e, s }); return; }
+    if (!e.intent || e.intent.skip || stunned(e) || hasCharm(e)) return;
+    let s; try { s = effSkill(e, e.intent.i); } catch (_) { s = e.skills[e.intent.i]; } if (!s || s.t !== 'dmg') return;
+    const T = protectTarget(e, e.intent.target);
+    if (s.all) { if (heroes.includes(h)) out.push({ e, s }); return; }
+    if (T === h) out.push({ e, s });
+    else if (s.aoe && T && isAlive(T)) out.push({ e, s: { ...scaleDmg(s, s.aoe), brk: Math.round((s.brk || 0) * (s.aoeBrk ?? s.aoe)) } });
   });
-  return [lo, hi];
+  out.forEach(x => { const [a, z] = adjRange(x.s, h); x.lo = a; x.hi = z; x.brk = (x.s.el || x.s.chip) ? (x.s.brk || 0) : 0; x.at = order.indexOf(x.e); });
+  return out.sort((a, b) => a.at - b.at);
 }
-function incomingRange(h) {       // total damage range of every telegraphed attack aimed at this hero, with position bonuses/penalties applied
-  let lo = 0, hi = 0;
-  enemies.forEach(e => {
-    if (!isAlive(e) || !e.intent || e.intent.skip || stunned(e) || hasCharm(e) || e.intent.target !== h) return;
-    const s = e.skills[e.intent.i]; if (s.t !== 'dmg') return;
-    const [a, b] = adjRange(s, h); lo += a; hi += b;
-  });
-  return [lo, hi];
+const incoming = h => incomingHits(h).length;
+// Telegraphed damage a barrier cast on h by `caster` could still absorb: attacks by enemies who haven't acted yet this round (a barrier fades when the round ends).
+function windowRange(h, caster) {       // what lands on this hero from enemies acting after the caster
+  const ic = order.indexOf(caster); let lo = 0, hi = 0; incomingHits(h).forEach(x => { if (x.at > ic) { lo += x.lo; hi += x.hi; } }); return [lo, hi];
+}
+function incomingRange(h) {             // total damage range of everything telegraphed at this hero (see incomingHits)
+  let lo = 0, hi = 0; incomingHits(h).forEach(x => { lo += x.lo; hi += x.hi; }); return [lo, hi];
 }
 
 function effSkill(u, i) {
