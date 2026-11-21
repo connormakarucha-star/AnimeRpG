@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-21 13:32",
+  "generated": "2026-11-21 16:41",
   "files": {
     "aneesah/armoured - swimsuit/damaged": "png",
     "aneesah/armoured - swimsuit/idle": "png",
@@ -326,6 +326,7 @@
     "ui/spa/aria_spa": "png",
     "ui/spa/aria_spa_mask": "png",
     "ui/spa/hotspring": "png",
+    "ui/spa/hotspring_snow": "png",
     "ui/spa/irae_spa": "png",
     "ui/spa/irae_spa_mask": "png",
     "ui/spa/iris_spa": "png",
@@ -335,6 +336,7 @@
     "ui/spa/seria_spa": "png",
     "ui/spa/seria_spa_mask": "png",
     "ui/spa/spa": "png",
+    "ui/spa/spa_snow": "png",
     "ui/spa/tyr_spa": "png",
     "ui/spa/tyr_spa_mask": "png",
     "ui/spa/vesper_spa": "png",
