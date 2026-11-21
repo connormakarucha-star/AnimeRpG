@@ -14667,7 +14667,7 @@ render = function () { _renderChill(); try { breathFx(); } catch (e) {} try { if
 /* ============ THE FROZEN LAKE: polar dip (Act 3 minigame) ============ */
 // Pick a hero, pay the fee, jump in. A tiny Vampire-Survivors-style swim: you only steer (WASD / arrows / stick / drag on touch); your attack fires by itself on a timer, every kill earns Frost Crystals,
 // and every few kills you choose 1 of 3 upgrades. Enemies are shrunk Act 3 monsters and get stronger faster than any upgrade can keep up, so a run always ends. Crystals are kept whatever happens.
-// The first dive with a hero also awakens that hero's Potential (game.dived[heroId]). Art: the hero's winter gear idle (surface), swimsuit damaged (sinking), swimsuit idle (swimming); enemies use their normal idle.
+// The first dive with a hero also awakens that hero's Potential (game.dived[heroId]). Art: the hero's winter gear idle (surface), swimsuit damaged (sinking), swimsuit idle (swimming); enemies use their battle picture (assets/enemies/<id>).
 const LAKE = { cost: 100, hpBase: 60, hpPer: 0.7, speed: 175, atkEvery: 0.7, dmgMul: 2.6, firstLevel: 5, levelStep: 3, maxAlive: 64, regionOpen: ['pass', 'valley', 'castle'] };
 const DIVE_FOES = [        // id, size (px tall), speed, hp, contact damage, crystals, appears from (s), spawn weight
   { id: 'e_husk',     size: 44, spd: 52,  hp: 22,  dmg: 7,  val: 1, from: 0,   w: 10 },
@@ -14708,7 +14708,7 @@ async function startDive(id) {
   game.gold -= LAKE.cost; game.dived = game.dived || {}; const first = !game.dived[id]; game.dived[id] = true; writeSave();
   const B = ANIM.base, skin = ['armoured - winter gear', 'armoured'];
   const [winter, sinkSpr, swim] = await Promise.all([diveSpr(skin.map(f => `${B}/${id}/${f}/idle`)), diveSpr([`${B}/${id}/armoured - swimsuit/damaged`, `${B}/${id}/armoured/damaged`, `${B}/${id}/armoured/idle`]), diveSpr([`${B}/${id}/armoured - swimsuit/idle`, `${B}/${id}/armoured/idle`])]);
-  const foes = {}; await Promise.all(DIVE_FOES.map(async f => { foes[f.id] = await diveSpr([`${B}/${f.id}/idle`]); }));
+  const foes = {}; await Promise.all(DIVE_FOES.map(async f => { foes[f.id] = await diveSpr([`${B}/enemies/${f.id}`, `${B}/${f.id}/armoured/idle`, `${B}/${f.id}/idle`]); }));      // the enemy's battle picture (assets/enemies/<id>)
   const others = game.roster.filter(x => x !== id && heroById(x)).sort(() => Math.random() - 0.5).slice(0, Math.random() < 0.5 ? 1 : 2);      // who is sitting by the stove (random, never the diver)
   await Promise.all([...others.map(campSpr), findAsset(`${B}/ui/woodstove`)]);
   const sk0 = h.skills[0], el = sk0.el || (h.elems || [])[0] || null, d = sk0.d || [10, 12];
