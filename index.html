@@ -2326,8 +2326,8 @@ button:not(:disabled):active,.clk:active,.rc:active,.dcs:active{filter:brightnes
 @keyframes stSnow{to{background-position:30px 90px,10px 90px,0 0}}
 .st-wx.sun{opacity:1;background:radial-gradient(ellipse 70% 50% at 80% 0%,rgba(255,236,170,.35),transparent 70%)}
 .st-ball{position:fixed;left:0;top:0;z-index:7;font-size:clamp(30px,4vw,64px);line-height:1;pointer-events:none;margin:-.5em 0 0 -.5em;filter:drop-shadow(0 4px 3px rgba(0,0,0,.5))}
-.st-actor.topple-l .figure{transition:transform .5s cubic-bezier(.5,0,.8,.4) .1s,translate .5s ease-in .35s;transform-origin:50% 100%;transform:rotate(-90deg);translate:0 60vh}
-.st-actor.topple-r .figure{transition:transform .5s cubic-bezier(.5,0,.8,.4) .1s,translate .5s ease-in .35s;transform-origin:50% 100%;transform:rotate(90deg);translate:0 60vh}
+.st-actor.topple-l .figure{transition:transform .25s cubic-bezier(.5,0,.8,.4) .05s,translate .25s ease-in .18s;transform-origin:50% 100%;transform:rotate(-90deg);translate:0 60vh}
+.st-actor.topple-r .figure{transition:transform .25s cubic-bezier(.5,0,.8,.4) .05s,translate .25s ease-in .18s;transform-origin:50% 100%;transform:rotate(90deg);translate:0 60vh}
 .st-actor.ascend{filter:none!important;animation:stAscend 3.2s ease-in forwards}
 @keyframes stAscend{0%{filter:brightness(1)}35%{filter:brightness(1.5) drop-shadow(0 0 30px #ffd54f)}45%{filter:brightness(2.6) drop-shadow(0 0 60px #fff3b0);opacity:1}100%{filter:brightness(4) blur(14px) drop-shadow(0 0 80px #ffd54f);opacity:0;scale:1.06}}
 .st-glow{position:fixed;z-index:3;width:2vh;height:2vh;margin:-1vh 0 0 -1vh;border-radius:50%;background:radial-gradient(circle,#fff,#ffe58a 40%,rgba(255,213,79,0) 70%);animation:stGlow 3.2s ease-in forwards;pointer-events:none}
@@ -9359,7 +9359,7 @@ const FINALE_SAY = { call: "They're down! Fire the cannon now!", gabby: 'Wh-whoa
 async function fbFireCall() {          // (the battle menu comes back with the next fight: fbEnd / a new battle clear fn-on)          // the boss is beaten: the shopkeeper pops on and calls for the cannon
   const bf = document.querySelector('#battle-scene .battlefield'); if (!bf) return;
   setSpot([]); actor = null; document.body.classList.add('fn-on'); const dia = $('dia'); if (dia) dia.style.visibility = 'hidden';      // no battle menu under his line
-  const art = await findAsset(`${ANIM.base}/ui/shopkeeper`), shop = document.createElement('div'); shop.className = 'fb-shop';
+  const art = (await findAsset(`${ANIM.base}/ui/shopkeeper_warrior`)) || await findAsset(`${ANIM.base}/ui/shopkeeper`), shop = document.createElement('div'); shop.className = 'fb-shop';      // in his old adventurer's coat
   shop.innerHTML = art && ['png', 'webp', 'jpg'].includes(art.ext) ? `<img src="${art.url}" draggable="false">` : `<div class="fb-shopph">🧔<small>SHOPKEEPER</small></div>`;
   bf.appendChild(shop); sfx('swing'); await sleep(450);
   fbBubble(shop, FINALE_SAY.call, 'shop'); await sleep(1700);
@@ -9643,7 +9643,7 @@ function fbCleanup() {
 }
 async function fbToss(t, revive) {   // the shopkeeper runs on, tosses a potion, they banter
   const bf = document.querySelector('#battle-scene .battlefield'), arr = FB.units[t.side];
-  const art = await findAsset(`${ANIM.base}/ui/shopkeeper`), shop = document.createElement('div'); shop.className = 'fb-shop';
+  const art = (await findAsset(`${ANIM.base}/ui/shopkeeper_warrior`)) || await findAsset(`${ANIM.base}/ui/shopkeeper`), shop = document.createElement('div'); shop.className = 'fb-shop';      // his old adventurer's coat
   shop.innerHTML = art && ['png', 'webp', 'jpg'].includes(art.ext) ? `<img src="${art.url}" draggable="false">` : `<div class="fb-shopph">🧔<small>SHOPKEEPER</small></div>`;
   bf.appendChild(shop); sfx('swing'); await sleep(520);
   fbBubble(shop, fbPick(revive ? FB_SAY.revive : FB_SAY.heal), 'shop'); await sleep(950);
@@ -11941,7 +11941,7 @@ async function evBuildStage(st) {
   const party = quest.party.slice(0, 4), tok = st;
   party.forEach((u, i) => { const el = document.createElement('div'); el.className = 'ev-fig'; el.style.cssText = `--x:${spots[i][0]};--y:${spots[i][1]}`; el.innerHTML = `<div class="ph">${u.tag}</div>`; box.appendChild(el);
     heroArt(u.id).then(a => { if (a && el.isConnected && !el.querySelector('img')) { const m = document.createElement('img'); m.src = a.url; m.draggable = false; el.textContent = ''; el.appendChild(m); } }); });
-  if (st.ev.npc && STORY_NPC[st.ev.npc]) { const N = STORY_NPC[st.ev.npc], el = document.createElement('div'); el.className = 'ev-fig flip'; el.style.cssText = '--x:59;--y:84;--fh:50'; el.innerHTML = `<div class="ph">${N.tag}</div>`; box.appendChild(el);
+  if (st.ev.npc && STORY_NPC[st.ev.npc]) { const N = STORY_NPC[st.ev.npc], el = document.createElement('div'); el.className = 'ev-fig' + (N.faces === 'left' ? '' : ' flip'); el.style.cssText = '--x:59;--y:84;--fh:50'; el.innerHTML = `<div class="ph">${N.tag}</div>`; box.appendChild(el);
     findStill(`${ANIM.base}/${N.art}`).then(a => { if (a && el.isConnected) { const m = document.createElement('img'); m.src = a.url; m.draggable = false; el.textContent = ''; el.appendChild(m); } }); }
   if (st.ev.art) { const el = document.createElement('div'); el.className = 'ev-fig flip'; el.style.cssText = '--x:66;--y:82;--fh:48'; el.innerHTML = `<div class="ph">${heroById(st.ev.art).tag}</div>`; box.appendChild(el);
     heroArt(st.ev.art).then(a => { if (a && el.isConnected) { const m = document.createElement('img'); m.src = a.url; m.draggable = false; el.textContent = ''; el.appendChild(m); } }); }
@@ -13117,7 +13117,7 @@ const STORY = {
     ['gabby', "It's raining. It's going to rain all week. Nobody's going to come in. I can slack off!", { enter: ['assistant', 'right'] }],
     ['', '', { title: ['ACT II', 'The Tidelands'] }] ] },
   // ---- ACT 2: the first visit to the beach, in the rain (plays from the beach screen)
-  beach_rain: { bg: 'beach', wx: 'rain', cast: { left: ['angel', 'aneesah'], right: ['keeper', 'assistant'] }, lines: [
+  beach_rain: { bg: 'beach', wx: 'rain', looks: { keeper: 'summer', assistant: 'summer' }, cast: { left: ['angel', 'aneesah'], right: ['keeper', 'assistant'] }, lines: [
     ['hana', 'Well! You two look excited for the beach.'],
     ['murray', "I was. Packed the good towel and everything. The rain's dampened it somewhat."],
     ['gabby', 'I like it. Keeps everyone else away.'],
@@ -13167,7 +13167,7 @@ const STORY = {
     ['iris', 'Good. Being scared means you\'re paying attention.'],
     ['mc', 'And you, Hana? You said you were saving your strength for this.'],
     ['hana', "I am. Don't worry about me. Just do your part and make sure everyone is prepared. It's going to be all hands for this fight."],
-    ['', "Footsteps in the snow. The shopkeeper walks up in a battered old adventurer's coat nobody has seen before, a bandolier of potions across his chest.", { exit: ['aria'], enter: ['keeper', 'right'] }],
+    ['', "Footsteps in the snow. The shopkeeper walks up in a battered old adventurer's coat nobody has seen before, a bandolier of potions across his chest.", { look: { keeper: 'warrior' }, exit: ['aria'], enter: ['keeper', 'right'] }],
     ['gabby', '...Boss? What are you wearing?', { enter: ['assistant', 'right'] }],
     ['murray', 'Old coat. Still fits. Mostly.'],
     ['murray', "I'm coming with you lot tomorrow. Somebody's got to keep you standing, and I'm not trusting it to the doctor's potions."],
@@ -13216,9 +13216,20 @@ const STORY = {
 // the town's own people can speak in scenes too (id: name tag, picture, stand-in); rename them here
 const STORY_NPC = {
   angel:     { name: 'Hana', art: 'guidingangel/guide', tag: 'ANGEL', float: true },      // Hanathiel, the guiding angel (write her lines as 'hana' or 'angel')
-  keeper:    { name: 'The Shopkeeper', art: 'ui/shopkeeper', tag: 'SHOPKEEPER' },
+  keeper:    { name: 'The Shopkeeper', art: 'ui/shopkeeper', tag: 'SHOPKEEPER', faces: 'left' },      // his pictures look left (Gabby's look right, like the heroes)
   assistant: { name: 'Gabby', art: 'ui/assistant', tag: 'ASSISTANT' }
 };
+// Town folk can change clothes: a scene's looks: { keeper: 'summer' } (or a line's { look: { keeper: 'warrior' } }) shows ui/shopkeeper_summer / _warrior instead,
+// falling back to the usual picture. Drawn so far: shopkeeper_summer, assistant_summer (the volleyball scene), shopkeeper_warrior (his old adventurer's coat, the eve of the final fight).
+function storyNpcArt(a, id) {
+  const N = STORY_NPC[id], look = ST.looks && ST.looks[id], f = a.querySelector('.figure'); if (!N || !f) return;
+  const tok = (a._artTok = (a._artTok || 0) + 1);
+  (async () => { const r = (look && await findAsset(`${ANIM.base}/${N.art}_${look}`)) || await findAsset(`${ANIM.base}/${N.art}`);
+    if (!a.isConnected || a._artTok !== tok) return; f.querySelectorAll(':scope > .spr').forEach(x => x.remove());
+    if (r && ['png', 'webp', 'jpg'].includes(r.ext)) f.insertAdjacentHTML('afterbegin', `<img class="spr" src="${r.url}" alt="" draggable="false">`);
+    else if (id === 'angel' && typeof ANGEL_SVG !== 'undefined') f.insertAdjacentHTML('afterbegin', `<div class="spr st-svg">${ANGEL_SVG}</div>`); else return;
+    f.classList.add('has-art'); })();
+}
 const STORY_ALIAS = { hana: 'angel', murray: 'keeper', shopkeeper: 'keeper', gabby: 'assistant' };
 const storyName = id => id === 'mc' ? 'You' : STORY_NPC[id] ? STORY_NPC[id].name : ((heroById(id) || ENEMIES.find(x => x.id === id) || {}).name || id);
 const storyQuestsDone = g => g.requires.every(id => questCleared(id) || (id === 'plague' && game && game.preJean));
@@ -13302,11 +13313,11 @@ function storyBall(id) {                     // a volleyball flies in from offsc
   const b = document.createElement('div'); b.className = 'st-ball'; b.textContent = '🏐'; el.appendChild(b);
   const x1 = r.left + r.width / 2, y1 = r.top + r.height * .14, x0 = side > 0 ? innerWidth + 60 : -60, y0 = innerHeight * .1;
   b.animate([{ transform: `translate(${x0}px,${y0}px) rotate(0)` }, { transform: `translate(${(x0 + x1) / 2}px,${y1 - innerHeight * .2}px) rotate(300deg)`, offset: .5 }, { transform: `translate(${x1}px,${y1}px) rotate(600deg)` }],
-    { duration: 650, easing: 'linear', fill: 'forwards' }).finished.then(() => {
+    { duration: 325, easing: 'linear', fill: 'forwards' }).finished.then(() => {      // the whole gag runs at double speed: it's funnier quick
     try { sfx('hit'); } catch (e) { }
-    b.animate([{ transform: `translate(${x1}px,${y1}px) rotate(600deg)` }, { transform: `translate(${x1 - side * innerWidth * .25}px,${y1 - innerHeight * .3}px) rotate(900deg)`, opacity: 0 }], { duration: 700, easing: 'ease-out', fill: 'forwards' }).finished.then(() => b.remove());
+    b.animate([{ transform: `translate(${x1}px,${y1}px) rotate(600deg)` }, { transform: `translate(${x1 - side * innerWidth * .25}px,${y1 - innerHeight * .3}px) rotate(900deg)`, opacity: 0 }], { duration: 350, easing: 'ease-out', fill: 'forwards' }).finished.then(() => b.remove());
     c.el.classList.add(c.side === 'right' ? 'topple-r' : 'topple-l');
-    setTimeout(() => { if (ST.cast[id] && ST.cast[id].el === c.el) { delete ST.cast[id]; } c.el.remove(); storyLayout(); }, 1100);
+    setTimeout(() => { if (ST.cast[id] && ST.cast[id].el === c.el) { delete ST.cast[id]; } c.el.remove(); storyLayout(); }, 550);
   }).catch(() => b.remove());
 }
 function storyAscend(id) {                   // Hana gives the last of herself: a golden glow from her chest, then she shatters into light
@@ -13330,7 +13341,7 @@ async function storyPlay(sc) {
   el.querySelector('.st-stage').innerHTML = ''; el.querySelector('.st-text').textContent = ''; el.querySelector('.st-name').textContent = '';
   const pad = document.body.classList.contains('gp'), G = typeof PAD_GLYPH !== 'undefined' ? PAD_GLYPH[padFamily()] : ['A'];
   el.querySelector('.st-keys').textContent = pad ? `${G[0]} next · Start skip` : 'Click / Space: next · Esc: skip';
-  ST.skin = sc.skin || ''; ST.titled = new Set(); storyBg(sc.bg || ''); storyWx(sc.wx || '');
+  ST.skin = sc.skin || ''; ST.looks = { ...(sc.looks || {}) }; ST.titled = new Set(); storyBg(sc.bg || ''); storyWx(sc.wx || '');
   const c = sc.cast || {}; (c.left || []).forEach(id => storyEnter(id, 'left')); (c.right || []).forEach(id => storyEnter(id, 'right'));
   if (sc.title) {
     const t = el.querySelector('.st-title'); t.innerHTML = `<small>${sc.title[0]}</small><b>${sc.title[1]}</b><i></i>`; t.classList.add('on');
@@ -13348,16 +13359,13 @@ function storyLayout() {                // spread each side's actors out; the in
 }
 function storyEnter(id, side) {
   if (!id || ST.cast[id] || !storyHas(id)) return;
-  const a = document.createElement('div'); a.className = 'st-actor' + (side === 'right' ? ' flip' : '');
+  const a = document.createElement('div'); a.className = 'st-actor' + ((side === 'right') !== (STORY_NPC[id] && STORY_NPC[id].faces === 'left') ? ' flip' : '');      // everyone faces the middle
   const h = heroById(id), u = !h && ENEMIES.find(x => x.id === id) || null, N = STORY_NPC[id];
   a.innerHTML = `<div class="figure"${N ? '' : ` data-art="${id}"`}><div class="ph">${(N || h || u || { tag: id.toUpperCase() }).tag || id.toUpperCase()}</div></div>`;
   $('story').querySelector('.st-stage').appendChild(a); ST.cast[id] = { el: a, side };
   if (N) {                                // town folk: their own picture (the angel floats; her drawn stand-in if there's no art yet)
     if (N.float) a.classList.add('st-float');
-    findAsset(`${ANIM.base}/${N.art}`).then(r => { const f = a.querySelector('.figure'); if (!f || !a.isConnected) return;
-      if (r && ['png', 'webp', 'jpg'].includes(r.ext)) f.insertAdjacentHTML('afterbegin', `<img class="spr" src="${r.url}" alt="" draggable="false">`);
-      else if (id === 'angel' && typeof ANGEL_SVG !== 'undefined') f.insertAdjacentHTML('afterbegin', `<div class="spr st-svg">${ANGEL_SVG}</div>`); else return;
-      f.classList.add('has-art'); });
+    storyNpcArt(a, id);
   } else storyDress(a, id);
   a.style.left = side === 'left' ? '-20%' : '120%'; storyLayout(); requestAnimationFrame(() => a.classList.add('in'));
 }
@@ -13382,7 +13390,8 @@ function storyLine() {
   if ('bg' in o) storyBg(o.bg);
   if ('wx' in o) storyWx(o.wx);
   if ('skin' in o && o.skin !== ST.skin) { ST.skin = o.skin; Object.entries(ST.cast).forEach(([id, c]) => { if (heroById(id)) storyDress(c.el, id); }); }
-  if (o.ball) setTimeout(() => storyBall(STORY_ALIAS[o.ball] || o.ball), 150);
+  if (o.look) Object.entries(o.look).forEach(([k, v]) => { k = STORY_ALIAS[k] || k; ST.looks[k] = v; if (ST.cast[k]) storyNpcArt(ST.cast[k].el, k); });      // a town folk changes clothes
+  if (o.ball) setTimeout(() => storyBall(STORY_ALIAS[o.ball] || o.ball), 75);
   if (o.ascend) storyAscend(STORY_ALIAS[o.ascend] || o.ascend);
   who = STORY_ALIAS[who] || who; const mc = who === 'mc';
   if (mc) who = '';
