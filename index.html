@@ -2713,6 +2713,7 @@ body.calm #battle-scene .combatant-card.dg-low .figure,body.calm .dg-skull{anima
   body.rings #battle-scene .combatant-card:hover .stats-info .nm,body.rings #battle-scene .combatant-card.active-turn .stats-info .nm{opacity:1}
   body.rings #battle-scene .combatant-card .floor{height:auto;margin:-2.2em -4% 0;padding:0;border:0!important;box-shadow:none!important;animation:none!important;background:none;z-index:0;position:relative;pointer-events:none}
   body.rings #battle-scene .combatant-card.dead .floor{visibility:hidden}
+  body.rings #battle-scene .combatant-card .stats-info .status-badge{display:none}          /* Broken / Super broken: the cracked ring and the art already say it */
   body.rings .ring{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--rc) 70%,transparent))}
   body.rings .ring .lit{filter:drop-shadow(0 0 2px var(--rc))}
   body.rings .ring .shd{filter:drop-shadow(0 0 5px #b388ff);animation:ringShd 2.4s ease-in-out infinite}
@@ -7255,7 +7256,7 @@ function ringSvg(u, bfx, sk) {
     g += `<path d="${O}" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="9" pathLength="100"/>`;
     for (let q = 0; q < 4; q++) { const on = lit.includes(q);
       g += `<path d="${O}" fill="none" stroke="${on ? hc : 'rgba(255,255,255,.08)'}" stroke-width="${on ? 6 : 4}" pathLength="100" stroke-dasharray="23.4 76.6" stroke-dashoffset="${-(q * 25 + .8)}"${on ? ' class="lit"' : ''}/>`; }
-    g += `<path d="${O}" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="7" pathLength="100" stroke-dasharray=".35 4.65"/>`; }              // etched notches
+    }
   const arm = u.state === 'armoured' ? ['ar', u.maxBreak ? u.breakBar / u.maxBreak : 0] : hero && u.state === 'broken' && u.maxBreak2 ? ['ar2', u.break2 / u.maxBreak2] : null;
   g += `<path d="${I}" fill="none" stroke="rgba(0,0,0,.55)" stroke-width="5.5" pathLength="100"/>`;
   g += arm ? `<path d="${I}" fill="none" stroke="${ringCol(P[arm[0]], arm[1])}" stroke-width="3.5" pathLength="100" class="lit"/>`
