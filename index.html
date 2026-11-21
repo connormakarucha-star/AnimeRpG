@@ -2706,6 +2706,39 @@ body.bt-wait #battle-scene .combatant-card .stats-info .bar-container{opacity:.7
 @keyframes dgSkull{50%{transform:scale(1.15)}}
 body.calm #battle-scene .combatant-card.dg-lethal .figure{animation:none;filter:drop-shadow(0 0 3px #ff3030) drop-shadow(0 0 16px rgba(255,40,40,.8))}
 body.calm #battle-scene .combatant-card.dg-low .figure,body.calm .dg-skull{animation:none}
+/* HEALTH RINGS (body.rings, PC layout): see ringSvg */
+@media (min-width:900px){
+  body.rings #battle-scene .combatant-card .stats-info .bar-container,body.rings #battle-scene .combatant-card .stats-info .hpnum,body.rings #battle-scene .combatant-card .stats-info .arm{display:none}
+  body.rings #battle-scene .combatant-card .stats-info .nm{opacity:0;transition:opacity .15s}
+  body.rings #battle-scene .combatant-card:hover .stats-info .nm,body.rings #battle-scene .combatant-card.active-turn .stats-info .nm{opacity:1}
+  body.rings #battle-scene .combatant-card .floor{height:auto;margin:-2.2em -4% 0;padding:0;border:0!important;box-shadow:none!important;animation:none!important;background:none;z-index:0;position:relative;pointer-events:none}
+  body.rings #battle-scene .combatant-card.dead .floor{visibility:hidden}
+  body.rings .ring{display:block;width:100%;height:auto;overflow:visible;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--rc) 70%,transparent))}
+  body.rings .ring .lit{filter:drop-shadow(0 0 2px var(--rc))}
+  body.rings .ring .shd{filter:drop-shadow(0 0 5px #b388ff);animation:ringShd 2.4s ease-in-out infinite}
+  body.rings .ring .shd.ghost{opacity:.75;animation:none}
+  @keyframes ringShd{50%{opacity:.55}}
+  body.rings .ring.flare{animation:ringFlare .6s ease-out}
+  @keyframes ringFlare{0%{filter:brightness(2.2) drop-shadow(0 0 10px #fff)}100%{filter:drop-shadow(0 0 4px color-mix(in srgb,var(--rc) 70%,transparent))}}
+  body.rings #battle-scene .combatant-card .floor::after{content:'';position:absolute;left:3%;right:3%;top:8%;bottom:2%;border-radius:50%;pointer-events:none}
+  body.rings #battle-scene .combatant-card.active-turn .floor::after{box-shadow:0 0 0 2px #e8b04a,0 0 14px rgba(232,176,74,.7)}
+  body.rings #battle-scene .combatant-card.targetable .floor::after{box-shadow:0 0 0 2px #ff5252,0 0 16px rgba(255,82,82,.85);animation:pulse 1s infinite alternate}
+  body.rings #battle-scene .combatant-card.targetable.team-p .floor::after{box-shadow:0 0 0 2px #4fc3f7,0 0 16px rgba(79,195,247,.85)}
+  body.rings #battle-scene .combatant-card.aoe-mark .floor::after{box-shadow:0 0 0 2px #ffd54f,0 0 16px rgba(255,213,79,.85);animation:pulse 1s infinite alternate}
+}
+/* threats on the heroes (rings mode) */
+#battle-scene .combatant-card.dg-hit:not(.targetable) .figure{filter:drop-shadow(0 0 2px rgba(255,170,60,.95)) drop-shadow(0 0 10px rgba(255,140,40,.5))}
+#battle-scene .combatant-card.dg-saved:not(.targetable) .figure{filter:drop-shadow(0 0 2px #7dffb0) drop-shadow(0 0 12px rgba(90,255,160,.55))}
+.dg-safe{display:inline-block;font-size:1.7em;line-height:1;filter:drop-shadow(0 0 6px #5cff9a)}
+.aims{display:inline-flex;gap:.25em;align-items:center}
+.aims .ai{display:inline-grid;place-items:center;min-width:2em;height:2em;padding:0 .2em;border-radius:50%;background:rgba(10,10,18,.85);box-shadow:0 0 0 1px rgba(255,255,255,.2);font-size:1.45em;font-style:normal;position:relative}
+.aims .ai.kill{box-shadow:0 0 0 2px #ff4040,0 0 10px rgba(255,60,60,.8);animation:dgSkull 1s ease-in-out infinite}
+.aims .ai.kill.may{box-shadow:0 0 0 1.5px #ff8a65;animation:none;opacity:.9}
+.aims .ai.kill i{position:absolute;right:-.15em;bottom:-.2em;font:900 .7em system-ui;color:#ffb199;font-style:normal}
+.aims .ai.brk{box-shadow:0 0 0 2px #4fd8ff,0 0 10px rgba(79,216,255,.7)}
+.aims .ai.wk{color:#7dff9a;font-weight:900}.aims .ai.rs{color:#ff8a8a;font-weight:900}
+.aims .ai.rx{box-shadow:0 0 0 2px var(--rc),0 0 8px var(--rc)}
+.aims .ai.none{opacity:.6}
 </style>
 </head>
 <body>
@@ -4288,10 +4321,10 @@ const hasKind = (h, k) => h.skills.some(s => s.t === 'dmg' && (k === 'physical' 
 
 /* ============ EFFECTS (hit numbers, screen shake) ============ */
 // Visual feedback only. The two toggles are remembered on this device (not part of the game save).
-const FX = { spicy: true, numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5, sfx: 1, ui: 'dia', uiV: 2, travel: true };
+const FX = { rings: true, spicy: true, numbers: true, shake: true, talk: true, flash: true, speed: 1, text: 0, calm: false, cb: false, vol: 0.5, sfx: 1, ui: 'dia', uiV: 2, travel: true };
 try {
   const saved = JSON.parse(localStorage.getItem('animeRpgFx') || 'null');
-  if (saved) { FX.pcfs = saved.pcfs === true; FX.dgspr = saved.dgspr === true; if (saved.fullscreen === false) FX.fullscreen = false; FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.travel = saved.travel !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; FX.sfx = typeof saved.sfx === 'number' ? Math.max(0, Math.min(1, saved.sfx)) : 1; FX.ui = saved.ui === 'classic' ? 'classic' : saved.ui === 'bar' && saved.uiV === 2 ? 'bar' : 'dia'; }      // (the button diamond replaced the bar as the default)
+  if (saved) { FX.pcfs = saved.pcfs === true; FX.rings = saved.rings !== false; if (saved.fullscreen === false) FX.fullscreen = false; FX.numbers = saved.numbers !== false; FX.shake = saved.shake !== false; FX.talk = saved.talk !== false; FX.flash = saved.flash !== false; FX.travel = saved.travel !== false; FX.speed = [1, 1.5, 2].includes(saved.speed) ? saved.speed : 1; FX.text = [0, 1, 2].includes(saved.text) ? saved.text : 0; FX.calm = !!saved.calm; FX.cb = !!saved.cb; FX.vol = typeof saved.vol === 'number' ? Math.max(0, Math.min(1, saved.vol)) : 0.5; FX.sfx = typeof saved.sfx === 'number' ? Math.max(0, Math.min(1, saved.sfx)) : 1; FX.ui = saved.ui === 'classic' ? 'classic' : saved.ui === 'bar' && saved.uiV === 2 ? 'bar' : 'dia'; }      // (the button diamond replaced the bar as the default)
   else if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) FX.shake = false;
 } catch (e) {}
 /* ============ BATTLE SPEED (1x / 1.5x / 2x) ============ */
@@ -4401,7 +4434,7 @@ const OPTIONS = [
   ['calm', '🕊️ Reduced motion', 'Turns off weather, screen shake, flashes and the fade between scenes. Calmer on the eyes.', () => FX.calm],
   ['ui', '🖥️ Battle menu (PC)', 'Diamond: on your turn the hero\'s skills pop up beside them, laid out like a controller\'s buttons. Bar: a bottom bar with slanted skill buttons. Classic: the old fixed panel.', () => FX.ui !== 'classic', () => ({ dia: 'Diamond', bar: 'Bar', classic: 'Classic' })[FX.ui]],
   ['travel', '🚶 Travel scenes', 'A short walking scene between fights, camps and events during a quest. Click or press a key to skip any of them.', () => FX.travel],
-  ['dgspr', '🩸 Danger on sprites (try-out)', 'Heroes show their danger on the sprite itself: an orange glow when an attack is coming at them, a pulsing red glow and a skull when it could kill them, a faint red pulse below a quarter HP.', () => FX.dgspr],
+  ['rings', '⭕ Health rings (PC)', 'On: each fighter stands on two rings, health outside and armour inside, that shift from cool colours to red as they drain; an orange outline means an attack is coming at her, red and 💀 that it could kill her. Off: the classic health and armour bars.', () => FX.rings !== false],
   ['cb', '🎨 Colour-blind palette', 'Safer colours for the element numbers (blue, orange and yellow instead of red and green tints).', () => FX.cb],
   ['talk', '💬 Battle chatter', 'Heroes talk in little speech bubbles: crits, kills, broken armour, boss phases and gag lines.', () => FX.talk],
   ['spicy', '🔥 Fanservice', 'On: super broken heroes use their own (fog-censored) art, and everyone reacts to being stripped in their own way. Off: super broken heroes keep their broken look, and the chatter stays tame.', () => FX.spicy]
@@ -7197,6 +7230,49 @@ function barFx(u, sk) {
     hp: chunks(hpP, u.maxHp, shown, dLo, dHi),
     arm: lay.m && u.state !== 'super' ? chunks(armPct, lay.m, shown, kLo, kHi) : '' };
 }
+/* HEALTH RINGS (PC battle, Options → Health rings). Each fighter stands on two etched rings: the outer one is health, the inner one armour. They don't show exact
+   amounts: they shift colour as they drain (health green → yellow → orange → red; armour ice-blue → violet → red; a hero's second, damaged armour layer amber → red),
+   and the health ring also loses a quarter at ¾, ½ and ¼ so it reads without colour too. Broken armour leaves a cracked inner ring. A barrier wraps the ring in violet
+   (dashed while a Ward is only being picked). Gold rim = whose turn it is; red / blue pulse = a target you can pick; yellow = caught in an area attack.
+   Threats show on the heroes themselves: orange outline = an attack is coming at her this round, red outline + 💀 = it could kill her, green + 🛡️ = the Ward you're
+   picking would save her. Exact numbers live in the ⓘ panel and at camp. */
+const RING = { hp: [[1, '#46d16a'], [.6, '#c9d544'], [.4, '#f2b03a'], [.2, '#f06a30'], [0, '#e0262b']], ar: [[1, '#58c8ff'], [.5, '#9a6bff'], [0, '#e3264a']], ar2: [[1, '#ffb347'], [0, '#e3264a']],
+  cb: { hp: [[1, '#4aa3ff'], [.6, '#a9b8ff'], [.4, '#ffd23f'], [.2, '#ff9a1f'], [0, '#ff5e00']], ar: [[1, '#7fe0ff'], [.5, '#e4e4ff'], [0, '#ff9a1f']], ar2: [[1, '#ffd23f'], [0, '#ff5e00']] } };
+function ringCol(stops, f) {
+  f = Math.max(0, Math.min(1, f)); for (let i = 0; i < stops.length - 1; i++) { const [f0, c0] = stops[i], [f1, c1] = stops[i + 1]; if (f <= f0 && f >= f1) {
+    const k = f0 === f1 ? 0 : (f0 - f) / (f0 - f1), a = c0.match(/\w\w/g).map(h => parseInt(h, 16)), b = c1.match(/\w\w/g).map(h => parseInt(h, 16));
+    return '#' + a.map((x, j) => Math.round(x + (b[j] - x) * k).toString(16).padStart(2, '0')).join(''); } }
+  return stops[stops.length - 1][1];
+}
+function ringSvg(u, bfx, sk) {
+  if (!isAlive(u)) return '';
+  const P = FX.cb ? RING.cb : RING, hero = u.team === 'p', f = Math.max(0, u.hp / u.maxHp), hideHp = !!(u.final || u.trollPart);
+  const ell = (rx, ry) => `M 100 ${26 + ry} A ${rx} ${ry} 0 1 1 100 ${26 - ry} A ${rx} ${ry} 0 1 1 100 ${26 + ry}`, O = ell(92, 19), I = ell(72, 12);
+  const hc = ringCol(P.hp, f); let g = '';
+  g += `<ellipse cx="100" cy="26" rx="90" ry="18" fill="${hideHp ? '#000' : hc}" opacity=".13"/>`;                                 // a pool of its light on the floor
+  if (hideHp) g += `<path d="${O}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5" stroke-dasharray="2 3" pathLength="100"/>`;
+  else { const keep = Math.max(f > 0 ? 1 : 0, Math.ceil(f * 4 - 1e-9)), lit = [0, 3, 1, 2].slice(0, keep);            // quarters: front-right, front-left, back-right, back-left (the back goes first)
+    g += `<path d="${O}" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="9" pathLength="100"/>`;
+    for (let q = 0; q < 4; q++) { const on = lit.includes(q);
+      g += `<path d="${O}" fill="none" stroke="${on ? hc : 'rgba(255,255,255,.08)'}" stroke-width="${on ? 6 : 4}" pathLength="100" stroke-dasharray="23.4 76.6" stroke-dashoffset="${-(q * 25 + .8)}"${on ? ' class="lit"' : ''}/>`; }
+    g += `<path d="${O}" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="7" pathLength="100" stroke-dasharray=".35 4.65"/>`; }              // etched notches
+  const arm = u.state === 'armoured' ? ['ar', u.maxBreak ? u.breakBar / u.maxBreak : 0] : hero && u.state === 'broken' && u.maxBreak2 ? ['ar2', u.break2 / u.maxBreak2] : null;
+  g += `<path d="${I}" fill="none" stroke="rgba(0,0,0,.55)" stroke-width="5.5" pathLength="100"/>`;
+  g += arm ? `<path d="${I}" fill="none" stroke="${ringCol(P[arm[0]], arm[1])}" stroke-width="3.5" pathLength="100" class="lit"/>`
+    : `<path d="${I}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2" pathLength="100" stroke-dasharray="6 3 2 5 9 2 4 4"/>`;      // broken: a cracked ring
+  const B = u.barrier || 0, ward = hero && sk && isWard(sk) && sk.p && (sk.t === 'barrier' || u !== cur || sk.self) ? sk.p : 0;
+  if (B > 0 || ward > B) g += `<path d="${ell(97, 22)}" fill="none" stroke="#b388ff" stroke-width="${B > 0 ? 4 : 3}" pathLength="100" class="shd${B > 0 ? '' : ' ghost'}"${B > 0 ? '' : ' stroke-dasharray="3 2"'}/>`;
+  return `<svg class="ring${u._trail && performance.now() - u._trail.t0 < 600 ? ' flare' : ''}" viewBox="0 0 200 52" style="--rc:${hideHp ? '#9aa' : hc}">${g}</svg>`;
+}
+function aimIcons(sk, u, m, rx) {         // what the picked skill would do to this enemy, as icons: 💀 kill (💀? maybe), 💥 break its armour, ▲ weak / ▼ resists, a reaction
+  const [lo, hi] = adjRange(sk, u), B = u.barrier || 0, dLo = Math.max(0, lo - B), dHi = Math.max(0, hi - B) + (critChance(sk, u) > 0 ? Math.max(0, num(CRIT.bonus)) : 0);
+  const brk = Math.max(0, ((sk.el || sk.chip) ? (sk.brk || 0) : 0) - B), ic = [];
+  if (rx) ic.push(`<b class="ai rx" style="--rc:${rx.col}" title="${rx.name}: ${rx.desc}">${rx.icon}</b>`);
+  if (!u.final && dLo >= u.hp) ic.push('<b class="ai kill" title="This takes it down">💀</b>'); else if (!u.final && dHi >= u.hp) ic.push('<b class="ai kill may" title="This could take it down (high roll or crit)">💀<i>?</i></b>');
+  if (u.state === 'armoured' && brk > 0 && brk >= u.breakBar) ic.push('<b class="ai brk" title="This breaks its armour">💥</b>');
+  if (m === 'weak') ic.push('<b class="ai wk" title="Weak to this">▲</b>'); else if (m === 'resist') ic.push('<b class="ai rs" title="Resists this">▼</b>');
+  return `<span class="aims">${ic.join('') || '<b class="ai none" title="A normal hit">⚔️</b>'}</span>`;
+}
 function hpTrail(u) {            // a pale strip that hangs where the HP was for a moment, then drains down to the new value
   const p = Math.max(0, u.hp / u.maxHp * 100), now = performance.now();
   if (u._hpShown == null || p > u._hpShown) { u._hpShown = p; u._trail = null; return ''; }
@@ -7225,20 +7301,22 @@ function card(u, team, i) {
   if (sk && team === 'e' && alive && sk.t === 'dmg') {      // exact damage and crit chance of the selected skill against this enemy
     const m = matchup(sk, u), [lo, hi] = adjRange(sk, u), pm = posMod(sk, u);
     const rx = reactFor(u, sk.el, cur);
+    if (FX.rings !== false) extra = aimIcons(sk, u, m, rx); else
     extra = `<span>${rx ? `<span class="rxprev" style="--rc:${rx.col}" title="${rx.desc}">${rx.icon} ${rx.name}</span>` : ''}<span class="dmgprev">${lo === hi ? lo : lo + '–' + hi}</span>${pmTag(pm)}<span class="crit ${m || ''}">Crit ${critChance(sk, u)}%${m === 'weak' ? ' ▲weak' : m === 'resist' ? ' ▼resists' : ''}</span></span>`;
   } else if (team === 'e' && alive && u.charging) extra = `<span class="intent charge">💥 ${BOSS_CHARGE.names[u.id] || 'Devastating Blow'} → ALL</span>`;      // charging: the next move hits everyone
   else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
   const inc = team === 'p' && alive && !FB ? incoming(u) : 0;
   const bfx = barFx(u, sk), low = alive && u.hp / u.maxHp <= .25;
   if (team === 'p' && alive && (bfx.lethal || low)) c.push('bars-hot');                     // quiet bars: these stay bright (see the battle bars CSS)
-  if (FX.dgspr && team === 'p' && alive && !FB) { if (bfx.lethal) c.push('dg-lethal'); else if (inc) c.push('dg-hit'); if (low) c.push('dg-low'); }      // try-out: danger shown on the sprite
-  const incTxt = FX.dgspr && bfx.lethal && team === 'p' ? `<span class="dg-skull" title="The attacks aimed at ${u.name} could take her down">💀</span>`
+  const RG = FX.rings !== false, saved = RG && team === 'p' && alive && !bfx.lethal && isWard(sk) && barFx(u, null).lethal;      // a Ward being picked would save her
+  if (RG && team === 'p' && alive && !FB) { if (bfx.lethal) c.push('dg-lethal'); else if (saved) c.push('dg-saved'); else if (inc) c.push('dg-hit'); }      // threat outlines on the sprite
+  const incTxt = RG ? (team !== 'p' || !alive ? '' : bfx.lethal ? `<span class="dg-skull" title="The attacks aimed at ${u.name} could take her down">💀</span>` : saved ? `<span class="dg-safe" title="This barrier would keep ${u.name} standing">🛡️</span>` : '')
     : inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
   const mt = (u.weak && u.weak.length ? `<span class="mt" title="Weak to">⚠️${elemIcons(u.weak)}</span>` : '') + (u.resist && u.resist.length ? `<span class="mt" title="Resists">🛡️${elemIcons(u.resist)}</span>` : '');
   return `<div class="${c.join(' ')}" onclick="pick('${team}',${i})">
     <div class="bubble">${extra}${incTxt}</div>
     <div class="figure-slot"></div>
-    <div class="floor"></div>
+    <div class="floor">${FX.rings !== false ? ringSvg(u, bfx, sk) : ''}</div>
     <div class="stats-info">
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
       <div class="tags">${u.trollPart && u.state !== 'armoured' && isAlive(u) ? `<span class="stealth-tag" style="background:#3a2a12;color:#ffd9a0" title="Its armour grows back after this many of the troll's turns">🦴 regrows in ${u.regrow}</span>` : ''}${u.chill >= 1 && blizz.on && isAlive(u) ? `<span class="stealth-tag" style="background:#1f3a5c;color:#bfe3ff" title="Cold slows you: your attacks can miss">❄️ hit ${Math.round(numbHit(u) * 100)}%</span>` : ''}${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
@@ -7402,6 +7480,7 @@ function dmgLoop() {                       // runs every frame while the battle 
   if (on) requestAnimationFrame(dmgLoop); else dmgRun = false;
 }
 function render() {
+  document.body.classList.toggle('rings', FX.rings !== false);        // health rings instead of bars (PC battle; see ringSvg)
   document.body.classList.toggle('bt-wait', !!waiting);          // your turn: the quiet battle bars come up a little
   if (!dmgRun) { dmgRun = true; requestAnimationFrame(dmgLoop); } requestAnimationFrame(trollLayer); trollHud();
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
