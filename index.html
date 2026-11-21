@@ -857,6 +857,14 @@ body.calm #qm-board .qm-rain,body.calm #qm-board .qm-mist,body.calm #qm-board .q
 #battle-scene .combatant-card .figure{transition:translate .55s cubic-bezier(.5,0,.3,1),rotate .55s,opacity .55s}
 #battle-scene .combatant-card.drowned .figure{opacity:.5;filter:blur(1.4px) brightness(.5) sepia(.55) hue-rotate(55deg);rotate:-80deg;clip-path:none;z-index:0}
 #battle-scene .combatant-card.drowned .hpbar{box-shadow:0 0 0 2px #4fc3f7}
+#battle-scene .combatant-card.gripped .figure{opacity:.75;filter:brightness(.7) saturate(.7);rotate:-14deg;translate:12% 4%}      /* pinned in the Carapace King's claw */
+#battle-scene .combatant-card.gripped .hpbar{box-shadow:0 0 0 2px #ff8a65}
+#battle-scene .combatant-card.charging .figure{animation:bossCharge .7s ease-in-out infinite alternate}      /* a boss charging its big attack */
+@keyframes bossCharge{from{filter:drop-shadow(0 0 6px #ff6d00) brightness(1.05)}to{filter:drop-shadow(0 0 26px #ff3d00) drop-shadow(0 0 50px rgba(255,61,0,.6)) brightness(1.3)}}
+#battle-scene .combatant-card.oniclone .figure{opacity:.62;filter:drop-shadow(0 0 10px #ff6d00) drop-shadow(0 0 22px rgba(255,61,0,.6)) sepia(.35) saturate(1.6) hue-rotate(-12deg);animation:oniFlame 1.1s ease-in-out infinite alternate}      /* Shuten's phantoms */
+@keyframes oniFlame{from{filter:drop-shadow(0 0 8px #ff6d00) drop-shadow(0 0 18px rgba(255,61,0,.5)) sepia(.35) saturate(1.6) hue-rotate(-12deg);opacity:.56}to{filter:drop-shadow(0 0 14px #ffab40) drop-shadow(0 0 30px rgba(255,109,0,.7)) sepia(.35) saturate(1.8) hue-rotate(-4deg);opacity:.7}}
+#battle-scene.stormgather .battlefield::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse 80% 40% at 25% 0%,rgba(20,26,50,.55),transparent 75%);animation:stormPulse 1.6s ease-in-out infinite alternate}
+@keyframes stormPulse{from{opacity:.6}to{opacity:1}}
 #troll-layer{position:absolute;inset:0;pointer-events:none;z-index:0}
 #troll-layer svg{position:absolute;left:0;top:0;overflow:visible}
 #troll-layer .tl-part{transition:opacity .3s,filter .3s;transform-box:fill-box}
@@ -2265,6 +2273,7 @@ button:not(:disabled):active,.clk:active,.rc:active,.dcs:active{filter:brightnes
 .st-box.narr .st-text{font-style:italic;color:#d9d2e6;text-align:center}
 .st-box.mc .st-name{background:#cfd6e6;color:#1b1f2c}      /* the player's own lines */
 .st-svgbg,.st-svgbg svg{position:absolute;inset:0;width:100%;height:100%}
+#battle-scene .intent.charge{color:#ffab40;font-weight:800}
 .st-wx{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s}
 .st-wx.rain{opacity:1;background:linear-gradient(180deg,rgba(30,40,60,.35),rgba(20,26,40,.2)),repeating-linear-gradient(105deg,transparent 0 9px,rgba(200,220,255,.22) 9px 10px,transparent 10px 23px);background-size:100% 100%,240px 240px;animation:stRain .45s linear infinite}
 @keyframes stRain{to{background-position:0 0,-60px 240px}}
@@ -3270,7 +3279,7 @@ const ENEMIES = [
   { id:'e_karakasa', role:'front', weak:['fire'], resist:['shock'], evasive:1.5, name:'Karakasa', tag:'KARAKASA', hp:75, brk:28, spd:9, skills:[
     { n:'Umbrella Bash', t:'dmg', r:'melee',  d:[9,11],  cd:0 },
     { n:'Spin Gust',     t:'dmg', r:'ranged', d:[9,11],  el:'ice',   brk:10, cd:3 } ] },
-  { id:'e_shuten', boss:true, weak:['shock'], resist:['fire'], name:'Oni Lord Shuten', short:'Shuten', tag:'SHUTEN', hp:300, brk:95, spd:8, phases:[{ at:.5, msg:'Shuten drains the sake cup and flies into a rage!', atk:1.3, cleanse:true, add:[{ n:'Blood Frenzy', t:'dmg', r:'melee', d:[21,24], el:'bleed', brk:20, cd:3 }] }], skills:[
+  { id:'e_shuten', boss:true, weak:['shock'], resist:['fire'], name:'Oni Lord Shuten', short:'Shuten', tag:'SHUTEN', hp:300, brk:95, spd:8, phases:[{ at:.5, msg:'Shuten drains the sake cup and flies into a rage! Flaming phantoms of the oni step out of the smoke!', atk:1.3, cleanse:true, clones:2, add:[{ n:'Blood Frenzy', t:'dmg', r:'melee', d:[21,24], el:'bleed', brk:20, cd:3 }] }], skills:[
     { n:'Kanabo Crush',  t:'dmg', r:'melee',  d:[17,20], cd:0 },
     { n:'Demon Fire',    t:'dmg', r:'ranged', d:[13,16], el:'fire',  brk:25, cd:2 },
     { n:'Oni Hide',      t:'barrier', p:28, cd:4 } ] },
@@ -3406,16 +3415,17 @@ const QUESTS = [{
   camps: 2,                    // two camps and two random events (the Tidelands are the hard group)
   events: 2,
   unlocks: 'siren',            // first boss win adds this hero to the roster
-  scale: { hp: 1.29, atk: 1.46 },
+  scale: { hp: 1.29, atk: 1.46 },          // (the +5% tried on 2026-11-20 was taken back: the fight-lined direct route adds the wear instead)
   nodes: [
     { name: 'Tidal Shallows',   enemies: ['e_jelly', 'e_crab', 'e_jelly'],                gold: 40 },
-    { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly'],                gold: 50 },
+    { name: 'Kelp Forest',      enemies: ['e_eel', 'e_urchin', 'e_jelly', 'e_crab'],      gold: 50 },
+    { name: 'Shipbreaker Rocks', enemies: ['e_urchin', 'e_crab', 'e_eel', 'e_jelly'],     gold: 55, bg: 2, scale: { hp: 1.03, atk: 1.03 } },      // Act 2 lengthened (2026-11-20)
     { name: 'Barnacle Caves',   enemies: ['e_crab', 'e_eel', 'e_ray', 'e_urchin'],        gold: 55, bg: 2, scale: { hp: 1.05, atk: 1.05 } },
     { name: 'Sunken Wreck',     enemies: ['e_ray', 'e_crab', 'e_eel', 'e_tide'],          gold: 65, bg: 3, scale: { hp: 1.1, atk: 1.1 } },
     { name: 'Drowned Harbour',  enemies: ['e_crab', 'e_eel', 'e_jelly', 'e_tide'],        gold: 70, bg: 3, scale: { hp: 1.12, atk: 1.12 } },     // added with the Tidelands: it shares the Wreck's picture (battle_cove_3)
     { name: 'Stormfront Reef',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 80, bg: 4, scale: { hp: 1.2, atk: 1.15 } },
     { name: "Siren's Grotto",   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 100, bg: 5, scale: { hp: 1.25, atk: 1.12 } },
-    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, bg: 6, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+    { name: "The Siren's Perch",enemies: ['e_jelly', 'e_siren', 'e_eel'],                 gold: 150, bg: 6, boss: true, scale: { hp: 1.18, atk: 1.05 } }      // Act 2 bosses eased 2026-11-20 (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
   ]
 }, {
   id: 'lighthouse', name: 'The Stormwatch Lighthouse',
@@ -3427,13 +3437,14 @@ const QUESTS = [{
   scale: { hp: 1.36, atk: 1.55 },
   nodes: [
     { name: 'Rocky Causeway',     enemies: ['e_eel', 'e_urchin', 'e_eel'],                  gold: 45 },
-    { name: "Keeper's Cottage",   enemies: ['e_ray', 'e_jelly', 'e_urchin'],                gold: 55 },
+    { name: "Keeper's Cottage",   enemies: ['e_ray', 'e_jelly', 'e_urchin', 'e_eel'],       gold: 55 },
+    { name: 'Gull-Swept Pier',    enemies: ['e_eel', 'e_urchin', 'e_ray', 'e_jelly'],       gold: 58, bg: 2, scale: { hp: 1.03, atk: 1.03 } },      // Act 2 lengthened (2026-11-20)
     { name: 'Salt-Eaten Cellar',  enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_jelly'],       gold: 60, bg: 3, scale: { hp: 1.05, atk: 1.05 } },
     { name: 'Spiral Stair',       enemies: ['e_eel', 'e_ray', 'e_urchin', 'e_tide'],        gold: 70, bg: 4, scale: { hp: 1.1, atk: 1.1 } },
     { name: 'Foghorn Gallery',    enemies: ['e_ray', 'e_eel', 'e_jelly', 'e_tide'],         gold: 80, bg: 5, scale: { hp: 1.15, atk: 1.12 } },
     { name: 'The Lamp Room',      enemies: ['e_ray', 'e_eel', 'e_urchin', 'e_tide'],        gold: 95, bg: 6, scale: { hp: 1.2, atk: 1.15 } },
     { name: 'Storm Balcony',      enemies: ['e_eel', 'e_ray', 'e_jelly', 'e_tide'],         gold: 110, bg: 7, scale: { hp: 1.25, atk: 1.15 } },
-    { name: "The Keeper's Lantern", enemies: ['e_ray', 'e_keeper', 'e_eel'],                gold: 160, bg: 8, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+    { name: "The Keeper's Lantern", enemies: ['e_ray', 'e_keeper', 'e_eel'],                gold: 160, bg: 8, boss: true, scale: { hp: 1.18, atk: 1.05 } }      // Act 2 bosses eased 2026-11-20 (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
   ]
 }, {
   id: 'beach', name: 'The Sunbaked Shoals',
@@ -3445,13 +3456,14 @@ const QUESTS = [{
   scale: { hp: 1.22, atk: 1.36 },
   nodes: [
     { name: 'Tide Pools',         enemies: ['e_crab', 'e_urchin', 'e_jelly'],               gold: 45 },
-    { name: 'Driftwood Cove',     enemies: ['e_crab', 'e_jelly', 'e_urchin'],               gold: 55 },
+    { name: 'Driftwood Cove',     enemies: ['e_crab', 'e_jelly', 'e_urchin', 'e_ray'],      gold: 55 },
+    { name: 'Coral Shallows',     enemies: ['e_jelly', 'e_urchin', 'e_crab', 'e_ray'],      gold: 58, bg: 2, scale: { hp: 1.03, atk: 1.03 } },      // Act 2 lengthened (2026-11-20)
     { name: 'Palm Grove',         enemies: ['e_ray', 'e_crab', 'e_jelly', 'e_urchin'],      gold: 60, bg: 3, scale: { hp: 1.05, atk: 1.05 } },
     { name: 'Sandbar Crossing',   enemies: ['e_crab', 'e_ray', 'e_jelly', 'e_tide'],        gold: 70, bg: 4, scale: { hp: 1.1, atk: 1.1 } },
     { name: 'Shipwreck Beach',    enemies: ['e_crab', 'e_crab', 'e_urchin', 'e_tide'],      gold: 80, bg: 5, scale: { hp: 1.15, atk: 1.12 } },
     { name: 'The Boardwalk',      enemies: ['e_ray', 'e_crab', 'e_jelly', 'e_tide'],        gold: 95, bg: 6, scale: { hp: 1.2, atk: 1.15 } },
     { name: 'Sunset Dunes',       enemies: ['e_crab', 'e_ray', 'e_urchin', 'e_tide'],       gold: 110, bg: 7, scale: { hp: 1.25, atk: 1.15 } },
-    { name: "The Carapace King's Throne", enemies: ['e_crab', 'e_crabking', 'e_jelly'],     gold: 160, bg: 8, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+    { name: "The Carapace King's Throne", enemies: ['e_crab', 'e_crabking', 'e_jelly'],     gold: 160, bg: 8, boss: true, scale: { hp: 1.18, atk: 1.05 } }      // Act 2 bosses eased 2026-11-20 (bal6: a party fresh from Act 1 lost 5 of 6 at the boss)
   ]
 }, {
   id: 'pass', name: 'The Shattered Pass',
@@ -3512,7 +3524,7 @@ const QUESTS = [{
     { name: 'Cold Kitchens', enemies: ['e_stitched', 'e_revenant', 'e_wight', 'e_chorus'], gold: 113, bg: 8, scale: { hp: 1.19, atk: 1.12 } },
     { name: 'The Throne Stair', enemies: ['e_hound', 'e_revenant', 'e_shade', 'e_wight'], gold: 120, bg: 9, scale: { hp: 1.22, atk: 1.13 } },
     { name: 'Mirror Hall', enemies: ['e_stitched', 'e_shade', 'e_wight', 'e_chorus'], gold: 127, bg: 10, scale: { hp: 1.25, atk: 1.15 } },
-    { name: "The Ice Queen's Throne", enemies: ['e_revenant', 'e_icequeen', 'e_wight'], gold: 250, bg: 11, boss: true, scale: { hp: 1.3, atk: 1.1 } }
+    { name: "The Ice Queen's Throne", enemies: ['e_revenant', 'e_icequeen', 'e_wight'], gold: 250, bg: 11, boss: true, blizzard: true, scale: { hp: 1.3, atk: 1.1 } }      // her court is always a blizzard: bring torches
   ]
 }];
 // Anti stun-lock (hidden, never shown in the UI): when a BOSS is the last enemy standing and loses `stunMisses` turns in a row to stun,
@@ -5294,12 +5306,18 @@ async function findAsset0(path) {
    around each patch (0-1); blur = how soft the solid edge is; speed = drift speed; res = working size of the fog (pixels tall). ---- */
 const FOG = { grey: .1, outline: 1, blur: 7, speed: 2, res: 240 };
 const FOG_MASK = {};                       // picture url -> its mask url
+/* Tyr's immortal form (assets/tyr/armoured - immortal/) uses the same masks (idle.png + idle_mask.png), but its fog is black with red
+   wisps (FOG_BLOOD) instead of white/grey. Unlike super broken, an immortal picture with no mask still shows as it is. */
+const FOG_DIRS = ['super broken', 'armoured - immortal'], FOG_SEL = FOG_DIRS.flatMap(d => [`img[src*="${d.replace(/ /g, '%20')}"]`, `img[src*="${d}"]`]).join(',');
+const FOG_BLOOD = { base: [8, 2, 4], red: [150, 8, 18], hot: [235, 40, 40] };   // shadow, blood red, the brightest wisps
+const fogBlood = url => { try { url = decodeURIComponent(url); } catch (e) {} return url.includes('armoured - immortal'); };
 async function findRaw(path) {
-  if (!path.includes('/super broken/') || path.endsWith('_mask')) return findRaw1(path);
+  const strict = path.includes('/super broken/');
+  if (!(strict || path.includes('/armoured - immortal/')) || path.endsWith('_mask')) return findRaw1(path);
   const k = path + '#fog'; if (k in animCache) return animCache[k];
   const a = await findRaw1(path), still = a && ['png', 'webp', 'jpg', 'jpeg'].includes(a.ext), m = still ? await findRaw1(path + '_mask') : null;
   if (m) FOG_MASK[a.url] = m.url;
-  return animCache[k] = m ? a : null;
+  return animCache[k] = m || !strict ? a : null;
 }
 const fogField = {};                        // mask url -> promise of { w, h, hard, soft, halo, box }
 function fogPrep(url) {
@@ -5315,12 +5333,14 @@ const FOG_P = (() => { const P = new Uint8Array(512), p = [...Array(256).keys()]
 function fogVn(x, y) { const P = FOG_P, xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), hv = (a, b) => P[P[a & 255] + (b & 255)] / 255;
   const a = hv(xi, yi), b = hv(xi + 1, yi), c = hv(xi, yi + 1), d = hv(xi + 1, yi + 1); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
 const fogFbm = (x, y) => fogVn(x, y) * .55 + fogVn(x * 2.1 + 7.3, y * 2.1 + 1.7) * .3 + fogVn(x * 4.3 + 3.1, y * 4.3 + 9.2) * .15;
-function fogDraw(F, g, img, t) {          // one frame of fog into this canvas (the mask's working size)
+function fogDraw(F, g, img, t, blood) {   // one frame of fog into this canvas (the mask's working size); blood = black/red (Tyr immortal)
   if (!F.box) return; const [x0, x1, y0, y1] = F.box, { w, sc } = F, k = 1 / sc; let id = g.__id; if (!id) id = g.__id = g.createImageData(F.w, F.h); const D = id.data;
   for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const i = y * w + x, o = F.halo[i], q = i * 4; if (o < .02) { D[q + 3] = 0; continue; }
     const X = x * k, Y = y * k, a = fogFbm(X * .034 + t * .3, Y * .045 - t * .1), b = fogFbm(X * .06 - t * .2 + 11, Y * .055 + t * .16 + 4), c = fogFbm(X * .022 + t * .12 + 30, Y * .026 - t * .08);
     const lite = Math.min(1, Math.max(0, (a * .6 + b * .4 - .32) * 2.4)), dark = Math.max(0, (c - .55) * 3) * FOG.grey;
-    const L = Math.max(120, Math.min(255, 200 + 55 * lite - 60 * FOG.grey * (1 - lite) - 55 * dark)); D[q] = L * .98; D[q + 1] = L * .96; D[q + 2] = L;
+    if (blood) { const B = FOG_BLOOD, r = Math.min(1, lite * .9 + Math.max(0, b - .5) * .8), h = Math.max(0, lite - .75) * 4 * (1 - dark);
+      for (let j = 0; j < 3; j++) D[q + j] = Math.min(255, B.base[j] + (B.red[j] - B.base[j]) * r + (B.hot[j] - B.red[j]) * Math.min(1, h)); }
+    else { const L = Math.max(120, Math.min(255, 200 + 55 * lite - 60 * FOG.grey * (1 - lite) - 55 * dark)); D[q] = L * .98; D[q + 1] = L * .96; D[q + 2] = L; }
     const edge = Math.min(1, F.soft[i] * 1.4) * (.4 + .7 * b), ring = Math.min(1, o * 1.6) * (.2 + .45 * a) * FOG.outline;
     D[q + 3] = 255 * Math.min(1, Math.max(F.hard[i], edge, ring)); }
   g.putImageData(id, 0, 0);
@@ -5328,7 +5348,7 @@ function fogDraw(F, g, img, t) {          // one frame of fog into this canvas (
 const fogOn = new Map();                  // img -> { cv, g, F, url }
 let fogT = 0, fogLast = 0, fogRun = false;
 function fogTick(now) {
-  const imgs = [...document.querySelectorAll('img[src*="super%20broken"],img[src*="super broken"]')];
+  const imgs = [...document.querySelectorAll(FOG_SEL)].filter(im => !fogBlood(im.getAttribute('src') || '') || FOG_MASK[decodeURIComponent(im.getAttribute('src'))] || FOG_MASK[im.getAttribute('src')]);
   const dt = Math.min(.05, (now - (fogLast || now)) / 1000); fogLast = now; if (!document.body.classList.contains('calm')) fogT += dt * FOG.speed;
   const hide = im => { if (im.style.visibility !== 'hidden') { im.style.visibility = 'hidden'; im.dataset.fogHid = 1; } }, show = im => { if (im.dataset.fogHid) { im.style.visibility = ''; delete im.dataset.fogHid; } };
   fogOn.forEach((o, im) => { if (!im.isConnected || !imgs.includes(im)) { o.cv.remove(); fogOn.delete(im); show(im); } });
@@ -5349,12 +5369,12 @@ function fogTick(now) {
     const [tox, toy] = cs.transformOrigin.split(' ').map(parseFloat);
     Object.assign(o.cv.style, { display: cs.display === 'none' ? 'none' : '', left: im.offsetLeft + ox + 'px', top: im.offsetTop + oy + 'px', width: cw + 'px', height: ch + 'px',
       transform: cs.transform, translate: cs.translate, rotate: cs.rotate, scale: cs.scale, transformOrigin: `${(tox || 0) - ox}px ${(toy || 0) - oy}px`, opacity: cs.opacity, zIndex: cs.zIndex });
-    fogDraw(o.F, o.g, im, fogT); show(im);
+    fogDraw(o.F, o.g, im, fogT, fogBlood(rel)); show(im);
   });
   if (imgs.length || fogOn.size) requestAnimationFrame(fogTick); else fogRun = false;
 }
 function fogWake() { if (!fogRun) { fogRun = true; fogLast = 0; requestAnimationFrame(fogTick); } }
-new MutationObserver(() => { if (document.querySelector('img[src*="super%20broken"],img[src*="super broken"]')) fogWake(); }).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['src'] });
+new MutationObserver(() => { if (document.querySelector(FOG_SEL)) fogWake(); }).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['src'] });
 async function findRaw1(path) {            // checked once per file, then remembered
   if (path in animCache) return animCache[path];
   await manifestReady;
@@ -7115,7 +7135,7 @@ function card(u, team, i) {
   if (u.stealth > 0 && alive) c.push('stealth');
   if (blizz.on && alive && team === 'p' && u.chill >= 1) c.push('chilled');
   if (u.mod) c.push('elite', 'elite-' + u.mod);
-  if (u.trollPart) c.push('tpart', 'tp-' + u.trollPart); if (u.drowned) c.push('drowned');
+  if (u.trollPart) c.push('tpart', 'tp-' + u.trollPart); if (u.drowned) c.push(u.heldTxt ? 'gripped' : 'drowned'); if (u.clone) c.push('oniclone'); if (u.charging) c.push('charging');
   if (u.final) c.push('fbboss');                 // the final boss's HP is hidden: only the break bar shows
   if (spot.length) c.push(spot.includes(u) ? 'spot' : 'bg');
   const sk = waiting && sel !== null ? effSkill(cur, sel) : null;
@@ -7128,7 +7148,8 @@ function card(u, team, i) {
     const m = matchup(sk, u), [lo, hi] = adjRange(sk, u), pm = posMod(sk, u);
     const rx = reactFor(u, sk.el, cur);
     extra = `<span>${rx ? `<span class="rxprev" style="--rc:${rx.col}" title="${rx.desc}">${rx.icon} ${rx.name}</span>` : ''}<span class="dmgprev">${lo === hi ? lo : lo + '–' + hi}</span>${pmTag(pm)}<span class="crit ${m || ''}">Crit ${critChance(sk, u)}%${m === 'weak' ? ' ▲weak' : m === 'resist' ? ' ▼resists' : ''}</span></span>`;
-  } else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
+  } else if (team === 'e' && alive && u.charging) extra = `<span class="intent charge">💥 ${BOSS_CHARGE.names[u.id] || 'Devastating Blow'} → ALL</span>`;      // charging: the next move hits everyone
+  else if (team === 'e' && alive && u.intent) extra = `<span class="intent">${intentText(u)}</span>`;
   const inc = team === 'p' && alive && !FB ? incoming(u) : 0;
   const incTxt = inc ? `<span class="intent" title="${inc} attack${inc > 1 ? 's' : ''} aimed at ${u.name} (yellow on the HP bar)">🎯×${inc}</span>` : '';
   const bfx = barFx(u, sk);
@@ -7879,6 +7900,8 @@ async function hit(u, t, s) {
     log(`🧊 The frost shell around ${t.name} shatters: ${u.name} takes ${hit0 - u.hp} ice damage and is frozen!`, 'log-status'); floatText(u, hit0 - u.hp, 'e-ice'); applyStatus(u, 'ice', sh);
   }                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
   t.hp = lethalGuard(t, t.hp - dmg);                           // never below 0, even for a frame (and immortal units stop at 1)
+  if (t.grip && dmg > 0) gripHit(t, dmg);                      // the Carapace King's claw lets go after enough damage
+  if (u && u.gripHits && t.team === 'p' && dmg > 0) u.gripHits.push(t);
   if (dmg > 0 && t.stealth > 0) { t.stealth = 0; t.stealthFresh = false; log(`🌫️ ${t.name} is hit and loses her stealth!`, 'log-status'); }
   if (t.hp <= 0 && !canRevive(t)) { t.statuses = []; t.stealth = 0; }             // a unit going down carries no ailments (or stealth) into the death animation
   if (bled && dmg > 0 && isAlive(u)) {                         // Crimson Bite: she drinks from a bleeding target
@@ -8255,9 +8278,10 @@ const ELITE_KEYS = Object.keys(ELITE.mods);
 const ALL_STATUSES = ['burn', 'bleed', 'poison', 'frozen', 'shocked'];
 // Build a line-up of enemy units. mods[i] (optional) makes slot i an elite. sc = {hp, atk} scaling for this fight.
 function buildEnemies(ids, mods, sc) {
+  const bossId = ids.find(id => (enemyById(id) || {}).boss), sq = bossId && BOSS_SQUAD[bossId], esc = sq && sq.escortHp || 1;      // a horde boss's escorts are a little lighter
   const list = ids.map((id, i) => {
     const d = enemyById(id), m = ELITE.mods[mods && mods[i]];
-    if (!m || d.boss) return make(d, 'e', sc);
+    if (!m || d.boss) return make(d, 'e', d.boss || esc === 1 ? sc : { ...sc, hp: sc.hp * esc });
     const e = make({ ...d, spd: d.spd + (m.spd || 0) }, 'e', { hp: sc.hp * (m.hp || 1), atk: sc.atk * (m.atk || 1) });
     if (m.brk) { e.brk = e.maxBreak = e.breakBar = Math.round(e.maxBreak * m.brk); e.maxBreak2 = e.break2 = 0; }
     e.mod = mods[i]; e.icons += m.icon; if (m.immune) e.rel = { immune: ALL_STATUSES.slice() };
@@ -8315,6 +8339,15 @@ function rollEncounter(pool, size, budget, opts = {}) {
   return best.sort((a, b) => rank[enemyRole(a)] - rank[enemyRole(b)]).map(d => d.id);
 }
 // Roll a whole quest: one line-up per node (boss node: [escort, BOSS, escort]) plus the boss's reinforcements. Saved with the run.
+/* Who comes with each boss (and who answers its call when it's stunned twice). Bosses not listed: 2 escorts rolled from the quest's pool, as before.
+   fixed: always these; n + pool: that many rolled from the pool; adds: the reinforcements. */
+const BOSS_SQUAD = {
+  e_boss:     { fixed: ['e_drone', 'e_drone'], adds: ['e_drone', 'e_drone'] },                         // the Warden and its defence drones
+  e_shuten:   { fixed: ['e_oni'], adds: ['e_oni'] },                                                   // a duellist: one oni at his side (his phantoms come later)
+  e_necro:    { n: 3, pool: ['e_skel', 'e_ghoul', 'e_wraith', 'e_skel'], support: true, escortHp: .6, adds: ['e_skel', 'e_skel', 'e_ghoul'] },     // a horde of the dead (escortHp: each at 75% HP)
+  e_ratking:  { fixed: ['e_rat', 'e_rat', 'e_rat'], escortHp: .75, adds: ['e_rat', 'e_rat', 'e_rat'] },               // the swarm
+  e_crabking: { fixed: ['e_crab', 'e_crab'], adds: ['e_crab', 'e_crab'] }                              // crabs, obviously
+};
 function rollPlan(def, tier = 0) {
   const nodes = [], pool = def.pool || [], plan = { nodes, adds: [], mods: [] };
   let prev = '';
@@ -8323,9 +8356,14 @@ function rollPlan(def, tier = 0) {
     if (!RAND.on || !pool.length) { nodes.push(node.enemies.slice()); plan.mods.push(node.enemies.map(() => null)); return; }
     const rest = ref.filter(d => !d.boss), budget = rest.reduce((a, d) => a + enemyPower(d), 0);
     if (boss) {
-      const e = rollEncounter(pool, rest.length, budget, { noSupport: true, tol: 0.5 });          // escorts: one tough, one flexible
-      nodes.push([e[0], boss.id, e[1] || e[0]]); plan.mods.push([null, null, null]);
-      plan.adds = rollEncounter(pool, 2, budget, {});
+      const sq = BOSS_SQUAD[boss.id], per = budget / Math.max(1, rest.length);
+      let e;
+      if (sq && sq.fixed) e = sq.fixed.slice();
+      else if (sq) e = sq.n ? rollEncounter(sq.pool || pool, sq.n, per * sq.n, { noSupport: !sq.support, tol: 0.5 }) : [];
+      else e = rollEncounter(pool, rest.length, budget, { noSupport: true, tol: 0.5 });          // escorts: one tough, one flexible
+      const line = e.length >= 3 ? [e[0], e[1], boss.id, ...e.slice(2)] : e.length === 2 ? [e[0], boss.id, e[1]] : e.length === 1 ? [e[0], boss.id] : [boss.id];
+      nodes.push(line); plan.mods.push(line.map(() => null));
+      plan.adds = sq && sq.adds ? sq.adds.slice() : sq && sq.n === 0 ? [] : rollEncounter(sq && sq.pool || pool, sq ? Math.max(1, Math.min(3, sq.n)) : 2, budget, {});
     } else {
       const e = rollEncounter(pool, ref.length, budget, { avoid: prev });
       prev = e.slice().sort().join(); nodes.push(e); plan.mods.push(rollMods(e, def.nodes.indexOf(node), def, tier));
@@ -8361,7 +8399,7 @@ const curNode = () => quest.bonus ? { name: quest.bonus.name, enemies: quest.bon
 async function reinforce(boss) {                 // a stunned-out boss on its own calls for help
   if (!boss.boss || !isAlive(boss) || (boss.stunMiss || 0) < BOSS.stunMisses || (boss.summons || 0) >= BOSS.maxSummons) return;
   if (enemies.some(e => e !== boss && isAlive(e))) return;
-  const node = curNode(), ids = (node.adds || (RAND.on && quest.plan && quest.plan.adds.length ? quest.plan.adds : node.enemies.filter(id => !(enemyById(id) || {}).boss))).slice(0, 3);
+  const node = curNode(), ids = ((RAND.on && quest.plan && quest.plan.adds.length ? quest.plan.adds : node.adds) || node.enemies.filter(id => !(enemyById(id) || {}).boss)).slice(0, 3);
   if (!ids.length) return;
   boss.summons = (boss.summons || 0) + 1; boss.stunMiss = 0;
   const qs = quest.def.scale || {}, ns = node.scale || {}, sc = { hp: (qs.hp || 1) * (ns.hp || 1) * (tierDef(quest.tier).hp || 1) * BOSS.addHp, atk: (qs.atk || 1) * (ns.atk || 1) * (tierDef(quest.tier).atk || 1) * BOSS.addAtk };
@@ -8375,9 +8413,115 @@ async function reinforce(boss) {                 // a stunned-out boss on its ow
    A phase can raise damage (atk), add new skills (add), raise a barrier, heal, cleanse, speed it up, or call allies (summon). From NG+2 every boss also gets a last stand at 25% HP. */
 const LAST_STAND = { at: .25, atk: 1.15, barrier: 25 };
 const phasesOf = b => { const l = (b.phases || []).map(p => ({ ...p })); if (b.boss && tierDef(quest && quest.tier).lastStand) l.push({ ...LAST_STAND }); return l.sort((x, y) => y.at - x.at); };
+/* ===== BOSS SIGNATURE MOVES (2026-11-20, built from systems already in the game) =====
+   Each runs at the start of that boss's turn (not while stunned). Knobs in BOSS_MOVES. Shuten's phantoms come from his phase (clones: 2), the Ice Queen's from her
+   throne node (blizzard: true), the Siren already charms. */
+const BOSS_MOVES = {
+  necro:   { every: 4, hp: .5 },                     // Raise Dead: when a minion is down and it's been 3+ of his turns since the last time, it gets back up at 50% HP
+  ratking: { every: 3 },                             // Call the Swarm: when there's room (4 enemies at most) and it's been 3+ of his turns (2 was too much for Act 1), one more rat joins
+  keeper:  { d: [10, 13], hits: 1, hits2: 2 },        // Lightning: every other turn the storm gathers, the next turn it strikes 1 hero (2 after phase 2), shock
+  crab:    { every: 3, dot: 12, free: .12 },         // Claw Grip: every 3rd turn its attack ends in a grab: the hero it hit is pinned (out of the fight, 12 a turn) until it takes 12% of its max HP
+  clone:   { hp: .15, atk: .5 }                      // Shuten's phantoms: 15% of his max HP each, half his damage (full damage tripled his output), same moves, semi-transparent fire
+};
+/* THE CHARGED ATTACK (every quest boss): on its 5th turn, then every 7th, it spends the turn charging (a warning and a glow), and on its next turn
+   it hits ALL the heroes. Damage = its average single attack × mult. A stun only delays it. Names per boss below. */
+const BOSS_CHARGE = { first: 5, every: 7, mult: .4, brk: 10,      // (first try was 4 / 6 / .7 / 20: far too much on top of the signature moves)
+  names: { e_boss: 'Total Discharge', e_shuten: 'Oni Quake', e_necro: 'Wave of Death', e_ratking: 'Plague Burst', e_siren: 'Drowning Requiem', e_keeper: 'Tempest Fury',
+           e_crabking: 'Shell Quake', e_warlord: 'Warlord\'s Cleave', e_matron: 'Hollow Lullaby', e_icequeen: 'Absolute Zero' } };
+async function bossCharge(b) {
+  const C = BOSS_CHARGE, name = C.names[b.id] || 'Devastating Blow'; b.chT = (b.chT || 0) + 1;
+  if (b.charging) {
+    b.charging = false; render();
+    const ds = b.skills.filter(x => x.t === 'dmg' && x.d), avg = ds.length ? ds.reduce((a, x) => a + (x.d[0] + x.d[1]) / 2, 0) / ds.length : 15, lo = Math.round(avg * C.mult * .9), hi = Math.round(avg * C.mult * 1.1);
+    const el = (ds.find(x => x.el) || {}).el, sk = { n: name, t: 'dmg', r: 'ranged', d: [lo, hi], el, brk: C.brk, noDodge: true };
+    log(`<strong style="color:#ff5252">💥 ${b.name} unleashes ${name}!</strong>`, 'log-status'); banner(`💥 ${name.toUpperCase()}`, 'boss');
+    flash('#ff3d00', .5, 500); shake(5); sfx('hit', el ? (STATUS_FX[ELEM[el] && ELEM[el].status] || 'phys') : 'phys', false, false, true); await sleep(500);
+    for (const t of party.filter(x => isAlive(x) && !x.drowned)) { await hit(b, t, sk); if (!party.some(x => isAlive(x) && !x.drowned)) break; }
+    return true;
+  }
+  if (b.chT >= C.first && (b.chT - C.first) % C.every === 0) {
+    b.charging = true; log(`<strong style="color:#ffab40">⚠️ ${b.name} is charging up a powerful attack!</strong> Next turn it hits the whole party: shield up and heal.`, 'log-status');
+    banner(`⚠️ ${b.short || b.name} is charging up a powerful attack!`, 'boss'); floatText(b, '⚡ CHARGING', 'tag'); render(); await sleep(700);
+    return true;
+  }
+  return false;
+}
+const bossTurnNo = b => (b.trickN = (b.trickN || 0) + 1);
+const BOSS_TRICK = {
+  async e_necro(b) {
+    b.raiseCd = (b.raiseCd ?? 1) - 1;
+    const dead = enemies.filter(e => e !== b && !isAlive(e) && !e.boss && !e.clone).pop(); if (!dead || b.raiseCd > 0) return;
+    b.raiseCd = BOSS_MOVES.necro.every;
+    log(`<strong style="color:#b388ff">☠️ The Necromancer raises ${dead.name} from the dead!</strong>`, 'log-status');
+    floatText(b, '☠️ RISE!', 'tag'); flash('#7c4dff', .35, 600); sfx('hit', 'phys', false, false, true); await sleep(400);
+    Object.assign(dead, { hp: Math.round(dead.maxHp * BOSS_MOVES.necro.hp), fell: false, vanish: false, gone: false, statuses: [], barrier: 0, state: 'armoured', breakBar: dead.maxBreak, cd: dead.cd.map(() => 0) });
+    dead.intent = enemyChoose(dead); render(); floatText(dead, 'RISEN', 'tag'); await sleep(500);
+  },
+  async e_ratking(b) {
+    b.ratCd = (b.ratCd ?? 1) - 1;
+    if (b.ratCd > 0 || enemies.filter(isAlive).length >= 4) return;
+    b.ratCd = BOSS_MOVES.ratking.every;
+    log(`<strong style="color:#a1887f">🐀 The Rat King squeals, and another rat scurries out of the walls!</strong>`, 'log-status'); floatText(b, '🐀 SQUEEE!', 'tag');
+    await summonAdds(b, 1);
+  },
+  async e_keeper(b) {
+    const n = bossTurnNo(b), M = BOSS_MOVES.keeper;
+    if (n % 2) { log(`⚡ <strong>The storm gathers over the party...</strong> lightning strikes next turn!`, 'log-status'); floatText(b, '⚡ THE STORM GATHERS', 'tag'); $('battle-scene').classList.add('stormgather'); flash('#1a2440', .35, 700); await sleep(450); return; }
+    $('battle-scene').classList.remove('stormgather');
+    const pool = party.filter(x => isAlive(x) && !x.drowned).sort(() => Math.random() - .5).slice(0, (b.phase || 0) > 0 ? M.hits2 : M.hits);
+    for (const t of pool) {
+      const mult = (b.atkSc || 1) * (b.phaseMult || 1); let dmg = Math.round((M.d[0] + Math.random() * (M.d[1] - M.d[0])) * mult);
+      if (t.barrier) { const a = Math.min(t.barrier, dmg); t.barrier -= a; dmg -= a; }
+      flash('#e3f2ff', .55, 220); shake(2); sfx('hit', 'shock', false, false, true);
+      t.hp = lethalGuard(t, t.hp - dmg); log(`⚡ Lightning strikes ${t.name} for ${dmg}!`, 'log-dmg'); floatText(t, dmg, 'dmg'); fx(t, 'shock', 600); render();
+      if (t.state !== 'armoured' && isAlive(t) && Math.random() < .35) applyStatus(t, 'shock', b);
+      await sleep(380);
+      if (t.hp <= 0) { if (tryRevive(t)) render(); else await fall(t); }
+    }
+  },
+  async e_crabking(b) {
+    const n = bossTurnNo(b); if (b.grip) await gripTick(b);
+    b.gripReady = !b.grip && n % BOSS_MOVES.crab.every === 0;
+    if (b.gripReady) { log('🦀 <strong>The Carapace King opens its great claw wide...</strong>', 'log-status'); floatText(b, '🦀 CLAW OPEN', 'tag'); await sleep(350); }
+  }
+};
+function gripTry(b, hits) {            // after the Carapace King's attack on a claw turn: grab the frontmost hero it hit (one at a time)
+  if (b.id !== 'e_crabking' || !isAlive(b) || b.grip || !b.gripReady || party.some(h => h.drowned)) return;
+  b.gripReady = false;
+  const h = hits.filter(x => isAlive(x) && x.team === 'p').sort((x, y) => party.indexOf(x) - party.indexOf(y))[0]; if (!h) return;
+  if (party.filter(x => isAlive(x) && !x.drowned).length < 2) return;      // never pins the last hero standing
+  b.grip = { h, dmg: 0, need: Math.round(b.maxHp * BOSS_MOVES.crab.free) };
+  h.drowned = true; h.heldTxt = '🦀 PINNED'; h.statuses = h.statuses.filter(x => !x.stun); h.stealth = 0;
+  log(`<strong style="color:#ff8a65">🦀 The Carapace King snaps its great claw shut on ${h.name}!</strong> Deal ${b.grip.need} damage to it to break her free.`, 'log-status');
+  floatText(h, '🦀 GRABBED!', 'tag hurt'); shake(3); render();
+}
+async function gripTick(b) {            // each of its turns the held hero is crushed
+  const g = b.grip, h = g && g.h; if (!h) return;
+  if (!isAlive(h)) { gripFree(b); return; }
+  const dmg = Math.round(BOSS_MOVES.crab.dot * (b.atkSc || 1)); h.hp = lethalGuard(h, h.hp - dmg);
+  log(`🦀 The claw crushes ${h.name} for ${dmg}! (${Math.max(0, g.need - g.dmg)} more damage to the King frees her)`, 'log-dmg'); floatText(h, dmg, 'dmg'); sfx('hit', 'phys', false, false, true); render(); await sleep(400);
+  if (h.hp <= 0) { gripFree(b); if (tryRevive(h)) render(); else await fall(h); }
+}
+function gripHit(b, dmg) { const g = b.grip; if (!g) return; g.dmg += dmg; if (g.dmg >= g.need || b.hp <= 0) gripFree(b, true); }
+function gripFree(b, broke) {
+  const h = b.grip && b.grip.h; b.grip = null; if (!h) return; h.drowned = false; h.heldTxt = null;
+  if (broke && isAlive(h)) { log(`💥 The claw cracks open and ${h.name} breaks free!`, 'log-heal'); floatText(h, 'FREE!', 'tag'); }
+  render();
+}
+async function bossClones(b, n) {      // Shuten's flaming phantoms: weak copies with his moves
+  const room = Math.min(n, 4 - enemies.filter(isAlive).length); if (room <= 0) return;
+  const fresh = [];
+  for (let k = 0; k < room; k++) {
+    const c = make(enemyById(b.id), 'e', { hp: 1, atk: 1 }), hp = Math.round(b.maxHp * BOSS_MOVES.clone.hp);
+    Object.assign(c, { boss: false, clone: true, name: 'Phantom Shuten', short: 'Phantom', hp, maxHp: hp, skills: scaleSkills(b.skills.map(x => ({ ...x })), BOSS_MOVES.clone.atk), cd: b.skills.map(() => 0), phases: [], atkSc: b.atkSc, phaseMult: b.phaseMult, breakBar: Math.ceil(b.maxBreak * .4), maxBreak: Math.ceil(b.maxBreak * .4) });
+    fresh.push(c);
+  }
+  const alive = enemies.filter(isAlive), had = alive.filter(e => e.clone).length; fresh.forEach((c, k) => { c.name = `Phantom Shuten ${'ABCD'[had + k]}`; }); enemies = [...alive, ...fresh];      // only the phantoms get letters (never the real Shuten)
+  render(); fresh.forEach(e => { floatText(e, '🔥 PHANTOM', 'tag'); e.intent = enemyChoose(e); }); sfx('hit', 'phys', false, false, true); await sleep(600);
+}
 async function summonAdds(b, n) {                  // fresh allies join at the back (never more than 4 enemies at once)
   const alive = enemies.filter(isAlive), k = Math.min(n, 4 - alive.length); if (k <= 0) return;
-  const node = curNode(), ids = (node.adds || (RAND.on && quest.plan && quest.plan.adds.length ? quest.plan.adds : node.enemies.filter(id => !(enemyById(id) || {}).boss))).slice(0, k); if (!ids.length) return;
+  const node = curNode(), ids = ((RAND.on && quest.plan && quest.plan.adds.length ? quest.plan.adds : node.adds) || node.enemies.filter(id => !(enemyById(id) || {}).boss)).slice(0, k); if (!ids.length) return;
   const qs = quest.def.scale || {}, ns = node.scale || {}, T = tierDef(quest.tier), sc = { hp: (qs.hp || 1) * (ns.hp || 1) * (T.hp || 1) * BOSS.addHp, atk: (qs.atk || 1) * (ns.atk || 1) * (T.atk || 1) * BOSS.addAtk };
   const fresh = ids.map(id => make(enemyById(id), 'e', sc)); labelDuplicates([...alive, ...fresh]);
   enemies = [...alive, ...fresh]; render(); fresh.forEach(e => floatText(e, 'REINFORCEMENTS', 'tag')); await sleep(500);
@@ -8395,6 +8539,7 @@ async function bossPhase(b, ph) {
   setTimeout(() => { if (!tauntFoe(b, 'phase')) speakTeam('phase'); else setTimeout(() => speakTeam('phase'), 1500); }, 1250); flash('#ff5a1a', .5, 800);       // the banner first, then the team reacts (never both on top of each other) banner(ph.msg || `${b.name} makes a last stand!`, 'phase e');
   await sleep(900);
   if (ph.summon) await summonAdds(b, ph.summon);
+  if (ph.clones) await bossClones(b, ph.clones);
   if (isAlive(b)) b.intent = enemyChoose(b, true);        // its next move is telegraphed again, with the new skills in the mix
 }
 async function checkPhases() {
@@ -8414,7 +8559,7 @@ function tickBuffs(u) {
 }
 async function takeTurn(u, bonus = false) {      // bonus: an extra action inside the same turn (no cooldown / ailment / buff ticks)
   if (u.trollCore && !bonus) return trollTurn(u);
-  if (u.drowned) { log(`🌊 ${u.name} struggles under the water and can't act!`, 'log-status'); floatText(u, '🌊 HELD UNDER', 'tag hurt'); render(); await sleep(450); return; }
+  if (u.drowned) { const g = u.heldTxt; log(g ? `🦀 ${u.name} is pinned in the claw and can't act!` : `🌊 ${u.name} struggles under the water and can't act!`, 'log-status'); floatText(u, g || '🌊 HELD UNDER', 'tag hurt'); render(); await sleep(450); return; }
   if (!bonus && u.holdBarrier) { u.holdBarrier = false; u.barrier = 0; }                  // Shield Wall's barrier ends with the guard
   if (!bonus) party.forEach(x => { if (x.guardedBy === u) x.guardedBy = null; });     // Shield Wall ends when its caster's next turn begins
   if (bonus) { setSpot([]); say(''); }          // the previous attack's spotlight would leave everyone but the old target blurred
@@ -8450,6 +8595,10 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
   }
   u.stunMiss = 0;                              // it acts this turn, so the stun streak is over
   if (!bonus && !(await curseTurn(u))) { render(); return; }      // cursed / blessed relics act at the start of the turn (the wearer may not survive it)
+  if (u.team === 'e' && !bonus && u.boss && !u.final && !FB && !u.trollCore && quest && (await bossCharge(u))) { tickBuffs(u); render(); return; }      // the charged attack (see BOSS_CHARGE)
+  if (u.team === 'e' && !bonus && BOSS_TRICK[u.id] && !u.clone) {      // a boss's signature move (see BOSS_TRICK)
+    await BOSS_TRICK[u.id](u); if (!isAlive(u) || !party.some(x => isAlive(x) && !x.drowned)) { render(); return; }
+  }
   render();
   let act;
   if (u.team === 'p') {
@@ -8491,7 +8640,8 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
   else if (act.item && ITEMS[act.item].type === 'torch') { say(`${u.name} lights a torch`); await useItem(u, act.item, u); }
   else if (act.item) { setSpot([u, act.target]); say(`${u.name} uses ${ITEMS[act.item].name} on ${act.target.name}`); await useItem(u, act.item, act.target); }
   else { const one2 = hadWrath && u.skills[act.i] && u.skills[act.i].t === 'dmg' && act.i <= 1 && act.target ? { hold: true, held: null } : null;
-    await perform(u, act.i, act.target, one2); keep = one2; if (u.skills[act.i] && u.skills[act.i].t === 'dmg') { u.danceBuff = false; u.shadow = false; }
+    u.gripHits = []; await perform(u, act.i, act.target, one2); keep = one2; if (u.skills[act.i] && u.skills[act.i].t === 'dmg') { u.danceBuff = false; u.shadow = false; }
+    if (u.id === 'e_crabking' && u.gripHits.length) gripTry(u, u.gripHits);      // the Carapace King's claw: grabs a broken hero it just hit
     if (u.skills[act.i] && u.skills[act.i].t === 'dmg') u.mirrorEl = null;
     const sk = u.skills[act.i]; if (u.team === 'p' && sk && sk.t !== 'dmg' && sk.t !== 'charm' && sk.t !== 'smoke') await medusaBack(u, sk.t === 'barrierAll' || sk.t === 'brew' || sk.all ? party.filter(isAlive) : [act.target]); }
   if (hadWrath) {                              // Dragon's Wrath: one extra Skill 1 on the SAME enemy (a random one if it fell, or if her action was not a strike), then the buff is gone
@@ -8624,6 +8774,7 @@ function checkEnd() {
 
 async function battle() {
   dashClear(); warmArt([...party, ...enemies]);
+  party.forEach(u => { if (u.heldTxt) { u.drowned = false; u.heldTxt = null; } }); $('battle-scene').classList.remove('stormgather');      // nobody starts a fight pinned, no storm left over
   log(`${curNode().name}: ${party.length} hero${party.length > 1 ? 'es' : ''} face ${enemies.length} enem${enemies.length > 1 ? 'ies' : 'y'}.`);
   for (let round = 1; ; round++) {
     roundNo = round; log(`— Round ${round} —`, 'log-round'); blizzTick(round);
@@ -10548,8 +10699,8 @@ const QMAP = { empty: [2, 3], extraEvents: 1, extraCamps: 1, wagon: .5, links: .
   /* FLOW LAYOUT (main quests): the entrance on the left, the lair on the far right, and the places between set out in columns joined into a web
      (each column links to the next with roads that never cross, plus some roads up and down a column). The boss can't be reached in fewer than
      minSteps moves; it comes into view one move before that at the earliest. rungs: chance of a road between neighbours in the same column. */
-  minSteps: 6, rungs: .45, bossLinks: 2,
-  act: { 1: { empty: [1, 1], extraEvents: 0, bossFar: .5, day: .65, minSteps: 5 }, 2: { minSteps: 6 }, 3: { minSteps: 7 } } };      // per-act overrides: Act 1 maps are smaller, the boss a little closer and the day runs longer      // per-act overrides: Act 1 maps are smaller, the boss sits a little closer and the day runs longer
+  minSteps: 6, rungs: .45, bossLinks: 2, fringe: true,      // fringe: the direct route is fights (one camp at most), the good places sit off it
+  act: { 1: { empty: [1, 1], extraEvents: 0, bossFar: .5, day: .65, minSteps: 5 }, 2: { minSteps: 6, empty: [1, 2] }, 3: { minSteps: 7 } } };      // Act 2: boss 7+ moves away, fewer empty places (so more of the map is fights)      // per-act overrides: Act 1 maps are smaller, the boss a little closer and the day runs longer      // per-act overrides: Act 1 maps are smaller, the boss sits a little closer and the day runs longer
 const TOD = { day: .55, dusk: .25,               // moves of daylight / twilight, as fractions of the number of places (about 10 and 4 on an 18-place map)
   hp:   { day: 1, dusk: 1.12, night: 1.25 },     // enemy max HP by phase
   atk:  { day: 1, dusk: 1.1,  night: 1.2 },      // enemy damage by phase
@@ -10595,27 +10746,45 @@ function mapFlow(N, rng, minSteps) {        // main quests: start (place 0) on t
     const o = (p, q, r) => Math.sign((n[q].x - n[p].x) * (n[r].y - n[p].y) - (n[q].y - n[p].y) * (n[r].x - n[p].x)); return o(a, b, c) !== o(a, b, d) && o(c, d, a) !== o(c, d, b); });
   const ladder = (A, B) => { let i = 0, j = 0; link(A[0], B[0]);      // join two columns top to bottom like a staircase: everyone gets a road, none cross
     while (i < A.length - 1 || j < B.length - 1) { if (j === B.length - 1 || (i < A.length - 1 && (i + 1) / A.length <= (j + 1) / B.length)) i++; else j++; link(A[i], B[j]); } };
+  const yAt = x => n[0].y + (n[boss].y - n[0].y) * (x - n[0].x) / (n[boss].x - n[0].x);
+  const spine = cols.map(col => col.slice().sort((a, b) => Math.abs(n[a].y - yAt(n[a].x)) - Math.abs(n[b].y - yAt(n[b].x)))[0]);
+  if (QMAP.fringe) {
+    /* SPINE + FRINGE: the straight road (one place per column, nearest the line from the entrance to the lair) is the only way in and out.
+       The other places hang off it as side roads above and below: each column's places are joined top to bottom, and each side joins the same side of
+       the next column. Going round the edge costs at least 2 extra moves, and it still starts and ends on the spine. */
+    link(0, spine[0]); for (let k = 0; k + 1 < K; k++) link(spine[k], spine[k + 1]); link(spine[K - 1], boss);
+    cols.forEach(col => { const c = col.slice().sort((a, b) => n[a].y - n[b].y); for (let r = 0; r + 1 < c.length; r++) link(c[r], c[r + 1]); });
+    const side = (col, k, up) => col.filter(i => i !== spine[k] && (up ? n[i].y < n[spine[k]].y : n[i].y > n[spine[k]].y)).sort((a, b) => n[a].y - n[b].y);
+    for (let k = 0; k + 1 < K; k++) [true, false].forEach(up => { const A = side(cols[k], k, up), B = side(cols[k + 1], k + 1, up); if (A.length && B.length) ladder(A, B); });
+  } else {
   cols[0].forEach(b => link(0, b));
   for (let k = 0; k < K - 1; k++) ladder(cols[k], cols[k + 1]);
   const last = cols[K - 1].slice().sort((a, b) => Math.abs(n[a].y - n[boss].y) - Math.abs(n[b].y - n[boss].y)).slice(0, QMAP.bossLinks);
   last.forEach(a => link(a, boss));
   cols.forEach(col => { for (let r = 0; r + 1 < col.length; r++) if (rng() < QMAP.rungs && adj[col[r]].length < QMAP.maxDeg && adj[col[r + 1]].length < QMAP.maxDeg && !cross(col[r], col[r + 1])) link(col[r], col[r + 1]); });      // roads up and down a column: the web
+  }
   const dist = n.map(() => Infinity); dist[0] = 0; const qu = [0]; while (qu.length) { const a = qu.shift(); adj[a].forEach(b => { if (dist[b] > dist[a] + 1) { dist[b] = dist[a] + 1; qu.push(b); } }); }
-  return { n, adj, dist, boss };
+  return { n, adj, dist, boss, direct: spine };      // direct: the spine (genMap fills it with fights; the rest is the fringe)
 }
 function genMap(def, plan, rng = RAND.rng) {
   const act = questAct(def.id), Q = { ...QMAP, ...(QMAP.act[act] || {}) };
   const F = def.nodes.length - 1, C = (def.camps ?? 1) + Q.extraCamps, E = (def.events ?? 1) + Q.extraEvents, W = rng() < QMAP.wagon ? 1 : 0, S = rng() < SPRING.chance ? 1 : 0;
   const X = Q.empty[0] + Math.floor(rng() * (Q.empty[1] - Q.empty[0] + 1)), N = 2 + F + C + E + W + S + X;
-  const { n, adj, dist, boss } = mapFlow(N, rng, Q.minSteps);      // (the old scatter layout, mapLayout, is kept for reference)
+  const { n, adj, dist, boss, direct } = mapFlow(N, rng, Q.minSteps);      // (the old scatter layout, mapLayout, is kept for reference)
   n[0].type = 'start'; n[0].seen = n[0].done = n[0].visited = true; n[boss].type = 'boss'; n[boss].fi = F;
   let free = n.map((_, i) => i).filter(i => i && i !== boss);
   const take = (k, ok) => { const c = free.filter(ok); const out = []; while (out.length < k && c.length) { const i = c.splice(Math.floor(rng() * c.length), 1)[0]; out.push(i); free = free.filter(x => x !== i); } return out; };
-  take(C, i => dist[i] >= 2).forEach(i => n[i].type = 'camp');
-  take(W, i => dist[i] >= 2).forEach(i => n[i].type = 'wagon');
-  take(S, i => dist[i] >= 2).forEach(i => n[i].type = 'spring');
-  take(X, i => dist[i] >= 2 && !adj[i].includes(boss)).forEach(i => n[i].type = 'empty');
-  take(E, () => true).forEach(i => n[i].type = 'event');
+  /* DIRECT ROUTE vs FRINGE (QMAP.fringe): the straight line to the lair is fights, with at most one camp on it. The spring, the wagon, empty roads,
+     events and the other camps sit out on the fringe, so a gentle path means going round the edge (and racing the clock). */
+  const D = new Set(QMAP.fringe ? direct : []), edge = i => !D.has(i);
+  const takeP = (k, ...oks) => { const out = []; for (const ok of oks) { if (out.length >= k) break; out.push(...take(k - out.length, ok)); } return out; };
+  const mid = dist[boss] / 2, campOnRoute = C > 0 && QMAP.fringe ? take(1, i => D.has(i) && dist[i] >= 2 && !adj[i].includes(boss) && Math.abs(dist[i] - mid) <= 1) : [];
+  campOnRoute.forEach(i => n[i].type = 'camp');
+  takeP(C - campOnRoute.length, i => edge(i) && dist[i] >= 2, i => dist[i] >= 2).forEach(i => n[i].type = 'camp');
+  takeP(W, i => edge(i) && dist[i] >= 2, i => dist[i] >= 2).forEach(i => n[i].type = 'wagon');
+  takeP(S, i => edge(i) && dist[i] >= 2, i => dist[i] >= 2).forEach(i => n[i].type = 'spring');
+  takeP(X, i => edge(i) && dist[i] >= 2 && !adj[i].includes(boss), i => edge(i)).forEach(i => n[i].type = 'empty');
+  takeP(E, edge, () => true).forEach(i => n[i].type = 'event');
   const fights = free.slice(); fights.forEach(i => n[i].type = 'fight');
   if (!adj[0].some(i => n[i].type === 'fight')) { const j = adj[0].find(i => i !== boss && n[i].type !== 'fight'), k = fights.sort((a, b) => dist[b] - dist[a])[0];      // the first step always offers a fight
     if (j != null && k != null) { n[k].type = n[j].type; n[j].type = 'fight'; fights.splice(fights.indexOf(k), 1, j); } }
@@ -13861,10 +14030,11 @@ function blizzStart(node) {
   blizz = { on: false, torch: 0 };
   party.forEach(u => { u.chill = 0; });
   let on = false;
-  if (quest.dev) on = !!quest.devBlizz;
+  if (node.blizzard && !quest.dev) on = true;      // a fight that is always a blizzard (the Ice Queen's throne)
+  else if (quest.dev) on = !!quest.devBlizz || !!node.blizzard;
   else if (!quest.bonus && quest.def.blizzard && !node.boss && quest.node > 0 && (quest.blizzUsed || 0) < (quest.def.blizzard.max || 2)) on = Math.random() < (quest.def.blizzard.chance || .4);
   if (!on) return;
-  if (!quest.dev) quest.blizzUsed = (quest.blizzUsed || 0) + 1;
+  if (!quest.dev && !node.blizzard) quest.blizzUsed = (quest.blizzUsed || 0) + 1;
   blizz = { on: true, torch: quest.dev && quest.devTorch ? 1 : 0, rounds: 0 };
   if (quest.warm) { blizz.warm = true; quest.warm = false; setTimeout(() => log('♨️ Still warm from the hot spring: the cold barely bites.', 'log-heal'), 300); }
   if (quest.dev && quest.devChill) party.forEach(u => { if (!u.numbImmune) u.chill = quest.devChill; });
