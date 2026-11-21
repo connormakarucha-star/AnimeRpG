@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-21 16:41",
+  "generated": "2026-11-21 16:53",
   "files": {
     "aneesah/armoured - swimsuit/damaged": "png",
     "aneesah/armoured - swimsuit/idle": "png",
@@ -306,6 +306,7 @@
     "ui/aneesah_camp": "png",
     "ui/aria_camp": "png",
     "ui/assistant": "png",
+    "ui/assistant_summer": "png",
     "ui/assistantsweeping": "png",
     "ui/bigmike": "png",
     "ui/dorm_interior": "png",
@@ -317,6 +318,8 @@
     "ui/seria_camp": "png",
     "ui/shop_room": "png",
     "ui/shopkeeper": "png",
+    "ui/shopkeeper_summer": "png",
+    "ui/shopkeeper_warrior": "png",
     "ui/shopkeepercannon": "png",
     "ui/shower_interior": "png",
     "ui/showera": "png",
@@ -347,7 +350,6 @@
     "ui/title_rings": "png",
     "ui/tyr_camp": "png",
     "ui/vesper_camp": "png",
-    "ui/warrior": "png",
     "vesper/armoured - swimsuit/damaged": "png",
     "vesper/armoured - swimsuit/idle": "png",
     "vesper/armoured - swimsuit/skill1": "png",
