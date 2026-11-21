@@ -13631,14 +13631,15 @@ let spaGame = null;     // { hero, cells, placed, strikes, over, safeLeft, nerve
 
 function openSpa() { showScene('spa-select'); }
 let spaSel = null;           // the hero whose card is open in the bath
-function spaPick(id) { spaSel = id && spaSel !== id ? id : null; const h = $('spa-stage'); if (h._sb) { h._sb.sel = spaSel; sbCamera(h); } spaCard(); }
+function spaPick(id) { const was = spaSel; spaSel = id && spaSel !== id ? id : null; const h = $('spa-stage'); if (h._sb) { h._sb.sel = spaSel; sbCamera(h); } spaCard();
+  if (typeof padFocus === 'function') setTimeout(() => padFocus(spaSel ? $('spa-flaws').querySelector('.spa-btns button:not(:disabled), .sf-x') : h.querySelector(`.sb-hero[data-id="${was}"]`)), 320); }      // on a pad: into the card, and back onto her when it closes
 const spaFlaws = id => [...new Set((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad'))];
 function renderSpaSelect() {               // the town spa: the bath with everyone in it (see HOT SPRINGS + THE TOWN SPA BATH)
   $('spa-intro').innerHTML = goldChip(SPA.cost);
   const host = $('spa-stage'), v = townVariant();
   sbOpen(host, 'spa', game.roster.filter(id => heroById(id)), { act: v === 'frost' ? 3 : v === 'coast' ? 2 : 1, tod: 'day', pick: true });
   if (!host.dataset.wired) { host.dataset.wired = 1;
-    host.addEventListener('click', e => { if (!host._sb || !host._sb.pick) return; const id = sbHit(host, e); spaPick(id || null); });
+    host.addEventListener('click', e => { if (!host._sb || !host._sb.pick || !e.isTrusted || e.detail === 0 || e.target.closest('.sb-hero')) return; const id = sbHit(host, e); spaPick(id || null); });      // real mouse clicks only: a pad / keyboard press clicks the hero's button itself
     host.addEventListener('pointermove', e => { if (!host._sb) return; const id = sbHit(host, e); host.querySelectorAll('.sb-hero').forEach(x => x.classList.toggle('hov', x.dataset.id === id)); host.style.cursor = id ? 'pointer' : ''; }); }
   spaCard();
 }
@@ -15105,6 +15106,7 @@ const GP = (() => {
     return list.filter(e => !list.some(o => o !== e && e.contains(o)));       // containers are not targets, their buttons are
   }
   const ctr = e => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+  window.padFocus = e => { if (S.active && e) setFocus(e); };      // let a screen move the pad's highlight (the spa card)
   function setFocus(e) {
     if (S.focus && S.focus !== e) S.focus.classList.remove('gp-focus', 'gp-st');
     if (e && e !== S.focus && S.active && typeof uiTick === 'function') uiTick();      // the pad's highlight moving ticks like a hover
