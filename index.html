@@ -5283,7 +5283,7 @@ function skinsFor(id) {
   return [...names].filter(n => !STATE_SKINS.includes(n) && (n !== 'winter gear' || frostOpen()) && (n !== LEGEND || legendOwned(id)));          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
 }
 function stateFolder(u) {                         // the art folder for a unit's current state
-  if (u.immortalLook) return `armoured - ${IMMORTAL.look}`;                    // Tyr's immortal look (see IMMORTAL); missing pictures fall back along artChain
+  if (u.immortalLook) return FX.spicy ? `armoured - ${IMMORTAL.look}` : 'broken';      // Tyr's immortal look (see IMMORTAL); with Fanservice off she turns in her broken art (underwear) instead. Missing pictures fall back along artChain
   const f = ({ armoured: 'armoured', broken: 'broken', super: 'broken' })[u.state];
   const sk = f === 'armoured' && u.team === 'p' ? skinOf(u.id) : null;
   return sk ? `armoured - ${sk}` : f;
@@ -11278,7 +11278,9 @@ const SB = {
     dusk: { 1: ['#2a1238', '#a8384a', '#ff9a5a'], 2: ['#241a30', '#5a3a4a', '#8a5a5a'], 3: ['#3a3458', '#9a7a98', '#e0b8b0'] },
     night: { 1: ['#03030c', '#141236', '#2a1a3a'], 2: ['#030308', '#10141e', '#1c222c'], 3: ['#0a0e1e', '#1e2a44', '#3a4864'] } },
   grade: { day: { 1: null, 2: ['#5a6e8e', .45], 3: ['#b4c6e0', .3] }, dusk: { 1: ['#ff8a6a', .32], 2: ['#a06a7a', .45], 3: ['#c890a0', .35] }, night: { 1: ['#2a3a8a', .55], 2: ['#202a5a', .62], 3: ['#2a3a7a', .55] } },
-  zoom: 1.55, ar: 2752 / 1536
+  zoom: 1.55, ar: 2752 / 1536,
+  // Fanservice off: steam covers everything of a spa sprite below this line (fraction of her visible height from the top of her hair), so only her head shows
+  neck: { aria: .27, seria: .31, aneesah: .3, iris: .27, irae: .17, vesper: .16, tyr: .28, jean: .32 }, neckDef: .3
 };
 const sbSprCache = {};
 function sbSprite(id) {                   // { url, own, ar, bb (visible box, fractions), w, h, d (small alpha copy for hit tests / ripple width) }
@@ -11291,9 +11293,20 @@ function sbSprite(id) {                   // { url, own, ar, bb (visible box, fr
       let d = null; try { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0, w, h); d = g.getImageData(0, 0, w, h).data; } catch (e) {}
       let x0 = w, y0 = h, x1 = -1, y1 = -1;
       if (d) for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 60) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-      res({ url: a.url, own, ar: im.naturalWidth / im.naturalHeight, bb: x1 < 0 ? [0, 0, 1, 1] : [x0 / w, y0 / h, (x1 + 1) / w, (y1 + 1) / h], w, h, d });
+      res({ url: a.url, im, own, ar: im.naturalWidth / im.naturalHeight, bb: x1 < 0 ? [0, 0, 1, 1] : [x0 / w, y0 / h, (x1 + 1) / w, (y1 + 1) / h], w, h, d });
     }; im.onerror = () => res(null); im.src = a.url; });
   })());
+}
+async function sbCover(id, sp) {          // Fanservice off: the same picture under its own address, paired with a steam mask over her whole body below the neck
+  const key = sp.url + '#sfw'; if (FOG_MASK[key]) return key;
+  try { const H0 = 320, h = Math.min(H0, sp.im.naturalHeight), w = Math.max(8, Math.round(h * sp.ar)), c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(sp.im, 0, 0, w, h); const id0 = g.getImageData(0, 0, w, h), d = id0.data;
+    const neckY = (sp.bb[1] + (SB.neck[id] != null ? SB.neck[id] : SB.neckDef) * (sp.bb[3] - sp.bb[1])) * h;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const q = (y * w + x) * 4, on = y >= neckY && d[q + 3] > 30; d[q] = d[q + 1] = d[q + 2] = 255; d[q + 3] = on ? 255 : 0; }
+    g.putImageData(id0, 0, 0);
+    const c2 = document.createElement('canvas'); c2.width = w; c2.height = h; const g2 = c2.getContext('2d'); g2.filter = 'blur(2px)'; for (let i = 0; i < 3; i++) g2.drawImage(c, 0, 0);      // grown a little past her outline
+    FOG_MASK[key] = c2.toDataURL('image/png'); return key;
+  } catch (e) { return sp.url; }
 }
 const sbAlpha = (sp, fx, fy) => { if (!sp.d) return 255; const x = Math.floor(fx * sp.w), y = Math.floor(fy * sp.h); return x < 0 || y < 0 || x >= sp.w || y >= sp.h ? 0 : sp.d[(y * sp.w + x) * 4 + 3]; };
 function sbSpan(sp, fy) {                 // the body's left / right edge on this row (fractions of the picture)
@@ -11322,7 +11335,8 @@ async function sbOpen(host, kind, ids, o = {}) {
     let seat = kind === 'spa' ? (sp.own && SB.spa[id]) : SB.spring[i % SB.spring.length];
     if (!seat) { seat = SB.spare[spare++ % SB.spare.length]; }
     const sit = sp.own ? (SB.sit[kind][id] || [.5, .9]) : SB.standIn;
-    return { id, sp, seat: { ...seat, w: sp.own ? seat.w : null }, sit }; }));
+    const src = sp.own && !FX.spicy ? await sbCover(id, sp) : sp.url;
+    return { id, sp, src, seat: { ...seat, w: sp.own ? seat.w : null }, sit }; }));
   if (host._sbTok !== tok) return;
   S.list = rows.filter(Boolean).sort((a, b) => a.seat.y - b.seat.y);          // back to front
   sbBuild(host); sbWx(host);
@@ -11341,7 +11355,7 @@ function sbBuild(host) {
   st.querySelector('.sb-steamL').innerHTML = s;
   const hl = st.querySelector('.sb-heroes');
   hl.innerHTML = S.list.map(r => { const tag = S.pick ? 'button' : 'div';
-    return `<${tag} class="sb-hero${S.pick ? " dp" : ""}${r.seat.flip ? ' flip' : ''}" data-id="${r.id}"${S.pick ? ` onclick="spaPick('${r.id}')" aria-label="${(heroById(r.id) || {}).name || r.id}"` : ''}><img class="sb-ghost" src="${r.sp.url}" alt="" draggable="false"><img class="sb-main" src="${r.sp.url}" alt="" draggable="false"><span class="sb-fx"></span></${tag}>`; }).join('');
+    return `<${tag} class="sb-hero${S.pick ? " dp" : ""}${r.seat.flip ? ' flip' : ''}" data-id="${r.id}"${S.pick ? ` onclick="spaPick('${r.id}')" aria-label="${(heroById(r.id) || {}).name || r.id}"` : ''}><img class="sb-ghost" src="${r.src}" alt="" draggable="false"><img class="sb-main" src="${r.src}" alt="" draggable="false"><span class="sb-fx"></span></${tag}>`; }).join('');
   sbLayout(host);
 }
 function sbLayout(host) {                 // sizes everything to the window (the picture covers the screen)
