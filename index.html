@@ -436,21 +436,6 @@ body.dorm-dragging .dorm-room .seat[data-slot]{outline:2px dashed rgba(255,213,7
 .dorm-room .seat{--sh:30}
 .dorm-room .seat .seat-lbl{font-size:max(.62rem,1.2cqw);font-weight:700}
 @keyframes flicker2{from{opacity:.82;transform:scale(1)}to{opacity:1;transform:scale(1.05)}}
-/* polar dip: a lake cabin */
-.dvi-room{position:absolute;inset:0;container-type:size;overflow:hidden}
-.dvi-win{position:absolute;left:7%;top:9%;width:15%;height:24%;border:6px solid #2b1a10;border-radius:6px;background:linear-gradient(#09142b,#203b63);box-shadow:0 0 0 3px #6a4a30,0 0 40px rgba(120,170,255,.12);overflow:hidden}
-.dvi-win::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 2px) 0 0/16px 20px;animation:dvbub 3s linear infinite reverse;opacity:.7}
-.dvi-win::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;margin-left:-2px;background:#2b1a10}
-.dvi-lamp{position:absolute;left:50%;top:-2%;width:30%;height:60%;margin-left:-15%;background:radial-gradient(ellipse at 50% 0,rgba(255,205,130,.28),transparent 70%);pointer-events:none}
-.dvi-stove{position:absolute;left:88%;top:80%;height:36cqh;aspect-ratio:.9;transform:translate(-50%,-100%);z-index:79}
-.dvi-stove .sg{position:absolute;left:50%;top:58%;width:320%;height:230%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,150,50,.6) 0,rgba(255,110,30,.3) 30%,transparent 66%);animation:stovePulse 2.4s ease-in-out infinite;pointer-events:none}
-.dvi-stove .sa{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center}
-.dvi-stove .sa>img{height:100%;width:auto;max-width:none;display:block}
-.dvi-stove .sd{position:relative;width:78%;height:78%;margin-bottom:4%;background:linear-gradient(#2c2c34,#18181e);border:3px solid #0d0d10;border-radius:10px 10px 4px 4px}
-.dvi-stove .sd::before{content:"";position:absolute;left:18%;right:18%;top:30%;height:34%;border-radius:6px;background:radial-gradient(ellipse,#ffd27a,#ff7a2c 70%);animation:flicker2 1.2s ease-in-out infinite alternate;box-shadow:0 0 18px rgba(255,140,40,.8)}
-.dvi-stove .sd::after{content:"";position:absolute;left:42%;width:16%;bottom:98%;height:80%;background:#18181e;border:3px solid #0d0d10;border-bottom:0}
-@keyframes stovePulse{0%,100%{opacity:.62;scale:.94}50%{opacity:1;scale:1.06}}
-#dvi-seats .seat{--sh:27}
 #camp-msg{min-height:1.2em;font-size:.72rem;color:#81c784;margin:4px 0 8px}
 #camp-bg{display:none;position:absolute;inset:0;z-index:0;overflow:hidden;background:#0b0f18 center/cover no-repeat}
 #camp-bg svg{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -939,12 +924,19 @@ body.calm .qm-n,body.calm .qm-pc img,body.calm .qm-pull::after{animation:none!im
 #spring.show{position:fixed;inset:0;z-index:5;margin:0;overflow:hidden;background:#0a0a12;display:block}
 #spring-stage{position:absolute;inset:0;overflow:hidden}
 /* painted bath (town spa) + quest spring: see HOT SPRINGS + THE TOWN SPA BATH in the script */
-#spa-select.show{position:fixed;inset:0;z-index:5;margin:0;overflow:hidden;background:#0a0a12;display:block}
+#spa-select.show,#lake.show{position:fixed;inset:0;z-index:5;margin:0;overflow:hidden;background:#0a0a12;display:block}
+#lake-stage{position:absolute;inset:0;overflow:hidden}
+#lake .lk-title{position:absolute;z-index:20;left:18px;top:16px;font-weight:800}#lake .lk-title small{font-weight:600;color:#bfe3f7;margin-left:8px}
+#lake .lk-bar{position:absolute;z-index:20;left:50%;bottom:16px;transform:translateX(-50%);width:min(900px,calc(100% - 32px));display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:14px;background:rgba(14,22,34,.82);border:1px solid rgba(160,210,240,.35);box-shadow:0 8px 30px rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+#lake .lk-bar .pk-info{flex:1;min-width:0}#lake .lk-bar .pk-acts{display:flex;gap:8px;flex:0 0 auto}
 #spa-stage{position:absolute;inset:0;overflow:hidden}
 .sb-stage{position:absolute;overflow:visible}
 .sb-cam{position:absolute;inset:0;transform-origin:0 0;transition:transform .55s cubic-bezier(.3,.7,.2,1)}
 .sb-cam>div{position:absolute;inset:0}
-.sb-bg,.sb-snow{background:center/100% 100% no-repeat}.sb-bg>svg{width:100%;height:100%}
+.sb-bg,.sb-snow{background:center/100% 100% no-repeat}
+.sb-sky.snowy::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,#fff 0 1.4px,transparent 2.2px),radial-gradient(circle,#dfeeff 0 1px,transparent 1.8px);background-size:90px 90px,60px 60px;background-position:0 0,30px 40px;opacity:.8;animation:sbSnowIn 9s linear infinite}
+@keyframes sbSnowIn{from{background-position:0 0,30px 40px}to{background-position:-20px 270px,10px 220px}}
+body.calm .sb-sky.snowy::after{animation:none}.sb-bg>svg{width:100%;height:100%}
 .sb-grade{mix-blend-mode:multiply;pointer-events:none;z-index:900}
 .sb-steamL{pointer-events:none;z-index:1}
 .sb-heroes{z-index:2;pointer-events:none}
@@ -1412,16 +1404,30 @@ body.calm .breath{display:none}
 #dv-intro{display:none;position:absolute;inset:0;z-index:6;container-type:size;background:#04162c;cursor:pointer}
 #dv-intro.on{display:block}
 #dv-intro small{position:absolute;bottom:10px;width:100%;text-align:center;color:#8fb6d2;opacity:.7}
-.dvi-surface{position:absolute;inset:0;background:linear-gradient(#4a301e 0,#4a301e 44%,#6a4a2e 44.3%,#3b2616 100%);transition:opacity .6s;overflow:hidden}
-.dvi-surface::before{content:"";position:absolute;inset:0 0 56% 0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 2px,transparent 2px 8%)}
-.dvi-surface::after{content:"";position:absolute;inset:44% 0 0 0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 9%);pointer-events:none}
-.dvi-hole{position:absolute;left:50%;top:66%;width:240px;height:70px;margin-left:-120px;border-radius:50%;background:radial-gradient(ellipse,#041a33 55%,#0d3a5e 70%,#cfe9f7 72%);box-shadow:0 0 0 6px rgba(255,255,255,.35);z-index:1}
-.dvi-hero{position:absolute;z-index:70;left:calc(50% - 215px);top:20%;height:55%;width:140px;transition:transform .55s ease-in,opacity .4s .3s}
-.dvi-hero img,.dvi-sink img{height:100%;width:auto;display:block}
-.dvi-hero.jump{transform:translate(215px,38%) scale(.35)}.dvi-hero.jump{opacity:0}
+/* the polar dip intro, outside on the lake (assets/ui/lake/lake): she stands by the hole in her winter gear, a puff of snow, swimsuit, jump, splash */
+.dvi-out{position:absolute;inset:0;overflow:hidden;transition:opacity .6s;background:#9fb3c8}
+.dvi-stage{position:absolute;left:50%;top:50%;width:max(100cqw,calc(100cqh * var(--ar,1.79)));aspect-ratio:var(--ar,1.79);transform:translate(-50%,-50%)}
+.dvi-stage>*{position:absolute}
+.dvi-sky{inset:0;background:linear-gradient(#6f84a0,#a9bccf 45%,#dfe7ef 62%)}
+.dvi-bg{inset:0;background:center/100% 100% no-repeat}
+.dvi-bg.none{background:linear-gradient(transparent 38%,#e6eef5 38%,#c9d6e2);}.dvi-bg.none::after{content:"";position:absolute;left:43%;top:54%;width:24%;height:13%;background:#0d2236;border-radius:6px;transform:skewX(-20deg)}
+.dvi-snowf{inset:0;pointer-events:none;background-image:radial-gradient(circle at 23% 31%,#fff 0 2px,transparent 2.8px),radial-gradient(circle at 71% 64%,#f0f6ff 0 1.3px,transparent 2px),radial-gradient(circle at 48% 12%,#fff 0 2.6px,transparent 3.4px),radial-gradient(circle at 87% 83%,#e8f1ff 0 1px,transparent 1.7px);background-size:157px 163px,97px 89px,233px 241px,61px 67px;opacity:.85;animation:dviSnow 9s linear infinite}
+@keyframes dviSnow{from{background-position:0 0,13px 29px,51px 7px,5px 41px}to{background-position:-60px 652px,-23px 445px,-90px 723px,-10px 268px}}
+.dvi-fig{left:var(--fx,33%);top:calc(var(--fy,74%) - var(--fh,44%));height:var(--fh,44%);width:0;transform-origin:0 100%}
+.dvi-a,.dvi-b{position:absolute;left:0;bottom:0;height:100%;transform:translateX(-50%);transition:opacity .25s}
+.dvi-a img,.dvi-b img,.dvi-sink img{height:100%;width:auto;max-width:none;display:block}
+.dvi-b{opacity:0}.dvi-fig.chg .dvi-a{opacity:0}.dvi-fig.chg .dvi-b{opacity:1}
+.dvi-puff{position:absolute;left:0;bottom:-6%;width:28cqh;height:56cqh;transform:translateX(-50%) scale(.4);border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.98) 0,rgba(240,248,255,.9) 40%,rgba(255,255,255,0) 70%);opacity:0;pointer-events:none}
+.dvi-fig.puff .dvi-puff{animation:dviPuff .9s ease-out forwards}
+@keyframes dviPuff{0%{opacity:0;transform:translateX(-50%) scale(.4)}25%{opacity:1;transform:translateX(-50%) scale(1.05)}100%{opacity:0;transform:translateX(-50%) translateY(-12%) scale(1.35)}}
+.dvi-splash{left:var(--hx,55%);top:var(--hy,60%);width:16%;aspect-ratio:2.2;transform:translate(-50%,-60%) scale(.2);border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,0) 30%,rgba(235,248,255,.95) 44%,rgba(200,232,250,.6) 58%,rgba(255,255,255,0) 70%);opacity:0;pointer-events:none}
+.dvi-splash::before{content:"";position:absolute;left:30%;right:30%;bottom:40%;height:180%;background:radial-gradient(circle,rgba(255,255,255,.95) 0 3px,transparent 4px) 0 0/22% 26%;filter:blur(.3px)}
+.dvi-splash.on{animation:dviSplash .8s ease-out forwards}
+@keyframes dviSplash{0%{opacity:1;transform:translate(-50%,-60%) scale(.2)}100%{opacity:0;transform:translate(-50%,-60%) scale(1.3)}}
+body.calm .dvi-snowf{animation:none}
 .dvi-under{position:absolute;inset:0;background:linear-gradient(#0e5b93,#062a4d 60%,#031428);opacity:0;transition:opacity .6s;overflow:hidden}
 .dvi-under.on{opacity:1}
-.dvi-sink{position:absolute;left:50%;top:6%;height:46%;margin-left:-60px;width:120px;animation:dvsink 1.5s ease-in forwards;opacity:0}
+.dvi-sink{position:absolute;left:0;right:0;top:6%;height:46%;display:flex;justify-content:center;animation:dvsink 1.5s ease-in forwards;opacity:0}
 .dvi-under.on .dvi-sink{opacity:1}
 .dvi-under::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(220,245,255,.55) 2px,transparent 3px) 0 0/46px 70px,radial-gradient(circle,rgba(220,245,255,.35) 3px,transparent 4px) 20px 30px/70px 90px;animation:dvbub 1.4s linear infinite}
 @keyframes dvsink{0%{transform:translateY(-30%) rotate(-12deg)}100%{transform:translateY(120%) rotate(10deg)}}
@@ -2381,9 +2387,6 @@ body.gp .bspot.pk .pk-hit.gp-focus{outline:none!important;box-shadow:none!import
 .pk-claim{color:#ffd54f;font-weight:700;display:flex;gap:.6em;align-items:center}
 .pk-claim:empty{display:none}
 /* the hut for the Frozen Lake */
-.lk-hut{container-type:inline-size}
-.lk-hut .dvi-surface{opacity:1}
-.lk-hut .bspot{width:15%;height:44%}
 
 /* ===== Title screen: "Mote in the Celestial Fire" over the turning heavens (assets/ui/title_bg). The rings seem to turn: a light sweeps around each one,
    neighbours in opposite directions, and along the accretion disk; the whole picture breathes. Knobs: TITLE_RINGS / TITLE_DISK in the script. ===== */
@@ -2888,15 +2891,11 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
   </div></div>
 </div>
 
-<div id="lake" class="scene fsr">
-  <div class="hub-wrap"><div class="hub-hall">
-    <div class="fsstage lk-hut" id="lake-map"><div class="dvi-surface"><div class="dvi-room"><div class="dvi-win"></div><div class="dvi-lamp"></div><div class="dvi-hole"></div><div class="dvi-stove" id="lake-stove"></div><div id="lake-figs" class="pk-figs"></div></div></div></div>
-    <div class="fs-ui pk-ui">
-      <div class="btitle">🧊 The Frozen Lake<small id="lake-gold"></small></div>
-      <div class="pk-bar"><div class="pk-info" id="lake-info"></div>
-        <div class="pk-acts"><button onclick="showScene('hub')">↩ Back to Town</button><button class="primary" id="lake-go" onclick="lakeGo()">Jump in</button></div></div>
-    </div>
-  </div></div>
+<div id="lake" class="scene">
+  <div id="lake-stage"></div>
+  <div class="fs-chip lk-title">🧊 The Frozen Lake <small id="lake-gold"></small></div>
+  <div class="lk-bar"><div class="pk-info" id="lake-info"></div>
+    <div class="pk-acts"><button onclick="showScene('hub')">↩ Back to Town</button><button class="primary" id="lake-go" onclick="lakeGo()">Jump in</button></div></div>
 </div>
 <div id="dive" class="scene">
   <canvas id="dv-cv"></canvas>
@@ -2906,7 +2905,7 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
     <button id="dv-pause" onclick="divePause(true)">⏸</button>
   </div>
   <div id="dv-joy"><i></i></div>
-  <div id="dv-intro"><div class="dvi-surface" id="dvi-surface"><div class="dvi-room"><div class="dvi-win"></div><div class="dvi-lamp"></div><div class="dvi-hole"></div><div class="dvi-stove" id="dvi-stove"></div><div id="dvi-seats"></div></div><div class="dvi-hero" id="dvi-hero"></div></div><div class="dvi-under" id="dvi-under"><div class="dvi-sink" id="dvi-sink"></div></div><small>tap to skip</small></div>
+  <div id="dv-intro"><div class="dvi-out" id="dvi-out"><div class="dvi-stage" id="dvi-stage"><div class="dvi-sky"></div><div class="dvi-bg" id="dvi-bg"></div><i class="dvi-splash" id="dvi-splash"></i><div class="dvi-fig" id="dvi-fig"><div class="dvi-a" id="dvi-a"></div><div class="dvi-b" id="dvi-b"></div><i class="dvi-puff"></i></div><div class="dvi-snowf"></div></div></div><div class="dvi-under" id="dvi-under"><div class="dvi-sink" id="dvi-sink"></div></div><small>tap to skip</small></div>
   <div id="dv-choose"><div class="dvc-title">Level up! Choose one</div><div class="dvc-row" id="dvc-row"></div></div>
   <div id="dv-pausebox"><div class="dvp"><b>Paused</b><button class="primary" onclick="divePause(false)">Resume</button><button onclick="diveEnd('surface')">Surface (keep your crystals)</button></div></div>
   <div id="dv-end"></div>
@@ -3989,7 +3988,7 @@ function relicFx(ids, traitIds, extra) {
 /* ============ POTENTIAL (Act 3) ============ */
 // A second permanent upgrade track, bought with Frost Crystals from the Frozen Lake dive. Each hero has three TIERS: tier 1 and 2 offer 3 curated options each, tier 3 offers one hero-specific option.
 // Buy an option once, then switch freely in the Dorm between quests (one ACTIVE option per tier). Tier 1 unlocks when the Mountain Pass is cleared, tier 2 with the Frozen Valley, tier 3 with the Ice Queen's Castle.
-// A hero's Potential appears after their first dive. Saved in game.pot[heroId] = { owned: [option id], active: { 1: id, 2: id, 3: id } } and game.crystals.
+// Every hero's Potential tiers open as the Act 3 quests are cleared (for all heroes at once). Saved in game.pot[heroId] = { owned: [option id], active: { 1: id, 2: id, 3: id } } and game.crystals.
 // POT_HERO picks each hero's options (spec = the Potential sheet). el = their specialty element (damage and "Skill 1 [element]"), weak = the element their resistance / immunity options cover.
 const POTENTIAL = { cost: { 1: 200, 2: 350, 3: 500 }, unlock: { 1: 'pass', 2: 'valley', 3: 'castle' }, counter: 0.2, chain: 0.5, sadistic: 0.25, masochist: 0.5, restore: 0.6, dodge: 0.2, resist: [0.05, 0.10], elRes: [0.10, 0.20], lifesteal: [0.05, 0.10], hp: [0.08, 0.16], armour: [0.08, 0.16], eldmg: [0.10, 0.20], brk: [0.25, 0.50], skelBrk: 0.4, greedy: 0.25, chef: 0.5 };
 const POT_HERO = {
@@ -4051,7 +4050,7 @@ Object.keys(POT_HERO).forEach(hid => { const C = POT_HERO[hid];
 const potList = (hid, tier) => Object.values(POT_OPTS).filter(o => o.hero === hid && o.tier === tier);
 const potState = hid => { game.pot = game.pot || {}; return game.pot[hid] || (game.pot[hid] = { owned: [], active: {} }); };
 const potTierOpen = tier => !!devMode || questCleared(POTENTIAL.unlock[tier]);
-const potAwake = hid => !!devMode || !!(game.dived && game.dived[hid]);
+const potAwake = hid => true;          // Potential is open for every hero: each tier unlocks for all 8 when its Act 3 quest is cleared (potTierOpen); no first dive needed
 const potActiveIds = hid => { const a = (game && game.pot && game.pot[hid] && game.pot[hid].active) || {}; return [1, 2, 3].map(t => a[t]).filter(id => POT_OPTS[id] && potTierOpen(POT_OPTS[id].tier) && potAwake(hid)); };
 const potHas = (hid, kind) => potActiveIds(hid).some(id => POT_OPTS[id].kind === kind);
 function potEffects(hid) {                    // the merged fx and skill changes of a hero's active options, or null
@@ -4710,7 +4709,7 @@ const BOOK = {
     { k: 'traits', h: 'Perks and flaws', when: anyCleared, b: () => [`Clearing a quest gives each hero who went a random <b>perk</b>; the Training Ground sells more (up to ${TRAITS.maxGood}). A hero who falls may pick up a <b>flaw</b> (up to ${TRAITS.maxBad}); the Spa removes them. Repeats stack. Each hero's perks and flaws are on her Dorm page.`] },
     { k: 'tier2', h: 'Tier II perks', good: true, when: () => QUEST_GROUPS[1].ids.some(questCleared), b: () => [`Clearing a <b>Tidelands</b> quest upgrades a perk the hero already has (Hardy → Hardy II, about 1.75× as strong) instead of giving a new one.`] },
     { k: 'beach', h: 'Beach volleyball', when: () => typeof beachOpen === 'function' && beachOpen(), b: () => [`Win <b>Beach Volleyball</b> (${VB.cost}g a game) to trade a Tier II perk for any Tier I perk.`] },
-    { k: 'potential', h: 'Potential', good: true, when: () => LAKE.regionOpen.some(questCleared), b: () => [`Survive the <b>polar dip</b> at the Frozen Lake: steer, your attack fires by itself, pick upgrades on level-up, and every kill earns ❄️ <b>Frost Crystals</b> (kept even if you fall). A hero's first dive awakens her <b>Potential</b> (her Dorm page).`,
+    { k: 'potential', h: 'Potential', good: true, when: () => LAKE.regionOpen.some(questCleared), b: () => [`Survive the <b>polar dip</b> at the Frozen Lake: steer, your attack fires by itself, pick upgrades on level-up, and every kill earns ❄️ <b>Frost Crystals</b> (kept even if you fall). Spend crystals on any hero's <b>Potential</b> (her Dorm page); each Frostbound quest you clear opens the next tier for everyone, and pays crystals too.`,
       `Three tiers: tiers 1 and 2 offer three options, tier 3 one special one. Buy an option once with crystals, then equip it in the Dorm; one option is active per tier. Tiers unlock with the Mountain Pass, the Frozen Valley and the Ice Queen's Castle.`] }
   ],
   endgame: [
@@ -4794,7 +4793,7 @@ function guideHtml(guideTab) {          // one section's text (used by the ⚙�
       <h4>Perks</h4>${perks.map(t => g(`${t.icon} <b>${t.name}</b>: ${t.desc}`, 'good')).join('')}
       <h4>Tier II perks (the Tidelands)</h4>${g(`Clearing a <b>Tidelands</b> quest (Cove, Lighthouse, Shoals) <b>upgrades</b> a perk the hero already has (Hardy → Hardy II, about 1.75× as strong) instead of giving a new one. A hero with nothing to upgrade gets a new perk as usual. After your first Tidelands quest, the <b>Beach</b> opens in town: win <b>Beach Volleyball</b> (${VB.cost}g a game) to trade a Tier II perk for any Tier I perk.`)}
       <h4>Flaws</h4>${flaws.map(t => g(`${t.icon} <b>${t.name}</b>: ${t.desc}`, 'bad')).join('')}
-      <h4>Potential (Act 3)</h4>${g(`Clear any Frostbound Peaks quest to open the <b>Frozen Lake</b> in town. Pay a fee, jump in, and survive the <b>polar dip</b>: steer, your attack fires by itself, pick upgrades on level-up, and every kill earns ❄️ <b>Frost Crystals</b> (you keep them even if you fall). A hero's first dive awakens their <b>Potential</b>, found on their Dorm page.`, 'good')}
+      <h4>Potential (Act 3)</h4>${g(`Clear any Frostbound Peaks quest to open the <b>Frozen Lake</b> in town. Pay a fee, jump in, and survive the <b>polar dip</b>: steer, your attack fires by itself, pick upgrades on level-up, and every kill earns ❄️ <b>Frost Crystals</b> (you keep them even if you fall). Spend them on any hero's <b>Potential</b> (their Dorm page). Each Frostbound Peaks quest you clear opens the next Potential tier for all heroes and pays ❄️ 200 / 350 / 500 crystals.`, 'good')}
       ${g(`Each hero has 3 tiers: tiers 1 and 2 offer 3 options each, tier 3 one special option. <b>Buy</b> an option once with crystals, then <b>equip</b> it in the Dorm (locked during a quest); one option is active per tier. Tier 1 unlocks with the Mountain Pass, tier 2 with the Frozen Valley, tier 3 with the Ice Queen's Castle.`, 'good')}
       ${g(`<b>Evasion</b> is a real chance to avoid a direct attack (it stacks with Evasive and never works on area attacks). <b>Sadistic</b> and <b>Masochistic</b> count burn, bleed, poison, freeze and shock only.`, 'good')}
       <h4>Relics</h4>${g(`Each hero wears up to ${RELIC.slots} relics, set from the Dorm (locked during a quest). Relics come from the Shop (restocked after every run) and boss drops. Rarity: common, rare, epic. Tidelands bosses and road finds drop <b>Tier II</b> relics (Iron Band II…, about 1.5× as strong) and a few coast-only relics; they are never sold in the Shop.`)}`;
@@ -9000,7 +8999,7 @@ function checkEnd() {
     } else if (last) {
       const coastWas = coastOpen(), beachWas = beachOpen(), frostWas = frostOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
       const qt = quest.tier || 0; game.tiers.cleared[quest.def.id] = Math.max(tierCleared(quest.def.id), qt); tierUnlock();                 // New Game+: remember the difficulty, maybe open the next one
-      game.gold += quest.gold; game.stats.won++; game.quest = null;
+      game.gold += quest.gold; game.stats.won++; game.quest = null; const cry = questCrystals(quest);
       const drop = rollDrop(quest.def, game.relics, (tierDef(quest.tier).relic || 0) + partySum('relicLuck', quest.party));      // the boss may drop a relic (cursed relics can raise the odds)
       game.curse = game.curse || {}; quest.party.forEach(u => (game.equip[u.id] || []).forEach(id => { if (RELICS[id] && RELICS[id].cursed) game.curse[id] = (game.curse[id] || 0) + 1; }));      // cursed relics worn to the end of a quest count toward purifying
       if (drop) { game.relics.push(drop); game.notices.push({ type: 'relic', id: drop }); }
@@ -9012,10 +9011,10 @@ function checkEnd() {
       if (!coastWas && coastOpen()) game.notices.push({ type: 'region', id: 'coast' });                                                   // the third Old Lands quest opens the Tidelands
       if (!beachWas && beachOpen()) game.notices.push({ type: 'beach' });                                                                 // clearing the Sunbaked Shoals opens the beach in town
       awardTraits(true);                                                                    // then the traits notice (a perk for every hero, a flaw for any who fell)
-      hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold.${pn}${drop ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
+      hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold${cry ? ` and ❄️ ${cry} Frost Crystals` : ''}.${pn}${drop ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
       $('turn-indicator').innerText = 'Quest Complete!';
       log(`<strong style="color:#4caf50">The boss falls and the quest is complete! All ${quest.gold} gold goes home with you.</strong>`);
-      main.textContent = 'Return to Town'; main.onclick = () => showScene('hub'); endSummary(true); endCard('won', quest.gold);
+      main.textContent = 'Return to Town'; main.onclick = () => showScene('hub'); endSummary(true); endCard('won', quest.gold, cry);
       quest = null; saved = writeSave();
     } else if (quest.bonus) {                                  // an event fight: back to the same camp, with no new rest allowance
       quest.bonus = null;
@@ -11192,12 +11191,12 @@ function bossCleared() {                 // the boss is down: the quest is clear
 function finishQuestWin() {              // home with everything: gold, the boss's drop, unused items
   const m = quest.map, drop = m && m.drop, qt = quest.tier || 0;
   if (quest.party.some(u => u.rel && u.rel.faust && !(u.downs > 0) && !u.faustDead)) game.faustGrow = Math.min(FAUST.cap, (game.faustGrow || 0) + FAUST.grow);      // a clean quest feeds the bargain
-  game.gold += quest.gold; game.quest = null;
+  game.gold += quest.gold; game.quest = null; const cry = questCrystals(quest);
   if (drop && RELICS[drop] && !game.relics.includes(drop)) { game.relics.push(drop); game.notices.push({ type: 'relic', id: drop }); }
   game.shop = { stock: rollStock(game.relics) };
   const pn = returnItems(true);
-  hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold.${pn}${drop && RELICS[drop] ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
-  endCard('won', quest.gold); quest = null; writeSave(); showScene('hub');
+  hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold${cry ? ` and ❄️ ${cry} Frost Crystals` : ''}.${pn}${drop && RELICS[drop] ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
+  endCard('won', quest.gold, cry); quest = null; writeSave(); showScene('hub');
 }
 /* ============ HUNTS (side quests, dev-only prototype) ============
    A bigger map with few fights, where you track a beast. Places you haven't been to show as ❔ (you don't know what's there until you arrive or scout).
@@ -11503,7 +11502,19 @@ const SPRING = { heal: .5, warm: .35, chance: .75 };
 const SB = {
   sit: {
     spa:    { aria: [.11, .96], seria: [.37, .79], aneesah: [.69, .70], iris: [.26, .86], irae: [.33, .51], vesper: [.31, .50], tyr: [.58, .84], jean: [.84, .98] },
-    spring: { aria: [.11, .96], seria: [.37, .79], aneesah: [.69, .70], iris: [.26, .86], irae: [.33, .51], vesper: [.31, .50], tyr: [.58, .84], jean: [.84, .98] }
+    spring: { aria: [.11, .96], seria: [.37, .79], aneesah: [.69, .70], iris: [.26, .86], irae: [.33, .51], vesper: [.31, .50], tyr: [.58, .84], jean: [.84, .98] },
+    cabin:  { aria: [.11, .96], seria: [.37, .79], aneesah: [.69, .70], iris: [.26, .86], irae: [.33, .51], vesper: [.31, .50], tyr: [.58, .84], jean: [.84, .98] }
+  },
+  // the Frozen Lake cabin (assets/ui/lake/cabin): the polar dip's diver pick, everyone warming up in the cabin's plunge pool. Same seat format as the spa.
+  cabin: {
+    iris:    { x: 47, y: 76, S: 16, w: 70, flip: false },
+    irae:    { x: 59, y: 76, S: 16, w: 70, flip: false },
+    aneesah: { x: 71, y: 76, S: 16, w: 70, flip: true },
+    vesper:  { x: 82, y: 76, S: 16, w: 70, flip: true },
+    aria:    { x: 36, y: 92, S: 20, w: 85, flip: false },
+    seria:   { x: 49, y: 93, S: 20, w: 86, flip: false },
+    tyr:     { x: 61, y: 93, S: 20, w: 86, flip: true },
+    jean:    { x: 72, y: 92, S: 20, w: 85, flip: true }
   },
   spa: {
     aria:    { x: 44.5, y: 61,   S: 11.5, w: 55.5, flip: false },
@@ -11523,7 +11534,7 @@ const SB = {
     { x: 67.6, y: 80.5, S: 12.9, w: 75.4, flip: true }
   ],
   standIn: [.5, .92],                      // where a camp sprite stand-in sits on itself
-  steam: { spa: [[39, 44, 18], [17, 68, 21], [51, 64, 27], [30, 83, 23], [81, 74, 20], [81, 58, 11]], spring: [[58, 72, 26], [55, 66, 14]] },   // [x, y, width] over each pool
+  steam: { cabin: [[58, 70, 30], [50, 86, 30]], spa: [[39, 44, 18], [17, 68, 21], [51, 64, 27], [30, 83, 23], [81, 74, 20], [81, 58, 11]], spring: [[58, 72, 26], [55, 66, 14]] },   // [x, y, width] over each pool
   sky: { day: { 1: ['#4f97d8', '#a9d3f2', '#eaf4fa'], 2: ['#3b4656', '#5d6a7a', '#8a96a2'], 3: ['#8c9cb2', '#c3cedb', '#e8edf3'] },
     dusk: { 1: ['#2a1238', '#a8384a', '#ff9a5a'], 2: ['#241a30', '#5a3a4a', '#8a5a5a'], 3: ['#3a3458', '#9a7a98', '#e0b8b0'] },
     night: { 1: ['#03030c', '#141236', '#2a1a3a'], 2: ['#030308', '#10141e', '#1c222c'], 3: ['#0a0e1e', '#1e2a44', '#3a4864'] } },
@@ -11573,16 +11584,16 @@ function sbPlace(sp, s, sit, W, H) {      // the sprite's box in px on the stage
 async function sbOpen(host, kind, ids, o = {}) {
   const tok = {}; host._sbTok = tok;
   host.innerHTML = `<div class="sb-stage"><div class="sb-cam"><div class="sb-sky"></div><div class="sb-bg"></div><div class="sb-snow"></div><div class="sb-steamL"></div><div class="sb-heroes"></div><div class="sb-grade"></div></div><canvas class="sb-wx"></canvas></div>`;
-  const S = host._sb = { kind, act: o.act || 1, tod: o.tod || 'day', pick: !!o.pick, ar: SB.ar, sel: null, list: [], bg: null, snow: null };
-  const pic = kind === 'spa' ? 'spa' : 'hotspring';
-  const [bg, snow] = await Promise.all([findAsset(`${ANIM.base}/ui/spa/${pic}`), S.act === 3 ? findAsset(`${ANIM.base}/ui/spa/${pic}_snow`) : null]);
+  const S = host._sb = { kind, act: o.act || 1, tod: o.tod || 'day', pick: !!o.pick, onPick: o.onPick || 'spaPick', noWx: !!o.noWx, skyCol: o.sky || null, grade: o.grade !== false, ar: SB.ar, sel: null, list: [], bg: null, snow: null };
+  const pic = kind === 'spa' ? 'spa/spa' : kind === 'cabin' ? 'lake/cabin' : 'spa/hotspring';
+  const [bg, snow] = await Promise.all([findAsset(`${ANIM.base}/ui/${pic}`), S.act === 3 && kind !== 'cabin' ? findAsset(`${ANIM.base}/ui/${pic}_snow`) : null]);
   if (host._sbTok !== tok) return;
   if (bg && ['png', 'webp', 'jpg', 'jpeg'].includes(bg.ext)) { S.bg = bg.url; await new Promise(r => { const im = new Image(); im.onload = () => { S.ar = im.naturalWidth / im.naturalHeight; r(); }; im.onerror = r; im.src = bg.url; }); }
   else S.bgSvg = springSvg(kind === 'spa' ? 'bath' : 'spring', S.tod);
   if (snow && ['png', 'webp'].includes(snow.ext)) S.snow = snow.url;
   let spare = 0;
   const rows = await Promise.all(ids.map(async (id, i) => { const sp = await sbSprite(id); if (!sp) return null;
-    let seat = kind === 'spa' ? (sp.own && SB.spa[id]) : SB.spring[i % SB.spring.length];
+    let seat = kind === 'spa' || kind === 'cabin' ? (sp.own && SB[kind][id]) : SB.spring[i % SB.spring.length];
     if (!seat) { seat = SB.spare[spare++ % SB.spare.length]; }
     const sit = sp.own ? (SB.sit[kind][id] || [.5, .9]) : SB.standIn;
     const src = sp.own && !FX.spicy ? await sbCover(id, sp) : sp.url;
@@ -11594,7 +11605,8 @@ async function sbOpen(host, kind, ids, o = {}) {
 }
 function sbBuild(host) {
   const S = host._sb, st = host.querySelector('.sb-stage'); if (!S || !st) return;
-  const sk = SB.sky[S.tod][S.act] || SB.sky.day[1], gr = SB.grade[S.tod][S.act];
+  const sk = S.skyCol || SB.sky[S.tod][S.act] || SB.sky.day[1], gr = S.grade && SB.grade[S.tod][S.act];
+  st.querySelector('.sb-sky').classList.toggle('snowy', !!S.skyCol && S.act === 3);
   st.querySelector('.sb-sky').style.background = `linear-gradient(180deg,${sk[0]},${sk[1]} 55%,${sk[2]})`;
   const bgEl = st.querySelector('.sb-bg'); if (S.bg) bgEl.style.backgroundImage = `url("${S.bg}")`; else bgEl.innerHTML = S.bgSvg || '';
   if (S.snow) st.querySelector('.sb-snow').style.backgroundImage = `url("${S.snow}")`;
@@ -11605,7 +11617,7 @@ function sbBuild(host) {
   st.querySelector('.sb-steamL').innerHTML = s;
   const hl = st.querySelector('.sb-heroes');
   hl.innerHTML = S.list.map(r => { const tag = S.pick ? 'button' : 'div';
-    return `<${tag} class="sb-hero${S.pick ? " dp" : ""}${r.seat.flip ? ' flip' : ''}" data-id="${r.id}"${S.pick ? ` onclick="spaPick('${r.id}')" aria-label="${(heroById(r.id) || {}).name || r.id}"` : ''}><img class="sb-ghost" src="${r.src}" alt="" draggable="false"><img class="sb-main" src="${r.src}" alt="" draggable="false"><span class="sb-fx"></span></${tag}>`; }).join('');
+    return `<${tag} class="sb-hero${S.pick ? " dp" : ""}${r.seat.flip ? ' flip' : ''}" data-id="${r.id}"${S.pick ? ` onclick="${S.onPick}('${r.id}')" aria-label="${(heroById(r.id) || {}).name || r.id}"` : ''}><img class="sb-ghost" src="${r.src}" alt="" draggable="false"><img class="sb-main" src="${r.src}" alt="" draggable="false"><span class="sb-fx"></span></${tag}>`; }).join('');
   sbLayout(host);
 }
 function sbLayout(host) {                 // sizes everything to the window (the picture covers the screen)
@@ -11655,7 +11667,7 @@ function sbHit(host, e) {                 // the hero whose visible pixels are u
   return null;
 }
 function sbWx(host) {                     // rain (Act 2) and snow (Act 3) over the picture
-  const S = host._sb, cv = host.querySelector('.sb-wx'); if (!S || !cv || S.act === 1) return;
+  const S = host._sb, cv = host.querySelector('.sb-wx'); if (!S || !cv || S.act === 1 || S.noWx) return;
   const drops = Array.from({ length: S.act === 2 ? 260 : 130 }, () => ({ x: Math.random(), y: Math.random(), s: .6 + Math.random() * .8, r: Math.random() }));
   const g = cv.getContext('2d');
   const step = () => {
@@ -11669,7 +11681,7 @@ function sbWx(host) {                     // rain (Act 2) and snow (Act 3) over 
   };
   requestAnimationFrame(step);
 }
-addEventListener('resize', () => ['spring-stage', 'spa-stage'].forEach(id => { const h = $(id); if (h && h._sb && h.offsetParent) sbLayout(h); }));
+addEventListener('resize', () => ['spring-stage', 'spa-stage', 'lake-stage'].forEach(id => { const h = $(id); if (h && h._sb && h.offsetParent) sbLayout(h); }));
 
 function springEnter() {                                      // the party reaches a hot spring on the map: soak, heal, (Act 3) warm up
   const q = quest, healed = [];
@@ -13559,30 +13571,32 @@ function vbTogglePick(id) {
 }
 /* ---- the Frozen Lake ---- */
 let lakePick = null;
-const lakeIdleCache = {};
-function lakeFig(id) {                       // the diver in winter gear when there is art for it (else their usual look)
-  const el = document.createElement('div'); el.className = 'figure bfig'; el.innerHTML = `<div class="ph">${heroById(id).tag}</div>`;
-  el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's');
-  (lakeIdleCache[id] = lakeIdleCache[id] || (async () => (await findAsset(`${ANIM.base}/${id}/armoured - winter gear/idle`)) || (await heroArt(id)))()).then(a => {
-    if (!a || !el.isConnected) return; const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
-    m.className = 'spr'; m.src = a.url; m.draggable = false; if (vid) { m.loop = true; m.muted = true; m.autoplay = true; m.playsInline = true; }
-    markLive(m, a); el.prepend(m); el.classList.add('has-art'); });
-  return el;
-}
 function lakeInfo() {
   const el = $('lake-info'); if (!el) return; game.dived = game.dived || {}; game.lake = game.lake || { best: {} };
   const id = pkState.lake.hov || lakePick, t = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
   if (id && heroById(id)) { const h = heroById(id), best = game.lake.best[id];
-    el.innerHTML = `<b>${h.name}</b> ${elIcons(h)} · ${game.dived[id] ? `Best time ${t(best || 0)}` : '✨ First dive awakens their <b>Potential</b>'}${lakePick === id ? ' · <span class="dim">ready at the hole</span>' : ''}`; return; }
+    el.innerHTML = `<b>${h.name}</b> ${elIcons(h)} · ${best ? `Best time ${t(best)}` : 'No dive yet'}${lakePick === id ? ' · <span class="dim">ready to jump</span>' : ''}`; return; }
   el.innerHTML = `Pick a diver. Each dive costs <b>${LAKE.cost}g</b>: swim, survive the horde, and keep every <b>❄️ Frost Crystal</b> you earn.`;
 }
-function renderLake() {
+function renderLake() {                     // the cabin by the lake: everyone warming up in the plunge pool; pick who dives (see SB.cabin)
   game.dived = game.dived || {}; game.lake = game.lake || { best: {} };
-  $('lake-gold').innerHTML = `Gold: ${game.gold} · ❄️ ${lakeNum('crystals')}`;
+  $('lake-gold').innerHTML = `🪙 ${game.gold} · ❄️ ${lakeNum('crystals')}`;
   if (lakePick && !game.roster.includes(lakePick)) lakePick = null;
-  const ids = game.roster.filter(id => heroById(id));
-  pkRender('lake', $('lake-figs'), ids, lakePick ? [lakePick] : [], () => true, lakeFig, id => { lakePick = lakePick === id ? null : id; renderLake(); });
-  const st = $('lake-stove'); if (st && !st.dataset.done) { st.dataset.done = 1; findAsset(`${ANIM.base}/ui/woodstove`).then(a => { st.innerHTML = '<div class="sg"></div>' + (a && a.url ? `<div class="sa"><img src="${a.url}" draggable="false"></div>` : '<div class="sa"><div class="sd"></div></div>'); }); }
+  const host = $('lake-stage');
+  sbOpen(host, 'cabin', game.roster.filter(id => heroById(id)), { act: 3, tod: 'night', pick: true, onPick: 'lakeTap', noWx: true, grade: false, sky: ['#0b1730', '#1e3354', '#3c5878'] })
+    .then(S => { if (!S) return; S.sel = lakePick; sbCamera(host);
+      host.querySelectorAll('.sb-hero').forEach(b => { b.addEventListener('mouseenter', () => lakeHov(b.dataset.id)); b.addEventListener('gpfocus', () => lakeHov(b.dataset.id)); }); });
+  if (!host.dataset.wired) { host.dataset.wired = 1;
+    host.addEventListener('click', e => { if (!host._sb || !e.isTrusted || e.detail === 0 || e.target.closest('.sb-hero')) return; lakeTap(sbHit(host, e) || lakePick); });      // real mouse clicks only (a pad presses the hero's button itself)
+    host.addEventListener('pointermove', e => { if (!host._sb) return; const id = sbHit(host, e); host.querySelectorAll('.sb-hero').forEach(x => x.classList.toggle('hov', x.dataset.id === id)); host.style.cursor = id ? 'pointer' : ''; if (id !== pkState.lake.hov) lakeHov(id); }); }
+  lakeBtn();
+}
+function lakeHov(id) { pkState.lake.hov = id || null; lakeInfo(); }
+function lakeTap(id) {                       // pick (the view leans in on her) or put back
+  lakePick = id && lakePick !== id ? id : null; const h = $('lake-stage'); if (h._sb) { h._sb.sel = lakePick; sbCamera(h); } sfx('click'); lakeBtn();
+  if (lakePick && typeof padFocus === 'function') setTimeout(() => padFocus($('lake-go')), 300);
+}
+function lakeBtn() {
   const b = $('lake-go'), can = game.gold >= LAKE.cost; b.textContent = `🧊 Jump in · ${LAKE.cost}g`; b.disabled = !lakePick || !can;
   b.title = !lakePick ? 'Pick a diver' : !can ? 'Not enough gold' : '';
   lakeInfo();
@@ -14512,13 +14526,13 @@ async function talkPlay() {
   await storyRun({ ...sc, guests: [...new Set([...(sc.guests || []), ...Object.values(sc.cast || {}).flat()])] });
 }
 
-function endCard(kind, gold) {
+function endCard(kind, gold, cry = 0) {
   try { talkRoll(); } catch (e) {}           // back in town: maybe a town talk is waiting (TOWN TALKS)             // kind: 'won' | 'left' | 'lost'
   try {
     const keep = [], got = { relics: [], good: [], bad: [] };
     (game.notices || []).forEach(n => { if (n && n.type === 'relic' && RELICS[n.id]) got.relics.push(n.id); else if (n && n.type === 'traits' && Array.isArray(n.items)) n.items.forEach(x => { const id = x && (x.id || x); const T = TRAIT[id]; if (T) (T.kind === 'bad' ? got.bad : got.good).push({ id, who: x.who || x.hero || null, from: x.from && TRAIT[x.from] ? x.from : null }); }); else keep.push(n); });
     game.notices = keep;
-    pendingCard = { kind, name: (quest.map && quest.map.hunt ? quest.map.hunt.title : quest.def.name), gold, S: validStats(quest.stats), fights: quest.map ? quest.map.n.filter(x => x.fi != null && x.done).length : quest.node + 1,
+    pendingCard = { kind, cry, name: (quest.map && quest.map.hunt ? quest.map.hunt.title : quest.def.name), gold, S: validStats(quest.stats), fights: quest.map ? quest.map.n.filter(x => x.fi != null && x.done).length : quest.node + 1,
       party: quest.party.map(u => ({ id: u.id, name: u.short || u.name, down: !(u.hp > 0) })), got, tier: quest.tier || 0 };
     game.lastCard = pendingCard;
   } catch (e) { console.warn('quest card:', e); }
@@ -14540,7 +14554,7 @@ function openSummary(side = 0) {
   $('sum-stamp').innerHTML = `<div class="stamp ${res[2]}">${res[1]}</div>`; void $('sum-stamp').offsetWidth; $('sum-stamp').firstChild.classList.add('go');
   if (!openSummary.art) openSummary.art = findAsset(`${ANIM.base}/ui/ledger`).then(a => { if (a) { const bx = $('ledger'); bx.style.background = `url("${a.url}") center/100% 100% no-repeat`; bx.style.boxShadow = 'none'; bx.style.clipPath = 'none'; } });
   const G = L.got || { relics: [], good: [], bad: [] }, nm = id => ((heroById(id) || {}).name || id).split(' ')[0];
-  const front = `<div class="sumtop"><div><b>${L.gold != null ? L.gold : '?'}</b>gold home</div><div><b>${L.fights ?? '-'}</b>fights</div><div><b>${G.relics.length}</b>relics</div><div><b>${G.good.length}</b>perks</div></div>`
+  const front = `<div class="sumtop"><div><b>${L.gold != null ? L.gold : '?'}</b>gold home</div>${L.cry ? `<div><b>❄️ ${L.cry}</b>crystals</div>` : ''}<div><b>${L.fights ?? '-'}</b>fights</div><div><b>${G.relics.length}</b>relics</div><div><b>${G.good.length}</b>perks</div></div>`
     + (G.relics.length ? `<div class="sumsec">🎒 Relics found</div><div class="sumgot">${G.relics.map(id => { const r = RELICS[id]; return `<span class="rarity-${r.rarity || 'common'}${r.cursed ? ' cursed' : ''}" title="${(r.desc || '').replace(/"/g, '&quot;')}">${r.icon} ${r.name}</span>`; }).join('')}</div>` : '')
     + (G.good.length ? `<div class="sumsec">✨ Perks gained</div><div class="sumgot">${G.good.map(x => `<span class="good" title="${(TRAIT[x.id].desc || '').replace(/"/g, '&quot;')}">${x.who ? nm(x.who) + ': ' : ''}${TRAIT[x.id].icon || ''} ${x.from ? TRAIT[x.from].name + ' → ' : ''}${TRAIT[x.id].name}</span>`).join('')}</div>` : '')
     + (G.bad.length ? `<div class="sumsec">💀 Flaws picked up</div><div class="sumgot">${G.bad.map(x => `<span class="bad" title="${(TRAIT[x.id].desc || '').replace(/"/g, '&quot;')}">${x.who ? nm(x.who) + ': ' : ''}${TRAIT[x.id].icon || ''} ${TRAIT[x.id].name}</span>`).join('')}</div>` : '')
@@ -14860,7 +14874,7 @@ render = function () { _renderChill(); try { breathFx(); } catch (e) {} try { if
 /* ============ THE FROZEN LAKE: polar dip (Act 3 minigame) ============ */
 // Pick a hero, pay the fee, jump in. A tiny Vampire-Survivors-style swim: you only steer (WASD / arrows / stick / drag on touch); your attack fires by itself on a timer, every kill earns Frost Crystals,
 // and every few kills you choose 1 of 3 upgrades. Enemies are shrunk Act 3 monsters and get stronger faster than any upgrade can keep up, so a run always ends. Crystals are kept whatever happens.
-// The first dive with a hero also awakens that hero's Potential (game.dived[heroId]). Art: the hero's winter gear idle (surface), swimsuit damaged (sinking), swimsuit idle (swimming); enemies use their battle picture (assets/enemies/<id>).
+// (game.dived[heroId] still records who has dived.) Art: the hero's winter gear idle (surface), swimsuit damaged (sinking), swimsuit idle (swimming); enemies use their battle picture (assets/enemies/<id>).
 const LAKE = { cost: 100, hpBase: 60, hpPer: 0.7, speed: 175, atkEvery: 0.7, dmgMul: 2.6, firstLevel: 5, levelStep: 3, maxAlive: 64, regionOpen: ['pass', 'valley', 'castle'] };
 const DIVE_FOES = [        // id, size (px tall), speed, hp, contact damage, crystals, appears from (s), spawn weight
   { id: 'e_husk',     size: 44, spd: 52,  hp: 22,  dmg: 7,  val: 1, from: 0,   w: 10 },
@@ -14883,12 +14897,23 @@ const DIVE_UP = [          // upgrades offered on level up (each stacks up to ma
   { id: 'hp',    icon: '❤️', name: 'Vitality',     max: 5, desc: '+25 max HP and heal 25' },
   { id: 'regen', icon: '🩹', name: 'Regeneration', max: 4, desc: 'Heal 1 HP per second' }
 ];
+const QUEST_CRYSTALS = { pass: 200, valley: 350, castle: 500 };       // Act 3 quests also pay Frost Crystals (every clear), the Potential currency
+function questCrystals(q) { const n = (q && q.def && !(q.map && q.map.hunt) && QUEST_CRYSTALS[q.def.id]) || 0; if (n) game.crystals = (game.crystals || 0) + n; return n; }
 const lakeOpen = () => !!devMode || LAKE.regionOpen.some(questCleared);
 const lakeNum = (k) => (game && game[k]) || 0;
 function openLake() { if (!lakeOpen()) return; showScene('lake'); }
 const diveArt = {};
 function diveLoadEl(a) { return new Promise(res => { if (a.ext === 'mp4' || a.ext === 'webm') { const v = document.createElement('video'); v.src = a.url; v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.oncanplay = () => { v.play().catch(() => {}); res({ el: v, w: v.videoWidth, h: v.videoHeight, url: a.url }); }; v.onerror = () => res(null); }
-  else { const i = new Image(); i.onload = () => res({ el: i, w: i.naturalWidth, h: i.naturalHeight, url: a.url }); i.onerror = () => res(null); i.src = a.url; } }); }
+  else { const i = new Image(); i.onload = () => res(diveTrim({ el: i, w: i.naturalWidth, h: i.naturalHeight, url: a.url })); i.onerror = () => res(null); i.src = a.url; } }); }
+function diveTrim(o) {                    // a picture's visible box (bb, fractions) and a copy cut to it (o.cut), so a sprite with a roomy canvas still sits centred / feet down
+  try { const k = Math.min(1, 200 / Math.max(o.w, o.h)), w = Math.max(1, Math.round(o.w * k)), h = Math.max(1, Math.round(o.h * k)), c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(o.el, 0, 0, w, h); const d = g.getImageData(0, 0, w, h).data; let x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) return o; o.bb = [Math.max(0, x0 - 1) / w, Math.max(0, y0 - 1) / h, Math.min(w, x1 + 2) / w, Math.min(h, y1 + 2) / h];
+    const sx = Math.floor(o.bb[0] * o.w), sy = Math.floor(o.bb[1] * o.h), sw = Math.ceil((o.bb[2] - o.bb[0]) * o.w), sh = Math.ceil((o.bb[3] - o.bb[1]) * o.h), k2 = Math.min(1, 1100 / sh);
+    const c2 = document.createElement('canvas'); c2.width = Math.round(sw * k2); c2.height = Math.round(sh * k2); c2.getContext('2d').drawImage(o.el, sx, sy, sw, sh, 0, 0, c2.width, c2.height); o.cut = c2.toDataURL('image/png');
+  } catch (e) {} return o;
+}
 async function diveSpr(paths) {                 // first path that exists wins (null when there is no art yet: a placeholder is drawn)
   const key = paths.join('|'); if (key in diveArt) return diveArt[key];
   for (const p of paths) { const a = await findAsset(p); if (a) { const e = await diveLoadEl(a); if (e) return diveArt[key] = e; } }
@@ -14900,10 +14925,8 @@ async function startDive(id) {
   const h = heroById(id); if (!h || game.gold < LAKE.cost || dv) return;
   game.gold -= LAKE.cost; game.dived = game.dived || {}; const first = !game.dived[id]; game.dived[id] = true; writeSave();
   const B = ANIM.base, skin = ['armoured - winter gear', 'armoured'];
-  const [winter, sinkSpr, swim] = await Promise.all([diveSpr(skin.map(f => `${B}/${id}/${f}/idle`)), diveSpr([`${B}/${id}/armoured - swimsuit/damaged`, `${B}/${id}/armoured/damaged`, `${B}/${id}/armoured/idle`]), diveSpr([`${B}/${id}/armoured - swimsuit/idle`, `${B}/${id}/armoured/idle`])]);
+  const [winter, sinkSpr, swim, lakeBg] = await Promise.all([diveSpr(skin.map(f => `${B}/${id}/${f}/idle`)), diveSpr([`${B}/${id}/armoured - swimsuit/damaged`, `${B}/${id}/armoured/damaged`, `${B}/${id}/armoured/idle`]), diveSpr([`${B}/${id}/armoured - swimsuit/idle`, `${B}/${id}/armoured/idle`]), findAsset(`${B}/ui/lake/lake`)]);
   const foes = {}; await Promise.all(DIVE_FOES.map(async f => { foes[f.id] = await diveSpr([`${B}/enemies/${f.id}`, `${B}/${f.id}/armoured/idle`, `${B}/${f.id}/idle`]); }));      // the enemy's battle picture (assets/enemies/<id>)
-  const others = game.roster.filter(x => x !== id && heroById(x)).sort(() => Math.random() - 0.5).slice(0, Math.random() < 0.5 ? 1 : 2);      // who is sitting by the stove (random, never the diver)
-  await Promise.all([...others.map(campSpr), findAsset(`${B}/ui/woodstove`)]);
   const sk0 = h.skills[0], el = sk0.el || (h.elems || [])[0] || null, d = sk0.d || [10, 12];
   const maxHp = Math.round(LAKE.hpBase + h.hp * LAKE.hpPer);
   dv = { id, h, first, el, col: DIVE_COL[el] || DIVE_COL.none, melee: sk0.r === 'melee', base: (d[0] + d[1]) / 2 * LAKE.dmgMul, running: false, t: 0, kills: 0, crystals: 0, lvl: 1, need: LAKE.firstLevel, lvlKills: 0,
@@ -14911,27 +14934,34 @@ async function startDive(id) {
          w: { dmg: 1, rate: 1, multi: 0, orbit: 0, pulse: 0, chain: 0, move: 1, regen: 0 }, up: {}, spr: { winter, sinkSpr, swim, foes }, over: false };
   showScene('dive'); fitDive(); dvUi = true; diveHud();
   $('dv-end').classList.remove('on'); $('dv-choose').classList.remove('on'); $('dv-pausebox').classList.remove('on');
-  await diveIntro(winter, sinkSpr, h, others);
+  await diveIntro(winter, swim, sinkSpr, h, lakeBg);
   dvUi = false; dv.running = true; dv.last = performance.now(); cancelAnimationFrame(dvRaf); dvRaf = requestAnimationFrame(diveFrame);
 }
-function diveImgHtml(a, h) { return a && a.url ? `<img src="${a.url}" draggable="false">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;width:120px;border:2px dashed #6aa;border-radius:10px;color:#cfe;font-weight:700">${h.tag}</div>`; }
-async function diveStove() {
-  const a = await findAsset(`${ANIM.base}/ui/woodstove`);
-  $('dvi-stove').innerHTML = '<div class="sg"></div>' + (a && a.url ? `<div class="sa"><img src="${a.url}" draggable="false"></div>` : '<div class="sa"><div class="sd"></div></div>');
-}
-function diveIntro(winter, sinkSpr, h, others = []) {
+function diveImgHtml(a, h) { return a && a.url ? `<img src="${a.cut || a.url}" draggable="false">` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;width:22cqh;border:2px dashed #6aa;border-radius:10px;color:#cfe;font-weight:700">${h.tag}</div>`; }
+/* The intro, outside on the frozen lake (assets/ui/lake/lake). DIVE_SCENE: where she stands (feet x, y and height, % of the picture) and the hole she jumps into (centre),
+   and the beats in ms (change = the snow puff + swimsuit, jump, splash, under = the dive underwater, end). */
+const DIVE_SCENE = { fx: 33, fy: 75, fh: 44, hx: 55, hy: 60, ar: 1024 / 572, t: { change: 1000, jump: 2000, splash: 2600, under: 2900, end: 4600 } };
+function diveIntro(winter, swim, sinkSpr, h, bg) {
   return new Promise(res => {
-    const SP = [[63, 66, 1], [72, 80, 1]];       // seated by the stove (feet x, y %, size), facing it (they are drawn facing right and the stove is on the right)
-    $('dvi-seats').innerHTML = others.map((o, i) => seatHtml(o, SP[i][0], SP[i][1], { sc: SP[i][2] })).join(''); fillSeats($('dvi-seats')); diveStove();
-    const box = $('dv-intro'), calm = FX.calm; let done = false;
-    const end = () => { if (done) return; done = true; box.classList.remove('on'); box.removeEventListener('pointerdown', end); document.removeEventListener('keydown', end); res(); };
-    $('dvi-hero').className = 'dvi-hero'; $('dvi-hero').innerHTML = diveImgHtml(winter, h); $('dvi-sink').innerHTML = diveImgHtml(sinkSpr, h);
-    $('dvi-surface').style.opacity = 1; $('dvi-under').classList.remove('on'); box.classList.add('on');
+    const D = DIVE_SCENE, box = $('dv-intro'), st = $('dvi-stage'), fig = $('dvi-fig'), calm = FX.calm, k = calm ? 0.4 : 1, timers = []; let done = false;
+    const bgEl = $('dvi-bg'), okBg = bg && ['png', 'jpg', 'jpeg', 'webp'].includes(bg.ext);
+    bgEl.classList.toggle('none', !okBg); bgEl.style.backgroundImage = okBg ? `url("${bg.url}")` : '';
+    if (okBg) { const im = new Image(); im.onload = () => st.style.setProperty('--ar', im.naturalWidth / im.naturalHeight); im.src = bg.url; } else st.style.setProperty('--ar', D.ar);
+    [['--fx', D.fx], ['--fy', D.fy], ['--fh', D.fh], ['--hx', D.hx], ['--hy', D.hy]].forEach(([v, n]) => st.style.setProperty(v, n + '%'));
+    fig.className = 'dvi-fig'; fig.getAnimations().forEach(a => a.cancel()); fig.style.opacity = 1;
+    $('dvi-a').innerHTML = diveImgHtml(winter, h); $('dvi-b').innerHTML = diveImgHtml(swim, h); $('dvi-sink').innerHTML = diveImgHtml(sinkSpr, h);
+    $('dvi-splash').classList.remove('on'); $('dvi-out').style.opacity = 1; $('dvi-under').classList.remove('on'); box.classList.add('on');
+    const end = () => { if (done) return; done = true; timers.forEach(clearTimeout); box.classList.remove('on'); box.removeEventListener('pointerdown', end); document.removeEventListener('keydown', end); res(); };
     box.addEventListener('pointerdown', end); document.addEventListener('keydown', end);
-    const k = calm ? 0.4 : 1;
-    setTimeout(() => $('dvi-hero').classList.add('jump'), 1100 * k);
-    setTimeout(() => { $('dvi-under').classList.add('on'); $('dvi-surface').style.opacity = 0; }, 1650 * k);
-    setTimeout(end, 3400 * k);
+    const at = (ms, f) => timers.push(setTimeout(f, ms * k));
+    at(D.t.change, () => { fig.classList.add('puff'); sfx('click'); setTimeout(() => fig.classList.add('chg'), 220 * k); });          // a puff of snow: winter gear off, swimsuit on
+    at(D.t.jump, () => { const r = st.getBoundingClientRect(), dx = (D.hx - D.fx) / 100 * r.width, dy = (D.hy - D.fy) / 100 * r.height;
+      fig.animate([{ transform: 'translate(0,0) scale(1)' }, { transform: `translate(${dx * .45}px,${dy - r.height * .16}px) scale(.88) rotate(-6deg)`, offset: .45 },
+        { transform: `translate(${dx}px,${dy}px) scale(.68) rotate(4deg)`, offset: .82, opacity: 1 }, { transform: `translate(${dx}px,${dy + r.height * .06}px) scale(.64)`, opacity: 0 }],
+        { duration: 700 * k, easing: 'ease-in', fill: 'forwards' }); });
+    at(D.t.splash, () => { $('dvi-splash').classList.add('on'); sfx('hit', 'ice', false, false, true); });
+    at(D.t.under, () => { $('dvi-under').classList.add('on'); $('dvi-out').style.opacity = 0; });
+    at(D.t.end, end);
   });
 }
 function fitDive() { const c = $('dv-cv'), r = devicePixelRatio > 1.5 ? 1.5 : 1; c.width = Math.round(innerWidth * r); c.height = Math.round(innerHeight * r); dv && (dv.scale = r * diveZoom()); }
@@ -15006,7 +15036,6 @@ function diveEnd(why) {
   const m = Math.floor(dv.t / 60), s = Math.floor(dv.t % 60);
   $('dv-end').innerHTML = `<div class="dve"><h3>${why === 'surface' ? '🏊 You surfaced' : '❄️ Overwhelmed by the cold dark'}</h3><div class="big">+${dv.crystals} ❄️ Frost Crystals</div>
     <div>${dv.h.name} survived <b>${m}:${String(s).padStart(2, '0')}</b>${best && prev ? ' (new best!)' : ''} · ${dv.kills} kills · reached level ${dv.lvl}</div>
-    ${dv.first ? '<div style="margin-top:8px;color:#ffd54f">✨ First dive: this hero\'s Potential is awakened!</div>' : ''}
     <div style="margin-top:6px;color:#a9d3ea;font-size:.8rem">Total: ❄️ ${game.crystals} · Gold: ${game.gold}</div>
     <div class="row"><button class="primary" onclick="diveAgain()" ${game.gold < LAKE.cost ? 'disabled' : ''}>Dive again · ${LAKE.cost}g</button><button onclick="diveLeave()">Back to the lake</button></div></div>`;
   $('dv-end').classList.add('on');
@@ -15050,13 +15079,13 @@ function diveStep(dt) {
   if (d.hurt > 0) d.hurt -= dt; diveHud();
 }
 function diveBlit(g, a, x, y, h, flip, fallback, tag, flash) {          // draw a sprite (or a simple placeholder) standing with its feet at (x, y)
-  if (a && a.el && (a.el.complete !== false) && a.w) { const w = h * a.w / a.h; g.save(); g.translate(x, y); if (flip < 0) g.scale(-1, 1); g.drawImage(a.el, -w / 2, -h, w, h); if (flash) { g.globalAlpha = .45; g.fillStyle = '#fff'; g.fillRect(-w / 2, -h, w, h); } g.restore(); }
+  if (a && a.el && (a.el.complete !== false) && a.w) { const b = a.bb || [0, 0, 1, 1], sw = (b[2] - b[0]) * a.w, sh = (b[3] - b[1]) * a.h, w = h * sw / sh; g.save(); g.translate(x, y); if (flip < 0) g.scale(-1, 1); g.drawImage(a.el, b[0] * a.w, b[1] * a.h, sw, sh, -w / 2, -h, w, h); if (flash) { g.globalAlpha = .45; g.fillStyle = '#fff'; g.fillRect(-w / 2, -h, w, h); } g.restore(); }
   else { g.save(); g.translate(x, y - h / 2); g.fillStyle = fallback; g.beginPath(); g.arc(0, 0, h / 2.2, 0, 6.283); g.fill(); g.fillStyle = '#fff'; g.font = `bold ${Math.round(h / 4.5)}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(tag, 0, 0); if (flash) { g.globalAlpha = .5; g.beginPath(); g.arc(0, 0, h / 2.2, 0, 6.283); g.fill(); } g.restore(); }
 }
 function diveDraw(g, cv) {
   const d = dv, sc = d.scale || (devicePixelRatio > 1.5 ? 1.5 : 1) * diveZoom(), W = cv.width, H = cv.height; g.setTransform(1, 0, 0, 1, 0, 0);
   const grd = g.createLinearGradient(0, 0, 0, H); grd.addColorStop(0, '#0f6aa6'); grd.addColorStop(.55, '#08365f'); grd.addColorStop(1, '#031428'); g.fillStyle = grd; g.fillRect(0, 0, W, H);
-  g.setTransform(sc, 0, 0, sc, 0, 0); const vw = W / sc, vh = H / sc, cx = vw / 2 - d.x, cy = vh / 2 - d.y;
+  g.setTransform(sc, 0, 0, sc, 0, 0); const vw = W / sc, vh = H / sc, cx = vw / 2 - d.x, cy = vh / 2 - d.y + 32;      // her body (not her feet) sits in the middle of the screen
   g.fillStyle = 'rgba(190,235,255,.06)'; for (let i = 0; i < 4; i++) { const x = ((i * 330 + 120 - d.x * .15) % (vw + 300) + vw + 300) % (vw + 300) - 150; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 90, 0); g.lineTo(x - 140, vh); g.lineTo(x - 230, vh); g.fill(); }
   g.fillStyle = 'rgba(210,240,255,.28)'; const T = 260; for (let i = 0; i < 46; i++) { const bx = (((i * 97.3) % T) * 4.1 + cx * (.6 + (i % 3) * .2)) % (vw + 40), by = (((i * 61.7) % T) * 3.2 + cy * (.6 + (i % 3) * .2) - d.t * 14 * (1 + (i % 3) * .4)) % (vh + 40); g.beginPath(); g.arc(((bx % (vw + 40)) + vw + 40) % (vw + 40) - 20, ((by % (vh + 40)) + vh + 40) % (vh + 40) - 20, 1.5 + (i % 4), 0, 6.283); g.fill(); }
   const items = [...d.en.map(e => ({ y: e.y, e })), { y: d.y, p: 1 }].sort((a, b) => a.y - b.y);
