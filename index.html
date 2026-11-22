@@ -2755,6 +2755,11 @@ body.calm .threat,body.calm .threat .tg-under{animation:none}
 .ii .ip{display:inline-grid;place-items:center;width:2.6em;height:2.6em;border-radius:50%;border:2px solid #ff5252;background:#1a1420;font:700 1em system-ui;color:transparent;box-shadow:0 0 8px rgba(255,60,60,.6)}
 .ii .ip.ward{border-color:#b388ff;box-shadow:0 0 8px rgba(179,136,255,.6)}.ii .ip.charm{border-color:#ff7ac8}
 .ii.charge{box-shadow:0 0 0 2px #ff6d00,0 0 14px rgba(255,109,0,.8);animation:pulse 1s infinite alternate}
+.talk-mark{position:absolute;z-index:6;translate:-50% -100%;width:46px;height:46px;border-radius:50%;border:2px solid #fff;background:radial-gradient(circle at 40% 35%,#ffe68a,#f2a91d 70%);box-shadow:0 0 0 4px rgba(242,169,29,.35),0 0 22px rgba(255,200,60,.9);display:grid;place-items:center;font-size:26px;cursor:pointer;padding:0;animation:talkGlow 1.1s ease-in-out infinite}
+.talk-mark span{filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));animation:talkBob 1.1s ease-in-out infinite}      /* only the mark bobs: the button itself never moves, so clicks always land */
+.talk-mark:hover{box-shadow:0 0 0 6px rgba(242,169,29,.45),0 0 30px rgba(255,210,80,1)}
+@keyframes talkBob{50%{translate:0 -4px}}@keyframes talkGlow{50%{box-shadow:0 0 0 7px rgba(242,169,29,.25),0 0 30px rgba(255,200,60,1)}}
+body.calm .talk-mark,body.calm .talk-mark span{animation:none}
 </style>
 </head>
 <body>
@@ -5917,11 +5922,25 @@ async function skyBolt(t, big) {                    // a bolt falls from the sky
     : `<polyline points="${pts}" stroke="#4aa3ff" stroke-width="10" opacity=".4"/><polyline points="${pts}" stroke="#e6f4ff" stroke-width="3" style="filter:drop-shadow(0 0 5px #7cc4ff)"/><circle cx="${x2}" cy="${y2}" r="22" fill="#7cc4ff" opacity=".4"/>`;
   host.appendChild(svg); await sleep(big ? 280 : 200); setTimeout(() => svg.remove(), 160);
 }
+/* Where a ranged attack leaves the caster: her casting hand. HANDS[id].skillN = [across, down] on that skill's picture (fractions; mirrored when she faces left).
+   Without a point: up at shoulder height and out in front of her (CAST_PT), not the middle of the body. Measured on Connor's skill1 pictures, 2026-11-22. */
+const HANDS = { aneesah: { skill1: [.8, .19] }, aria: { skill1: [.92, .21] } };
+const CAST_PT = { ahead: .3, up: .24 };          // the fallback: this far ahead of centre (share of the picture's width) and this far down from its top
+function castPt(u, towardX) {
+  const f = figs.get(u); if (!f) return null; const im = f.querySelector('.spr'); let r = (im && im.getBoundingClientRect().width ? im : f).getBoundingClientRect();
+  const nw = im && (im.naturalWidth || im.videoWidth), nh = im && (im.naturalHeight || im.videoHeight);
+  if (nw && nh && r.width) { const cs = getComputedStyle(im), k = Math.min(r.width / nw, r.height / nh), dw = nw * k, dh = nh * k, op = (cs.objectPosition || '50% 50%').split(' ').map(v => parseFloat(v) / 100);      // the picture as drawn inside its box (object-fit: contain)
+    r = { left: r.left + (r.width - dw) * (isNaN(op[0]) ? .5 : op[0]), top: r.top + (r.height - dh) * (isNaN(op[1]) ? .5 : op[1]), width: dw, height: dh }; }
+  const src = (im && (im.currentSrc || im.src || (im.querySelector && im.querySelector('source') && im.querySelector('source').src))) || '', m = /skill(\d)/.exec(src);
+  const H = m && HANDS[u.id] && HANDS[u.id]['skill' + m[1]], cx = r.left + r.width / 2, dir = towardX == null ? (u.team === 'p' ? 1 : -1) : Math.sign(towardX - cx) || 1;
+  if (H) { const fx = dir < 0 ? 1 - H[0] : H[0]; return { x: r.left + fx * r.width, y: r.top + H[1] * r.height }; }
+  return { x: cx + dir * CAST_PT.ahead * r.width, y: r.top + CAST_PT.up * r.height };
+}
 async function projectile(u, t, kind) {            // ranged elemental skills: a bolt / fireball / shard flies from the caster to the target
   const a = figs.get(u), b = figs.get(t), host = $('fx'), v = VFX[kind]; if (!a || !b || !host || !v || !v.mk || !a.isConnected || !b.isConnected) return;
   const hb = host.getBoundingClientRect(), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect(); if (!hb.width || !ra.width) return;
   sfx('whoosh', kind);
-  const x1 = ra.left - hb.left + ra.width / 2, y1 = ra.top - hb.top + ra.height * bodyAt(.4), x2 = rb.left - hb.left + rb.width / 2, y2 = rb.top - hb.top + rb.height * bodyAt(.4);
+  const x2 = rb.left - hb.left + rb.width / 2, y2 = rb.top - hb.top + rb.height * bodyAt(.4), cp = castPt(u, rb.left + rb.width / 2), x1 = (cp ? cp.x : ra.left + ra.width / 2) - hb.left, y1 = (cp ? cp.y : ra.top + ra.height * bodyAt(.4)) - hb.top;      // from her hand (castPt)
   if (kind === 'shock') {
     const bolt = (n, jit, w) => { const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len; let pts = '';
       for (let i = 0; i <= n; i++) { const k = i / n, j = i === 0 || i === n ? 0 : (Math.random() - .5) * jit; pts += `${(x1 + dx * k + nx * j).toFixed(1)},${(y1 + dy * k + ny * j).toFixed(1)} `; } return pts; };
@@ -7987,6 +8006,7 @@ function mothFx(u) {                    // a few moths flutter around a Ring of 
   if (u.state === 'super' || !u.rel || !u.rel.moths) { if (m) m.remove(); return; }
   if (!m) { m = document.createElement('div'); m.className = 'mothfx'; m.innerHTML = Array.from({ length: 6 }, (_, i) => `<i style="--d:${(-i * .7).toFixed(1)}s;--x:${(15 + Math.random() * 70).toFixed(0)}%;--y:${(25 + Math.random() * 55).toFixed(0)}%"></i>`).join(''); el.appendChild(m); }
 }
+function castFig(u, t) { const P = figPt(u), T = figPt(t), c = P && castPt(u, T ? T.x : null); return P && c ? { ...P, x: c.x, y: c.y } : P; }      // a thrown weapon leaves from her hand
 function figPt(x) { const f = figs.get(x); if (!f) return null; const r = f.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * .45, r }; }
 async function flyGlyph(a, b, glyph, spin = 720, ms = 380, cls = '') {     // something flies from one point to another
   if (!a || !b) return; const h = document.createElement('div'); h.className = 'mj-fly ' + cls; h.textContent = glyph; document.body.appendChild(h);
@@ -8022,7 +8042,7 @@ async function weaponStrike(u, i, target, s) {
   else if (W.kind === 'pierce') {
     const line = u.team === 'p' ? enemies : party, behind = line.slice(line.indexOf(target) + 1).find(isAlive);
     say(`${u.name} hurls ${W.name}: it never misses!`); setSpot([u, target, behind].filter(Boolean));
-    await flyGlyph(figPt(u), figPt(target), '➤', 0, 300, 'spear'); await hit(u, target, s);
+    await flyGlyph(castFig(u, target), figPt(target), '➤', 0, 300, 'spear'); await hit(u, target, s);
     if (behind && isAlive(behind)) { await flyGlyph(figPt(target), figPt(behind), '➤', 0, 200, 'spear'); await hit(u, behind, s); }
   }
   else if (W.kind === 'wave' || W.kind === 'sweep') {
@@ -8031,7 +8051,7 @@ async function weaponStrike(u, i, target, s) {
   }
   else if (W.kind === 'volley') {
     say(`${u.name} looses moonlight arrows!`);
-    for (let k = 0; k < (W.shots || 3); k++) { const f = foes(); if (!f.length) break; const t = choose(f, Math.random); await flyGlyph(figPt(u), figPt(t), '➵', 0, 240, 'arrow'); await hit(u, t, s); }
+    for (let k = 0; k < (W.shots || 3); k++) { const f = foes(); if (!f.length) break; const t = choose(f, Math.random); await flyGlyph(castFig(u, t), figPt(t), '➵', 0, 240, 'arrow'); await hit(u, t, s); }
   }
   else if (W.kind === 'shield') {
     say(`${u.name} raises ${W.name}!`); domeFx('#ffe9a0'); sfx('ward');
@@ -8331,6 +8351,7 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
         if (!foes.some(isAlive) || !friends.some(isAlive)) break;
         const pool = (k % 2 ? foes : friends).filter(isAlive), v = pool[Math.floor(Math.random() * pool.length)];
         log(`⚡ Strike ${k}: ${k % 2 ? 'at' : 'on'} ${v === u ? 'herself' : v.name}!`, 'log-status');
+        if (!(k % 2) && u.team === 'p' && v !== u && v.team === 'p' && game && !(quest && quest.dev)) { game.zapped = game.zapped || {}; game.zapped[v.id] = (game.zapped[v.id] || 0) + 1; }      // who her storm has hit (a town talk)
         await skyBolt(v, false); await hit(u, v, spark);
       }
     }
@@ -9886,7 +9907,7 @@ function showScene(name) {
   if (name !== 'battle-scene' && FB) fbCleanup();
   const rv = document.getElementById('tm-full'); if (rv) rv.className = '';
   ['hub', 'beach', 'beach-pick', 'vb', 'party-select', 'battle-scene', 'camp', 'spa-select', 'spa', 'shop', 'gear', 'train-select', 'train-method', 'event', 'dev-battle', 'lake', 'dive', 'qboard', 'spring'].forEach(id => $(id).classList.toggle('show', id === name));
-  if (name === 'hub') renderHub();
+  if (name === 'hub') { renderHub(); try { talkMark(); } catch (e) {} }
   if (name === 'beach') renderBeach();
   if (name === 'beach-pick') renderBeachPick();
   if (name === 'lake') renderLake();
@@ -13222,7 +13243,7 @@ const STORY_NPC = {
 // Town folk can change clothes: a scene's looks: { keeper: 'summer' } (or a line's { look: { keeper: 'warrior' } }) shows ui/shopkeeper_summer / _warrior instead,
 // falling back to the usual picture. Drawn so far: shopkeeper_summer, assistant_summer (the volleyball scene), shopkeeper_warrior (his old adventurer's coat, the eve of the final fight).
 function storyNpcArt(a, id) {
-  const N = STORY_NPC[id], look = ST.looks && ST.looks[id], f = a.querySelector('.figure'); if (!N || !f) return;
+  const N = STORY_NPC[id], look = (ST.looks && ST.looks[id]) || (ST.skin === 'winter' ? 'winter' : ST.skin === 'swimsuit' ? 'summer' : ''), f = a.querySelector('.figure'); if (!N || !f) return;      // a scene in winter gear / swimsuits dresses them too (<art>_winter / _summer), if drawn
   const tok = (a._artTok = (a._artTok || 0) + 1);
   (async () => { const r = (look && await findAsset(`${ANIM.base}/${N.art}_${look}`)) || await findAsset(`${ANIM.base}/${N.art}`);
     if (!a.isConnected || a._artTok !== tok) return; f.querySelectorAll(':scope > .spr').forEach(x => x.remove());
@@ -13389,7 +13410,7 @@ function storyLine() {
   }
   if ('bg' in o) storyBg(o.bg);
   if ('wx' in o) storyWx(o.wx);
-  if ('skin' in o && o.skin !== ST.skin) { ST.skin = o.skin; Object.entries(ST.cast).forEach(([id, c]) => { if (heroById(id)) storyDress(c.el, id); }); }
+  if ('skin' in o && o.skin !== ST.skin) { ST.skin = o.skin; Object.entries(ST.cast).forEach(([id, c]) => { if (heroById(id)) storyDress(c.el, id); else if (STORY_NPC[id] && !(ST.looks || {})[id]) storyNpcArt(c.el, id); }); }
   if (o.look) Object.entries(o.look).forEach(([k, v]) => { k = STORY_ALIAS[k] || k; ST.looks[k] = v; if (ST.cast[k]) storyNpcArt(ST.cast[k].el, k); });      // a town folk changes clothes
   if (o.ball) setTimeout(() => storyBall(STORY_ALIAS[o.ball] || o.ball), 75);
   if (o.ascend) storyAscend(STORY_ALIAS[o.ascend] || o.ascend);
@@ -13429,6 +13450,7 @@ function storyPick(k) {
   storyChoicesOff();
   if (!opt[1] || !opt[1].length) { ST.choices = null; ST.i++; storyLine(); return; }      // move on
   used.add(k); ST.used.set(key, used); ST.asked = true;
+  if (ln[2] && ln[2].pick) { const lines = L.slice(); lines.splice(ST.i + 1, 0, ['mc', opt[0]], ...opt[1]); ST.lines = lines; ST.choices = null; ST.i++; storyLine(); return; }      // pick: one answer, then the scene goes on
   const lines = L.slice(); lines.splice(ST.i + 1, 0, ['mc', opt[0]], ...opt[1], [ln[0], (ln[2] && ln[2].again) || 'Anything else?', ln[2]]);      // you ask it, they answer, then back to the same menu (with a short re-prompt: { again: '...' })
   ST.lines = lines; ST.choices = null; ST.i++; storyLine();
 }
@@ -14329,7 +14351,159 @@ function qAdd(k, id, n) { if (!quest || quest.dev || !id || !(n > 0)) return; co
    damage blocked (barriers they put up), HP healed, kills and crits, with an MVP. One-time news (a new hero, region, the beach, a difficulty, an
    ending) still comes as its own pop-up after the card. ---- */
 let pendingCard = null;
-function endCard(kind, gold) {             // kind: 'won' | 'left' | 'lost'
+/* ============ TOWN TALKS: short character scenes in town ============
+   After a quest (won or lost) the town sometimes has a scene waiting: a bouncing ❕ appears in town, click it and the scene plays once (the story player), then it's gone
+   for good. Ignore it and it waits. One at a time. Chance per return: TALK_CHANCE by act (Act 1 has its recruit scenes already).
+   A talk: { act: [from, to], needs: [hero ids that must have joined], when: () => true (a condition, e.g. someone has been zapped), weight, at: {x, y} (% of the town
+   picture, where the ❕ sits), scene: { ...a STORY scene } or a function returning one (for casts picked at play time) }.
+   Written as drafts 2026-11-21 (Connor's concepts); edit the text in the Lore Bible doc ("Town talks") and they get copied here. */
+const TALK_CHANCE = { 1: .25, 2: .65, 3: .65 };
+const talkActNow = () => typeof frostOpen === 'function' && frostOpen() ? 3 : typeof coastOpen === 'function' && coastOpen() ? 2 : 1;
+const zappedBy = () => Object.keys((game && game.zapped) || {}).filter(id => id !== 'aneesah' && game.roster.includes(id));
+const TALKS = {
+  tyr_lilith: { act: [2, 3], needs: ['tyr'], at: { x: 63, y: 70 }, scene: { bg: 'town2', cast: { left: ['tyr'], right: ['angel'] }, lines: [
+    ['', 'Evening. Tyr leans on the fountain, swirling something dark in a glass. Hana keeps a careful three paces away.'],
+    ['hana', "You don't have to drink that in the town square."],
+    ['tyr', "It's wine, angel. Mostly. Come closer, I don't bite people I'm drinking with."],
+    ['hana', 'I know what you are.'],
+    ['tyr', 'Do you? Say it, then. The word your lot always use.'],
+    ['hana', "...A daughter of Lilith."],
+    ['mc', 'Lilith?'],
+    ['tyr', "The first woman. Made from the same dust as the first man, not from his rib, and she never let anyone forget it. She was told to kneel. She didn't. So she left the garden."],
+    ['hana', 'She walked out of paradise. My kind remember it as the first rebellion.'],
+    ['tyr', "Your kind remember it wrong. She didn't fall, she left. Lucifer came later, and she never took his side either. My blood has never answered to Heaven or to the Fallen."],
+    ['hana', "...That's why the Fallen can't turn you."],
+    ['tyr', "That's why they can't buy me. There's a difference. I'm here because I like this world, and you're all in it."],
+    ['hana', "I'll never be comfortable around you."],
+    ['tyr', "Good. Comfortable is boring. You'll fight next to me anyway."],
+    ['hana', '...I will.'] ] } },
+  aneesah_zap: { act: [1, 3], needs: ['aneesah'], when: () => zappedBy().length > 0, at: { x: 40, y: 72 }, scene: () => { const z = zappedBy()[Math.floor(Math.random() * zappedBy().length)];
+    return { bg: 'town1', cast: { left: ['aneesah'], right: [z] }, lines: [
+      ['', `${storyName(z)} storms across the square, hair still standing on end.`],
+      [z, 'You hit me. Again. With lightning.'],
+      ['aneesah', "The storm hit you. I just asked it to come. It's very enthusiastic."],
+      [z, "Then ask it to aim!"],
+      ['aneesah', "That's the thing, it doesn't aim. That's what makes it beautiful. Raw power, no leash. You can't get that from a polite little fire spell."],
+      [z, "I could get that from standing in a field during a thunderstorm. At least then I'd choose to."],
+      ['aneesah', 'And miss the best part? The crack, the light, the smell after? Every time I call it I feel alive.'],
+      [z, "Every time you call it I feel singed."],
+      ['aneesah', "It mostly hits the enemy! Mostly. The odds are on your side."],
+      [z, "The odds are on MY side?"],
+      ['aneesah', "Fine. Stand behind Aria's barrier next time. Lightning hates paperwork."],
+      [z, "I'm putting in a complaint with the guild."],
+      ['aneesah', "Put it in writing. I'll use it to start the campfire."] ] }; } },
+  faith: { act: [2, 3], needs: [], at: { x: 50, y: 60 }, scene: { bg: 'town2', cast: { left: [], right: ['angel'] }, lines: [
+    ['', 'A quiet night. Hana sits on the steps of the shrine, wings folded, looking up at the stars.'],
+    ['hana', "Can I ask you something personal? You can tell me it's none of my business."],
+    ['mc', 'Go ahead.'],
+    ['hana', 'Do you believe in God?', { pick: true, choices: [
+      ['I do.', [['hana', "Good. That makes two of us. It's nice to hear it from someone who hasn't been told what to think since the dawn of time."]]],
+      ["I don't.", [['hana', "You don't? You're sitting next to an ANGEL. I have wings. I glow. I literally fell out of the sky to meet you."], ['mc', "That proves angels exist. It doesn't prove anything about God."], ['hana', '...Oh. Well. That stings more than it should.']]],
+      ["I'm not sure.", [['hana', "Not sure? I'm right here! Wings, halo, the whole set. What more do you want?"], ['mc', "Proof of God, not proof of you."], ['hana', '...That is a fair distinction.']]] ] }],
+    ['hana', "Can I tell you a secret? You can't tell the others."],
+    ['hana', "No angel has ever met Him. Not me, not the oldest of us. We were made knowing our purpose, and we were told who gave it to us. We've never seen His face. We've never heard His voice."],
+    ['mc', 'Then how do you know?'],
+    ['hana', "I don't. That's the thing. I believe. Every angel believes. Some days I think maybe we're just a kind of creature, like elves or dragons, and we tell ourselves a story about why we're here."],
+    ['hana', "Lucifer stopped believing. That's how the Fall started. He asked the question out loud."],
+    ['mc', 'And you still believe?'],
+    ['hana', "I choose to. Every morning. Maybe that's all faith ever was."],
+    ['hana', "...Thank you for listening. Now forget I said any of it, or I'll deny everything."] ] } },
+  round_table: { act: [3, 3], needs: ['tyr', 'iris', 'vesper', 'jean', 'seria'], weight: 2, at: { x: 58, y: 66 }, scene: { bg: 'town3', wx: 'snow', skin: 'winter', cast: { left: ['iris', 'vesper', 'jean'], right: ['angel', 'tyr', 'seria'] }, lines: [
+    ['', "The tavern's back table. Too much mulled wine, and the conversation has wandered somewhere dangerous."],
+    ['vesper', "Here's what I don't get. If your God is all-powerful and all-good, why is any of this happening? Plagues. Wars. Demons in the mountains."],
+    ['hana', "Free will. Suffering is the price of being able to choose. Without the choice there's no goodness either."],
+    ['jean', "Free will did not give the children of my village the plague, mon ange. A rat did."],
+    ['iris', "And if He can stop it and doesn't, He isn't good. If He wants to and can't, He isn't all-powerful. Pick one."],
+    ['hana', "That's an old argument. Humans were making it before your grandmother was born."],
+    ['iris', "My grandmother made it. She won."],
+    ['tyr', "Personally I think He's on holiday. Somewhere warm. Not answering letters."],
+    ['hana', 'Tyr.'],
+    ['tyr', "What? I'm the only one here who's actually been damned. I'm allowed an opinion."],
+    ['seria', "I don't need Him to explain Himself. I need the people next to me to keep their shields up. That's the only kind of faith I trust."],
+    ['vesper', "So we're fighting for a God who might not exist, to stop a war His side started?"],
+    ['hana', "You're fighting so that town out there wakes up tomorrow. Leave the theology to the angels."],
+    ['iris', "The angels haven't done a great job with it."],
+    ['hana', "...Who ordered this much wine?"],
+    ['jean', 'Medicinal. All of it.'] ] } },
+  swimsuits: { act: [2, 2], needs: [], at: { x: 18, y: 58 }, scene: { bg: 'town2', cast: { left: ['aneesah', 'aria'], right: ['keeper', 'assistant'] }, lines: [
+    ['', "A rack of brand-new swimwear has appeared outside the shop. A hand-painted sign reads: SUMMER COLLECTION. NO REFUNDS."],
+    ['murray', 'Fresh in from the coast! Quick-dry, salt-proof, fight-tested. Mostly.'],
+    ['gabby', "He bought three hundred of them from a man on a boat."],
+    ['aneesah', "Ooh. The purple one. Matches the lightning."],
+    ['aria', "I-is there anything with... more fabric?"],
+    ['gabby', 'There is a diving suit. It has a helmet.'],
+    ['aria', "...I'll take the white one. It's practical. You can see me if I fall in."],
+    ['seria', "Navy. And a sword belt. I'm not going to the beach unarmed.", { enter: ['seria', 'left'] }],
+    ['tyr', "Black. Obviously. And a very large hat. The sun and I have an understanding: we stay apart.", { enter: ['tyr', 'right'] }],
+    ['murray', "That's half my stock! You'll all need beach towels too. And sun cream. And a parasol."],
+    ['gabby', "He also bought four hundred parasols."],
+    ['mc', 'Put it on the guild tab.'],
+    ['murray', "Music to my ears."] ] } },
+  cold: { act: [3, 3], needs: ['jean', 'tyr'], at: { x: 46, y: 62 }, scene: { bg: 'town3', wx: 'snow', skin: 'winter', cast: { left: ['aneesah', 'jean', 'aria'], right: ['tyr', 'seria'] }, lines: [
+    ['', 'Snow up to the knees. Everyone huddles around the brazier outside the shop.'],
+    ['aneesah', "I can't feel my fingers. I can't cast without my fingers."],
+    ['seria', 'Good. Then nobody gets zapped today.'],
+    ['jean', "My mask fogs from the inside. I am breathing my own breath. Again and again. It is like drowning, slowly, in myself."],
+    ['aria', 'Elves are supposed to be graceful in the snow. I fell over twice this morning.'],
+    ['tyr', "Is it cold? I hadn't noticed."],
+    ['aneesah', "You're a corpse. You don't count."],
+    ['tyr', "I'm a very well-preserved corpse. The cold keeps the skin lovely."],
+    ['jean', "Medically speaking, she is right. Her circulation is... a matter of opinion."],
+    ['seria', "Next quest, we're bringing more torches."],
+    ['gabby', "Or you could stay inside like normal people. It's cosy in here. I have tea.", { enter: ['assistant', 'right'] }],
+    ['', 'Five heroes crowd through the shop door at once.'] ] } },
+  spa_peace: { act: [2, 3], needs: [], weight: 1.5, at: { x: 41, y: 40 }, scene: { bg: 'spa/spa', skin: 'swimsuit', cast: { left: ['seria', 'aria', 'iris'], right: ['aneesah', 'tyr'] }, lines: [
+    ['', "The spa after closing. Steam over the water, lanterns low. Nobody is talking about the war."],
+    ['aria', "...This is nice."],
+    ['iris', 'Mm.'],
+    ['aneesah', "I could fall asleep here. Someone poke me if I start to sink."],
+    ['seria', "My shoulders haven't been this loose since the academy."],
+    ['tyr', "Hot water and good company. Some nights, immortality isn't so bad."],
+    ['aria', "Do you think it'll be like this after? When it's over?"],
+    ['iris', "If we win."],
+    ['seria', "When we win."],
+    ['', 'Nobody answers. Nobody needs to. The steam rolls on, and for a while the world is very small and very quiet.'] ] } },
+  seria_smith: { act: [2, 3], needs: ['seria'], at: { x: 22, y: 76 }, scene: { bg: 'town2', cast: { left: ['seria'], right: [] }, lines: [
+    ['', "The clang of a hammer from behind the training ground. Seria has borrowed the old forge, sleeves rolled, a breastplate glowing on the anvil."],
+    ['mc', "I didn't know you smithed."],
+    ['seria', "My father was a smith. I could hold a hammer before I could hold a sword. Every knight should be able to fix her own armour."],
+    ['seria', 'Here. Feel this. Steel has a grain, like wood. Fold it right and it bends before it breaks. Fold it wrong and it shatters the first time it matters.'],
+    ['mc', 'Is that a lesson about armour or about people?'],
+    ['seria', "...Both, I suppose. Father always said I was too stiff. That I'd crack."],
+    ['seria', "This plate is for Aria. She keeps taking hits meant for the back row. If it's going to be in front of her, it should be the best thing I've ever made."],
+    ['mc', "She'll love it."],
+    ['seria', "She'll cry, and then she'll write a three-page thank-you note. I'm counting on it."],
+    ['seria', "Pass me the tongs? And stay a while. It's nice to have someone to talk to while it cools."] ] } }
+};
+function talkReady() {                     // the talks that could play right now
+  const a = talkActNow(), seen = game.talksSeen || [];
+  return Object.entries(TALKS).filter(([id, t]) => !seen.includes(id) && a >= t.act[0] && a <= t.act[1] && t.needs.every(h => game.roster.includes(h)) && (!t.when || t.when()));
+}
+function talkRoll() {                      // back from a quest: maybe a scene is waiting in town
+  if (!game || game.talk) return;
+  if (Math.random() >= (TALK_CHANCE[talkActNow()] || 0)) return;
+  const R = talkReady(); if (!R.length) return;
+  let k = Math.random() * R.reduce((s, [, t]) => s + (t.weight || 1), 0), pick = R[0][0];
+  for (const [id, t] of R) { k -= t.weight || 1; if (k <= 0) { pick = id; break; } }
+  game.talk = pick; writeSave();
+}
+function talkMark() {                      // the ❕ in town
+  const map = $('town-map'); if (!map) return; let b = $('talk-mark');
+  const t = game && game.talk && TALKS[game.talk];
+  if (!t) { if (b) b.remove(); return; }
+  if (!b) { b = document.createElement('button'); b.id = 'talk-mark'; b.className = 'talk-mark'; b.setAttribute('aria-label', 'Someone wants to talk'); b.innerHTML = '<span>❕</span>'; b.onclick = talkPlay; map.appendChild(b); }
+  b.style.left = (t.at || {}).x + '%'; b.style.top = (t.at || {}).y + '%';
+}
+async function talkPlay() {
+  const id = game.talk, t = TALKS[id]; if (!t || storyOn()) return;
+  game.talk = null; (game.talksSeen = game.talksSeen || []).push(id); writeSave(); talkMark();
+  const sc0 = typeof t.scene === 'function' ? t.scene() : t.scene, A = talkActNow(), sc = { ...sc0 };
+  if (/^town\d$/.test(sc.bg || '')) { sc.bg = 'town' + A; if (A === 3) { sc.wx = sc.wx || 'snow'; sc.skin = sc.skin || 'winter'; } }      // the town as it looks in this act
+  await storyRun({ ...sc, guests: [...new Set([...(sc.guests || []), ...Object.values(sc.cast || {}).flat()])] });
+}
+
+function endCard(kind, gold) {
+  try { talkRoll(); } catch (e) {}           // back in town: maybe a town talk is waiting (TOWN TALKS)             // kind: 'won' | 'left' | 'lost'
   try {
     const keep = [], got = { relics: [], good: [], bad: [] };
     (game.notices || []).forEach(n => { if (n && n.type === 'relic' && RELICS[n.id]) got.relics.push(n.id); else if (n && n.type === 'traits' && Array.isArray(n.items)) n.items.forEach(x => { const id = x && (x.id || x); const T = TRAIT[id]; if (T) (T.kind === 'bad' ? got.bad : got.good).push({ id, who: x.who || x.hero || null, from: x.from && TRAIT[x.from] ? x.from : null }); }); else keep.push(n); });
@@ -14903,7 +15077,9 @@ window.addEventListener('blur', () => { dvKeys = {}; });
 // A second town screen with a grey, gloomy shore. A few heroes stand about in their skins (some with the sea over their feet). For now it has one activity: Beach Volleyball, a
 // tiny rhythm game. Win it and the two heroes you played with may each TRADE one Tier II perk for any Tier I perk. Costs VB.cost gold per game, win or lose.
 // Art: drop assets/ui/beach.(png|jpg|webp) to replace the drawn shore, assets/ui/volleyball.(...) for the court.
-const VB = { cost: 150, winPts: 3, lives: 3, perfect: 110, good: 270 };
+const VB = { cost: 150, winPts: 3, lives: 3, perfect: 65, good: 200, grace: 140,      // ms from the ring's close: Perfect / Good windows. A tap outside the Good window (too early or too late) misses: the point goes to the rivals.
+  ret: { good: .65, perfect: .45, perStreak: .1, min: .05 }, sure: 3 };                  // the rivals' chance to return a spike: lower with every Perfect in a row (streak); a streak of VB.sure+ skips their free returns
+// (taps in the first VB.grace ms of a touch are ignored, so a double-click from the last touch doesn't count as too early)
 const beachOpen = () => QUEST_GROUPS[1].ids.some(questCleared);          // any Tidelands quest opens the beach (the player will have Tier II perks by then)
 let beachArt = null, vbArt = null, beachHeroes = [];
 const BEACH_LOOK = {        // the drawn beach: Act 2 grey storm shore, Act 3 clear sunny beach
@@ -15147,22 +15323,24 @@ async function vbTouch(from, to, dur, apex) {
   const ring = $('vb-ring'), G = vb; ring.style.left = to[0] + '%'; ring.style.top = to[1] + '%'; ring.style.display = 'block'; G.stopFly = false;
   const arrive = vbClock() + dur, flight = vbFly(from, to, dur, apex, ring);
   const q = await new Promise(resolve => {
-    G.wait = { arrive, resolve };
-    const poll = () => { if (vb !== G || G.dead || !G.wait || G.wait.resolve !== resolve) return; if (vbClock() > arrive + VB.good) { G.wait = null; resolve('miss'); } else requestAnimationFrame(poll); };
+    G.wait = { arrive, resolve, t0: vbClock() };
+    const poll = () => { if (vb !== G || G.dead || !G.wait || G.wait.resolve !== resolve) return; if (vbClock() > arrive + VB.good) { G.wait = null; resolve('late'); } else requestAnimationFrame(poll); };
     requestAnimationFrame(poll);
   });
   G.stopFly = true; ring.style.display = 'none'; await flight;
+  G.streak = q === 'perfect' ? (G.streak || 0) + 1 : 0;
   return q;
 }
 function vbTap() {
   if (!vb || !vb.wait || vb.paused) return;
-  const dt = vbClock() - vb.wait.arrive; if (dt < -VB.good) return;           // far too early: ignored, no penalty
-  const w = vb.wait; vb.wait = null; w.resolve(Math.abs(dt) <= VB.perfect ? 'perfect' : 'good');
+  const now = vbClock(), dt = now - vb.wait.arrive; if (now - vb.wait.t0 < VB.grace) return;      // a leftover double-click from the last touch
+  const w = vb.wait; vb.wait = null; w.resolve(dt < -VB.good ? 'early' : Math.abs(dt) <= VB.perfect ? 'perfect' : 'good');      // too early = a miss (no more spamming)
 }
 async function vbDrop() { const [x] = vb.bp; await vbFly(vb.bp, [x, 80], 450, 0); sfx('poof'); }
 async function vbSend(q) {            // your spike goes over the net; the rivals may fail to return it
   const [, , O1, O2] = vb.sp; vb.sends = (vb.sends || 0) + 1;
-  const ret = vb.sends <= (vb.must || 0) || Math.random() < (q === 'perfect' ? .4 : .6);      // the rivals always return the first 1-2 spikes of a point, then it's a chance
+  const k = vb.streak || 0, chance = q === 'perfect' ? Math.max(VB.ret.min, VB.ret.perfect - VB.ret.perStreak * (k - 1)) : VB.ret.good;
+  const ret = (vb.sends <= (vb.must || 0) && k < VB.sure) || Math.random() < chance;      // they return the first 1-2 spikes of a point (unless you're on a Perfect streak), then it's a chance
   if (!ret) { await vbFly(vb.bp, [vbHX.O1 - 8, 80], 700, 8); sfx('poof'); return false; }
   await vbFly(vb.bp, [vbHX.O1, vbHY], 700, 10); if (vb.dead) return false; vbHop(O1);
   await vbFly(vb.bp, [vbHX.O2, vbHY], 520, 16); if (vb.dead) return false; vbHop(O2);
@@ -15176,8 +15354,8 @@ async function vbMine() {             // receive, set, spike
     const hx = name === 'SPIKE' ? 36 : vbHX[who];
     const q = await vbTouch(vb.bp, [hx, vbHY], T(dur), apex);
     if (vb.dead) return null;
-    if (q === 'miss') { vbJudge('Miss!', 'miss'); await vbDrop(); return null; }
-    vbJudge(q === 'perfect' ? 'PERFECT!' : 'Good', q); vbHop(who === 'A' ? A : B);
+    if (q === 'early' || q === 'late') { vbJudge(q === 'early' ? 'Too early!' : 'Too late!', 'miss'); await vbDrop(); return null; }
+    vbJudge(q === 'perfect' ? (vb.streak > 1 ? `PERFECT ×${vb.streak}!` : 'PERFECT!') : 'Good', q); vbHop(who === 'A' ? A : B);
     if (name === 'SET') A.style.left = '36%';
     if (name === 'SPIKE') { A.style.left = vbHX.A + '%'; return q; }
   }
@@ -15190,8 +15368,8 @@ async function vbPoint(server) {
     vbPosBall(vbHX.A, 22);
     const q = await vbTouch([vbHX.A, 22], [vbHX.A, vbHY], Math.round(1150 * vb.speed), 0);
     if (vb.dead) return 'dead';
-    if (q === 'miss') { vbJudge('Miss!', 'miss'); await vbDrop(); return 'foe'; }
-    vbJudge(q === 'perfect' ? 'PERFECT!' : 'Good', q); vbHop(A);
+    if (q === 'early' || q === 'late') { vbJudge(q === 'early' ? 'Too early!' : 'Too late!', 'miss'); await vbDrop(); return 'foe'; }
+    vbJudge(q === 'perfect' ? (vb.streak > 1 ? `PERFECT ×${vb.streak}!` : 'PERFECT!') : 'Good', q); vbHop(A);
     if (!(await vbSend(q))) return vb.dead ? 'dead' : 'me';
   } else {
     $('vb-msg').textContent = 'The rivals serve...'; vbPosBall(vbHX.O1 + 3, vbHY); await vbSleep(700); if (vb.dead) return 'dead'; vbHop(O1);
