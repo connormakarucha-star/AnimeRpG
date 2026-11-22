@@ -1427,10 +1427,10 @@ body.calm .breath{display:none}
 body.calm .dvi-snowf{animation:none}
 .dvi-under{position:absolute;inset:0;background:linear-gradient(#0e5b93,#062a4d 60%,#031428);opacity:0;transition:opacity .6s;overflow:hidden}
 .dvi-under.on{opacity:1}
-.dvi-sink{position:absolute;left:0;right:0;top:6%;height:46%;display:flex;justify-content:center;animation:dvsink 1.5s ease-in forwards;opacity:0}
-.dvi-under.on .dvi-sink{opacity:1}
+.dvi-sink{position:absolute;left:0;right:0;top:25%;height:50%;display:flex;justify-content:center;opacity:0}
+.dvi-under.on .dvi-sink{opacity:1;animation:dvsink 1.6s cubic-bezier(.2,.7,.3,1) both}
 .dvi-under::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(220,245,255,.55) 2px,transparent 3px) 0 0/46px 70px,radial-gradient(circle,rgba(220,245,255,.35) 3px,transparent 4px) 20px 30px/70px 90px;animation:dvbub 1.4s linear infinite}
-@keyframes dvsink{0%{transform:translateY(-30%) rotate(-12deg)}100%{transform:translateY(120%) rotate(10deg)}}
+@keyframes dvsink{0%{transform:translateY(-75%) rotate(-14deg)}70%{transform:translateY(4%) rotate(3deg)}100%{transform:translateY(0) rotate(0)}}      /* plunges in from above and settles in the middle of the screen, where the swim starts */
 @keyframes dvbub{to{background-position:0 -140px,20px -150px}}
 #dv-choose,#dv-pausebox,#dv-end{display:none;position:absolute;inset:0;z-index:7;background:rgba(2,12,26,.78);align-items:center;justify-content:center;flex-direction:column;gap:16px}
 #dv-choose.on,#dv-pausebox.on,#dv-end.on{display:flex}
@@ -11633,9 +11633,12 @@ function sbLayout(host) {                 // sizes everything to the window (the
     Object.assign(el.style, { left: b.left + 'px', top: b.top + 'px', width: b.w + 'px', height: b.h + 'px', zIndex: Math.round(s.y * 10) });
     const main = el.querySelector('.sb-main'), ghost = el.querySelector('.sb-ghost'), fx = el.querySelector('.sb-fx'); let html = '';
     const cut = s.w == null ? 1e9 : s.w / 100 * H - b.top, wet = cut < b.h;
+    el._gpCtr = () => { const r = el.getBoundingClientRect(), k = r.width / b.w, bb = row.sp.bb, x = (s.flip ? 1 - (bb[0] + bb[2]) / 2 : (bb[0] + bb[2]) / 2) * b.w, top = bb[1] * b.h, bot = Math.min(bb[3] * b.h, cut);
+      return [r.left + x * k, r.top + (top + bot) / 2 * k]; };      // the pad moves between what you can see of her (not her whole picture box, which reaches under the water)
     const mk = (e, v) => { e.style.webkitMaskImage = v; e.style.maskImage = v; };
     mk(main, wet ? `linear-gradient(180deg,#000 ${cut - 4}px,transparent ${cut + 1}px)` : 'none');
-    ghost.style.display = wet ? '' : 'none'; if (wet) mk(ghost, `linear-gradient(180deg,transparent ${cut}px,#000 ${cut + 3}px,transparent ${cut + b.h * .3}px)`);
+    const gh = wet && S.kind !== 'cabin';                 // the cabin's pool is shallow and close: nothing of her shows below the water
+    ghost.style.display = gh ? '' : 'none'; if (gh) mk(ghost, `linear-gradient(180deg,transparent ${cut}px,#000 ${cut + 3}px,transparent ${cut + b.h * .3}px)`);
     if (wet) { let sp = sbSpan(row.sp, Math.max(0, cut - 2) / b.h);
       if (sp) { if (s.flip) sp = [1 - sp[1], 1 - sp[0]]; const cx = (sp[0] + sp[1]) / 2 * b.w, ww = Math.max(18, (sp[1] - sp[0]) * b.w);
         html += `<i class="sb-foam" style="left:${cx - ww * .6}px;width:${ww * 1.2}px;top:${cut}px"></i><i class="sb-rip" style="left:${cx}px;top:${cut}px;width:${ww * 1.3}px;height:${ww * .32}px"></i><i class="sb-rip b" style="left:${cx}px;top:${cut}px;width:${ww * 1.3}px;height:${ww * .32}px"></i><i class="sb-ws" style="left:${cx}px;top:${cut}px;width:${ww * 1.8}px;height:${ww * .7}px"></i>`; } }
@@ -15564,7 +15567,7 @@ const GP = (() => {
     else if (L.scene === 'battle-scene') { const t = list.filter(e => e.classList.contains('targetable')); list = t.length ? t : list.filter(e => !e.classList.contains('combatant-card')); }
     return list.filter(e => !list.some(o => o !== e && e.contains(o)));       // containers are not targets, their buttons are
   }
-  const ctr = e => { const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+  const ctr = e => { if (e._gpCtr) { const p = e._gpCtr(); if (p) return p; } const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };      // e._gpCtr: a screen may give a button its own anchor (a bath hero: her visible head and shoulders)
   window.padFocus = e => { if (S.active && e) setFocus(e); };      // let a screen move the pad's highlight (the spa card)
   function setFocus(e) {
     if (S.focus && S.focus !== e) S.focus.classList.remove('gp-focus', 'gp-st');
