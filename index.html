@@ -2760,6 +2760,7 @@ body.calm .threat,body.calm .threat .tg-under{animation:none}
 .talk-mark:hover{box-shadow:0 0 0 6px rgba(242,169,29,.45),0 0 30px rgba(255,210,80,1)}
 @keyframes talkBob{50%{translate:0 -4px}}@keyframes talkGlow{50%{box-shadow:0 0 0 7px rgba(242,169,29,.25),0 0 30px rgba(255,200,60,1)}}
 body.calm .talk-mark,body.calm .talk-mark span{animation:none}
+#troll-hud .th-pass{display:block;font-style:normal;font-size:12px;color:#8dffa8;margin-top:2px}#troll-hud .th-pass.off{color:#ff9a5a;text-decoration:line-through}
 </style>
 </head>
 <body>
@@ -7311,7 +7312,9 @@ function ringSvg(u, bfx, sk) {
   return `<svg class="ring${u._trail && performance.now() - u._trail.t0 < 600 ? ' flare' : ''}" viewBox="0 0 200 52" style="--rc:${hideHp ? '#9aa' : hc}">${g}</svg>`;
 }
 function intentIcons(u) {          // rings mode: the enemy's move as icons, and the portrait of whoever it will really land on (taunts and Shield Wall included)
-  if (u.trollCore || (FB && u.final)) return `<span class="intent">${intentText(u)}</span>`;
+  if (u.trollPart && u.state !== 'armoured') return '<span class="ii" title="Broken: no attack until it grows back"><b class="ii-i">🦴</b></span>';
+  if (u.trollPart && u.intent && u.skills[u.intent.i] && u.skills[u.intent.i].t === 'squeeze') return `<span class="ii" title="Holds her under"><b class="ii-i">🌊</b><span class="ii-arrow">›</span><span class="ip port-box atk" data-port="${u.intent.target.id}"></span></span>`;
+  if (FB && u.final) return `<span class="intent">${intentText(u)}</span>`;
   const it = u.intent; if (!it) return ''; if (stunned(u)) return '<span class="ii" title="Stunned: skips its turn"><b class="ii-i">💤</b></span>'; if (it.skip) return '';
   const s = u.skills[it.i], q = u.rush ? `<b class="ii-i rush" title="Hurrying: +${u.rush} speed this round">⚡</b>` : '';
   const P = (t, cls) => t ? `<span class="ip port-box ${cls}" data-port="${t.id}" title="${t.name}">${(t.short || t.name || '').slice(0, 2)}</span>` : '', ALL = '<b class="ii-i all" title="Everyone">👥</b>';
@@ -8131,6 +8134,7 @@ async function counterAttack(t, u) {             // Seria's Shield Bash answers 
   } finally { countering = false; }
 }
 async function hit(u, t, s) {
+  if (t.troll && t.troll.passive && s.el === t.troll.passive.stop && s.t === 'dmg') t.troll.stopped = true;      // its weakness landed: no passive at the end of this round
   if (s.t === 'dmg' && t.stealth > 0 && t.team !== u.team && Math.random() < EVADE.stealth) {      // Irae in stealth: the attack finds nothing
     log(`💨 ${t.name} is hidden in the shadows: ${u.name}'s ${s.n} misses!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
   }
@@ -8421,7 +8425,7 @@ function weightedHero() {
 }
 
 function enemyChoose(u, ahead = false) {      // ahead = planning for its coming turn: cooldowns tick down by 1 first
-  if (u.noTurn) return null; if (u.trollCore) return trollChoose(u);
+  if (u.noTurn) return null; if (u.trollPart) return trollChoose(u);
   const ready = u.skills.map((s, i) => i).filter(i => u.cd[i] <= (ahead ? 1 : 0));
   const wardI = ready.find(i => isWard(u.skills[i]));
   if (wardI !== undefined) {                  // barrier whenever it can: the most wounded ally that has none yet
@@ -8445,9 +8449,9 @@ function resolveIntent(u) {
     : it.target && isAlive(it.target) && it.target !== u && !(s.t === 'barrier' && it.target.barrier) && (s.t !== 'charm' || charmable(it.target)));
   return ok ? { i: it.i, target: it.target } : enemyChoose(u);
 }
-const stunned = u => !!(u.statuses && u.statuses.some(x => x.stun));
+const stunned = u => !u.trollPart && !!(u.statuses && u.statuses.some(x => x.stun));      // the troll can't be stunned
 function intentText(u) {
-  if (u.trollCore) return trollIntent(u);
+  if (u.trollPart) return trollIntent(u);
   const it = u.intent; if (!it) return '';
   if (FB && u.final) return stunned(u) || FB.stun > 0 ? '💤 stunned' : it.skip ? '' : u.skills[it.i].aoe ? '⚠️ The boss is winding up for a powerful attack!' : `▶ The boss targets ${it.target.short}`;       // the final fight hides what it will do
   if (stunned(u)) return '💤 stunned, skips its turn';
@@ -8818,7 +8822,7 @@ function tickBuffs(u) {
   }
 }
 async function takeTurn(u, bonus = false) {      // bonus: an extra action inside the same turn (no cooldown / ailment / buff ticks)
-  if (u.trollCore && !bonus) return trollTurn(u);
+  if (u.trollPart && !bonus) return trollTurn(u);
   if (u.drowned) { const g = u.heldTxt; log(g ? `🦀 ${u.name} is pinned in the claw and can't act!` : `🌊 ${u.name} struggles under the water and can't act!`, 'log-status'); floatText(u, g || '🌊 HELD UNDER', 'tag hurt'); render(); await sleep(450); return; }
   if (!bonus && u.holdBarrier) { u.holdBarrier = false; u.barrier = 0; }                  // Shield Wall's barrier ends with the guard
   if (!bonus) party.forEach(x => { if (x.guardedBy === u) x.guardedBy = null; });     // Shield Wall ends when its caster's next turn begins
@@ -9037,6 +9041,7 @@ async function battle() {
   party.forEach(u => { if (u.heldTxt) { u.drowned = false; u.heldTxt = null; } }); $('battle-scene').classList.remove('stormgather');      // nobody starts a fight pinned, no storm left over
   log(`${curNode().name}: ${party.length} hero${party.length > 1 ? 'es' : ''} face ${enemies.length} enem${enemies.length > 1 ? 'ies' : 'y'}.`);
   for (let round = 1; ; round++) {
+    if (round > 1) await beastPassive();             // the end of the last round: a hunt beast's passive
     roundNo = round; log(`— Round ${round} —`, 'log-round'); blizzTick(round);
     if (round > 1 && (round - 1) % PIPER.every === 0 && partySum('piper') && !partySum('piperSafe') && (quest.ratsCalled || 0) < PIPER.max && enemyById('e_rat')) {      // the Piper keeps calling rats into the gaps
       const i = enemies.findIndex(e => !isAlive(e) && !e.boss && !e.final); if (i >= 0) { enemies[i] = piperRat(); quest.ratsCalled = (quest.ratsCalled || 0) + 1; render(); floatText(enemies[i], '🎶 RAT!', 'tag'); log("🎶 The Piper's tune calls another rat out of the dark!", 'log-status'); await sleep(450); } }
@@ -9071,28 +9076,32 @@ async function battle() {
    Grab: after any attack that hit a broken hero, if the drowning arm is intact and nobody is held, it grabs the frontmost one and holds her under the water.
    She's out of the fight and takes TROLL.drown each of its turns. Break the drowning arm to free her.
    Weaknesses (TROLL.weak) come from the hunt's edge elites. Art: stand-in drawn in code for now. */
+/* A hunt beast's passive (a template for future beasts: give its shared state T a passive like this). At the end of every round it heals heal × max HP and each
+   part with its armour up regains armour × its max armour, unless something with its weakness (stop) hit it that round. The troll: troll blood, stopped by fire. */
+const TROLL_PASSIVE = { icon: '💚', name: 'Troll blood', heal: .02, armour: .1, stop: 'fire', stopIcon: '🔥', stopTxt: 'fire' };
 const TROLL = { hp: 1400, spd: 7, regrow: 2, regenAt: .7, regenEvery: 3, regen: .08, drown: 18,
   armour: { club: 34, drown: 34, head: 30, body: 44 },
   weak: {
-    nest:  { icon: '🔥', name: 'Torched nest', clue: 'Scorched reeds and a smell of smoke: its nest is near.', fx: 'its body starts the fight broken (no early regeneration, burns land at once)' },
+    nest:  { icon: '🔥', name: 'Torched nest', clue: 'Scorched reeds and a smell of smoke: its nest is near.', fx: 'its body starts the fight broken (no Flail at first)' },
     fish:  { icon: '🐟', name: 'Spoiled fishing grounds', clue: 'Rotten fish heaped by the water: its larder.', fx: 'its head starts the fight broken (no Bile at first)' },
     wound: { icon: '🩸', name: 'Old wound', clue: 'Dried black blood on a broken spear: someone hurt it once.', fx: 'both arms have 40% less armour' },
     bones: { icon: '🦴', name: 'Scattered bone pile', clue: 'A trophy pile of bones, picked clean.', fx: '12% less HP' }
   } };
+/* 2026-11-22 (Connor): the troll fights like a party of four. Every part takes its own turn (4 attacks a round), so breaking a part's armour takes that attack
+   away until it grows back (TROLL.regrow of that part's own turns) - the hunt's main trick. No more Regenerate (the body flails instead), and it can't be stunned:
+   breaking parts is how you stop its attacks. Damage per hit is set like a regular enemy's, since there are four of them. */
 const TROLL_PARTS = [
-  { k: 'club', name: 'Club Arm', tag: 'CLUB', skill: { n: 'Club', t: 'dmg', r: 'melee', d: [33, 40], chip: true, brk: 22, cd: 0 } },
-  { k: 'drown', name: 'Drowning Arm', tag: 'GRAB', skill: { n: 'Grab', t: 'grab', cd: 0 } },
-  { k: 'head', name: 'Head', tag: 'HEAD', skill: { n: 'Bile', t: 'dmg', r: 'ranged', d: [16, 19], el: 'poison', brk: 20, cd: 2, all: true } },
-  { k: 'body', name: 'Body', tag: 'BODY', skill: { n: 'Regenerate', t: 'regen', cd: 0 } }];
-const TROLL_FLAIL = { n: 'Flail', t: 'dmg', r: 'melee', d: [22, 27], chip: true, brk: 12, cd: 0 };
-const TROLL_SK = { club: 0, bile: 1, flail: 2, regen: 3 };          // the body's (the troll's) skill list
+  { k: 'club', name: 'Club Arm', tag: 'CLUB', spd: 8, skills: [{ n: 'Club', t: 'dmg', r: 'melee', d: [26, 31], chip: true, brk: 18, cd: 0 }] },
+  { k: 'drown', name: 'Drowning Arm', tag: 'GRAB', spd: 6, skills: [{ n: 'Grab', t: 'dmg', r: 'melee', d: [14, 17], chip: true, brk: 12, cd: 0, grab: true }, { n: 'Hold Under', t: 'squeeze', cd: 0 }] },
+  { k: 'head', name: 'Head', tag: 'HEAD', spd: 7, skills: [{ n: 'Bile', t: 'dmg', r: 'ranged', d: [12, 14], el: 'poison', brk: 14, cd: 3, all: true }, { n: 'Bite', t: 'dmg', r: 'melee', d: [16, 19], chip: true, brk: 10, cd: 0 }] },
+  { k: 'body', name: 'Body', tag: 'BODY', spd: 5, skills: [{ n: 'Flail', t: 'dmg', r: 'melee', d: [18, 22], chip: true, brk: 10, cd: 0 }] }];
 function trollBuild(sc, h) {
-  const W = (h && h.weak) || [], T = { hp: 0, maxHp: 0, parts: [], held: null, stunLast: false, regenCd: 0 };
+  const W = (h && h.weak) || [], T = { hp: 0, maxHp: 0, parts: [], held: null, passive: TROLL_PASSIVE, stopped: false };
   const parts = TROLL_PARTS.map(P => {
-    const core = P.k === 'body', sk = core ? [TROLL_PARTS[0].skill, TROLL_PARTS[2].skill, TROLL_FLAIL, P.skill] : [P.skill];
-    const u = make({ id: 'e_troll_' + P.k, boss: true, name: 'Troll · ' + P.name, short: P.name, tag: P.tag, hp: TROLL.hp * (W.includes('bones') ? .88 : 1), brk: 1, spd: TROLL.spd, weak: ['fire'], resist: ['poison'], skills: sk }, 'e', sc);
+    const core = P.k === 'body', sk = P.skills.map(x => ({ ...x }));
+    const u = make({ id: 'e_troll_' + P.k, boss: true, name: 'Troll · ' + P.name, short: P.name, tag: P.tag, hp: TROLL.hp * (W.includes('bones') ? .88 : 1), brk: 1, spd: P.spd, weak: ['fire'], resist: ['poison'], skills: sk }, 'e', sc);
     u.maxBreak = u.breakBar = Math.max(1, Math.round(TROLL.armour[P.k] * ((P.k === 'club' || P.k === 'drown') && W.includes('wound') ? .6 : 1)));
-    u.troll = T; u.trollPart = P.k; u.noTurn = !core; u.trollCore = core; u.regrow = 0;
+    u.troll = T; u.trollPart = P.k; u.noTurn = false; u.trollCore = core; u.regrow = 0;
     if ((P.k === 'body' && W.includes('nest')) || (P.k === 'head' && W.includes('fish'))) { u.state = 'broken'; u.breakBar = 0; u.regrow = TROLL.regrow; }
     return u; });
   T.maxHp = parts[0].maxHp; T.hp = T.maxHp; T.parts = parts;
@@ -9102,63 +9111,67 @@ function trollBuild(sc, h) {
 }
 const trollPart = (T, k) => T.parts.find(p => p.trollPart === k);
 const trollOk = (T, k) => trollPart(T, k).state === 'armoured';
-function trollChoose(u) {                     // its move this round (shown above the body)
-  const T = u.troll, opts = [], burning = T.parts.some(p => p.statuses.some(x => x.type === 'burn'));
-  if (trollOk(T, 'body') && T.hp < T.maxHp * TROLL.regenAt && !T.regenCd && !burning && Math.random() < .75) return { i: TROLL_SK.regen, target: null };
-  if (trollOk(T, 'club')) opts.push([TROLL_SK.club, 3]);
-  if (trollOk(T, 'head') && u.cd[TROLL_SK.bile] <= 1) opts.push([TROLL_SK.bile, 2]);
-  opts.push([TROLL_SK.flail, opts.length ? 1 : 3]);
-  let r = Math.random() * opts.reduce((a, o) => a + o[1], 0), i = opts[0][0]; for (const [k, w] of opts) { r -= w; if (r < 0) { i = k; break; } }
-  return { i, target: u.skills[i].all ? null : weightedHero() };
+function trollChoose(u) {                     // each part's own move this round
+  const T = u.troll; if (u.state !== 'armoured') return { skip: true };          // broken: it spends its turns growing back
+  const live = () => party.filter(x => isAlive(x) && !x.drowned);
+  if (u.trollPart === 'drown' && T.held && isAlive(T.held)) return { i: 1, target: T.held };       // holding someone: keeps her under
+  if (u.trollPart === 'head') return u.cd[0] <= 1 && Math.random() < .6 ? { i: 0, target: null } : { i: 1, target: weightedHero() };
+  return live().length ? { i: 0, target: weightedHero() } : { skip: true };
 }
 function trollIntent(u) {
-  const it = u.intent; if (!it) return ''; if (stunned(u) || u.troll.parts.some(stunned)) return '💤 stunned';
-  const s = u.skills[it.i]; return s.t === 'regen' ? '▶ 💚 Regenerate' : s.all ? `▶ ${s.n} (everyone)` : `▶ ${s.n} → ${it.target ? it.target.short : '?'}`;
+  const it = u.intent; if (u.state !== 'armoured') return '🦴 regrowing'; if (!it || it.skip) return '';
+  const s = u.skills[it.i]; return s.t === 'squeeze' ? `▶ 🌊 holds ${it.target ? it.target.short : 'her'} under` : s.all ? `▶ ${s.n} (everyone)` : `▶ ${s.n} → ${it.target ? it.target.short : '?'}`;
 }
-async function trollTurn(u) {
+async function trollTurn(u) {                 // one part's turn
   const T = u.troll;
-  u.cd = u.cd.map(c => Math.max(0, c - 1)); T.regenCd = Math.max(0, T.regenCd - 1);
-  for (const p of T.parts) for (const st of p.statuses.filter(x => x.dot)) {          // ailments on any part hurt the whole beast, on its turn
-    if (!isAlive(u)) break; const tick = st.dot; p.hp = lethalGuard(p, p.hp - tick);
-    log(`The troll's ${p.short.toLowerCase()} takes ${tick} damage from ${st.type}!`, 'log-status'); render(); floatText(p, tick, 'dot'); sfx('hit', STATUS_FX[st.type] || 'phys', false, false, true); trollFx('hurt'); await sleep(380);
-    if (--st.dur <= 0) p.statuses = p.statuses.filter(x => x !== st);
-    if (!isAlive(p)) { await fall(p); return; }
+  if (u.statuses.some(x => x.stun)) { u.statuses = u.statuses.filter(x => !x.stun); log(`💢 The troll shrugs off the stun.`, 'log-status'); floatText(u, '💢 UNFAZED', 'tag'); }
+  u.cd = u.cd.map(c => Math.max(0, c - 1));
+  for (const st of u.statuses.filter(x => x.dot)) {                                   // ailments on this part hurt the whole beast, on this part's turn
+    if (!isAlive(u)) break; const tick = st.dot; u.hp = lethalGuard(u, u.hp - tick); if (T.passive && STATUS_EL && STATUS_EL[st.type] === T.passive.stop) T.stopped = true;
+    log(`The troll's ${u.short.toLowerCase()} takes ${tick} damage from ${st.type}!`, 'log-status'); render(); floatText(u, tick, 'dot'); sfx('hit', STATUS_FX[st.type] || 'phys', false, false, true); trollFx('hurt'); await sleep(380);
+    if (--st.dur <= 0) u.statuses = u.statuses.filter(x => x !== st);
+    if (!isAlive(u)) { await fall(u); return; }
   }
   const hh = quest && quest.map && quest.map.hunt;
   if (hh && !hh.fled && T.hp <= T.maxHp * HUNT.flee) return trollFlee(u, hh);
-  if (T.parts.some(stunned)) {
-    T.parts.forEach(p => { p.statuses = p.statuses.filter(x => !x.stun); });
-    if (T.stunLast) { T.stunLast = false; log(`💢 The troll shakes off the stun!`, 'log-status'); floatText(u, '💢 SHAKES IT OFF', 'tag'); await sleep(350); }
-    else { T.stunLast = true; log(`The troll is stunned and loses its turn!`, 'log-status'); floatText(u, '💤 STUNNED', 'tag'); trollFx('hurt'); render(); await sleep(500); await trollDrownTick(T); trollRegrow(T); render(); return; }
-  } else T.stunLast = false;
-  await trollDrownTick(T); if (!isAlive(u) || over) return;
-  let it = u.intent; u.intent = null;
-  const valid = it && (it.i === TROLL_SK.regen ? trollOk(T, 'body') : it.i === TROLL_SK.club ? trollOk(T, 'club') : it.i === TROLL_SK.bile ? trollOk(T, 'head') && !u.cd[it.i] : true) && (!it.target || (isAlive(it.target) && !it.target.drowned));
-  if (!valid) it = trollChoose(u);
-  if (it.i === TROLL_SK.regen && !(trollOk(T, 'body') && !T.parts.some(p => p.statuses.some(x => x.type === 'burn')))) it = { i: TROLL_SK.flail, target: weightedHero() };
-  const s = u.skills[it.i];
-  if (s.t === 'regen') {
-    const add = Math.round(T.maxHp * TROLL.regen), b0 = T.hp; u.hp = T.hp + add; T.regenCd = TROLL.regenEvery;
-    say('The troll regenerates'); trollFx('regen'); sfx('heal'); log(`💚 The troll's wounds knit shut: +${T.hp - b0} HP.`, 'log-heal'); floatText(u, '+' + (T.hp - b0), 'heal'); render(); await sleep(700);
-  } else {
-    if (!it.target) it.target = s.all ? party.find(x => isAlive(x) && !x.drowned) : weightedHero();
-    if (!it.target) { trollRegrow(T); return; }
-    trollFx(it.i === TROLL_SK.bile ? 'spew' : it.i === TROLL_SK.club ? 'club' : 'flail');
-    const hitList = s.all ? party.filter(x => isAlive(x) && !x.drowned) : [it.target];
-    await perform(u, it.i, it.target);
-    if (!T.held && trollOk(T, 'drown') && isAlive(u) && !over) {                    // the grab: the frontmost broken hero it just hit
-      const c = hitList.filter(x => isAlive(x) && !x.drowned && x.state !== 'armoured').sort((a, b) => party.indexOf(a) - party.indexOf(b));
-      if (c.length) await trollGrab(T, c[0]);
-    }
+  if (u.state !== 'armoured') {                                                       // broken: no attack, the armour grows back over its turns
+    if (u.regrow > 0) u.regrow--;
+    if (u.regrow <= 0) { u.state = 'armoured'; u.breakBar = u.maxBreak; floatText(u, '🦴 REGROWN', 'tag'); log(`The troll's ${u.short.toLowerCase()} hardens again: ${u.skills[0].n} is back.`, 'log-status'); }
+    else { log(`🦴 The troll's ${u.short.toLowerCase()} is still broken (${u.regrow} more turn${u.regrow > 1 ? 's' : ''}).`, 'log-status'); floatText(u, '🦴 REGROWING', 'tag'); }
+    u.intent = null; render(); await sleep(420); return;
   }
-  trollRegrow(T); render();
+  let it = u.intent; u.intent = null;
+  if (!it || it.skip || (it.target && (!isAlive(it.target) || (it.target.drowned && u.skills[it.i].t !== 'squeeze'))) || u.cd[it.i] > 0) it = trollChoose(u);
+  if (it.skip) return;
+  const s = u.skills[it.i];
+  if (s.t === 'squeeze') { trollFx('grab'); await trollDrownTick(T); render(); return; }
+  if (!it.target) it.target = s.all ? party.find(x => isAlive(x) && !x.drowned) : weightedHero();
+  if (!it.target) return;
+  trollFx(u.trollPart === 'head' ? (s.all ? 'spew' : 'flail') : u.trollPart === 'club' ? 'club' : u.trollPart === 'drown' ? 'grab' : 'flail');
+  await perform(u, it.i, it.target);
+  if (s.grab && !T.held && isAlive(u) && !over && isAlive(it.target) && !it.target.drowned && it.target.state !== 'armoured') await trollGrab(T, it.target);      // the grab: a hero whose armour is broken gets dragged under
+  render();
+}
+const STATUS_EL = { burn: 'fire', bleed: 'bleed', poison: 'poison', chill: 'ice', shock: 'shock' };      // which element an ailment's ticks count as
+async function beastPassive() {               // end of a round: the hunt beast's passive (TROLL_PASSIVE), unless its weakness hit it this round
+  const b = enemies.find(e => e.troll && isAlive(e)), T = b && b.troll, P = T && T.passive; if (!P) return;
+  if (T.stopped) { T.stopped = false; log(`${P.stopIcon} The ${P.stopTxt} keeps its wounds open: no ${P.name.toLowerCase()} this round.`, 'log-player'); floatText(b, `${P.stopIcon} NO REGEN`, 'tag'); await sleep(350); return; }
+  const add = Math.min(T.maxHp - T.hp, Math.round(T.maxHp * P.heal)); let arm = 0;
+  T.parts.forEach(p => { if (p.state !== 'armoured' || p.breakBar >= p.maxBreak) return; const a = Math.min(p.maxBreak - p.breakBar, Math.max(1, Math.round(p.maxBreak * P.armour))); p.breakBar += a; arm += a; });
+  if (add <= 0 && !arm) return;
+  T.hp += add; trollFx('regen'); sfx('heal');
+  log(`${P.icon} ${P.name}: the troll's wounds knit${add ? ` (+${add} HP)` : ''}${arm ? ' and its hide thickens' : ''}. Hit it with ${P.stopTxt} to stop it.`, 'log-heal');
+  if (add) floatText(T.parts.find(p => p.trollCore) || b, '+' + add, 'heal'); render(); trollHud(); await sleep(500);
 }
 async function trollFlee(u, h) {             // badly hurt: it breaks off and runs for its den, bleeding
   const T = u.troll; if (T.held) trollFree(T);
   h.fled = h.fleeing = true; h.trollHp = T.hp; h.trollMax = T.maxHp;
   const m = quest.map, path = huntSteps(m, h.troll, h.den), dP = huntBfs(m, m.at);
-  let to = path && path.length > 1 ? path[1] : null; if (to == null) { const o = m.adj[h.troll].filter(j => j && j !== m.at).sort((a, b) => dP[b] - dP[a]); to = o[0]; h.fleeing = false; }
-  if (to != null) { h.trail.push({ a: h.troll, b: to, t: m.t, blood: true, found: true }); h.troll = m.boss = to; if (to === h.den) h.fleeing = false; }
+  if (path && path.length > 1) {                                                     // it runs all the way home at once, bleeding every step of the way
+    for (let k = 1; k < path.length; k++) h.trail.push({ a: path[k - 1], b: path[k], t: m.t, blood: true, found: true });
+    h.troll = m.boss = h.den; h.fleeing = false;
+  } else { const o = m.adj[h.troll].filter(j => j && j !== m.at).sort((a, b) => dP[b] - dP[a]), to = o[0]; h.fleeing = false;      // already home: it backs off one step
+    if (to != null) { h.trail.push({ a: h.troll, b: to, t: m.t, blood: true, found: true }); h.troll = m.boss = to; } }
   h.msg = `🩸 <b>It fled toward its den, bleeding.</b> Follow the blood before it heals.`;
   say('The troll flees!'); trollFx('flee'); sfx('defeat'); shake(2);
   log(`<strong style="color:#ffb74d">🩸 The troll bellows, tears free and crashes away through the reeds, bleeding! Follow the blood trail before it heals.</strong>`, 'log-status');
@@ -9173,13 +9186,10 @@ function trollFledEnd() {                    // the fight ends without a winner:
   { const o = $('btn-end-alt'); if (o) o.remove(); }
   $('end-buttons').style.display = 'flex'; render(); saveQuest(); return true;
 }
-function trollRegrow(T) {                    // at the end of each of its turns, broken parts count down and grow their armour back
-  T.parts.forEach(p => { if (p.state !== 'broken') return; if (p.regrow > 0) p.regrow--;
-    if (p.regrow <= 0) { p.state = 'armoured'; p.breakBar = p.maxBreak; floatText(p, '🦴 REGROWN', 'tag'); log(`The troll's ${p.short.toLowerCase()} hardens again: ${p.skills[0].n === 'Regenerate' || p.trollCore ? 'Regenerate' : p.skills[0].n} is back.`, 'log-status'); } });
-}
+
 function trollPartBroken(p) {                // hook from the armour-break code
   const T = p.troll; p.regrow = TROLL.regrow;
-  log(`🦴 The troll's ${p.short.toLowerCase()} is broken: ${p.trollCore ? 'no Regenerate' : 'no ' + p.skills[0].n} for ${TROLL.regrow} of its turns.`, 'log-player');
+  log(`🦴 The troll's ${p.short.toLowerCase()} is broken: no ${p.skills[0].n} for ${TROLL.regrow} of its turns.`, 'log-player');
   if (p.trollPart === 'drown' && T.held) trollFree(T);
 }
 async function trollGrab(T, h) {
@@ -9245,7 +9255,7 @@ function trollHud() {                        // one HP bar for the whole beast
   let hb = document.getElementById('troll-hud'); const tp = enemies.find(e => e.troll);
   if (!tp) { if (hb) hb.remove(); return; }
   if (!hb) { hb = document.createElement('div'); hb.id = 'troll-hud'; $('battle-scene').appendChild(hb); }
-  const T = tp.troll; hb.innerHTML = `<b>🧌 ${(quest && quest.map && quest.map.hunt && quest.map.hunt.title) || 'River Troll'}</b><div class="th-bar"><i style="width:${Math.max(0, T.hp / T.maxHp * 100)}%"></i></div><span>${Math.max(0, T.hp)} / ${T.maxHp}${T.held ? ` · 🌊 ${T.held.short} is drowning` : ''}</span>`;
+  const T = tp.troll; hb.innerHTML = `<b>🧌 ${(quest && quest.map && quest.map.hunt && quest.map.hunt.title) || 'River Troll'}</b><div class="th-bar"><i style="width:${Math.max(0, T.hp / T.maxHp * 100)}%"></i></div><span>${Math.max(0, T.hp)} / ${T.maxHp}${T.held ? ` · 🌊 ${T.held.short} is drowning` : ''}</span>${T.passive ? `<em class="th-pass${T.stopped ? ' off' : ''}" title="${T.passive.name}: heals ${Math.round(T.passive.heal * 100)}% HP and ${Math.round(T.passive.armour * 100)}% armour at the end of each round, unless hit with ${T.passive.stopTxt} that round">${T.stopped ? T.passive.stopIcon : T.passive.icon} ${T.passive.name}${T.stopped ? ' stopped' : ''}</em>` : ''}`;
 }
 /* ============ FINAL BOSS (dev-only framework) ============
    Two fights at once on two screens: LEFT FRONT (party A faces right, boss body L on the right) and RIGHT FRONT (everything mirrored: party B faces left, boss body R on the left).
