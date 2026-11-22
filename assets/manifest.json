@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-11-21 16:53",
+  "generated": "2026-11-22 08:03",
   "files": {
     "aneesah/armoured - swimsuit/damaged": "png",
     "aneesah/armoured - swimsuit/idle": "png",
@@ -253,7 +253,6 @@
     "seria/armoured/skill3b": "png",
     "seria/broken/damaged": "png",
     "seria/broken/idle": "png",
-    "seria/broken/seria_camp": "png",
     "seria/broken/skill1": "png",
     "seria/broken/skill2": "png",
     "seria/broken/skill3": "png",
@@ -307,6 +306,7 @@
     "ui/aria_camp": "png",
     "ui/assistant": "png",
     "ui/assistant_summer": "png",
+    "ui/assistant_winter": "png",
     "ui/assistantsweeping": "png",
     "ui/bigmike": "png",
     "ui/dorm_interior": "png",
@@ -320,6 +320,7 @@
     "ui/shopkeeper": "png",
     "ui/shopkeeper_summer": "png",
     "ui/shopkeeper_warrior": "png",
+    "ui/shopkeeper_winter": "png",
     "ui/shopkeepercannon": "png",
     "ui/shower_interior": "png",
     "ui/showera": "png",
