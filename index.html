@@ -679,8 +679,8 @@ body.dev #btn-quick{display:inline-block}
 .gc-n{position:absolute;right:6px;top:6px;min-width:24px;height:24px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:#d9b46a;color:#1a1208;font:800 .8rem system-ui;font-style:normal;display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(217,180,106,.7);pointer-events:none}
 .gc-i{position:absolute;right:6px;bottom:44px;width:22px;height:22px;padding:0;border-radius:50%;font-size:.7rem;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.3);opacity:0;transition:opacity .15s}
 .gc:hover .gc-i{opacity:1}
-.gc-t{display:flex;align-items:baseline;justify-content:space-between;padding:6px 10px 7px;background:rgba(0,0,0,.25)}
-.gc-t b{font-size:.95rem;color:#f3ead6}.gc-t small{font-size:.66rem;color:#c6b89a}
+.gc-t{display:flex;flex-wrap:wrap;gap:0 6px;align-items:baseline;justify-content:space-between;padding:6px 10px 7px;background:rgba(0,0,0,.25)}
+.gc-t b{font-size:.95rem;color:#f3ead6}.gc-t small{font-size:.66rem;color:#c6b89a;white-space:nowrap;margin-left:auto}
 .gc:hover,body.gp .gc.gp-focus{translate:0 -4px;border-color:#d9b46a;box-shadow:0 0 0 3px rgba(255,216,138,.25),0 0 22px rgba(255,216,138,.45)}
 .gc.on{border-color:#d9b46a;box-shadow:0 0 16px rgba(217,180,106,.35)}
 .gc.off{filter:grayscale(.7) brightness(.6)}
@@ -926,7 +926,7 @@ body.calm .qm-n,body.calm .qm-pc img,body.calm .qm-pull::after{animation:none!im
 /* painted bath (town spa) + quest spring: see HOT SPRINGS + THE TOWN SPA BATH in the script */
 #spa-select.show,#lake.show{position:fixed;inset:0;z-index:5;margin:0;overflow:hidden;background:#0a0a12;display:block}
 #lake-stage{position:absolute;inset:0;overflow:hidden}
-#lake .lk-title{position:absolute;z-index:20;left:18px;top:16px;font-weight:800}#lake .lk-title small{font-weight:600;color:#bfe3f7;margin-left:8px}
+#lake .lk-title{position:absolute;z-index:20;left:190px;top:16px;font-weight:800}#lake .lk-title small{font-weight:600;color:#bfe3f7;margin-left:8px}
 #lake .lk-bar{position:absolute;z-index:20;left:50%;bottom:16px;transform:translateX(-50%);width:min(900px,calc(100% - 32px));display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:14px;background:rgba(14,22,34,.82);border:1px solid rgba(160,210,240,.35);box-shadow:0 8px 30px rgba(0,0,0,.5);backdrop-filter:blur(4px)}
 #lake .lk-bar .pk-info{flex:1;min-width:0}#lake .lk-bar .pk-acts{display:flex;gap:8px;flex:0 0 auto}
 #spa-stage{position:absolute;inset:0;overflow:hidden}
@@ -961,7 +961,7 @@ body.calm .sb-sky.snowy::after{animation:none}.sb-bg>svg{width:100%;height:100%}
 .sb-steam{position:absolute;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,var(--o)) 0,rgba(255,255,255,0) 68%);filter:blur(6px);animation:sbRise var(--t) linear infinite;animation-delay:var(--d);opacity:0}
 @keyframes sbRise{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% - var(--dy))) scale(1.5)}}
 body.calm .sb-steam,body.calm .sb-rip,body.calm .sb-ghost,body.calm .sb-ws,body.calm .sb-dot{animation:none}body.calm .sb-steam{opacity:.45}
-#spa-select #spa-intro{position:absolute;z-index:20;left:18px;top:16px}
+#spa-select #spa-intro{position:absolute;z-index:20;left:190px;top:16px}
 #spa-select .sb-back{position:absolute;z-index:20;left:18px;bottom:18px;padding:10px 20px;border-radius:999px;background:rgba(18,52,58,.8);border:1px solid #9ff0e2;color:#eafffb;font-weight:700}
 #spa-select #spa-flaws{display:block;position:absolute;z-index:25;top:50%;left:auto;right:auto;width:min(380px,32vw);transform:translateY(-50%);opacity:0;pointer-events:none;transition:opacity .3s,translate .3s}
 #spa-select #spa-flaws.r{right:3vw;translate:20px 0}#spa-select #spa-flaws.l{left:3vw;translate:-20px 0}
@@ -1614,9 +1614,10 @@ body.calm .pot-back svg.tt{animation:none!important}
 .gold-chip{display:inline-flex;align-items:center;gap:.45em;font-weight:800;color:#ffd54f;font-size:1.05rem;white-space:nowrap}
 .gold-chip .gc-cost{font-style:normal;font-weight:700;font-size:.78em;color:#ff9aa8;background:rgba(255,120,140,.14);border-radius:8px;padding:.05em .5em}
 .gold-chip .gc-lock{filter:grayscale(.2)}
+.gold-chip .gc-what{font-weight:600;font-size:.72em;color:#e8e0cc;margin-left:.4em;white-space:nowrap}
 .rc-i,.fs-i{position:absolute;right:6px;bottom:4px;z-index:4;background:rgba(10,8,20,.7);border:1px solid #4a5a78;border-radius:50%;width:1.6em;height:1.6em;padding:0;line-height:1.5em;font-size:.8rem;text-align:center;cursor:pointer;color:#81d4fa}
 .rc-i:hover,.fs-i:hover{background:#243050;color:#fff}
-.fs-i{right:4px;top:4px;bottom:auto}
+.fs-i{left:30px;right:auto;top:4px;bottom:auto}
 .dc-strip{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:0 0 -4px}
 .dc-strip .dcs{padding:3px;border-radius:50%;border:2px solid #2d2c42;background:#15131d;cursor:pointer;line-height:0}
 .dc-strip .dcs .mini-sprite{width:46px;height:46px;flex:0 0 46px;font-size:.45rem}
@@ -1886,7 +1887,7 @@ body.fs .qmap{margin:0}
   #battle-scene .combatant-card .floor{order:2}
   #battle-scene .combatant-card .bubble{order:3;min-height:3.7em;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;text-align:center;padding:.25em .2em 0;text-shadow:0 1px 3px #000}
   #battle-scene .combatant-card .stats-info{order:4}
-  #battle-scene .figure{width:150%;align-self:center;height:var(--figH);pointer-events:none;transform-origin:50% 100%;scale:var(--z,1);translate:calc((var(--z,1) - 1) * 14% * var(--side,0));transition:filter .12s,scale .7s cubic-bezier(.3,.1,.2,1),translate .7s cubic-bezier(.3,.1,.2,1)}
+  #battle-scene .figure{width:150%;align-self:center;height:calc(var(--figH) * var(--hk,1));margin-top:calc(var(--figH) * (1 - var(--hk,1)));pointer-events:none;transform-origin:50% 100%;scale:var(--z,1);translate:calc((var(--z,1) - 1) * 14% * var(--side,0));transition:filter .12s,scale .7s cubic-bezier(.3,.1,.2,1),translate .7s cubic-bezier(.3,.1,.2,1)}
   #battle-scene .team-p .figure{--side:-1}#battle-scene .team-e .figure{--side:1}   /* wider than its card so tall portraits are not squeezed; the camera (--z) zooms in as fighters fall */
   #battle-scene .figure .ph{width:56%;height:62%;margin-bottom:0;font-size:.9em;border-radius:8px}
   #battle-scene .combatant-card .floor{display:block;height:10px;margin:2px 6%;border-bottom:2px solid rgba(255,255,255,.14);border-left:2px solid rgba(255,255,255,.14);border-right:2px solid rgba(255,255,255,.14);border-radius:0 0 4px 4px;transition:all .2s}
@@ -2309,7 +2310,7 @@ button:not(:disabled):active,.clk:active,.rc:active,.dcs:active{filter:brightnes
 .st-actor.in{opacity:1}
 .st-actor.talk{filter:none;scale:1;z-index:2}
 .st-actor .figure{position:absolute;inset:0;width:100%;height:100%}
-.st-actor .figure>img.spr{position:absolute;left:50%;bottom:0;height:100%;width:auto;max-width:none;transform:translateX(-50%)}
+.st-actor .figure>img.spr{position:absolute;left:50%;bottom:0;height:calc(100% * var(--hk,1));width:auto;max-width:none;transform:translateX(-50%)}
 .st-actor.flip .figure>img.spr{transform:translateX(-50%) scaleX(-1)}
 .st-actor .st-svg{position:absolute;inset:0}.st-actor .st-svg svg{width:100%;height:100%}
 .st-actor.st-float .figure{animation:stFloat 4.2s ease-in-out infinite}
@@ -2658,7 +2659,7 @@ body.fbfight #fb-hud{display:flex;position:absolute;top:128px;left:50%;transform
 #battle-scene .battlefield.fbm{flex-direction:row-reverse}
 #battle-scene .battlefield.fbm #party-cards{flex-direction:row}
 #battle-scene .battlefield.fb .team-p{flex:.9}#battle-scene .battlefield.fb .team-e{flex:1.1}
-#battle-scene .battlefield.fb .team-p .figure{height:calc(var(--figH) * var(--fbP,.5))}
+#battle-scene .battlefield.fb .team-p .figure{height:calc(var(--figH) * var(--fbP,.5) * var(--hk,1));margin-top:calc(var(--figH) * var(--fbP,.5) * (1 - var(--hk,1)))}
 #battle-scene .battlefield.fb .team-e .combatant-card{flex:0 0 100%;max-width:none}
 #battle-scene .battlefield.fb .team-e .figure{width:100%;height:calc(var(--figH) * var(--fbB,1))}
 #battle-scene .battlefield.fbpair .team-e .combatant-card{flex:0 0 64%}
@@ -2765,11 +2766,47 @@ body.calm .threat,body.calm .threat .tg-under{animation:none}
 body.calm .talk-mark,body.calm .talk-mark span{animation:none}
 #troll-hud .th-pass{display:block;font-style:normal;font-size:12px;color:#8dffa8;margin-top:2px}#troll-hud .th-pass.off{color:#ff9a5a;text-decoration:line-through}
 #btn-start-quest.fin{letter-spacing:.06em;white-space:nowrap;font-size:.92em}
+#end-banner{position:fixed;left:50%;top:30%;translate:-50% -50%;z-index:31;display:none;flex-direction:column;align-items:center;gap:6px;pointer-events:none;text-align:center}
+#end-banner.on{display:flex;animation:endIn .5s ease-out both}
+#end-banner b{font:700 clamp(40px,5vw,84px)/1 Georgia,serif;letter-spacing:.08em;text-transform:uppercase;color:#ffe27a;text-shadow:0 0 18px rgba(255,190,60,.55),0 4px 0 #3a2208,0 6px 16px rgba(0,0,0,.8)}
+#end-banner.bad b{color:#ff8a8a;text-shadow:0 0 18px rgba(255,60,60,.5),0 4px 0 #3a0808,0 6px 16px rgba(0,0,0,.8)}
+#end-banner span:not(:empty){font-weight:700;font-size:1.05rem;color:#f3ead6;background:rgba(10,8,20,.75);border:1px solid rgba(255,215,120,.35);border-radius:999px;padding:6px 16px}
+@keyframes endIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+#coach{position:fixed;inset:0;z-index:90;background:rgba(6,4,14,.45);opacity:0;transition:opacity .25s;cursor:pointer}#coach.on{opacity:1}
+#coach .ck-box{position:fixed;border:2px solid #ffd54f;border-radius:12px;box-shadow:0 0 0 3px rgba(255,213,79,.18),0 0 18px rgba(255,213,79,.45);pointer-events:none}
+#coach .ck-tip{position:fixed;translate:-50% 0;max-width:240px;padding:7px 12px;border-radius:10px;background:#fff6dc;color:#2a1a08;font-weight:700;font-size:.92rem;line-height:1.25;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none}
+#coach .ck-tip.t{translate:-50% -100%}
+#coach .ck-tip.b::before,#coach .ck-tip.t::after{content:"";position:absolute;left:50%;translate:-50% 0;border:7px solid transparent}
+#coach .ck-tip.b::before{bottom:100%;border-bottom-color:#fff6dc}#coach .ck-tip.t::after{top:100%;border-top-color:#fff6dc}
+#coach .ck-go{position:fixed;right:24px;bottom:22px;font-weight:800;font-size:1rem;padding:10px 26px;border-radius:999px;background:#ffd54f;color:#2a1a08;border:0;cursor:pointer}
+/* every plain "back" button sits in the same spot, top-left (screens whose art has a door keep the door: shop, dorm, training ground) */
+.back-tl{position:fixed!important;top:16px!important;left:16px!important;right:auto!important;bottom:auto!important;translate:none!important;transform:none!important;z-index:60!important;margin:0!important;min-width:0!important;width:auto!important;
+  padding:.5em 1.05em!important;font-size:.9rem!important;font-weight:700;border-radius:10px!important;background:rgba(10,8,20,.8)!important;border:1px solid rgba(255,255,255,.28)!important;color:#f3ead6!important;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.back-tl:hover{background:rgba(40,32,64,.92)!important;border-color:rgba(255,215,120,.6)!important}
+/* Reading a Fight (guide book): a dark plate holds a copy of each battle sign */
+.gb-vrow{display:flex;gap:.8em;align-items:center}
+.gb-vis{flex:0 0 38%;display:flex;flex-wrap:wrap;gap:.4em;align-items:center;justify-content:center;padding:.6em .5em;border-radius:10px;background:linear-gradient(#2a2236,#141020);box-shadow:inset 0 0 0 1px rgba(0,0,0,.4);color:#f3ead6;font-size:.82em;line-height:1.5}
+.gb-vis .gb-rings{display:flex;flex-direction:column;gap:.2em;width:100%}.gb-vis .ring{display:block;width:100%;height:auto;overflow:visible}
+.gb-vis .gb-tally{display:inline-block;width:3.6em;filter:drop-shadow(0 0 3px rgba(0,0,0,.9))}.gb-vis .gb-tally svg{width:100%;height:auto;overflow:visible}
+.gb-vis .gb-tally .tg-under{display:block;text-align:center;font-size:1.4em;margin-top:-.2em}
+.gb-vis .aims{font-size:.75em;flex-wrap:wrap;justify-content:center}.gb-vis .ii{font-size:.85em}
+.gb-vis kbd{display:inline-block;min-width:1.5em;padding:0 .3em;border-radius:4px;background:#f3ead6;color:#2a1a08;font:700 .9em system-ui;text-align:center}
+.gb-vis .stealth-tag{font-size:.8rem}
+.mh-pips{display:inline-flex;gap:4px;vertical-align:middle;margin:0 4px}.mh-pips i{width:10px;height:10px;border-radius:50%;border:1.5px solid #cbb98a}.mh-pips i.ok{background:#7ddc7d;border-color:#7ddc7d}
+table.ctl{width:100%;border-collapse:collapse;font-size:.88rem;margin:4px 0 10px}table.ctl th{text-align:left;color:#c9b98a;font-weight:700;padding:4px 8px}table.ctl td{padding:5px 8px;border-top:1px solid rgba(255,255,255,.08)}table.ctl td:first-child{color:#cfc6e6}
+/* blood & steel rings */
+.ring .rb-beat{transform-box:fill-box;transform-origin:center;animation:rbBeat .75s ease-in-out infinite}
+@keyframes rbBeat{0%,100%{transform:scale(1);filter:brightness(1)}12%{transform:scale(1.04,1.09);filter:brightness(1.45)}24%{transform:scale(1)}36%{transform:scale(1.02,1.05);filter:brightness(1.2)}50%{transform:scale(1)}}
+.ring .rb-drip{transform-box:fill-box;animation:rbDrip var(--dt,2.4s) ease-in infinite;animation-delay:var(--dd,0s)}
+@keyframes rbDrip{0%{transform:translateY(-2px) scaleY(.4);opacity:0}15%{opacity:1;transform:none}70%{opacity:1}100%{transform:translateY(9px) scaleY(1.3);opacity:0}}
+body.calm .ring .rb-beat,body.calm .ring .rb-drip{animation:none}
+.shield-fx.gold{filter:hue-rotate(185deg) saturate(1.6) brightness(1.15) drop-shadow(0 0 12px #ffd54f)}
+.figure.tint-stone{filter:grayscale(1) sepia(.25) brightness(.85) contrast(1.15);transition:filter .25s}
 </style>
 </head>
 <body>
-<button id="menu-btn" onclick="openGuide()" title="Menu: options, controls and guide">⚙️</button>
-<div id="pause" onclick="if (event.target === this) pauseClose()"><div class="pz"><div class="pz-h"></div><button class="primary" onclick="pauseClose()">▶ Resume</button><button onclick="pauseClose();openGuide()">⚙️ Options &amp; Guide</button><button id="pz-title" onclick="pauseAskTitle(true)">🏠 Return to Title</button><div class="pz-ask" id="pz-ask"><span>🏠 ?</span><button class="danger" onclick="location.reload()">✔ Yes</button><button class="primary" onclick="pauseAskTitle(false)">✖ No</button></div></div></div>
+<button id="menu-btn" onclick="$('title') && !$('title').classList.contains('hide') ? openGuide() : pauseToggle()" title="Menu (Esc): resume, options and guide, return to title">⚙️</button>
+<div id="pause" onclick="if (event.target === this) pauseClose()"><div class="pz"><div class="pz-h"></div><button class="primary" onclick="pauseClose()">▶ Resume</button><button onclick="pauseClose();openGuide()">⚙️ Options &amp; Controls</button><button onclick="pauseClose();openBook($('battle-scene').classList.contains('show') ? 'field' : undefined)">📖 Guide Book</button><button id="pz-title" onclick="pauseAskTitle(true)">🏠 Return to Title</button><div class="pz-ask" id="pz-ask"><span>🏠 ?</span><button class="danger" onclick="location.reload()">✔ Yes</button><button class="primary" onclick="pauseAskTitle(false)">✖ No</button></div></div></div>
 <div id="film"></div>
 <div id="fade"></div>
 <div id="rotate"><b>📱</b>Turn your phone sideways<small style="font-size:1rem;color:#9a9ab8">The game is played in landscape</small></div>
@@ -2870,13 +2907,13 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
         <div class="fs-chip gold-chip" id="hub-gold"></div>
         <button class="town-guide" id="btn-guide" onclick="openBook()" title="The guide book"><span class="tg-ic" id="tg-ic">📖</span><span class="tg-lbl">Guide</span></button>
         <div id="hub-msg"></div>
-        <button id="hub-back" onclick="location.reload()">Back to Title</button>
       </div>
     </div>
   </div>
 </div>
 
 <div id="beach" class="scene fsr">
+  <button class="back-tl" onclick="showScene('hub')">◀ Back to Town</button>
   <div class="hub-wrap"><div class="hub-hall">
     <div class="bmap" id="beach-map">
       <div class="bart" id="beach-art"></div>
@@ -2886,17 +2923,17 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
       <div class="btitle">The Grey Shore<small id="beach-gold">Gold: 0</small></div>
       <div class="bbtns">
         <button class="primary" onclick="openBeachPick()">🏐 Beach Volleyball</button>
-        <button onclick="showScene('hub')">↩ Return to Town</button>
       </div>
     </div>
   </div></div>
 </div>
 
 <div id="lake" class="scene">
+  <button class="back-tl" onclick="showScene('hub')">◀ Back to Town</button>
   <div id="lake-stage"></div>
   <div class="fs-chip lk-title">🧊 The Frozen Lake <small id="lake-gold"></small></div>
   <div class="lk-bar"><div class="pk-info" id="lake-info"></div>
-    <div class="pk-acts"><button onclick="showScene('hub')">↩ Back to Town</button><button class="primary" id="lake-go" onclick="lakeGo()">Jump in</button></div></div>
+    <div class="pk-acts"><button class="primary" id="lake-go" onclick="lakeGo()">Jump in</button></div></div>
 </div>
 <div id="dive" class="scene">
   <canvas id="dv-cv"></canvas>
@@ -2912,12 +2949,13 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
   <div id="dv-end"></div>
 </div>
 <div id="beach-pick" class="scene fsr">
+  <button class="back-tl" onclick="showScene('beach')">◀ Back</button>
   <div class="hub-wrap"><div class="hub-hall">
     <div class="bmap fsstage" id="bp-map"><div class="bart" id="bp-art"></div><div id="bp-figs" class="pk-figs"></div></div>
     <div class="fs-ui pk-ui">
       <div class="btitle">🏐 Beach Volleyball<small id="bp-gold"></small></div>
       <div class="pk-bar"><div class="pk-info" id="bp-info"></div>
-        <div class="pk-acts"><div class="pk-claim" id="bp-claim"></div><button onclick="showScene('beach')">↩ Back</button><button class="primary" id="bp-play" onclick="startVb()">Play</button></div></div>
+        <div class="pk-acts"><div class="pk-claim" id="bp-claim"></div><button class="primary" id="bp-play" onclick="startVb()">Play</button></div></div>
     </div>
   </div></div>
 </div>
@@ -2949,7 +2987,7 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
     <div class="hub-hall">
       <section class="em-map" id="em-map">
         <div id="quest-list"></div>
-        <button class="em-back" onclick="showScene('hub')">◀ Back to Town</button>
+        <button class="em-back back-tl" onclick="showScene('hub')">◀ Back to Town</button>
         <button class="primary em-begin" id="btn-start-quest" onclick="beginQuest()">Begin Quest ▶</button>
       </section>
       <section class="em-party">
@@ -2969,7 +3007,7 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
   <div id="spa-stage"></div>
   <div class="fs-chip gold-chip" id="spa-intro"></div>
   <div id="spa-flaws"></div>
-  <button class="sb-back" onclick="showScene('hub')">⬅ Back to Town</button>
+  <button class="sb-back back-tl" onclick="showScene('hub')">◀ Back to Town</button>
 </div>
 
 <div id="spa" class="scene">
@@ -3078,7 +3116,7 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
   <div id="tm-stage">
     <div id="tm-head"><div class="hub-title" id="train-title">Training</div><div class="hub-sub" id="train-sub"></div></div>
     <div id="tm-halves"></div>
-    <button id="btn-train-back" onclick="showScene('train-select')">Back</button>
+    <button id="btn-train-back" class="back-tl" onclick="showScene('train-select')">◀ Back</button>
   </div>
 </div>
 
@@ -3150,7 +3188,7 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
 <h1>Anime RPG Prototype</h1>
 <div class="subtitle" id="battle-sub">Quest battle</div>
 <div id="action-line"></div>
-<div class="fxbar"><button id="btn-log" onclick="toggleLog()">📜 Log</button><button id="btn-speed" onclick="cycleSpeed()" title="Battle speed">⏩ 1×</button></div>
+<div class="fxbar"><button id="btn-book" onclick="openBook('field')" title="The guide book (Select on a pad)">📖 Guide</button><button id="btn-log" onclick="toggleLog()">📜 Log</button><button id="btn-speed" onclick="cycleSpeed()" title="Battle speed">⏩ 1×</button></div>
 
 <div id="game-container">
   <div id="order"></div>
@@ -3183,8 +3221,8 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
     <div id="end-buttons" style="display:none">
       <button id="btn-end-main" class="primary">Continue</button>
       <button id="btn-summary" style="display:none" onclick="openSummary()">📊 Summary</button>
-      <button onclick="location.reload()">Back to Title</button>
     </div>
+    <div id="end-banner"><b></b><span></span></div>
     <div id="active-panel"></div>
     <div id="log-box"><button id="log-close" onclick="toggleLog()">✕ Close log</button></div>
   </div>
@@ -4434,7 +4472,7 @@ function punch(t, k) {
 let guideTab = 'options';
 const GUIDE_TABS = [['options', '⚙️ Options'], ['controls', '🎮 Controls'], ['credits', '🏷️ Credits']];          // the ⚙️ menu: settings only. The rules of the game live in the guide book in town (BOOK_TABS)
 /* The guide book's chapters. Each chapter only shows the sections the player has reached (BOOK below); a chapter with nothing open yet is hidden. */
-const BOOK_TABS = [['basics', '📜', 'First Steps'], ['road', '🗺️', 'The Road'], ['armour', '🛡️', 'Armour'], ['elements', '🔥', 'Elements'], ['status', '✨', 'Buffs &amp; Debuffs'],
+const BOOK_TABS = [['basics', '📜', 'First Steps'], ['field', '👁️', 'Reading a Fight'], ['road', '🗺️', 'The Road'], ['armour', '🛡️', 'Armour'], ['elements', '🔥', 'Elements'], ['status', '✨', 'Buffs &amp; Debuffs'],
   ['heroes', '👥', 'Heroes'], ['relics', '🏺', 'Relics'], ['growth', '💎', 'Growth'], ['endgame', '🌌', 'Endgame']];
 function openGuide(tab) { if (tab) guideTab = tab; renderGuide(); $('guide').classList.add('show'); }
 function refreshOptions() { const gd = document.getElementById('guide'); if (guideTab === 'options' && gd && gd.classList.contains('show')) { const gb = document.getElementById('guide-body'), y = gb.scrollTop; renderGuide(); gb.scrollTop = y; } }
@@ -4462,12 +4500,12 @@ const OPTIONS = [
   ['numbers', '💥 Hit numbers', 'The damage numbers that pop up over units.', () => FX.numbers],
   ['shake', '📳 Screen shake', 'Camera shake on heavy hits. Turn off if it bothers you.', () => FX.shake],
   ['speed', '⏩ Battle speed', 'Faster animations and pauses in battle: 1× normal, 1.5×, 2×. Also on the battle bar.', () => FX.speed > 1, () => speedLabel()],
-  ['flash', '⚡ Screen flashes', 'Colour flashes on kills, crits and boss phases, and the red pulse when a hero is nearly down. Turn off if flashing bothers you.', () => FX.flash],
+  ['flash', '⚡ Screen flashes', 'Colour flashes on kills, crits and boss phases. Turn off if flashing bothers you.', () => FX.flash],
   ['text', '🔤 Text size', 'Makes all text bigger: Normal, Large, Extra large.', () => FX.text > 0, () => ['Normal', 'Large', 'Extra large'][FX.text]],
   ['calm', '🕊️ Reduced motion', 'Turns off weather, screen shake, flashes and the fade between scenes. Calmer on the eyes.', () => FX.calm],
   ['ui', '🖥️ Battle menu (PC)', 'Diamond: on your turn the hero\'s skills pop up beside them, laid out like a controller\'s buttons. Bar: a bottom bar with slanted skill buttons. Classic: the old fixed panel.', () => FX.ui !== 'classic', () => ({ dia: 'Diamond', bar: 'Bar', classic: 'Classic' })[FX.ui]],
   ['travel', '🚶 Travel scenes', 'A short walking scene between fights, camps and events during a quest. Click or press a key to skip any of them.', () => FX.travel],
-  ['rings', '⭕ Health rings (PC)', 'On: each fighter stands on two rings, health outside and armour inside, that shift from cool colours to red as they drain; an orange outline means an attack is coming at her, red and 💀 that it could kill her. Off: the classic health and armour bars.', () => FX.rings !== false],
+  ['rings', '⭕ Health rings (PC)', 'On: each fighter stands on two rings: blood (health) outside, steel armour inside, that break up, crack and drip as they drain; red marks over a hero show the hits coming her way. Off: the classic health and armour bars.', () => FX.rings !== false],
   ['cb', '🎨 Colour-blind palette', 'Safer colours for the element numbers (blue, orange and yellow instead of red and green tints).', () => FX.cb],
   ['talk', '💬 Battle chatter', 'Heroes talk in little speech bubbles: crits, kills, broken armour, boss phases and gag lines.', () => FX.talk],
   ['spicy', '🔥 Fanservice', 'On: super broken heroes use their own (fog-censored) art, and everyone reacts to being stripped in their own way. Off: super broken heroes keep their broken look, and the chatter stays tame.', () => FX.spicy]
@@ -4580,6 +4618,7 @@ function renderBook(reset) {
   $('gb-tabs').innerHTML = tabs.map(([k, ic, n], i) => `<button class="${k === bookTab ? 'sel' : ''}${k !== bookTab && bookNew(k).length ? ' new' : ''}" style="--tc:${BOOK_TINT[i % BOOK_TINT.length]}" onclick="bookTabTo('${k}')"><span>${ic}</span>${n}</button>`).join('');
   const t = tabs.find(x => x[0] === bookTab) || tabs[0];
   $('gb-flow').innerHTML = `<div class="gb-chap"><span>${t[1]}</span><b>${t[2]}</b><i>❦</i></div>` + bookChapterHtml(t[0]);
+  if (typeof fillPortraits === 'function') fillPortraits();
   bookMarkSeen(t[0]);
   if (reset) bookSpread = 0;
   bookLayout(); bookShow();
@@ -4663,7 +4702,20 @@ function heroPage(id) {
     ${h.skills.map((sk, i) => `<div class="gb-sk"><b>${i + 1}. ${sk.n}</b>${sk.cd ? ` <small>(cooldown ${sk.cd})</small>` : ''}<br>${skillDesc(sk, h)}</div>`).join('')}
     ${G.how ? `<h4 class="gb-col">How she works</h4><div class="g">${G.how()}</div>` : ''}${G.tip ? `<h4>Playing her</h4><div class="g good">${G.tip}</div>` : ''}</div>`;
 }
+/* "Reading a Fight": the battle screen's signs, each next to a small copy of the real thing (drawn with the battle's own code where it can be) */
+function gbVis(html, text) { return `<div class="gb-vrow"><div class="gb-vis">${html}</div><div>${text}</div></div>`; }
+function gbRing(hp, arm) { try { return ringSvg({ hp, maxHp: 100, breakBar: arm, maxBreak: 100, state: arm > 0 ? 'armoured' : 'super', team: 'p', id: 'gb', name: 'gb' + hp }); } catch (e) { return '⭕'; } }
+function gbTally(T) { try { return `<span class="gb-tally">${tallySvg(T)}</span>`; } catch (e) { return '❗'; } }
+const BOOK_FIELD = [
+  { k: 'rings', h: 'Rings', when: () => true, b: () => [gbVis(`<div class="gb-rings">${gbRing(100, 100)}${gbRing(40, 35)}${gbRing(15, 0)}</div>`, `Every fighter stands on two rings. <b>Outer = blood (health)</b>: full and bright, then it breaks into clots, darkens and drips; under a quarter it beats. <b>Inner = armour</b>: steel plates that crack with each hit (brass once her first layer breaks); no inner ring once it's all gone. Hover a fighter (or its ⓘ, Y on a pad) for exact numbers.`)] },
+  { k: 'marks', h: 'Red marks', when: () => true, b: () => [gbVis(`${gbTally({ n: 2, was: 2 })}${gbTally({ n: 3, was: 3, lethal: true })}`, `Over a hero's head: how hard this round's enemy attacks will hit her, <b>one mark per 10%</b> of her health. A <b>💀</b> with them means she could go down: shield her, heal her or shift her back.`)] },
+  { k: 'intents', h: 'What the enemy will do', when: () => true, b: () => [gbVis(`<span class="ii"><b class="ii-i">⚔️</b><span class="ii-arrow">›</span><span class="ip port-box atk" data-port="seria">SE</span></span> <span class="ii charge"><b class="ii-i">💥</b></span> <span class="ii"><b class="ii-i">💤</b></span>`, `Under each enemy: its next move and <b>who it will land on</b> (taunts already counted). <b>💥</b> = winding up a blow at the whole party. <b>💤</b> = stunned, it skips its turn.`)] },
+  { k: 'aim', h: 'When you aim', when: () => true, b: () => [gbVis(`<span class="aims"><b class="ai kill">💀</b><b class="ai kill may">💀<i>?</i></b><b class="ai brk">💥</b><b class="ai wk">▲</b><b class="ai rs">▼</b></span>`, `After you pick a skill, each target shows what it would do: <b>💀</b> takes it down, <b>💀?</b> might (a high roll or a crit), <b>💥</b> breaks its armour, <b>▲</b> it's weak to this, <b>▼</b> it resists.`)] },
+  { k: 'menu', h: 'Your turn', when: () => true, b: () => [gbVis(`<span class="gb-keys"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> skills<br><kbd>4</kbd> items · <kbd>5</kbd> shift</span>`, `Her skills pop up beside her. A greyed skill is <b>cooling down</b> (the number is turns left). <b>Shift Line</b> swaps her with the ally ahead and ends her turn. Right-click or Esc backs out of a choice.`)] },
+  { k: 'chips', h: 'Small chips', when: () => true, b: () => [gbVis(`<span class="stealth-tag">🔰 −25% 3</span> <span class="stealth-tag" style="background:#3a2a12;color:#ffd9a0">🔥 burn 2</span>`, `Under a name: buffs and debuffs, with the turns they have left. Hover one for what it does (more in <b>Buffs &amp; Debuffs</b>). This book opens in battle too: <b>📖 Guide</b> at the top right, or Select on a pad.`)] }
+];
 const BOOK = {
+  field: BOOK_FIELD,
   basics: [
     { k: 'turn', h: 'A turn', when: () => true, b: () => [`Fighters act in <b>speed</b> order, highest first (the bar at the top shows the order). On your turn pick a <b>skill</b>, then a target. Strong skills have a <b>cooldown</b>: they can't be used again for that many turns. You can also <b>Shift Line</b> (swap with the ally ahead; it ends your turn) or use a potion from your bag.`] },
     { k: 'rows', h: 'Rows and range', when: () => true, b: () => [`Each side stands in a line. The first ${POS.front} are the <b>front row</b>, the rest the <b>back row</b>. ${RICON.melee} <b>Melee</b> skills hit the front row for <b>+${Math.round(POS.bonus * 100)}%</b> and the back row for <b>−${Math.round(POS.bonus * 100)}%</b>. ${RICON.ranged} <b>Ranged</b> skills are the reverse. When a fighter falls, the others step up.`] },
@@ -4740,13 +4792,7 @@ function guideHtml(guideTab) {          // one section's text (used by the ⚙�
   const g = (t, c = '') => `<div class="g ${c}">${t}</div>`, pb = Math.round(POS.bonus * 100);
   let h = '';
   if (guideTab === 'options') h = `<h4>Options</h4>` + OPTIONS.map(([k, n, d, on, lab]) => `<div class="optrow"><div><b>${n}</b><small>${d}</small></div><button id="opt-${k}" class="optsw ${on() ? 'on' : 'off'}" onclick="optToggle('${k}')">${lab ? lab() : on() ? 'ON' : 'OFF'}</button></div>`).join('') + `<div class="optrow"><div><b>🔊 Effects volume</b><small>Hits, spells, clicks and the blizzard wind. Needs Sound on.</small></div><input type="range" id="opt-sfx" min="0" max="100" step="5" value="${Math.round(FX.sfx * 100)}" oninput="setSfx(this.value / 100)" onchange="sfx('hit')" style="width:120px"></div><div class="optrow"><div><b>🎵 Music volume</b><small>Quiet ambient music that changes with the area. Needs Sound on.</small></div><input type="range" id="opt-vol" min="0" max="100" step="5" value="${Math.round(FX.vol * 100)}" oninput="setVol(this.value / 100)" style="width:120px"></div>` + `<div class="g">Options are remembered on this device. The other tabs are the game guide.</div>`;
-  else if (guideTab === 'controls') h = `<h4>Controller</h4>
-    ${g(`🎮 Plug in or pair any gamepad and press a button. <b>D-pad / left stick</b> move the highlight, <b>A</b> selects, <b>B</b> goes back or cancels, <b>Y</b> inspects the highlighted unit (ⓘ), <b>LB/RB</b> flip tabs in this menu, <b>Start</b> opens the pause menu (Esc on the keyboard; it has Return to Title), <b>Select</b> opens this guide and the <b>right stick</b> scrolls. Touch or the mouse takes over again instantly.`)}
-    <h4>Controller in battle</h4>
-    ${g(`On your turn the hero's skills pop up beside them in a diamond, laid out like the face buttons: <b>A</b> Skill 1, <b>X</b> Skill 2, <b>Y</b> Skill 3, <b>B</b> Items, <b>LB</b> Shift Line. Then <b>◀ ▶</b> to a target and <b>A</b>; <b>B</b> backs out. A skill with no target (a team barrier, Thunderstorm...) lights up everyone it reaches: <b>A</b> uses it. <b>RB</b> changes the battle speed. (With the Bar or Classic battle menu, the D-pad moves the highlight and <b>X</b> opens Items.)`)}
-    <h4>Mouse, touch and keyboard</h4>
-    ${g(`In battle: click a skill, then a target. <b>Right-click</b> or <b>Esc</b> backs out. Keys <b>1 2 3</b> pick a skill, <b>4</b> opens the bag, <b>5</b> shifts the line.`)}
-    ${g(`Everything is tappable or clickable. In Beach Volleyball you can also hit <b>Space</b> or <b>Enter</b>, or the big HIT button.`)}`;
+  else if (guideTab === 'controls') h = `<h4>Everywhere</h4><table class="ctl"><tr><th></th><th>🎮 Pad</th><th>🖱️ Mouse &amp; keys</th></tr><tr><td>Move the highlight</td><td>D-pad / left stick</td><td>Mouse</td></tr><tr><td>Choose</td><td><b>A</b></td><td>Click</td></tr><tr><td>Back / cancel</td><td><b>B</b></td><td>Esc · right-click</td></tr><tr><td>Look closer at a unit</td><td><b>Y</b></td><td>ⓘ · hover</td></tr><tr><td>Menu (options, title)</td><td><b>Start</b></td><td>Esc · ⚙️</td></tr><tr><td>Guide book</td><td><b>Select</b></td><td>📖</td></tr><tr><td>Flip tabs / chapters</td><td><b>LB</b> / <b>RB</b></td><td>Click a tab</td></tr><tr><td>Scroll</td><td>Right stick</td><td>Wheel</td></tr></table><h4>In battle</h4><table class="ctl"><tr><th></th><th>🎮 Pad</th><th>🖱️ Mouse &amp; keys</th></tr><tr><td>Skill 1 / 2 / 3</td><td><b>A</b> / <b>X</b> / <b>Y</b></td><td><b>1</b> / <b>2</b> / <b>3</b></td></tr><tr><td>Items</td><td><b>B</b></td><td><b>4</b></td></tr><tr><td>Shift Line</td><td><b>LB</b></td><td><b>5</b></td></tr><tr><td>Pick a target</td><td>◀ ▶ then <b>A</b></td><td>Click it</td></tr><tr><td>Relic weapon (when ready)</td><td><b>RB</b></td><td>Click its tile</td></tr><tr><td>Volleyball hit</td><td><b>A</b></td><td>Space · Enter · HIT</td></tr></table>${g(`Plug in any gamepad and press a button; the mouse takes over again the moment you use it.`)}`;      // a grid, not paragraphs
   else if (guideTab === 'basics') h = `<h4>A turn</h4>
     ${g(`Fighters act in <b>speed</b> order, highest first (the bar at the top shows the order). On your turn pick one of three <b>skills</b>, then a target. Strong skills have a <b>cooldown</b>: they cannot be used again for that many turns. You can also <b>Shift Line</b> (swap places with the ally ahead; it ends your turn) or use a potion from your bag.`)}
     <h4>Rows and range</h4>
@@ -5581,6 +5627,9 @@ async function playAnim(unit, key, state, host, onStart) {      // spa / trainin
    No file = a labelled placeholder box. Set SPR.flipParty / SPR.flipEnemy to true if your drawings face the other way
    (heroes should face right, enemies left). */
 const SPR = { flipParty: false, flipEnemy: false };
+/* Hero heights (2026-11-23): each hero's figure box is this much taller or shorter than the rest (feet stay planted), so every pose and outfit follows.
+   Picked from a lineup matched by head size: Tyr a touch taller, Aneesah up a little (small head), Aria down a little (big head). In battle and story scenes. */
+const HERO_H = { tyr: 1.08, aneesah: 1.04, aria: 0.96 };
 const SPR_SCALE = 0.85;      // every picture is drawn at this fraction of its figure box's height (1 = fill the box); same for idle, damaged and skills, in combat and in the dorm
 document.documentElement.style.setProperty('--sprH', (SPR_SCALE * 100) + '%');
 const sprFlip = u => (u.team === 'p' ? SPR.flipParty : SPR.flipEnemy) !== !!u.mir;      // the final fight's right-hand screen mirrors every figure
@@ -5619,7 +5668,7 @@ function artBlankCheck(m, a) {           // dev mode: a picture that loads but h
 }
 function figureEl(u, team) {
   let el = figs.get(u);
-  if (!el) { el = document.createElement('div'); el.className = 'figure'; el.innerHTML = `<div class="ph">${u.tag}</div>`; figs.set(u, el); el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's'); }
+  if (!el) { el = document.createElement('div'); el.className = 'figure'; el.innerHTML = `<div class="ph">${u.tag}</div>`; figs.set(u, el); if (u.team === 'p' && HERO_H[u.id]) el.style.setProperty('--hk', HERO_H[u.id]); el.style.setProperty('--bd', (-Math.random() * 4).toFixed(2) + 's'); el.style.setProperty('--bt', (3.6 + Math.random() * 1.2).toFixed(2) + 's'); }
   const a = spriteFor(u), want = a ? a.url : '';
   if (el.dataset.src !== want) {
     el.dataset.src = want; el.querySelectorAll('.spr').forEach(x => x.remove());
@@ -7294,25 +7343,71 @@ function ringCol(stops, f) {
     return '#' + a.map((x, j) => Math.round(x + (b[j] - x) * k).toString(16).padStart(2, '0')).join(''); } }
   return stops[stops.length - 1][1];
 }
+/* BLOOD & STEEL (2026-11-23, from rings_mockup.html): the health ring is blood, always red, in the same four bands as before (75 / 50 / 25%): full and bright, then a few
+   gaps open into clots, then it darkens and drips, and under 25% it's thin and broken with a heartbeat. The armour ring is riveted steel plates that crack with every
+   hit and start to go missing below ~45%; a hero's second (broken) layer is the same in brass. No inner ring once a hero is super broken or an enemy is broken.
+   Shapes are seeded per fighter so the gaps and cracks don't jump around between redraws. Shared gradients + the wobble filter live once in #rb-defs. */
+const RB = {
+  tiers: [ { min: .75, c: ['#ff2a44', '#b80d26'], cover: 1,   w: 7,   glow: .9,  drips: 0 },
+           { min: .5,  c: ['#e01834', '#8e0a1f'], cover: .9,  w: 6.4, glow: .65, drips: 0 },
+           { min: .25, c: ['#c4142e', '#6e0818'], cover: .74, w: 5.6, glow: .5,  drips: 2 },
+           { min: 0,   c: ['#ff3550', '#9a0c24'], cover: .52, w: 4.8, glow: .85, drips: 3, beat: true } ],          // near death: brighter again so it pops, and it beats
+  steel: ['#f4f8fc', '#9aa8b8', '#3e4856'], brass: ['#fff0a8', '#d9a325', '#5e3d06']
+};
+const rbRng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const rbHash = s => [...String(s)].reduce((a, c) => Math.imul(a ^ c.charCodeAt(0), 16777619), 2166136261);
+const rbPt = (rx, ry, a) => [100 + rx * Math.sin(a), 26 + ry * Math.cos(a)];          // a = 0 at the front (nearest the camera)
+const rbDepth = a => .78 + .22 * Math.cos(a);                                           // the front of a ring is a little thicker
+function rbRibbon(rx, ry, a0, a1, w, taper) {         // a filled band along the ellipse, an even width on screen; tapered ends for blood, square for plates
+  const n = Math.max(3, Math.ceil(Math.abs(a1 - a0) / .07)), out = [], inn = [];
+  for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n, tp = taper ? Math.min(1, Math.sin(Math.PI * i / n) * 2.2) : 1, h = w / 2 * rbDepth(a) * Math.max(.18, tp);
+    const [x, y] = rbPt(rx, ry, a), nx = Math.sin(a) / rx, ny = Math.cos(a) / ry, L = Math.hypot(nx, ny) || 1, ox = nx / L * h, oy = ny / L * h * .8;
+    out.push([x + ox, y + oy]); inn.push([x - ox, y - oy]); }
+  const f = p => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+  return 'M' + out.map(f).join('L') + 'L' + inn.reverse().map(f).join('L') + 'Z';
+}
+function rbDefs() {                                   // once per page: the tier gradients, steel, brass, and the wobble that makes blood look wet
+  if (document.getElementById('rb-defs')) return;
+  const lg = (id, cs) => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${cs.map((c, i) => `<stop offset="${cs.length === 2 ? i : [0, .45, 1][i]}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+  const d = document.createElement('div'); d.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  d.innerHTML = `<svg id="rb-defs" width="0" height="0"><defs>${RB.tiers.map((t, i) => lg('rbT' + i, t.c)).join('')}${lg('rbSteel', RB.steel)}${lg('rbBrass', RB.brass)}
+    <filter id="rbWob" x="-10%" y="-60%" width="120%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.09 0.35" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter></defs></svg>`;
+  document.body.appendChild(d);
+}
+function rbBlood(seed, f) {
+  const ti = RB.tiers.findIndex(t => f >= t.min), T = RB.tiers[ti], R = rbRng(rbHash(seed + 'hp')), rx = 92, ry = 19, TAU = Math.PI * 2;
+  const segs = []; if (T.cover >= 1) segs.push([0, TAU, false]);
+  else { let a = R() * TAU, left = TAU; while (left > .05) { const seg = Math.min(left, (.35 + R() * .9) * T.cover * 1.4), gap = Math.max(0, Math.min(left - seg, (.08 + R() * .35) * (1 - T.cover) * 2.2)); segs.push([a, a + seg, true]); a += seg + gap; left -= seg + gap; } }
+  let body = segs.map(([a0, a1, t]) => `<path d="${rbRibbon(rx, ry, a0, a1, T.w, t)}" fill="url(#rbT${ti})"/>`).join('');
+  if (T.cover < 1) segs.forEach(([, a1]) => { if (R() < .55) { const [x, y] = rbPt(rx, ry, a1 - .02); body += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(T.w * .42 * rbDepth(a1)).toFixed(2)}" fill="${T.c[1]}"/>`; } });     // clotted ends
+  let drips = ''; if (!FX.calm) for (let i = 0; i < T.drips; i++) { const a = (R() - .5) * 1.8, [x, y] = rbPt(rx, ry, a), h = 3 + R() * 3;
+    drips += `<path class="rb-drip" style="--dd:${(R() * 2).toFixed(2)}s;--dt:${(1.8 + R() * 1.4).toFixed(2)}s" d="M ${(x - 1.1).toFixed(1)} ${(y + 1).toFixed(1)} Q ${x.toFixed(1)} ${(y + h * .4).toFixed(1)} ${(x - .9).toFixed(1)} ${(y + h).toFixed(1)} A 1.3 1.3 0 1 0 ${(x + .9).toFixed(1)} ${(y + h).toFixed(1)} Q ${x.toFixed(1)} ${(y + h * .4).toFixed(1)} ${(x + 1.1).toFixed(1)} ${(y + 1).toFixed(1)} Z" fill="${T.c[1]}"/>`; }
+  const glow = `drop-shadow(0 0 ${(1.5 + 3 * T.glow).toFixed(1)}px ${T.c[0]}${Math.round(T.glow * 200).toString(16).padStart(2, '0')})`;
+  return { col: T.c[0], svg: `<ellipse cx="100" cy="26" rx="${rx}" ry="${ry}" fill="${T.c[1]}" opacity="${(.08 + .1 * T.glow).toFixed(2)}"/><g class="hpg" style="filter:${glow}"><g filter="url(#rbWob)"><g class="${T.beat && !FX.calm ? 'rb-beat' : ''}">${body}</g></g></g>${drips}` };
+}
+function rbPlates(seed, f, pal) {                     // riveted plates: cracks with every hit, plates go missing near the end
+  const R = rbRng(rbHash(seed + 'ar')), rx = 70, ry = 11.5, TAU = Math.PI * 2, n = 16, w = 5; let g = '', cr = '';
+  const lost = f <= 0 ? n : Math.floor(Math.max(0, .45 - f) / .45 * n * .55), order = [...Array(n).keys()].sort(() => R() - .5), gone = new Set(order.slice(0, lost)), cracks = Math.round((1 - f) * 14), dim = (.55 + .45 * f).toFixed(2);
+  for (let i = 0; i < n; i++) { if (gone.has(i)) continue; const a0 = i / n * TAU + .02, a1 = (i + 1) / n * TAU - .02, [x, y] = rbPt(rx, ry, (a0 + a1) / 2);
+    g += `<path d="${rbRibbon(rx, ry, a0, a1, w, false)}" fill="url(#${pal})"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(.8 * rbDepth((a0 + a1) / 2)).toFixed(2)}" fill="${pal === 'rbSteel' ? RB.steel[2] : RB.brass[2]}" opacity=".9"/>`; }
+  for (let k = 0; k < cracks; k++) { const i = order[(lost + k) % n]; if (gone.has(i)) continue; const a = (i + .2 + R() * .6) / n * TAU, d = rbDepth(a), [x, y] = rbPt(rx, ry, a);
+    const pts = [[x - .2, y - w * .55 * d], [x + .9, y - w * .15 * d], [x - .5, y + w * .1 * d], [x + .6, y + w * .55 * d]].map(p => p.map(v => v.toFixed(1)).join(' ')).join(' L ');
+    cr += `<path d="M ${pts}" fill="none" stroke="#0a0a0e" stroke-width=".75" stroke-linejoin="bevel"/><path d="M ${pts}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width=".3" transform="translate(.35 0)"/>`; }
+  return `<g style="filter:brightness(${dim}) drop-shadow(0 1px 1px rgba(0,0,0,.6))">${g}</g>${cr}`;
+}
 function ringSvg(u, bfx, sk) {
   if (!isAlive(u)) return '';
-  const P = FX.cb ? RING.cb : RING, hero = u.team === 'p', f = Math.max(0, u.hp / u.maxHp), hideHp = !!(u.final || u.trollPart);
-  const ell = (rx, ry) => `M 100 ${26 + ry} A ${rx} ${ry} 0 1 1 100 ${26 - ry} A ${rx} ${ry} 0 1 1 100 ${26 + ry}`, O = ell(92, 19), I = ell(72, 12);
-  const hc = ringCol(P.hp, f); let g = '';
-  g += `<ellipse cx="100" cy="26" rx="90" ry="18" fill="${hideHp ? '#000' : hc}" opacity=".13"/>`;                                 // a pool of its light on the floor
-  if (hideHp) g += `<path d="${O}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5" stroke-dasharray="2 3" pathLength="100"/>`;
-  else { const keep = Math.max(f > 0 ? 1 : 0, Math.ceil(f * 4 - 1e-9)), lit = [0, 3, 1, 2].slice(0, keep);            // quarters: front-right, front-left, back-right, back-left (the back goes first)
-    g += `<path d="${O}" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="9" pathLength="100"/>`;
-    for (let q = 0; q < 4; q++) { const on = lit.includes(q);
-      g += `<path d="${O}" fill="none" stroke="${on ? hc : 'rgba(255,255,255,.08)'}" stroke-width="${on ? 6 : 4}" pathLength="100" stroke-dasharray="23.4 76.6" stroke-dashoffset="${-(q * 25 + .8)}"${on ? ' class="lit"' : ''}/>`; }
-    }
-  const arm = u.state === 'armoured' ? ['ar', u.maxBreak ? u.breakBar / u.maxBreak : 0] : hero && u.state === 'broken' && u.maxBreak2 ? ['ar2', u.break2 / u.maxBreak2] : null;
-  g += `<path d="${I}" fill="none" stroke="rgba(0,0,0,.55)" stroke-width="5.5" pathLength="100"/>`;
-  g += arm ? `<path d="${I}" fill="none" stroke="${ringCol(P[arm[0]], arm[1])}" stroke-width="3.5" pathLength="100" class="lit"/>`
-    : `<path d="${I}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2" pathLength="100" stroke-dasharray="6 3 2 5 9 2 4 4"/>`;      // broken: a cracked ring
+  rbDefs();
+  const hero = u.team === 'p', f = Math.max(0, u.hp / u.maxHp), hideHp = !!(u.final || u.trollPart), seed = (u.name || u.id) + (u.team || '');
+  const ell = (rx, ry) => `M 100 ${26 + ry} A ${rx} ${ry} 0 1 1 100 ${26 - ry} A ${rx} ${ry} 0 1 1 100 ${26 + ry}`;
+  let g = '', rc = '#9aa';
+  if (hideHp) g += `<path d="${ell(92, 19)}" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="5" stroke-dasharray="2 3" pathLength="100"/>`;      // a boss whose health isn't shown
+  else { const b = rbBlood(seed, f); g += b.svg; rc = b.col; }
+  const arm = u.state === 'armoured' ? ['rbSteel', u.maxBreak ? u.breakBar / u.maxBreak : 0] : hero && u.state === 'broken' && u.maxBreak2 ? ['rbBrass', u.break2 / u.maxBreak2] : null;
+  if (arm) g += rbPlates(seed, arm[1], arm[0]);
   const B = u.barrier || 0, ward = hero && sk && isWard(sk) && sk.p && (sk.t === 'barrier' || u !== cur || sk.self) ? sk.p : 0;
   if (B > 0 || ward > B) g += `<path d="${ell(97, 22)}" fill="none" stroke="#b388ff" stroke-width="${B > 0 ? 4 : 3}" pathLength="100" class="shd${B > 0 ? '' : ' ghost'}"${B > 0 ? '' : ' stroke-dasharray="3 2"'}/>`;
-  return `<svg class="ring${u._trail && performance.now() - u._trail.t0 < 600 ? ' flare' : ''}" viewBox="0 0 200 52" style="--rc:${hideHp ? '#9aa' : hc}">${g}</svg>`;
+  return `<svg class="ring${u._trail && performance.now() - u._trail.t0 < 600 ? ' flare' : ''}" viewBox="0 0 200 52" style="--rc:${rc}">${g}</svg>`;
 }
 function intentIcons(u) {          // rings mode: the enemy's move as icons, and the portrait of whoever it will really land on (taunts and Shield Wall included)
   if (u.trollPart && u.state !== 'armoured') return '<span class="ii" title="Broken: no attack until it grows back"><b class="ii-i">🦴</b></span>';
@@ -7688,6 +7783,38 @@ function diaTag() {
   if (tg.dataset.h !== h) { tg.dataset.h = h; tg.innerHTML = h; }
   tg.classList.toggle('on', !!h); placeDia();
 }
+let endSub = '';
+function endShow() {                       // the fight is over: the buttons, and a big result banner (the turn line is hidden in the diamond menu, and the gold was only in the log)
+  $('end-buttons').style.display = 'flex';
+  { const bs = $('battle-sub'); if (bs && quest && quest.gold != null) bs.textContent = bs.textContent.replace(/Quest gold: \d+/, 'Quest gold: ' + quest.gold); }      // the corner total was only set when the fight began
+  const t = ($('turn-indicator').innerText || '').trim(), bad = /defeat|falls back|fled|flees/i.test(t), B = $('end-banner');
+  const head = t.split(/[.!:(]/)[0].trim() || t, rest = t.slice(head.length).replace(/^[!.:]\s*/, '').trim();
+  B.className = 'on' + (bad ? ' bad' : ''); B.querySelector('b').textContent = head; B.querySelector('span').textContent = [rest, endSub].filter(Boolean).join(' · ');
+}
+/* First fight: short labels point at what a new player can't guess (turn order, the rings, the red tally marks, enemy intents, the skill menu). Once per save (game.coach.battle); any click or key closes it. */
+let coachUp = false;
+function coachBattle() {
+  if (coachUp || devMode || !game || (game.coach && game.coach.battle) || !waiting || over || !$('battle-scene').classList.contains('show')) return;
+  const box = q => {                         // the screen box of the first match (or of all matches, for "all:")
+    const all = q.startsWith('all:'), els = all ? [...document.querySelectorAll(q.slice(4))] : [document.querySelector(q)];
+    const rs = els.filter(Boolean).map(e => e.getBoundingClientRect()).filter(r => r.width && r.height && r.bottom > 0 && r.top < innerHeight); if (!rs.length) return null;
+    const l = Math.min(...rs.map(r => r.left)), t = Math.min(...rs.map(r => r.top)), rr = Math.max(...rs.map(r => r.right)), b = Math.max(...rs.map(r => r.bottom));
+    return { left: l, top: t, width: rr - l, height: b - t };
+  };
+  const threatQ = document.querySelector('#party-cards .combatant-card.active-turn .threat') ? '#party-cards .combatant-card.active-turn .threat' : '#party-cards .threat';
+  const marks = [['#order', 'Turn order: who acts next', 'b'], ['#party-cards .combatant-card.active-turn svg.ring', 'Rings: health outside, armour inside', 'b'],
+    [threatQ, 'Red marks: how hard she will be hit this round', 't'], ['#enemy-cards .ii', 'What each enemy will do, and to whom', 't'],
+    ['all:#dia .dt', 'Her skills: pick one, then a target (keys 1–5)', 'b']].map(([q, txt, at]) => { const r = box(q); return r ? { r, txt, at } : null; }).filter(Boolean);
+  if (marks.length < 3) return;
+  coachUp = true; game.coach = game.coach || {}; game.coach.battle = true; writeSave();
+  const o = document.createElement('div'); o.id = 'coach';
+  o.innerHTML = marks.map(m => { const pad = 6, x = m.r.left - pad, y = m.r.top - pad, w = m.r.width + pad * 2, h = m.r.height + pad * 2, cx = x + w / 2;
+    return `<i class="ck-box" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"></i><span class="ck-tip ${m.at}" style="left:${Math.max(130, Math.min(innerWidth - 130, cx))}px;top:${Math.max(m.at === 'b' ? 0 : 60, Math.min(innerHeight - 60, m.at === 'b' ? y + h + 10 : y - 10))}px">${m.txt}</span>`; }).join('')
+    + '<button class="ck-go">Got it ▸</button>';
+  document.body.appendChild(o); requestAnimationFrame(() => o.classList.add('on'));
+  const close = e => { if (e && e.type === 'keydown' && e.repeat) return; e && e.preventDefault && e.type !== 'keydown' && e.stopPropagation(); o.classList.remove('on'); setTimeout(() => o.remove(), 250); coachUp = false; removeEventListener('keydown', close, true); };
+  o.addEventListener('pointerdown', close); setTimeout(() => addEventListener('keydown', close, true), 300);
+}
 function renderDia() {
   if (!$('battle-scene')) return;
   const d = $('dia') || diaBuild(), inv = $('inv'), home = $('bar');
@@ -7717,6 +7844,7 @@ function renderDia() {
   if (!waiting) diaHov = null;
   diaTag();
   if (document.body.classList.contains('bar-on')) diaLoop();
+  if (waiting && !coachUp && !(game && game.coach && game.coach.battle)) setTimeout(coachBattle, 900);
 }
 function placeDia() {                    // beside the hero, on the side facing the enemies, clamped to the screen
   const d = $('dia'); if (!d || !cur || !diaOn()) return;
@@ -7987,7 +8115,7 @@ function festerNow(t) {
 async function curseTurn(u) {            // returns false when the wearer can no longer act this turn
   const R = u.rel; if (!R || !isAlive(u)) return isAlive(u);
   if (R.icarus && quest && (quest.fightNo || 0) > ICARUS.after && !(u.statuses || []).some(x => x.type === 'burn')) {     // too close to the sun
-    u.statuses.push({ type: 'burn', dot: ICARUS.dot, stun: false, dur: 2 }); floatText(u, '☀️ TOO CLOSE TO THE SUN', 'tag hurt'); fx(u, 'fire', 700); log(`☀️ ${u.name}'s wings catch fire!`, 'log-status'); render(); await sleep(300); }
+    u.statuses.push({ type: 'burn', dot: ICARUS.dot, stun: false, dur: 2 }); floatText(u, '☀️ TOO CLOSE TO THE SUN', 'tag hurt'); sunFx(u); fx(u, 'fire', 700); log(`☀️ ${u.name}'s wings catch fire!`, 'log-status'); render(); await sleep(300); }
   if (R.narcissus && Math.random() < R.narcissus) { floatText(u, '🪷 LOST IN HER REFLECTION', 'tag'); log(`🪷 ${u.name} catches her own reflection and forgets the fight for a moment.`, 'log-status'); render(); await sleep(600); return false; }
   if (R.selfBleed) { const h0 = u.hp; u.hp = Math.max(1, u.hp - Math.max(1, Math.round(u.maxHp * R.selfBleed)));
     if (u.hp < h0) { log(`📜 Faust's Bargain takes its due from ${u.name} (${h0 - u.hp} HP).`, 'log-status'); floatText(u, h0 - u.hp, 'dot'); fx(u, 'bleed', 600); render(); await sleep(300); } }
@@ -8029,6 +8157,150 @@ function bandFx(side, col) {                // a wave / sweep across one side of
   const el = document.createElement('div'); el.className = 'wp-band'; el.style.cssText = `left:${x0 - 40}px;width:${x1 - x0 + 80}px;top:${y - 60}px;--c:${col}`; document.body.appendChild(el); setTimeout(() => el.remove(), 800);
 }
 function domeFx(col) { party.filter(isAlive).forEach(x => { const P = figPt(x); if (!P) return; const el = document.createElement('div'); el.className = 'wp-dome'; el.style.cssText = `left:${P.x}px;top:${P.r.bottom}px;width:${P.r.width * 1.1}px;height:${P.r.height * .95}px;--c:${col}`; document.body.appendChild(el); setTimeout(() => el.remove(), 900); }); }
+/* ==== BIG FX (2026-11-23): relic weapons, relic curses and boss storms drawn to match what they say they do ====
+   skyBolt: a real bolt from the top of the screen onto a fighter (Zeus, Mjolnir's landing, the Act 2 Keeper's storm). arcBolt: lightning jumping between two fighters.
+   tideWave: a curling wave rolls across a whole side (Trident). staffSweep: a golden staff grows and sweeps the line (Ruyi). flySpear / flyArrow: drawn projectiles
+   with trails (Gungnir, Artemis). slashArc: a crescent cut in the weapon's style (Excalibur, Harpe, Gáe Bolg, Dáinsleif). aegisFx / caduceusFx: party shields and a
+   healing helix. stoneFx: Medusa's gaze greys and cracks the target. All of it is pure decoration; Reduced motion keeps it short. */
+const fxMs = ms => Math.max(60, (FX.calm ? ms * .55 : ms) / battleSpd());
+function fxSvg(z = 70) {
+  const vw = innerWidth, vh = innerHeight, s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('viewBox', `0 0 ${vw} ${vh}`); s.setAttribute('fill', 'none'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round');
+  Object.assign(s.style, { position: 'fixed', left: 0, top: 0, width: vw + 'px', height: vh + 'px', zIndex: z, pointerEvents: 'none', overflow: 'visible' });
+  document.body.appendChild(s); return s;
+}
+const fxFeet = t => { const P = figPt(t); return P ? { x: P.x, y: P.r.bottom - P.r.height * .06, mid: P.y, h: P.r.height, w: P.r.width } : null; };
+function boltLayers(pts, col, w, a = 1) {      // one lightning stroke: a wide soft glow, the coloured body, a white-hot core
+  return `<polyline points="${pts}" stroke="${col}" stroke-width="${w * 5}" opacity="${.28 * a}" style="filter:blur(${w * 1.6}px)"/><polyline points="${pts}" stroke="${col}" stroke-width="${w * 1.9}" opacity="${.95 * a}"/><polyline points="${pts}" stroke="#fff" stroke-width="${w * .8}" opacity="${a}"/>`;
+}
+function skyBolt(t, o = {}) {                 // resolves the moment the bolt lands, so the hit can line up with it
+  const F = fxFeet(t); if (!F) return Promise.resolve();
+  const vw = innerWidth, vh = innerHeight, col = o.col || '#8fc4ff', sx = F.x + (Math.random() - .5) * vw * .12, s = fxSvg(71);
+  const main = jagPts(sx, -30, F.x, F.y, 20, vh * .085), P = main.trim().split(' ').map(p => p.split(',').map(Number));
+  let br = ''; for (let k = 0; k < 3; k++) { const q = P[4 + Math.floor(Math.random() * (P.length - 9))], dir = Math.random() < .5 ? -1 : 1;
+    br += boltLayers(jagPts(q[0], q[1], q[0] + dir * (40 + Math.random() * 120), q[1] + 50 + Math.random() * 120, 7, 28), col, 1.4, .8); }
+  const sparks = Array.from({ length: 10 }, (_, i) => { const a = Math.PI * (1.05 + i / 9 * .9), r = F.w * (.25 + Math.random() * .3);
+    return `<line x1="${F.x}" y1="${F.y}" x2="${(F.x + Math.cos(a) * r).toFixed(1)}" y2="${(F.y + Math.sin(a) * r * .6).toFixed(1)}" stroke="#fff" stroke-width="2" class="sk"/>`; }).join('');
+  s.innerHTML = `<rect x="${sx - vh * .04}" y="0" width="${vh * .08}" height="${F.y}" fill="${col}" opacity=".18" style="filter:blur(14px)"/>${br}${boltLayers(main, col, 3.2)}
+    <ellipse cx="${F.x}" cy="${F.y}" rx="${F.w * .55}" ry="${F.w * .14}" fill="${col}" opacity=".55" class="gl" style="filter:blur(6px)"/><ellipse cx="${F.x}" cy="${F.y}" rx="${F.w * .22}" ry="${F.w * .06}" fill="#fff" class="gl"/><g class="sks">${sparks}</g>`;
+  const T = fxMs(520);
+  s.animate([{ opacity: 0 }, { opacity: 1, offset: .06 }, { opacity: .3, offset: .2 }, { opacity: 1, offset: .32 }, { opacity: .55, offset: .55 }, { opacity: 1, offset: .62 }, { opacity: 0 }], { duration: T, fill: 'forwards' });
+  s.querySelector('.sks').animate([{ transform: 'scale(.2)', opacity: 1 }, { transform: 'scale(1.25)', opacity: 0 }], { duration: T * .8, easing: 'ease-out', fill: 'forwards' }); s.querySelector('.sks').style.transformOrigin = `${F.x}px ${F.y}px`;
+  setTimeout(() => s.remove(), T + 40);
+  const fl = document.createElement('div'); fl.className = 'boltflash'; fl.style.background = `radial-gradient(circle at ${F.x}px ${F.y - F.h * .3}px, rgba(255,255,255,.9), ${col}88 30%, transparent 70%)`; document.body.appendChild(fl);
+  fl.animate([{ opacity: 0 }, { opacity: .8, offset: .1 }, { opacity: .15, offset: .3 }, { opacity: .55, offset: .4 }, { opacity: 0 }], { duration: T, fill: 'forwards' }); setTimeout(() => fl.remove(), T + 40);
+  const f = figs.get(t); if (f) { f.classList.add('tint-shock'); setTimeout(() => f.classList.remove('tint-shock'), T); }
+  shake(2); return sleep(T * .12);
+}
+function arcBolt(a, b, col = '#9fd8ff') {     // lightning leaping from one fighter to another (Chain Lightning)
+  const A = figPt(a), B = figPt(b); if (!A || !B) return; const s = fxSvg(71), T = fxMs(360);
+  s.innerHTML = boltLayers(jagPts(A.x, A.y, B.x, B.y, 14, 46), col, 2.2) + boltLayers(jagPts(A.x, A.y, B.x, B.y, 10, 30), col, 1, .6);
+  s.animate([{ opacity: 0 }, { opacity: 1, offset: .1 }, { opacity: .4, offset: .35 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: T, fill: 'forwards' }); setTimeout(() => s.remove(), T + 40);
+}
+function tideWave(side) {                     // a curling breaker rolls in from the caster's side and crashes over the whole line; resolves as it reaches the first fighter
+  const list = (side === 'e' ? enemies : party).filter(isAlive).map(fxFeet).filter(Boolean); if (!list.length) return Promise.resolve();
+  const x0 = Math.min(...list.map(p => p.x - p.w / 2)), x1 = Math.max(...list.map(p => p.x + p.w / 2)), feet = Math.max(...list.map(p => p.y)) + 8, H = Math.max(...list.map(p => p.h)) * 1.02;
+  const dir = side === 'e' ? 1 : -1, W = H * .75, s = fxSvg(71), top = feet - H, id = 'tw' + Date.now(), T = fxMs(1350);
+  const P = (x, y) => `${(x * W).toFixed(1)} ${(y * H).toFixed(1)}`;     // the breaker, facing right: front at x = 0, bottom at y = H
+  const body = `M ${P(-1.5, 1)} L ${P(-1.5, .56)} C ${P(-.95, .52)} ${P(-.5, .36)} ${P(-.26, .15)} C ${P(-.1, .01)} ${P(.15, -.05)} ${P(.3, .08)} C ${P(.43, .18)} ${P(.38, .37)} ${P(.22, .39)}
+    C ${P(.12, .41)} ${P(.09, .31)} ${P(.16, .26)} C ${P(.05, .46)} ${P(.1, .8)} ${P(.32, 1)} Z`;
+  const crest = `M ${P(-.42, .2)} C ${P(-.2, .02)} ${P(.12, -.06)} ${P(.3, .08)} C ${P(.43, .18)} ${P(.38, .37)} ${P(.22, .39)}`;
+  const face = `M ${P(.16, .3)} C ${P(.08, .5)} ${P(.14, .8)} ${P(.32, 1)}`;
+  const spray = Array.from({ length: 22 }, () => `<circle cx="${(W * (.05 + Math.random() * .5)).toFixed(0)}" cy="${(H * (-.12 + Math.random() * .35)).toFixed(0)}" r="${(2 + Math.random() * 6).toFixed(1)}" fill="#f2fdff" opacity="${(.45 + Math.random() * .55).toFixed(2)}"/>`).join('');
+  s.innerHTML = `<defs><linearGradient id="${id}v" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9f6ff"/><stop offset=".3" stop-color="#46bde8"/><stop offset="1" stop-color="#0a4b86"/></linearGradient>
+      <linearGradient id="${id}h" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".45" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="1"/></linearGradient>
+      <mask id="${id}m" maskUnits="userSpaceOnUse" x="${-1.6 * W}" y="${-.3 * H}" width="${2.2 * W}" height="${1.4 * H}"><rect x="${-1.5 * W}" y="${-.3 * H}" width="${2 * W}" height="${1.4 * H}" fill="url(#${id}h)"/></mask></defs>
+    <g class="wv"><g mask="url(#${id}m)" style="filter:drop-shadow(0 0 14px rgba(120,220,255,.6))"><path d="${body}" fill="url(#${id}v)" opacity=".92"/><path d="${face}" stroke="#bff0ff" stroke-width="5" opacity=".6"/>
+      <path d="${crest}" stroke="#fff" stroke-width="16" opacity=".4" style="filter:blur(5px)"/><path d="${crest}" stroke="#fff" stroke-width="6"/></g>
+      <ellipse cx="${.3 * W}" cy="${H}" rx="${.35 * W}" ry="${.06 * H}" fill="#fff" opacity=".8" style="filter:blur(4px)"/>${spray}</g>`;
+  const g = s.querySelector('.wv'), from = dir > 0 ? x0 - W * .4 : x1 + W * .4, to = dir > 0 ? x1 + W * .5 : x0 - W * .5;
+  g.animate([{ transform: `translate(${from}px,${top + H * .25}px) scale(${dir * .9},.75)`, opacity: 0 }, { opacity: 1, offset: .1 }, { transform: `translate(${from + (to - from) * .5}px,${top}px) scale(${dir},1)`, offset: .5 },
+    { transform: `translate(${to}px,${top + H * .15}px) scale(${dir * 1.05},.85)`, opacity: 0 }], { duration: T, easing: 'cubic-bezier(.4,.05,.6,.95)', fill: 'forwards' });
+  setTimeout(() => s.remove(), T + 40);
+  return sleep(T * .32);
+}
+function staffSweep(side) {                   // the staff grows out over the line and sweeps across it, leaving afterimages
+  const list = (side === 'e' ? enemies : party).filter(isAlive).map(fxFeet).filter(Boolean); if (!list.length) return Promise.resolve();
+  const x0 = Math.min(...list.map(p => p.x - p.w / 2)), x1 = Math.max(...list.map(p => p.x + p.w / 2)), H = Math.max(...list.map(p => p.h)), y = Math.min(...list.map(p => p.y)) - H * .45;
+  const dir = side === 'e' ? 1 : -1, px = dir > 0 ? x0 - H * .35 : x1 + H * .35, L = (x1 - x0) + H * .7, s = fxSvg(71), T = fxMs(620);
+  const staff = o => `<g opacity="${o}"><rect x="0" y="-7" width="${L}" height="14" rx="7" fill="#d23a2a"/><rect x="${L * .1}" y="-6" width="${L * .8}" height="12" fill="#c9a24a"/><rect x="${L * .1}" y="-6" width="${L * .8}" height="4" fill="#ffe9a8" opacity=".6"/><rect x="0" y="-8" width="${L * .1}" height="16" rx="7" fill="#ffd54f"/><rect x="${L * .9}" y="-8" width="${L * .1}" height="16" rx="7" fill="#ffd54f"/></g>`;
+  s.innerHTML = [.12, .22, .38, 1].map((o, i) => `<g class="st" data-i="${i}" style="filter:drop-shadow(0 0 10px #ffd54f)">${staff(o)}</g>`).join('');
+  s.querySelectorAll('.st').forEach((g, i) => g.animate([{ transform: `translate(${px}px,${y}px) scale(${dir},1) rotate(-38deg) scaleX(.15)` }, { transform: `translate(${px}px,${y}px) scale(${dir},1) rotate(-30deg) scaleX(1)`, offset: .25 }, { transform: `translate(${px}px,${y}px) scale(${dir},1) rotate(${22 - (3 - i) * 6}deg) scaleX(1)`, offset: .7 }, { transform: `translate(${px}px,${y}px) scale(${dir},1) rotate(${26 - (3 - i) * 6}deg) scaleX(1)`, opacity: 0 }], { duration: T, delay: (3 - i) * 24, easing: 'cubic-bezier(.5,0,.3,1)', fill: 'forwards' }));
+  setTimeout(() => s.remove(), T + 140); return sleep(T * .55);
+}
+async function flyThing(a, b, kind, ms) {     // a drawn spear or arrow with a glowing trail
+  if (!a || !b) return; const s = fxSvg(72), ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI, T = fxMs(ms);
+  const spear = kind === 'spear', col = spear ? '#ffcf5a' : '#cfe4ff', len = spear ? 210 : 110;
+  s.innerHTML = `<g class="ft"><line x1="${-len * 2.2}" y1="0" x2="${-len * .2}" y2="0" stroke="${col}" stroke-width="${spear ? 10 : 6}" opacity=".35" style="filter:blur(5px)"/>
+    <line x1="${-len}" y1="0" x2="0" y2="0" stroke="${spear ? '#8a5a2b' : '#e8eef8'}" stroke-width="${spear ? 6 : 3}"/>
+    ${spear ? `<path d="M -6 -9 L 30 0 L -6 9 L 2 0 Z" fill="#f6f0e0" stroke="${col}" stroke-width="2"/><path d="M ${-len} -6 L ${-len - 14} 0 L ${-len} 6" stroke="#c9302c" stroke-width="3"/>` : `<path d="M -4 -6 L 18 0 L -4 6 Z" fill="#fff"/><path d="M ${-len} 0 L ${-len - 12} -7 M ${-len} 0 L ${-len - 12} 7 M ${-len + 8} 0 L ${-len - 4} -7 M ${-len + 8} 0 L ${-len - 4} 7" stroke="#bcd3ff" stroke-width="2"/>`}</g>`;
+  s.style.filter = `drop-shadow(0 0 8px ${col}) drop-shadow(0 0 18px ${col})`;
+  try { await s.querySelector('.ft').animate([{ transform: `translate(${a.x}px,${a.y}px) rotate(${ang}deg)` }, { transform: `translate(${b.x}px,${b.y}px) rotate(${ang}deg)` }], { duration: T, easing: 'cubic-bezier(.5,0,.9,.6)', fill: 'forwards' }).finished; } catch (e) { }
+  s.remove();
+}
+const SLASH_STYLE = { excalibur: { a: '#fff4c8', b: '#ff7a1f', embers: '#ffb347' }, harpe: { a: '#ffffff', b: '#b8c8ff', moon: true }, gaebolg: { a: '#ffd0d8', b: '#d01438', embers: '#ff4a6a' }, dainsleif: { a: '#f0dcff', b: '#6a1fb8', embers: '#c060ff' } };
+function slashArc(t, key) {                   // a crescent cut sweeping through the target, styled per weapon
+  const F = fxFeet(t); if (!F) return; const St = SLASH_STYLE[key] || { a: '#fff', b: '#e8e0ff' }, s = fxSvg(71), R = F.h * .34, cx = F.x, cy = F.mid, id = 'sl' + Date.now(), T = fxMs(460);
+  const cres = `M ${-R} 0 A ${R} ${R} 0 0 1 ${R} 0 A ${R} ${R * .78} 0 0 0 ${-R} 0 Z`, echo = `M ${-R * .86} ${R * .08} A ${R * .86} ${R * .86} 0 0 1 ${R * .86} ${R * .08} A ${R * .86} ${R * .74} 0 0 0 ${-R * .86} ${R * .08} Z`;
+  const em = St.embers ? Array.from({ length: 12 }, () => `<circle cx="${((Math.random() - .5) * R * 1.8).toFixed(0)}" cy="${(-Math.random() * R * .9).toFixed(0)}" r="${(1.5 + Math.random() * 3).toFixed(1)}" fill="${St.embers}" class="em"/>`).join('') : '';
+  s.innerHTML = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${St.b}" stop-opacity=".15"/><stop offset=".4" stop-color="${St.b}"/><stop offset="1" stop-color="${St.a}"/></linearGradient></defs>
+    <g class="sl" style="filter:drop-shadow(0 0 10px ${St.b}) drop-shadow(0 0 24px ${St.b})">${St.moon ? `<circle cx="${R * .5}" cy="${-R * .7}" r="${R * .22}" fill="#f4f6ff" opacity=".85"/><circle cx="${R * .58}" cy="${-R * .76}" r="${R * .2}" fill="#0b0b18" opacity=".0"/>` : ''}<path d="${echo}" fill="url(#${id})" opacity=".45"/><path d="${cres}" fill="url(#${id})"/><path d="M ${-R * .6} ${-R * .8} A ${R} ${R} 0 0 1 ${R} 0" stroke="${St.a}" stroke-width="5"/><path d="M ${-R * .9} -2 A ${R * .9} ${R * .9} 0 0 1 ${R * .9} -2" stroke="#fff" stroke-width="2.5" opacity=".9"/>${em}</g>`;
+  const g = s.querySelector('.sl');
+  g.animate([{ transform: `translate(${cx}px,${cy}px) rotate(-150deg) scale(.6)`, opacity: 0 }, { opacity: 1, offset: .25 }, { transform: `translate(${cx}px,${cy}px) rotate(-20deg) scale(1.05)`, opacity: 1, offset: .7 }, { transform: `translate(${cx}px,${cy}px) rotate(5deg) scale(1.12)`, opacity: 0 }], { duration: T, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+  s.querySelectorAll('.em').forEach(e => e.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${(Math.random() - .5) * 60}px,${-30 - Math.random() * 60}px)`, opacity: 0 }], { duration: T * 1.6, delay: T * .3, fill: 'forwards' }));
+  setTimeout(() => s.remove(), T * 2 + 60);
+}
+function aegisFx() {                          // a golden shield snaps up in front of every hero
+  party.filter(isAlive).forEach((x, i) => { shieldFx(x, i * 70); setTimeout(() => { const el = figs.get(x), k = el && el.querySelector('.shield-fx:last-of-type'); if (k) k.classList.add('gold'); }, i * 70 + 5); });
+}
+function caduceusFx() {                       // two serpents of green light spiral up each hero, motes rising
+  party.filter(isAlive).forEach((x, n) => { const F = fxFeet(x); if (!F) return; const s = fxSvg(71), w = Math.min(F.w * .2, F.h * .11), h = F.h * .85, T = fxMs(1100);
+    const helix = ph => { let d = ''; for (let i = 0; i <= 40; i++) { const k = i / 40, X = F.x + Math.sin(k * Math.PI * 3 + ph) * w * (1 - k * .3), Y = F.y - k * h; d += (i ? ' L ' : 'M ') + X.toFixed(1) + ' ' + Y.toFixed(1); } return d; };
+    const motes = Array.from({ length: 10 }, () => `<circle cx="${(F.x + (Math.random() - .5) * w * 2).toFixed(0)}" cy="${(F.y - Math.random() * h * .5).toFixed(0)}" r="${(2 + Math.random() * 3).toFixed(1)}" fill="#d8ffd0" class="mo"/>`).join('');
+    s.innerHTML = `<g style="filter:drop-shadow(0 0 6px #7dff8a) drop-shadow(0 0 14px #3fd35a)"><path d="${helix(0)}" stroke="#9cff9a" stroke-width="4" pathLength="100" stroke-dasharray="100" class="hx"/><path d="${helix(Math.PI)}" stroke="#e6ffd8" stroke-width="3" pathLength="100" stroke-dasharray="100" class="hx"/>${motes}</g>`;
+    s.querySelectorAll('.hx').forEach(p => p.animate([{ strokeDashoffset: 100, opacity: 1 }, { strokeDashoffset: 0, opacity: 1, offset: .6 }, { strokeDashoffset: -60, opacity: 0 }], { duration: T, delay: n * 80, fill: 'both' }));
+    s.querySelectorAll('.mo').forEach(m => m.animate([{ transform: 'translateY(0)', opacity: 0 }, { opacity: 1, offset: .3 }, { transform: `translateY(${-h * .5}px)`, opacity: 0 }], { duration: T, delay: n * 80 + Math.random() * 300, fill: 'both' }));
+    setTimeout(() => s.remove(), T + n * 80 + 400); });
+}
+function stoneFx(t) {                         // Medusa: the target greys out and cracks
+  const el = figs.get(t); if (!el) return; el.classList.add('tint-stone'); setTimeout(() => el.classList.remove('tint-stone'), fxMs(1400));
+  const F = fxFeet(t); if (!F) return; const s = fxSvg(71), T = fxMs(1300); let d = '';
+  for (let k = 0; k < 6; k++) { let x = F.x + (Math.random() - .5) * F.w * .4, y = F.y - F.h * (.2 + Math.random() * .6); d += `M ${x.toFixed(0)} ${y.toFixed(0)}`; for (let j = 0; j < 4; j++) { x += (Math.random() - .5) * 30; y += 8 + Math.random() * 18; d += ` L ${x.toFixed(0)} ${y.toFixed(0)}`; } }
+  s.innerHTML = `<path d="${d}" stroke="#1d1b18" stroke-width="3.4" opacity=".9"/><path d="${d}" stroke="#e8e2d0" stroke-width=".8" opacity=".7" transform="translate(1 0)"/><circle cx="${F.x}" cy="${F.y - F.h * .82}" r="${F.w * .1}" fill="#9cff6a" opacity=".0" class="eye"/>`;
+  s.animate([{ opacity: 0 }, { opacity: 1, offset: .15 }, { opacity: 1, offset: .75 }, { opacity: 0 }], { duration: T, fill: 'forwards' }); setTimeout(() => s.remove(), T + 40);
+}
+function sunFx(t) {                           // Icarus: the sun's glare beats down on the wearer
+  const F = fxFeet(t); if (!F) return; const s = fxSvg(70), T = fxMs(900), cy = F.y - F.h * 1.05;
+  const rays = Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI * 2; return `<line x1="${F.x + Math.cos(a) * F.w * .2}" y1="${cy + Math.sin(a) * F.w * .2}" x2="${F.x + Math.cos(a) * F.w * .42}" y2="${cy + Math.sin(a) * F.w * .42}" stroke="#ffe27a" stroke-width="4"/>`; }).join('');
+  s.innerHTML = `<polygon points="${F.x - F.w * .15},${cy} ${F.x + F.w * .15},${cy} ${F.x + F.w * .5},${F.y} ${F.x - F.w * .5},${F.y}" fill="#ffd54f" opacity=".22" style="filter:blur(8px)"/><circle cx="${F.x}" cy="${cy}" r="${F.w * .17}" fill="#fff3b0" style="filter:drop-shadow(0 0 16px #ffb300)"/>${rays}`;
+  s.animate([{ opacity: 0, transform: 'translateY(-20px)' }, { opacity: 1, transform: 'translateY(0)', offset: .3 }, { opacity: 1, offset: .7 }, { opacity: 0 }], { duration: T, fill: 'forwards' }); setTimeout(() => s.remove(), T + 40);
+}
+function necroFx(t) {                         // a rune circle opens under the fallen and souls pull it back up
+  const F = fxFeet(t); if (!F) return; const s = fxSvg(70), T = fxMs(1100), rx = F.w * .55, ry = F.w * .14;
+  const runes = Array.from({ length: 10 }, (_, i) => { const a = i / 10 * Math.PI * 2; return `<text x="${(F.x + Math.cos(a) * rx * .8).toFixed(0)}" y="${(F.y + Math.sin(a) * ry * .8 + 3).toFixed(0)}" fill="#e3c8ff" font-size="${Math.max(8, F.w * .06).toFixed(0)}" text-anchor="middle">${'ᚱᛟᚾᛞᛉᚦᛗᛃᛜᛇ'[i]}</text>`; }).join('');
+  const wisps = Array.from({ length: 6 }, () => `<path d="M ${(F.x + (Math.random() - .5) * rx).toFixed(0)} ${F.y} q ${(Math.random() - .5) * 30} ${-F.h * .3} 0 ${-F.h * (.5 + Math.random() * .3)}" stroke="#b388ff" stroke-width="4" opacity=".7" class="ws" pathLength="100" stroke-dasharray="100"/>`).join('');
+  s.innerHTML = `<g style="filter:drop-shadow(0 0 10px #7c4dff)"><ellipse cx="${F.x}" cy="${F.y}" rx="${rx}" ry="${ry}" stroke="#b388ff" stroke-width="3"/><ellipse cx="${F.x}" cy="${F.y}" rx="${rx * .7}" ry="${ry * .7}" stroke="#e3c8ff" stroke-width="1.5" stroke-dasharray="6 4"/>${runes}${wisps}</g>`;
+  s.querySelectorAll('.ws').forEach((w, i) => w.animate([{ strokeDashoffset: 100 }, { strokeDashoffset: 0, offset: .6 }, { strokeDashoffset: -100, opacity: 0 }], { duration: T, delay: i * 60, fill: 'both' }));
+  s.animate([{ opacity: 0 }, { opacity: 1, offset: .15 }, { opacity: 1, offset: .75 }, { opacity: 0 }], { duration: T + 300, fill: 'forwards' }); setTimeout(() => s.remove(), T + 360);
+}
+function quakeWave(b) {                       // a boss's charged blow: a shockwave rolls along the ground from the boss through the whole party
+  const B = fxFeet(b), list = party.filter(isAlive).map(fxFeet).filter(Boolean); if (!B || !list.length) return;
+  const far = Math.max(...list.map(p => Math.abs(p.x - B.x))) + 120, s = fxSvg(70), T = fxMs(700);
+  s.innerHTML = [0, 1, 2].map(k => `<ellipse class="qw" cx="${B.x}" cy="${B.y}" rx="${far}" ry="${far * .16}" stroke="${k ? '#ffb380' : '#fff1d8'}" stroke-width="${k ? 6 : 10}" opacity="${k ? .5 : .9}" style="filter:blur(${k * 2}px) drop-shadow(0 0 12px #ff6d00)"/>`).join('') + `<ellipse cx="${B.x}" cy="${B.y}" rx="${far * .4}" ry="${far * .07}" fill="#ff6d00" opacity=".35" style="filter:blur(10px)" class="qw"/>`;
+  s.querySelectorAll('.qw').forEach((e, k) => { e.style.transformOrigin = `${B.x}px ${B.y}px`; e.animate([{ transform: 'scale(.05)', opacity: 1 }, { transform: 'scale(1)', opacity: 0 }], { duration: T, delay: k * 70, easing: 'cubic-bezier(.2,.6,.4,1)', fill: 'both' }); });
+  setTimeout(() => s.remove(), T + 260);
+}
+function clawFx(h) {                          // the Carapace King's claw: two serrated jaws hinge in from the right and snap shut on a hero
+  const F = fxFeet(h); if (!F) return; const s = fxSvg(72), T = fxMs(560), cy = F.y - F.h * .48, Rr = F.h * .26, hx = F.x + Rr * .9;
+  const jaw = `<path d="M 0 0 C ${-Rr * .3} ${-Rr * .62} ${-Rr * .95} ${-Rr * .62} ${-Rr * 1.25} ${-Rr * .06} C ${-Rr * .95} ${-Rr * .22} ${-Rr * .45} ${-Rr * .2} ${-Rr * .05} ${Rr * .1} Z" fill="#c8452a" stroke="#3a0f06" stroke-width="3"/>
+    <path d="M ${-Rr * .15} ${-Rr * .3} C ${-Rr * .45} ${-Rr * .5} ${-Rr * .8} ${-Rr * .48} ${-Rr * 1.05} ${-Rr * .16}" stroke="#ff9a72" stroke-width="3" opacity=".8"/>
+    ${[.3, .55, .8].map(k => `<path d="M ${-Rr * k} ${-Rr * (.17 - k * .05)} l ${-Rr * .05} ${Rr * .1} l ${-Rr * .05} ${-Rr * .09}" fill="#f6e7d8" stroke="#3a0f06" stroke-width="1.2"/>`).join('')}`;
+  s.innerHTML = `<g style="filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))"><g class="up">${jaw}</g><g class="dn"><g transform="scale(1,-1)">${jaw}</g></g><circle cx="0" cy="0" r="${Rr * .14}" fill="#8a2a14" stroke="#3a0f06" stroke-width="3" class="hinge"/></g>`;
+  const at = `translate(${hx}px,${cy}px)`, open = 34;
+  const go = (el, a) => el.animate([{ transform: `${at} rotate(${a}deg)`, opacity: 0 }, { transform: `${at} rotate(${a}deg)`, opacity: 1, offset: .25 }, { transform: `${at} rotate(0deg)`, offset: .45, easing: 'ease-in' }, { transform: `${at} rotate(0deg)`, opacity: 1, offset: .85 }, { transform: `${at} rotate(0deg)`, opacity: 0 }], { duration: T, fill: 'forwards' });
+  go(s.querySelector('.up'), -open); go(s.querySelector('.dn'), open); const hg = s.querySelector('.hinge'); hg.animate([{ transform: at, opacity: 0 }, { transform: at, opacity: 1, offset: .25 }, { transform: at, opacity: 1, offset: .85 }, { transform: at, opacity: 0 }], { duration: T, fill: 'forwards' });
+  setTimeout(() => s.remove(), T + 40);
+}
 let aegisArmed = null;                      // the Aegis wielder whose shield is waiting for the next enemy to strike
 async function weaponStrike(u, i, target, s) {
   const W = WEAPONS[s.weapon], col = W.el ? (SK_COL[W.el] || '#fff') : '#e8e0ff';
@@ -8040,7 +8312,7 @@ async function weaponStrike(u, i, target, s) {
     if (W.harpe && target.hp <= target.maxHp * W.harpe) {
       if (target.final) tooPowerful(target, W.name);                                                        // the Final Stand's boss shrugs it off entirely
       else { x = scaleDmg(s, 2); if (target.state !== 'armoured' && !target.boss) x = { ...s, d: [target.hp + (target.barrier || 0), target.hp + (target.barrier || 0)] }; else if (target.boss && target.state !== 'armoured') tooPowerful(target, 'the killing blow'); floatText(target, '🌙 HARVEST', 'tag'); } }
-    slashFx(target, col); flash(col, .25, 300); await sleep(160 / battleSpd()); await hit(u, target, x);
+    slashArc(target, s.weapon); flash(col, .22, 300); await sleep(160 / battleSpd()); await hit(u, target, x);
     if (W.burst && isAlive(target) && target.state !== 'armoured' && target.final) tooPowerful(target, W.name);
     else if (W.burst && isAlive(target) && target.state !== 'armoured') { const b = ELEM.bleed; target.statuses = target.statuses.filter(q => q.type !== 'bleed'); target.statuses.push({ type: 'bleed', dot: Math.round(b.dot * W.burst), stun: false, dur: Math.round(b.dur * W.burst) }); floatText(target, '🪝 BARBS BURST', 'tag'); log(`🪝 The barbs of ${W.name} burst inside ${target.name}!`, 'log-status'); render(); }
     if (W.dain && isAlive(target) && isAlive(u)) { const out = new Set(), n = Math.round(u.maxHp * W.dain); floatText(u, '🗡️ THE BLADE TURNS', 'tag hurt'); log(`🗡️ ${target.name} still stands, and ${W.name} drinks from ${u.name} instead (${n}).`, 'log-status'); rxDmg(u, n, 'bleed', out); render(); await sleep(300); await rxFalls(out); }
@@ -8048,24 +8320,26 @@ async function weaponStrike(u, i, target, s) {
   else if (W.kind === 'pierce') {
     const line = u.team === 'p' ? enemies : party, behind = line.slice(line.indexOf(target) + 1).find(isAlive);
     say(`${u.name} hurls ${W.name}: it never misses!`); setSpot([u, target, behind].filter(Boolean));
-    await flyGlyph(castFig(u, target), figPt(target), '➤', 0, 300, 'spear'); await hit(u, target, s);
-    if (behind && isAlive(behind)) { await flyGlyph(figPt(target), figPt(behind), '➤', 0, 200, 'spear'); await hit(u, behind, s); }
+    await flyThing(castFig(u, target), figPt(target), 'spear', 300); await hit(u, target, s);
+    if (behind && isAlive(behind)) { await flyThing(figPt(target), figPt(behind), 'spear', 200); await hit(u, behind, s); }
   }
   else if (W.kind === 'wave' || W.kind === 'sweep') {
-    say(`${u.name} ${W.kind === 'wave' ? 'calls up the tide' : 'swings the growing staff'}!`); bandFx(u.team === 'p' ? 'e' : 'p', W.kind === 'wave' ? '#6fd3ff' : '#e8c070'); flash(W.kind === 'wave' ? '#6fd3ff' : '#e8c070', .2, 300); await sleep(260 / battleSpd());
-    for (const t of foes()) await hit(u, t, s);
+    say(`${u.name} ${W.kind === 'wave' ? 'calls up the tide' : 'swings the growing staff'}!`); const side = u.team === 'p' ? 'e' : 'p';
+    if (W.kind === 'wave') { sfx('whoosh', 'ice'); await tideWave(side); } else { sfx('swing'); await staffSweep(side); }
+    flash(W.kind === 'wave' ? '#6fd3ff' : '#e8c070', .15, 260);
+    for (const t of foes()) { await hit(u, t, s); if (W.kind === 'wave') await sleep(60 / battleSpd()); }
   }
   else if (W.kind === 'volley') {
     say(`${u.name} looses moonlight arrows!`);
-    for (let k = 0; k < (W.shots || 3); k++) { const f = foes(); if (!f.length) break; const t = choose(f, Math.random); await flyGlyph(castFig(u, t), figPt(t), '➵', 0, 240, 'arrow'); await hit(u, t, s); }
+    for (let k = 0; k < (W.shots || 3); k++) { const f = foes(); if (!f.length) break; const t = choose(f, Math.random); await flyThing(castFig(u, t), figPt(t), 'arrow', 240); await hit(u, t, s); }
   }
   else if (W.kind === 'shield') {
-    say(`${u.name} raises ${W.name}!`); domeFx('#ffe9a0'); sfx('ward');
+    say(`${u.name} raises ${W.name}!`); aegisFx(); sfx('ward');
     party.filter(isAlive).forEach(x => { x.barrier = Math.max(x.barrier || 0, W.p); floatText(x, '🛡️ ' + W.p, 'ward'); });
     aegisArmed = u; log(`🛡️ ${W.name} shields the party: the next enemy to strike meets Medusa's gaze.`, 'log-heal'); render(); await sleep(400);
   }
   else if (W.kind === 'heal') {
-    say(`${u.name} lifts the ${W.name}!`); domeFx('#9cff9a'); sfx('heal');
+    say(`${u.name} lifts the ${W.name}!`); caduceusFx(); sfx('heal');
     party.filter(isAlive).forEach(x => { const h0 = x.hp; x.hp = Math.min(x.maxHp, x.hp + Math.round(x.maxHp * W.heal)); const c = cleanse(x, 1); if (x.hp > h0) floatText(x, '+' + (x.hp - h0), 'heal'); if (c.length) setTimeout(() => floatText(x, '✨ ' + c[0].toUpperCase(), 'tag'), 200); });
     log(`⚕️ ${W.name}: the party heals ${Math.round(W.heal * 100)}% and sheds an ailment each.`, 'log-heal'); render(); await sleep(400);
   }
@@ -8078,8 +8352,7 @@ async function hammerThrow(from, to, strike) {        // a spinning hammer betwe
   const dur = (FX.calm ? 120 : 420) / battleSpd();
   try { await h.animate([{ transform: `translate(${ax}px,${ay}px) translate(-50%,-50%) rotate(0deg)` }, { transform: `translate(${bx}px,${by}px) translate(-50%,-50%) rotate(${strike ? 900 : -720}deg)` }], { duration: dur, easing: strike ? 'cubic-bezier(.4,0,.8,.6)' : 'ease-out' }).finished; } catch (e) { }
   h.remove();
-  if (strike) { const z = document.createElement('div'); z.className = 'mj-bolt'; z.style.left = bx + 'px'; z.style.height = by + 'px'; document.body.appendChild(z); setTimeout(() => z.remove(), 380);
-    flash('#d8ecff', .45, 380); shake(3); sfx('hit', 'shock', true, true); }
+  if (strike) { skyBolt(to, { col: '#9fd0ff' }); flash('#d8ecff', .35, 380); shake(3); sfx('hit', 'shock', true, true); }
 }
 function tooPowerful(t, what) {            // a relic trick that would cheese a boss: say so, so it never looks like a bug
   floatText(t, 'TOO POWERFUL', 'tag'); try { sfx('ward'); } catch (e) { }
@@ -8087,22 +8360,22 @@ function tooPowerful(t, what) {            // a relic trick that would cheese a 
 }
 async function medusaStone(u, t) {       // Medusa's Gaze: the target starts turning to stone
   if (t.final) { tooPowerful(t, "Medusa's gaze"); return; }
-  floatText(t, '🐍 STONE', 'tag'); fx(t, 'ice', 700); sfx('hit', 'ice', false, false);
+  floatText(t, '🐍 STONE', 'tag'); stoneFx(t); sfx('hit', 'ice', false, false);
   if (t.state === 'armoured') { t.breakBar = Math.max(0, t.breakBar - MEDUSA.brk); if (!t.breakBar) { t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); armourBreak(t, false); } }
   else applyStatus(t, 'ice', u);
   log(`🐍 ${u.name}'s gaze turns ${t.name} to stone!`, 'log-status'); render(); await sleep(260);
 }
 async function medusaBack(caster, targets) {   // an ally who helps a Medusa wearer meets her eyes
   const m = targets.find(x => x && x !== caster && x.rel && x.rel.medusa && !x.rel.medusaSafe); if (!m || !isAlive(caster)) return;
-  const out = new Set(); floatText(caster, "🐍 MET MEDUSA'S GAZE", 'tag hurt'); rxDmg(caster, MEDUSA.back, 'ice', out); fx(caster, 'ice', 700);
+  const out = new Set(); floatText(caster, "🐍 MET MEDUSA'S GAZE", 'tag hurt'); rxDmg(caster, MEDUSA.back, 'ice', out); stoneFx(caster);
   if (caster.state !== 'armoured' && isAlive(caster)) applyStatus(caster, 'ice', m);
   log(`🐍 ${caster.name} looks ${m.name} in the eye and starts to turn to stone!`, 'log-status'); render(); await sleep(350); await rxFalls(out);
 }
 async function zeusBolt(u, any) {        // Zeus' Spite: a bolt from a clear sky at anyone at all (Zeus' Favour: enemies only)
   const mine = u.team === 'p' ? party : enemies, theirs = u.team === 'p' ? enemies : party, pool = (any ? [...mine, ...theirs] : theirs).filter(isAlive);
   const x = pool.length ? choose(pool, Math.random) : null; if (!x) return;
-  const out = new Set(); flash('#d8ecff', .35, 320); shake(2); sfx('hit', 'shock', true, false);
-  rxDmg(x, CURSE.bolt, 'shock', out); fx(x, 'shock', 700);
+  const out = new Set(); sfx('hit', 'shock', true, false); await skyBolt(x, { col: '#bcd8ff' });
+  rxDmg(x, CURSE.bolt, 'shock', out); fx(x, 'shock', 600);
   log(`🌩️ Zeus' bolt answers ${u.name} and strikes ${x.name} for ${CURSE.bolt}!`, 'log-status'); render(); await sleep(380); await rxFalls(out);
 }
 async function rxFalls(out) {             // anyone a reaction brought to 0 HP falls now
@@ -8335,11 +8608,11 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
     }
     if (u.rel && u.rel.chain && !s.aoe && !s.storm && !countering && isAlive(u) && u.team === 'p') {            // Potential: Chaining
       const others = enemies.filter(e => isAlive(e) && e !== target);
-      if (others.length) { const v = others[Math.floor(Math.random() * others.length)]; log(`⛓️ ${s.n} chains to ${v.name}!`, 'log-status'); countering = true; try { await hit(u, v, { ...scaleDmg(s, u.rel.chain), brk: Math.round((s.brk || 0) * u.rel.chain), noDodge: true }); } finally { countering = false; } }
+      if (others.length) { const v = others[Math.floor(Math.random() * others.length)]; log(`⛓️ ${s.n} chains to ${v.name}!`, 'log-status'); if (s.el === 'shock') { arcBolt(target, v); await sleep(90 / battleSpd()); } countering = true; try { await hit(u, v, { ...scaleDmg(s, u.rel.chain), brk: Math.round((s.brk || 0) * u.rel.chain), noDodge: true }); } finally { countering = false; } }
     }
     if (u.rel && u.rel.dance && s.n === 'Chain Lightning' && !countering && isAlive(u)) {                             // Potential: Storm Dancer, Chain Lightning jumps once more
       const others = enemies.filter(e => isAlive(e) && e !== target);
-      if (others.length) { const v = others[Math.floor(Math.random() * others.length)]; log(`⚡ Chain Lightning jumps to ${v.name}!`, 'log-status'); countering = true; try { await hit(u, v, { ...scaleDmg(s, .6), brk: Math.round((s.brk || 0) * .6), noDodge: true }); } finally { countering = false; } }
+      if (others.length) { const v = others[Math.floor(Math.random() * others.length)]; log(`⚡ Chain Lightning jumps to ${v.name}!`, 'log-status'); arcBolt(target, v); await sleep(90 / battleSpd()); countering = true; try { await hit(u, v, { ...scaleDmg(s, .6), brk: Math.round((s.brk || 0) * .6), noDodge: true }); } finally { countering = false; } }
     }
     if (u.rel && u.rel.embrace && s.n === 'Absolute Zero' && !u.embraceUsed && isAlive(u)) {                          // Potential: Winter's Embrace, once per battle
       u.embraceUsed = true; const foes = enemies.filter(isAlive);
@@ -8702,7 +8975,7 @@ async function bossCharge(b) {
     const ds = b.skills.filter(x => x.t === 'dmg' && x.d), avg = ds.length ? ds.reduce((a, x) => a + (x.d[0] + x.d[1]) / 2, 0) / ds.length : 15, lo = Math.round(avg * C.mult * .9), hi = Math.round(avg * C.mult * 1.1);
     const el = (ds.find(x => x.el) || {}).el, sk = { n: name, t: 'dmg', r: 'ranged', d: [lo, hi], el, brk: C.brk, noDodge: true };
     log(`<strong style="color:#ff5252">💥 ${b.name} unleashes ${name}!</strong>`, 'log-status'); banner(`💥 ${name.toUpperCase()}`, 'boss');
-    flash('#ff3d00', .5, 500); shake(5); sfx('hit', el ? (STATUS_FX[ELEM[el] && ELEM[el].status] || 'phys') : 'phys', false, false, true); await sleep(500);
+    quakeWave(b); flash('#ff3d00', .4, 500); shake(5); sfx('hit', el ? (STATUS_FX[ELEM[el] && ELEM[el].status] || 'phys') : 'phys', false, false, true); await sleep(500);
     for (const t of party.filter(x => isAlive(x) && !x.drowned)) { await hit(b, t, sk); if (!party.some(x => isAlive(x) && !x.drowned)) break; }
     return true;
   }
@@ -8722,7 +8995,7 @@ const BOSS_TRICK = {
     log(`<strong style="color:#b388ff">☠️ The Necromancer raises ${dead.name} from the dead!</strong>`, 'log-status');
     floatText(b, '☠️ RISE!', 'tag'); flash('#7c4dff', .35, 600); sfx('hit', 'phys', false, false, true); await sleep(400);
     Object.assign(dead, { hp: Math.round(dead.maxHp * BOSS_MOVES.necro.hp), fell: false, vanish: false, gone: false, statuses: [], barrier: 0, state: 'armoured', breakBar: dead.maxBreak, cd: dead.cd.map(() => 0) });
-    dead.intent = enemyChoose(dead); render(); floatText(dead, 'RISEN', 'tag'); await sleep(500);
+    dead.intent = enemyChoose(dead); render(); necroFx(dead); floatText(dead, 'RISEN', 'tag'); await sleep(700);
   },
   async e_ratking(b) {
     b.ratCd = (b.ratCd ?? 1) - 1;
@@ -8739,7 +9012,7 @@ const BOSS_TRICK = {
     for (const t of pool) {
       const mult = (b.atkSc || 1) * (b.phaseMult || 1); let dmg = Math.round((M.d[0] + Math.random() * (M.d[1] - M.d[0])) * mult);
       if (t.barrier) { const a = Math.min(t.barrier, dmg); t.barrier -= a; dmg -= a; }
-      flash('#e3f2ff', .55, 220); shake(2); sfx('hit', 'shock', false, false, true);
+      sfx('hit', 'shock', false, false, true); await skyBolt(t, { col: '#9fc8ff' }); flash('#e3f2ff', .3, 220);
       t.hp = lethalGuard(t, t.hp - dmg); log(`⚡ Lightning strikes ${t.name} for ${dmg}!`, 'log-dmg'); floatText(t, dmg, 'dmg'); fx(t, 'shock', 600); render();
       if (t.state !== 'armoured' && isAlive(t) && Math.random() < .35) applyStatus(t, 'shock', b);
       await sleep(380);
@@ -8760,7 +9033,7 @@ function gripTry(b, hits) {            // after the Carapace King's attack on a 
   b.grip = { h, dmg: 0, need: Math.round(b.maxHp * BOSS_MOVES.crab.free) };
   h.drowned = true; h.heldTxt = '🦀 PINNED'; h.statuses = h.statuses.filter(x => !x.stun); h.stealth = 0;
   log(`<strong style="color:#ff8a65">🦀 The Carapace King snaps its great claw shut on ${h.name}!</strong> Deal ${b.grip.need} damage to it to break her free.`, 'log-status');
-  floatText(h, '🦀 GRABBED!', 'tag hurt'); shake(3); render();
+  floatText(h, '🦀 GRABBED!', 'tag hurt'); shake(3); render(); clawFx(h);
 }
 async function gripTick(b) {            // each of its turns the held hero is crushed
   const g = b.grip, h = g && g.h; if (!h) return;
@@ -8963,7 +9236,7 @@ function checkEnd() {
     $('turn-indicator').innerText = won ? 'Victory! (quick battle)' : 'Defeat (quick battle)';
     log(`<strong>${won ? 'Victory!' : 'Your party was defeated.'}</strong> Quick battle over: nothing is kept.`, 'log-round');
     main.textContent = '⚡ Back to Quick Battle'; main.onclick = () => { quest = null; showScene('dev-battle'); };
-    $('end-buttons').style.display = 'flex'; render(); return true;
+    endShow(); render(); return true;
   }
   if (lost) {
     const kept = Math.floor(quest.gold / 2), gz = gooseDies('The party fell.');
@@ -8975,7 +9248,7 @@ function checkEnd() {
     hubNote += gz;
     $('turn-indicator').innerText = 'Defeat - Party Defeated';
     log(`<strong style="color:#ff5252">Your party was defeated and retreats to town.</strong>`); charDefeat();
-    log(`You were carrying ${quest.gold} gold; half (${kept}) makes it home.`, 'log-heal');
+    log(`You were carrying ${quest.gold} gold; half (${kept}) makes it home.`, 'log-heal'); endSub = `Half your gold makes it home: 🪙 ${kept}`;
     main.textContent = 'Return to Town'; main.onclick = () => showScene('hub'); endSummary(false); endCard(quest.map && quest.map.bossDone ? 'won' : 'lost', kept);
     quest = null; saved = writeSave();
   } else {
@@ -8984,6 +9257,7 @@ function checkEnd() {
     quest.gold += earned + enemies.filter(e => e.piperRat).length * PIPER.gold; settleDebts();
     if (partySum('goose')) quest.gooseWins = (quest.gooseWins || 0) + 1;
     setTimeout(() => speakTeam('win'), 900);
+    endSub = `🪙 +${earned} gold`;
     log(`<strong style="color:#4caf50">Victory!</strong> +${earned} gold${gb ? ' (relic bonus)' : ''}${elites ? ` (★ elite loot +${elites * ELITE.gold})` : ''}.`, 'log-heal');
     for (let k = 0; k < elites; k++) if (Math.random() < ELITE.relic) { const r = grantRelic('An elite dropped a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} falls from the elite's remains!</strong>`, 'log-heal'); }
     if (quest.bonus && quest.bonus.relic && Math.random() < quest.bonus.relic) { const r = grantRelic(quest.bonus.kind === 'champion' ? 'The champion left you a relic!' : 'You found a relic!'); if (r) log(`<strong style="color:#ffd54f">${r.icon} ${r.name} is among the spoils!</strong>`, 'log-heal'); }
@@ -9034,7 +9308,7 @@ function checkEnd() {
     }
   }
   log(saved ? 'Progress saved.' : 'Could not save: browser storage is unavailable.', 'log-round');
-  $('end-buttons').style.display = 'flex';
+  endShow();
   render();
   return true;
 }
@@ -9187,7 +9461,7 @@ function trollFledEnd() {                    // the fight ends without a winner:
   $('turn-indicator').innerText = 'The troll flees!';
   const main = $('btn-end-main'); main.textContent = '🩸 Follow the blood trail'; main.onclick = () => { saveQuest(); showMap(); };
   { const o = $('btn-end-alt'); if (o) o.remove(); }
-  $('end-buttons').style.display = 'flex'; render(); saveQuest(); return true;
+  endShow(); render(); saveQuest(); return true;
 }
 
 function trollPartBroken(p) {                // hook from the armour-break code
@@ -9667,7 +9941,7 @@ function fbEnd(won) {
       main.textContent = 'Return to Town'; main.onclick = back;
     } else { log('<strong style="color:#ff5252">Everyone has fallen.</strong> In a real run the whole save would roll back to before the quest began.', 'log-status'); main.textContent = '⚡ Back to Quick Battle'; main.onclick = back; }
   }
-  $('end-buttons').style.display = 'flex'; render();
+  endShow(); render();
 }
 function fbCleanup() {
   if (!FB) return; FB = null; quest = null; party = []; enemies = []; order = [];
@@ -9896,7 +10170,7 @@ function startFinal(ids, real) {
   document.documentElement.style.setProperty('--fbP', FINAL.partyScale); document.documentElement.style.setProperty('--fbB', FINAL.bossScale);
   blizzStop(); party = units[0]; enemies = [bosses[0]]; order = []; actor = null; cur = null; sel = null; waiting = null; over = false; lastSummary = null;
   { const sb = document.getElementById('btn-summary'); if (sb) sb.style.display = 'none'; }
-  $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = ''; $('end-buttons').style.display = 'none';
+  $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = ''; $('end-buttons').style.display = 'none'; endSub = ''; $('end-banner').classList.remove('on');
   $('turn-indicator').innerText = 'Preparing...'; $('battle-sub').textContent = real ? 'The Final Stand' : 'The Final Stand (developer test)';
   showScene('battle-scene'); renderFx(); renderSnd();
   fbPlaceholderArt().then(() => { loadStageBg(); return fbShow(0, true); }).then(() => { banner('THE FINAL STAND', 'phase', 'two fronts · one boss'); setTimeout(() => { if (FB && !over) fbBattle(); }, 1100); });
@@ -10280,7 +10554,7 @@ function renderParty(full) {
   if (!$('gate-bg').firstChild) $('gate-bg').innerHTML = GATE_SVG.replace('<rect width="1600" height="560" fill="url(#gSky)"/>', m => m + mikeSvg(1600, 560, 330, 'night', 'gate'));
   if (pickedQuest === 'final') return renderFinalParty(full);
   const order = Array.from({ length: MAX_PARTY }, (_, k) => MAX_PARTY - 1 - k);      // shown back -> front, like the battlefield: the front line sits next to the enemy
-  $('party-slots').innerHTML = `<div class="form-lab"><span>◀ BACK</span><b>Party ${picked.length}/${MAX_PARTY}</b><span>FRONT ▶</span></div><div class="form-row" id="form-row">` +
+  $('party-slots').innerHTML = `<div class="form-lab"><span>Back line</span><b>Party ${picked.length}/${MAX_PARTY}${picked.length < MAX_PARTY ? ' · pick heroes from the Guild →' : ''}</b><span>Front line ⚔️</span></div><div class="form-row" id="form-row">` +
     order.map(i => { const id = picked[i], h = id && heroById(id);
       return h ? `<div class="fslot has${formSel === i ? ' sel' : ''}" data-i="${i}"><span class="pos">${i + 1}</span><button class="x" data-rm="${id}" title="Remove">✕</button><button class="info fs-i" title="Details" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();heroInfo('${id}')">ⓘ</button><div class="figure" data-art="${id}"><div class="ph">${h.tag}</div></div><div class="nm">${h.name.split(' ')[0]}</div></div>`
                : `<div class="fslot" data-i="${i}"><span class="pos">${i + 1}</span><div class="empty">Pick a hero</div></div>`; }).join('') + '</div>';
@@ -10348,7 +10622,7 @@ function tapFinalSlot(i) {
 function renderFinalParty(full) {
   if (full) { finalLoad(); finalSel = -1; }
   const rowHtml = (base, label) => { const n = finalSlots.slice(base, base + 4).filter(Boolean).length;
-    return `<div class="form-lab"><span>◀ BACK</span><b>${label} ${n}/4</b><span>FRONT ▶</span></div><div class="form-row fin-row">` + [3, 2, 1, 0].map(k => { const i = base + k, id = finalSlots[i], h = id && heroById(id);
+    return `<div class="form-lab"><span>Back line</span><b>${label} ${n}/4</b><span>Front line ⚔️</span></div><div class="form-row fin-row">` + [3, 2, 1, 0].map(k => { const i = base + k, id = finalSlots[i], h = id && heroById(id);
       return h ? `<div class="fslot has${finalSel === i ? ' sel' : ''}" data-i="${i}" onclick="tapFinalSlot(${i})"><span class="pos">${k + 1}</span><button class="x" title="Remove" onclick="event.stopPropagation();toggleFinalPick('${id}')">✕</button><button class="info fs-i" title="Details" onclick="event.stopPropagation();heroInfo('${id}')">ⓘ</button><div class="figure" data-art="${id}"><div class="ph">${h.tag}</div></div><div class="nm">${h.name.split(' ')[0]}</div></div>`
         : `<div class="fslot${finalSel >= 0 ? ' over' : ''}" data-i="${i}" onclick="tapFinalSlot(${i})"><span class="pos">${k + 1}</span><div class="empty">empty</div></div>`; }).join('') + '</div>'; };
   $('party-slots').innerHTML = rowHtml(0, 'LEFT FRONT') + rowHtml(4, 'RIGHT FRONT');
@@ -10464,7 +10738,8 @@ function mapApply(box, stage) {
 addEventListener('resize', () => { const b = document.getElementById('qmap'); if (b && $('party-select').classList.contains('show')) { b.classList.add('nt'); mapApply(b, +b.dataset.stage || 1); void b.offsetWidth; b.classList.remove('nt'); } });
 function mapHint(stage) {
   const g = QUEST_GROUPS.find(x => !groupOpen(x)); if (!g) return '';
-  return `<b>🔒 ${g.name}</b> lies beyond the mist.<br>Clear: ${g.requires.map(id => { const q = QUESTS.find(x => x.id === id); return `<span class="${questCleared(id) ? 'ok' : ''}">${questCleared(id) ? '✔' : '○'} ${q.name}</span>`; }).join(' · ')}`;
+  const n = g.requires.filter(questCleared).length, list = g.requires.map(id => `${questCleared(id) ? '✔' : '○'} ${(QUESTS.find(x => x.id === id) || {}).name}`).join('\n');      // compact: the quest names live in the tooltip
+  return `<span title="To open ${g.name}, clear:\n${list}">🔒 <b>${g.name}</b> <span class="mh-pips">${g.requires.map(id => `<i class="${questCleared(id) ? 'ok' : ''}"></i>`).join('')}</span> <small>${n}/${g.requires.length} cleared</small></span>`;
 }
 /* Which quest a click on the map means: the pin nearest the pointer (pins are generous circles), else the name label under it.
    Labels can overlap a neighbouring pin when the whole world is shown, so the pin always wins over a label. */
@@ -10577,7 +10852,7 @@ function beginQuest() {
 let quest = null;      // { def, node, gold, party } while a quest runs. gold = the quest purse (not hub gold)
 let campMsg = '';
 let hubNote = '';
-const goldChip = cost => `<span>🪙</span><b>${game.gold}</b>${cost ? `<i class="gc-cost">−${cost}</i>` : ''}`;
+const goldChip = (cost, what) => `<span>🪙</span><b>${game.gold}</b>${cost ? `<i class="gc-cost">−${cost}</i>` : ''}${what ? `<small class="gc-what">${what}</small>` : ''}`;      // what: one line on what this place does (spa, training)
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, Number(v) || 0));
 
 // The quest is checkpointed into game.quest at embark, after each win, on entering camp and after each purchase.
@@ -11454,10 +11729,11 @@ function qmTip(i) {
 function qmHud(m, T, bd) {
   const items = quest.items || {}, sky = $('qm-sky');
   $('qm-title').innerHTML = m.hunt ? huntTitle(m, T) : `<small>${quest.def.name.toUpperCase()}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''}</small><b>${m.bossDone ? 'The boss is beaten' : bd <= 1 ? 'The lair is near…' : bd <= QMAP.hint ? 'Something dark pulls at you' : 'Find the boss'}</b>`;
-  $('qm-time').innerHTML = `<b>${TOD_NAME[T.phase]}</b><span>${T.phase === 'night' ? `Deep night${T.extra ? ` · foes +${Math.round((T.hp - 1) * 100)}%` : ''}` : `${T.left} move${T.left === 1 ? '' : 's'} until ${T.phase === 'day' ? 'twilight' : 'night'}`}</span>`;
+  $('qm-time').innerHTML = `<b>${TOD_NAME[T.phase]}</b><span>${T.phase === 'night' ? `Deep night${T.extra ? ` · foes +${Math.round((T.hp - 1) * 100)}%` : ''}` : `${T.left} move${T.left === 1 ? '' : 's'} until ${T.phase === 'day' ? 'twilight' : 'night'} · foes get tougher`}</span>`;
+  $('qm-clock').title = 'Every move passes time. Fights are tougher at twilight and much tougher at night (they also pay more). Find the boss before dark.';
   qmSky(sky, T);
   $('qm-party-hud').innerHTML = quest.party.map(u => `<div class="qm-hp${u.hp <= 0 ? ' down' : ''}"><b>${u.short}</b><i><em style="width:${Math.max(0, u.hp / u.maxHp * 100).toFixed(0)}%"></em></i><span>${Math.max(0, u.hp)}/${u.maxHp}${u.state !== 'armoured' ? ` · <s class="${u.state}">${u.state === 'super' ? 'SUPER BROKEN' : 'broken'}</s>` : ''}</span></div>`).join('')
-    + `<div class="qm-bag">🪙 ${quest.gold} · 🧪 ${items.potion || 0} · 🍙 ${items.ration || 0} · 🔧 ${items.kit || 0}${items.torch ? ` · 🔥 ${items.torch}` : ''}</div>`;
+    + `<div class="qm-bag"><span title="Gold found on this quest">🪙 ${quest.gold}</span> · <span title="Healing Potions (use in battle)">🧪 ${items.potion || 0}</span> · <span title="Field Rations (eat at camp to heal)">🍙 ${items.ration || 0}</span> · <span title="Repair Kits (mend armour at camp)">🔧 ${items.kit || 0}</span>${items.torch ? ` · <span title="Torches (keep warm in a blizzard)">🔥 ${items.torch}</span>` : ''}</div>`;
   const here = m.n[m.at];
   $('qm-acts').innerHTML = (here.type === 'camp' ? `<button onclick="goCamp()">⛺ Make camp</button>` : '')
     + (here.type === 'camp' && m.hunt && !m.bossDone ? `<button onclick="huntScout()" ${here.scouted ? 'disabled' : ''} title="Look around: reveals what is within ${HUNT.scoutR} steps and any tracks there. Once per camp; costs 1 move">🔭 ${here.scouted ? 'Scouted' : 'Scout'}</button><button onclick="huntRest()" title="Heal ${Math.round(HUNT.rest * 100)}% of HP, but ${HUNT.restMoves} moves pass (the beast moves)">💤 Rest</button>` : '')
@@ -13418,6 +13694,7 @@ function storyEnter(id, side) {
   const a = document.createElement('div'); a.className = 'st-actor' + ((side === 'right') !== !!(STORY_NPC[id] && STORY_NPC[id].faces === 'left') ? ' flip' : '');      // everyone faces the middle (heroes face right, so the right-hand ones flip; the shopkeepers face left)
   const h = heroById(id), u = !h && ENEMIES.find(x => x.id === id) || null, N = STORY_NPC[id];
   a.innerHTML = `<div class="figure"${N ? '' : ` data-art="${id}"`}><div class="ph">${(N || h || u || { tag: id.toUpperCase() }).tag || id.toUpperCase()}</div></div>`;
+  if (h && HERO_H[id]) a.style.setProperty('--hk', HERO_H[id]);      // her height relative to the others
   $('story').querySelector('.st-stage').appendChild(a); ST.cast[id] = { el: a, side };
   if (N) {                                // town folk: their own picture (the angel floats; her drawn stand-in if there's no art yet)
     if (N.float) a.classList.add('st-float');
@@ -13806,7 +14083,7 @@ function bannerTrain() {
 function openTrain() { showScene('train-select'); }
 function renderTrainSelect() {
   bannerTrain();
-  $('train-intro').innerHTML = goldChip(TRAIN.cost);
+  $('train-intro').innerHTML = goldChip(TRAIN.cost, 'Pick a hero to train: she learns a new perk');
   $('train-list').innerHTML = game.roster.filter(id => heroById(id)).map(id => {
     const poor = game.gold < TRAIN.cost, maxed = traitCount(id, 'good') >= TRAITS.maxGood;
     const sub = maxed ? '⭐ Max perks' : `Perks ${traitCount(id, 'good')}/${TRAITS.maxGood}`;
@@ -13936,7 +14213,7 @@ function spaPick(id) { const was = spaSel; spaSel = id && spaSel !== id ? id : n
   if (typeof padFocus === 'function') setTimeout(() => padFocus(spaSel ? $('spa-flaws').querySelector('.spa-btns button:not(:disabled), .sf-x') : h.querySelector(`.sb-hero[data-id="${was}"]`)), 320); }      // on a pad: into the card, and back onto her when it closes
 const spaFlaws = id => [...new Set((game.traits[id] || []).filter(t => TRAIT[t] && TRAIT[t].kind === 'bad'))];
 function renderSpaSelect() {               // the town spa: the bath with everyone in it (see HOT SPRINGS + THE TOWN SPA BATH)
-  $('spa-intro').innerHTML = goldChip(SPA.cost);
+  $('spa-intro').innerHTML = goldChip(SPA.cost, 'Click a hero for a massage: it can cure one of her flaws');
   const host = $('spa-stage'), v = townVariant();
   sbOpen(host, 'spa', game.roster.filter(id => heroById(id)), { act: v === 'frost' ? 3 : v === 'coast' ? 2 : 1, tod: 'day', pick: true });
   if (!host.dataset.wired) { host.dataset.wired = 1;
@@ -14149,7 +14426,7 @@ function introCard() {                                // a boss name plate befor
     document.addEventListener('keydown', function k(e) { if (e.isTrusted) { end(); document.removeEventListener('keydown', k); } });
   });
 }
-function lowHpPulse() { document.body.classList.toggle('lowhp', !!FX.flash && document.body.classList.contains('in-battle') && party.some(u => isAlive(u) && u.hp / u.maxHp < .25)); }
+function lowHpPulse() { document.body.classList.remove('lowhp'); }          // retired 2026-11-23: a hero under 25% now shows it on her own blood ring (it beats); no more red screen edge
 
 /* ============ BATTLE CHATTER (speech bubbles over your heroes) ============ */
 // Heroes pipe up in little pop-up bubbles: brag on crits and kills, grumble when their armour breaks, react together when a boss changes phase, and gag lines when hit or afflicted.
@@ -15626,6 +15903,7 @@ const GP = (() => {
     (document.scrollingElement || document.documentElement).scrollTop += amt;
   }
   function press(el) {
+    { const ck = document.getElementById('coach'); if (ck) { ck.dispatchEvent(new Event('pointerdown')); return; } }      // A on the first-fight tips just closes them
     if (!el) return;
     if ((el.classList.contains('fslot') && el.classList.contains('has') && el.onpointerdown) || (el.onpointerdown && !el.onclick && !el.matches('button'))) {      // tap-to-pick / dorm cards and seats use pointer events     // formation slot: tap-to-pick / tap-to-swap uses pointer events
       const [x, y] = ctr(el); S.synth = true;
@@ -15724,7 +16002,7 @@ const GP = (() => {
       }
       if (edge('RB') && cur.skills[3] && cur.skills[3].hammer) { if (sel === null) pick(3); else if (sel === 3) finish({ i: 3 }); }      // RB: Mjolnir (battle speed lives in Options)
       if (edge('START') && pauseAllowed()) pauseToggle();
-      if (edge('SEL')) openGuide();
+      if (edge('SEL')) { if (bookOpen()) closeBook(); else openBook('field'); }      // Select in battle: the guide book, at Reading a Fight
       S.prev = down; return;
     }
     if (!wake) {
@@ -15743,7 +16021,7 @@ const GP = (() => {
         if (edge('START') && L.modal === 'pause') pauseClose();
         else if (edge('START') && pauseAllowed()) pauseToggle();
         else if (edge('START')) { const m = $('btn-end-main') && vis($('btn-end-main')) ? $('btn-end-main') : [...L.root.querySelectorAll('button.primary')].find(e => !e.disabled && vis(e)); if (m) m.click(); }
-        if (edge('SEL')) { if (L.modal === 'guide') closeGuide(); else openGuide(); }
+        if (edge('SEL')) { if (L.modal === 'guide') closeGuide(); else if (bookOpen()) closeBook(); else if (L.scene === 'battle-scene') openBook('field'); else openGuide(); }
         const ry = ax(3); if (Math.abs(ry) > .3) scrollNear(S.focus || L.root.querySelector('*') || document.body, ry * 18);
       }
     }
