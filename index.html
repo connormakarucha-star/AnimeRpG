@@ -2764,6 +2764,7 @@ body.calm .threat,body.calm .threat .tg-under{animation:none}
 @keyframes talkBob{50%{translate:0 -4px}}@keyframes talkGlow{50%{box-shadow:0 0 0 7px rgba(242,169,29,.25),0 0 30px rgba(255,200,60,1)}}
 body.calm .talk-mark,body.calm .talk-mark span{animation:none}
 #troll-hud .th-pass{display:block;font-style:normal;font-size:12px;color:#8dffa8;margin-top:2px}#troll-hud .th-pass.off{color:#ff9a5a;text-decoration:line-through}
+#btn-start-quest.fin{letter-spacing:.06em;white-space:nowrap;font-size:.92em}
 </style>
 </head>
 <body>
@@ -4715,7 +4716,7 @@ const BOOK = {
   endgame: [
     { k: 'phases', h: 'Boss phases', when: anyCleared, b: () => [`Bosses change tactics as their HP drops (ⓘ shows when): they hit harder, learn new skills, raise barriers or call allies.`] },
     { k: 'final', h: 'The Final Stand', when: () => QUEST_GROUPS[2].ids.every(questCleared), b: () => [`All eight heroes, on two fronts, against one foe. There are no camps and no gold: you bring your bag. The shopkeeper helps between rounds, and a stranger may lend a hand. If everyone falls, time rolls back to before you set out and nothing is lost.`] },
-    { k: 'ngp', h: 'New Game+', when: () => QUEST_GROUPS.every(g => g.ids.every(questCleared)), b: () => [`Once every quest is cleared, the whole game opens again, harder: more enemy HP and damage, more elites, more gold and better boss drops; from NG+2 bosses also make a last stand at 25% HP. You keep every hero, relic, perk and skin. Pick the difficulty on the quest screen.`] }
+    { k: 'ngp', h: 'New Game+', when: () => !!(game.cleared && game.cleared.final), b: () => [`Once the Final Stand is won, the whole game opens again, harder: more enemy HP and damage, more elites, more gold and better boss drops; from NG+2 bosses also make a last stand at 25% HP. You keep every hero, relic, perk and skin. Pick the difficulty on the quest screen.`] }
   ]
 };
 function bookSections(ch) {
@@ -4760,7 +4761,7 @@ function guideHtml(guideTab) {          // one section's text (used by the ⚙�
     ${g(`💉 <b>Tonic</b> (Jean): heals, but ${Math.round(TONIC.repay * 100)}% of it returns as ☠️ <b>poison that ignores armour</b> (a net heal). ⚗️ <b>Untested Potions</b>: the party deals more physical damage for ${BREW.dur} turns (more while poisoned), then everyone is poisoned. 🦇 <b>Immortal</b> (Tyr): HP cannot fall below 1. Her Undying Night fires by itself, once per battle, when a blow would kill her.`)}
     <h4>Bosses and New Game+</h4>
     ${g(`🔥 <b>Boss phases</b>: bosses change tactics when their HP drops (ⓘ shows the thresholds): they hit harder, learn new skills, throw up barriers, molt or call allies. From New Game+ 2 they also make a last stand at 25% HP.`)}
-    ${g(`🔥 <b>New Game+</b>: once every quest is cleared, the whole game opens again on a harder difficulty (more enemy HP and damage, more elites, more gold and better boss drops). You keep every hero, relic, trait and skin. Pick the difficulty on the quest screen.`)}
+    ${g(`🔥 <b>New Game+</b>: once the Final Stand is won, the whole game opens again on a harder difficulty (more enemy HP and damage, more elites, more gold and better boss drops). You keep every hero, relic, trait and skin. Pick the difficulty on the quest screen.`)}
     <h4>Defeat and recovery</h4>
     ${g(`Heroes who fall are not lost: they get back up with 1 HP before the next fight. Each run has only a few camps, placed at random after the first couple of fights, so ration your supplies. If your whole party falls the quest ends and you keep only half the gold you carried. At camp, eat <b>Field Rations</b> to heal the party and use <b>Repair Kits</b> on a hero's armour. Buy both in the town Shop.`)}`;
   else if (guideTab === 'credits') h = `<h4>Credits</h4>${g(`<b>Sound effects:</b> Kenney Impact Sounds, Kenney RPG Audio and Kenney Interface Sounds, by Kenney Vleugels (<a href="https://kenney.nl" target="_blank" rel="noopener">kenney.nl</a>), licensed CC0.`, 'good')}${g(`<b>Magic sound effects:</b> Basic Spell Impacts and Healing Spell Impacts by Lentikula (<a href="https://lentikula.itch.io/" target="_blank" rel="noopener">lentikula.itch.io</a>), licensed CC0.`, 'good')}${g(`Music and ambience are generated in the game for now.`, '')}`
@@ -5383,6 +5384,7 @@ const finalSlots = Array(8).fill(null);                  // slots 0-3 = LEFT FRO
 let finalSel = -1;
 function tierUnlock() {          // every quest beaten on the current top difficulty opens the next one (returns true when it did)
   const t = game && game.tiers; if (!t || t.max >= MAX_TIER) return false;
+  if (!(game.cleared && game.cleared.final)) return false;            // New Game+ waits for the Final Stand to be won (not just Act 3)
   if (!QUESTS.every(q => tierCleared(q.id) >= t.max)) return false;
   t.max++; game.notices.push({ type: 'tier', id: t.max }); return true;
 }
@@ -9644,7 +9646,7 @@ function fbEnd(won) {
       Object.keys(ITEMS).forEach(id => { game.items[id] = (game.items[id] || 0) + (quest.items[id] || 0); });           // unused supplies come home
       game.cleared = game.cleared || {}; game.cleared.final = true;
       const f = game.final = game.final || {}; f.wins = (f.wins || 0) + 1; f.ending = f.ending === 'good' || !bad ? 'good' : 'bad'; f.last = bad ? 'bad' : 'good';        // the best ending you have earned
-      game.notices.push({ type: 'ending', id: bad ? 'bad' : 'good' }); game.stats.won++;
+      game.notices.push({ type: 'ending', id: bad ? 'bad' : 'good' }); game.stats.won++; tierUnlock();          // the ending first, then New Game+ opens
       hubNote = bad ? 'The Final Stand is won, but at a cost.' : 'The Final Stand is won!';
       const ok = writeSave(); log(ok ? 'Progress saved.' : 'Could not save: browser storage is unavailable.', 'log-round');
       main.textContent = 'Return to Town'; main.onclick = back;
@@ -10089,7 +10091,7 @@ function showNotice() {                      // pending pop-ups (saved, so they 
     const T = tierDef(n.id);
     box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🔥'; $('notice-btn').textContent = 'Bring it on!';
     $('notice-title').textContent = `🔥 ${T.name} unlocked!`;
-    $('notice-text').textContent = n.id === 1 ? 'Every quest is beaten. The whole game can now be played again on a harder difficulty, keeping all your heroes, relics, traits and skins. Pick the difficulty when you embark.' : `A harder difficulty is open: ${T.name}. Clear every quest on the current one to climb higher.`;
+    $('notice-text').textContent = n.id === 1 ? 'The Final Stand is won. The whole game can now be played again on a harder difficulty, keeping all your heroes, relics, traits and skins. Pick the difficulty when you embark.' : `A harder difficulty is open: ${T.name}. Clear every quest on the current one to climb higher.`;
     $('notice-skills').textContent = tierText(T);
     return;
   }
@@ -10383,7 +10385,7 @@ function wireFormation() {
 let pickedQuest = null;     // id of the quest chosen on the quest select screen
 const questGold = q => q.nodes.reduce((a, n) => a + n.gold, 0);
 function pickTier(i) { if (i < 0 || i > game.tiers.max) return; game.tiers.pick = i; writeSave(); renderQuests(); }
-function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.querySelector('#qmap .mnode.on[data-q="' + id + '"]'))) return; pickedQuest = id; renderQuests(); }
+function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.querySelector('#qmap .mnode.on[data-q="' + id + '"]'))) return; const was = pickedQuest === 'final'; pickedQuest = id; renderQuests(); if (was !== (id === 'final')) renderParty(true); }      // into or out of the Final Stand: swap the 4-hero party board for the two-front 8-hero one (and back)
 
 /* ---- the world map ----
    One painted world (MAP_SVG, or assets/ui/map_world.* if you draw one: same 16:9 frame, whole world visible) and a camera that zooms out as areas open:
@@ -10502,7 +10504,7 @@ function renderQuests(full) {
   if (bq.parentElement !== $('em-map')) $('em-map').appendChild(bq);      // the Begin button lives in the quest card; park it while the card is rebuilt
   $('quest-detail').innerHTML = pq ? questCard(pq, isFinal, tbar) : '';
   bq.disabled = !pickedQuest || (isFinal ? finalSlots.includes(null) : !picked.length);
-  bq.textContent = isFinal ? 'BEGIN THE FINAL STAND' : 'BEGIN QUEST';
+  bq.textContent = isFinal ? 'BEGIN THE FINAL STAND' : 'BEGIN QUEST'; bq.classList.toggle('fin', isFinal);
   const go = $('qc-go'); if (go) go.appendChild(bq);
   qcBoss(pq); placeQuestCard(); setTimeout(placeQuestCard, 80); setTimeout(placeQuestCard, 900);
 }
@@ -13405,7 +13407,7 @@ function storyLayout() {                // spread each side's actors out; the in
 }
 function storyEnter(id, side) {
   if (!id || ST.cast[id] || !storyHas(id)) return;
-  const a = document.createElement('div'); a.className = 'st-actor' + ((side === 'right') !== (STORY_NPC[id] && STORY_NPC[id].faces === 'left') ? ' flip' : '');      // everyone faces the middle
+  const a = document.createElement('div'); a.className = 'st-actor' + ((side === 'right') !== !!(STORY_NPC[id] && STORY_NPC[id].faces === 'left') ? ' flip' : '');      // everyone faces the middle (heroes face right, so the right-hand ones flip; the shopkeepers face left)
   const h = heroById(id), u = !h && ENEMIES.find(x => x.id === id) || null, N = STORY_NPC[id];
   a.innerHTML = `<div class="figure"${N ? '' : ` data-art="${id}"`}><div class="ph">${(N || h || u || { tag: id.toUpperCase() }).tag || id.toUpperCase()}</div></div>`;
   $('story').querySelector('.st-stage').appendChild(a); ST.cast[id] = { el: a, side };
@@ -15195,7 +15197,7 @@ function renderBeach() {
   pool.forEach((id, i) => {
     const sp = spots[i], d = document.createElement('div'); d.className = 'bspot' + (sp.w ? ' in-water' : '');
     d.style.left = sp.x + '%'; d.style.bottom = (100 - sp.y) + '%'; d.style.zIndex = Math.round(sp.y);
-    d.appendChild(bFig(id, i % 2 === 1)); if (sp.w) { const w = document.createElement('div'); w.className = 'wave'; w.innerHTML = '<b></b><i></i><i></i><i></i>'; w.style.cssText = `--wl:${sp.wl || 24}%`; d.style.setProperty('--wl', (sp.wl || 24) + '%'); [...w.children].forEach((c, k) => c.style.animationDelay = (-(i * .55 + k * 1.07)) + 's'); d.appendChild(w); }
+    d.appendChild(bFig(id, sp.x > 50));      // heroes face right: only those on the right half turn round to face the middle if (sp.w) { const w = document.createElement('div'); w.className = 'wave'; w.innerHTML = '<b></b><i></i><i></i><i></i>'; w.style.cssText = `--wl:${sp.wl || 24}%`; d.style.setProperty('--wl', (sp.wl || 24) + '%'); [...w.children].forEach((c, k) => c.style.animationDelay = (-(i * .55 + k * 1.07)) + 's'); d.appendChild(w); }
     box.appendChild(d);
   });
 }
