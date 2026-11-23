@@ -4085,7 +4085,7 @@ function potBuy(id) {
   const o = POT_OPTS[id]; if (!o || !potAwake(o.hero) || !potTierOpen(o.tier)) return;
   const st = potState(o.hero); if (st.owned.includes(id) || potCrystals() < o.cost) return;
   game.crystals -= o.cost; st.owned.push(id); if (!st.active[o.tier] && !gearLocked()) st.active[o.tier] = id;
-  if (o.tier === 3 && legendOwned(o.hero)) game.notices.unshift({ type: 'legend', id: o.hero });          // Tier III bought: the legendary look is earned
+  if (o.tier === 3 && legendOwned(o.hero)) game.notices.unshift({ type: 'legend', id: o.hero });          // Tier III bought: the gym wear skin is earned
   writeSave(); renderPot(); if (o.tier === 3) showNotice();
 }
 function potSet(id) {                         // make an owned option the active one of its tier (there is no switching off, only switching to another)
@@ -4231,7 +4231,7 @@ function renderPot() {
   $('pot-sub').textContent = lock ? 'A quest is in progress: options can be bought but not switched until it ends.' : `Buy an option once, then switch freely between quests. One option per tier is active. Specialty: ${ELEM_NAME[C.el]} · Weak to: ${ELEM_NAME[C.weak]}`;
   $('pot-list').innerHTML = [1, 2, 3].map(t => {
     const open = potTierOpen(t), q = QUESTS.find(x => x.id === POTENTIAL.unlock[t]);
-    return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}${t === 3 && LEGEND_ON ? `<span class="pot-legend" title="Buying it unlocks ${h.name}'s Legendary look">${legendOwned(hid) ? '👑 Legendary look earned' : '👑 unlocks the Legendary look'}</span>` : ''}</div>` + potList(hid, t).map(o => {
+    return `<div class="pot-tier"><div class="dh">TIER ${t}${open ? '' : ` <span class="dim">· 🔒 clear ${q ? q.name : POTENTIAL.unlock[t]} to unlock</span>`}${t === 3 && LEGEND_ON ? `<span class="pot-legend" title="Buying it unlocks ${h.name}'s gym wear skin">${legendOwned(hid) ? '🥊 Gym wear earned' : '🥊 unlocks the gym wear skin'}</span>` : ''}</div>` + potList(hid, t).map(o => {
       const owned = st.owned.includes(o.id), on = st.active[t] === o.id, afford = potCrystals() >= o.cost;
       return `<div class="pot-opt${on ? ' on' : ''}${open ? '' : ' locked'}${potPrev === o.id ? ' prev' : ''}" onclick="potPreview('${o.id}')">${potIcon(o)}<div class="pt"><b>${o.name}</b><br>${o.desc}</div>
         <div class="pb">${!open ? '' : owned ? (on ? '' : `<button onclick="event.stopPropagation();potSet('${o.id}')" ${lock ? 'disabled' : ''}>Equip</button>`) : `<button class="primary" onclick="event.stopPropagation();potBuy('${o.id}')" ${afford ? '' : 'disabled'}>❄️ ${o.cost}</button>`}</div></div>`; }).join('') + '</div>';
@@ -5179,6 +5179,7 @@ function startGame() {
   }
   t.classList.add('hide');
   if (!devMode && tierUnlock()) writeSave();                  // a save that already cleared everything gets New Game+ straight away
+  if (!devMode && !game.gymMigrated) { game.gymMigrated = true; HEROES.forEach(h => { if (legendOwned(h.id)) game.notices.push({ type: 'legend', id: h.id }); }); writeSave(); }      // heroes who bought Tier III before gym wear existed get their pop-up once
   if (game.quest) {                          // resume a quest in progress at its last checkpoint
     quest = restoreQuest(game.quest);
     if (quest && quest.map) { if (quest.bonus) startNode(); else showMap(); return; }
@@ -5390,11 +5391,12 @@ function tierUnlock() {          // every quest beaten on the current top diffic
 }
 const frostOpen = () => groupOpen(QUEST_GROUPS[2]);          // clearing all three Tidelands quests opens Act 3 and the winter gear skins
 const coastOpen = () => groupOpen(QUEST_GROUPS[1]);          // also what unlocks the hero skins
-/* LEGENDARY skin (PARKED: LEGEND_ON = false hides every trace of it until it comes back): assets/<hero>/armoured - legendary/ (same files as armoured/).
-   Earned by buying that hero's Tier III Potential option (each hero has exactly one): a 👑 pop-up, a locked button in the Dorm, a tag on the Potential screen. */
-const LEGEND_ON = false, LEGEND = 'legendary';
+/* GYM WEAR skin (the Potential reward; this slot was the parked "legendary" look): assets/<hero>/armoured - gym wear/ (same files as armoured/).
+   Earned by buying that hero's Tier III Potential option (each hero has exactly one): a 🥊 pop-up, a locked button in the Dorm, a tag on the Potential screen.
+   The training gym's punching-bag loop also uses gym wear idle + skill1 when they exist (see gymLoop). LEGEND_ON = false hides the skin again. */
+const LEGEND_ON = true, LEGEND = 'gym wear';
 const legendOwned = hid => { if (!LEGEND_ON) return false; const C = POT_HERO[hid], st = game && game.pot && game.pot[hid]; return !!(C && st && Array.isArray(st.owned) && st.owned.includes(hid + '.' + C.t3)); };
-const skinLabel = n => n === LEGEND ? '👑 Legendary' : (n || 'Default');
+const skinLabel = n => n === LEGEND ? '🥊 Gym wear' : (n || 'Default');
 const skinOf = id => { const sk = game && coastOpen() && game.skins && game.skins[id]; return sk && !(sk === 'winter gear' && !frostOpen()) && !(sk === LEGEND && !legendOwned(id)) ? sk : null; };
 function skinsFor(id) {
   if (!coastOpen()) return [];                          // skins stay hidden until the Tidelands open
@@ -10066,10 +10068,10 @@ function showNotice() {                      // pending pop-ups (saved, so they 
   if (n && n.type === 'legend' && heroById(n.id)) {          // a hero finished their Potential: the Legendary look
     const h = heroById(n.id), sp = $('notice-sprite');
     box.classList.add('show', 'top'); sp.className = 'mini-sprite port-box'; sp.style.fontSize = ''; sp.dataset.port = h.id; sp.textContent = h.tag;
-    $('notice-title').textContent = `👑 ${h.name.split(' ')[0]}'s Legendary look!`;
-    $('notice-text').textContent = `${h.name.split(' ')[0]} has reached the peak of her Potential.`;
+    $('notice-title').textContent = `🥊 ${h.name.split(' ')[0]}'s gym wear!`;
+    $('notice-text').textContent = `${h.name.split(' ')[0]} has reached the peak of her Potential and earned her gym wear. Wear it in the Dorm's skin list.`;
     $('notice-skills').textContent = '';
-    $('notice-btn').textContent = '👑 Wear it'; $('notice-btn').onclick = () => { const id = n.id; dismissNotice(); setSkin(id, LEGEND); };
+    $('notice-btn').textContent = '🥊 Wear it'; $('notice-btn').onclick = () => { const id = n.id; dismissNotice(); setSkin(id, LEGEND); };
     $('notice-btn2').style.display = '';
     findAsset(`${ANIM.base}/${h.id}/armoured - ${LEGEND}/idle`).then(a => {        // her legendary idle, big, if it has been drawn; else her portrait stays
       if (!a || game.notices[0] !== n) return; const vid = a.ext === 'mp4' || a.ext === 'webm', m = document.createElement(vid ? 'video' : 'img');
@@ -10327,15 +10329,21 @@ function finalLoad() {                                         // remembered bet
   if (Array.isArray(sv)) sv.slice(0, 8).forEach((id, i) => { if (id && game.roster.includes(id) && !finalSlots.includes(id)) finalSlots[i] = id; });
 }
 function finalSave() { game.finalSlots = [...finalSlots]; writeSave(); }
+function padKeep(fn, alt) {        // re-render without losing the controller's place: put its highlight back on the same hero card / slot / button (else alt, a selector)
+  const f = document.querySelector('.gp-focus'), key = f && (f.classList.contains('gc') && f.dataset.id ? `.gc[data-id="${f.dataset.id}"]` : f.dataset.i != null ? `.fslot[data-i="${f.dataset.i}"]` : f.id ? '#' + f.id : null);
+  fn(); if (!f || typeof padFocus !== 'function') return;
+  const ok = e => e && e.isConnected && (e.classList.contains('has') || e.classList.contains('over') || !e.classList.contains('fslot'));
+  const put = () => { let e = key && document.querySelector(key); if (!ok(e)) e = alt && document.querySelector(alt); if (ok(e) && !e.classList.contains('gp-focus')) padFocus(e); }; put(); requestAnimationFrame(put); setTimeout(put, 120);
+}
 function toggleFinalPick(id) {
   finalSel = -1; const i = finalSlots.indexOf(id);
   if (i >= 0) finalSlots[i] = null; else { const k = finalSlots.indexOf(null); if (k >= 0) finalSlots[k] = id; }
-  finalSave(); renderParty();
+  finalSave(); padKeep(renderParty, `.gc[data-id="${id}"]`);
 }
 function tapFinalSlot(i) {
   if (finalSel < 0) { if (finalSlots[i]) finalSel = i; }
   else { if (finalSel !== i) { [finalSlots[finalSel], finalSlots[i]] = [finalSlots[i], finalSlots[finalSel]]; finalSave(); try { sfx('click'); } catch (e) {} } finalSel = -1; }
-  renderParty();
+  padKeep(renderParty);
 }
 function renderFinalParty(full) {
   if (full) { finalLoad(); finalSel = -1; }
@@ -12842,7 +12850,7 @@ function renderGear() {
     const group = kind => { const n = {}; tr.forEach(id => { if (TRAIT[id] && TRAIT[id].kind === kind) n[id] = (n[id] || 0) + 1; });
       return Object.keys(n).map(id => { const t = TRAIT[id]; return `<div class="tr-row ${kind}">${t.icon} <b>${t.name}</b>${n[id] > 1 ? ' ×' + n[id] : ''}: ${t.desc}${n[id] > 1 ? ' <span class="dim">(each)</span>' : ''}</div>`; }).join('') || '<div class="dim" style="font-size:.78rem">None</div>'; };
     const strip = `<div class="dc-strip"><button class="arr" onclick="dormStep(-1)" title="Previous hero">◀</button>${game.roster.filter(heroById).map(x => `<button class="dcs${x === dormHero ? ' on' : ''}" onclick="dormOpen('${x}')" title="${heroById(x).name}"><span class="mini-sprite port-box" data-port="${x}">${heroById(x).tag}</span></button>`).join('')}<button class="arr" onclick="dormStep(1)" title="Next hero">▶</button></div>`;
-    const skins = skinsFor(dormHero).length || legendTease(dormHero) ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${n === LEGEND ? ' legend' : ''}${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${skinLabel(n)}</button>`).join('')}${legendTease(dormHero) ? `<button class="skinbtn legend locked" disabled title="Buy ${heroById(dormHero).name}'s Tier III Potential to unlock">🔒 👑 Legendary</button>` : ''}</div>` : '';
+    const skins = skinsFor(dormHero).length || legendTease(dormHero) ? `<div class="dh">SKIN</div><div class="dskins">${['', ...skinsFor(dormHero)].map(n => `<button class="skinbtn${n === LEGEND ? ' legend' : ''}${(skinOf(dormHero) || '') === n ? ' on' : ''}" onclick="setSkin('${dormHero}', '${n.replace(/'/g, '')}')">${skinLabel(n)}</button>`).join('')}${legendTease(dormHero) ? `<button class="skinbtn legend locked" disabled title="Buy ${heroById(dormHero).name}'s Tier III Potential to unlock">🔒 🥊 Gym wear</button>` : ''}</div>` : '';
     const head = `<h3>${h.name} ${elIcons(h)}</h3>
         ${BIOS[dormHero] ? `<div class="dbio">${BIOS[dormHero].bio}<br><span class="likes">♥ Likes: ${BIOS[dormHero].like}</span> · <span class="hates">✖ Dislikes: ${BIOS[dormHero].hate}</span></div>` : ''}
         <div class="dorm-stats">❤️ HP ${u.maxHp} · 💨 SPD ${u.spd} · 🛡️ Armour ${u.maxBreak} / ${u.maxBreak2}${u.rel && u.rel.dodge ? ` · 🌀 Evade ${Math.round(u.rel.dodge * 100)}%` : ''}<br>⚠️ Weak to: ${elemList(u.weak)} · 🛡️ Resists: ${elemList(u.resist)}</div>`;
@@ -13848,8 +13856,8 @@ async function trainShow(host, chain, idle = true) {
 }
 const trainAlive = tok => tok === trainToken && $('train-method').classList.contains('show');
 async function gymLoop(stage, h, tok) {
-  const fig = stage.querySelector('.tm-fig'), B = ANIM.base, idleChain = [`${B}/${h.id}/armoured/idle`], atkKey = `${B}/${h.id}/armoured/skill1`;
-  await trainShow(fig, idleChain); const atk = await findAsset(atkKey);
+  const fig = stage.querySelector('.tm-fig'), B = ANIM.base, idleChain = [`${B}/${h.id}/armoured - ${LEGEND}/idle`, `${B}/${h.id}/armoured/idle`];      // gym wear when it's drawn (everyone, earned or not: it's the gym), else her armour
+  await trainShow(fig, idleChain); const atk = (await findAsset(`${B}/${h.id}/armoured - ${LEGEND}/skill1`)) || (await findAsset(`${B}/${h.id}/armoured/skill1`));
   while (trainAlive(tok) && fig.isConnected) {
     await sleep(900 + Math.random() * 700); if (!trainAlive(tok)) return;
     const bag = stage.querySelector('.gym-bag'), keep = fig.firstElementChild;
@@ -14205,7 +14213,7 @@ const VOICE = {      // hero-only lines. {outfit} becomes what they had on (armo
     seeSuper: ['Avert your eyes, everyone! Show some decency!', 'Oh, the poor thing... the shame of it!'] }
 };
 const SPICY_KINDS = ['broken', 'super', 'seeSuper'];          // with Fanservice off these use only the tame shared lines (seeSuper not at all)
-const outfitWord = id => { const sk = skinOf(id); return !sk ? 'armour' : sk === LEGEND ? 'legendary outfit' : sk; };
+const outfitWord = id => { const sk = skinOf(id); return !sk ? 'armour' : sk === LEGEND ? 'gym wear' : sk; };
 let talkActive = [], talkLoop = false;
 function talkClear() { talkActive.forEach(b => b.el.remove()); talkActive = []; }
 function talkPick(u, kind) {
@@ -15555,7 +15563,7 @@ const GP = (() => {
     return { root: sc || document.body, scene: sc && sc.id };
   }
   const SEL = 'button,[onclick],.pick,.pk-hit,.fslot,.rc,.gc,.seat[data-id],select,input[type=range],input[type=checkbox]';
-  const NOFOCUS = '#menu-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has)';
+  const NOFOCUS = '#menu-btn,#dev-bar,.fxbar,#gp-hint,.info,[data-rm],#log-close,.fslot:not(.has):not(.over),.fslot .x';      // (an empty Final Stand slot is a target while you are swapping; heroes come off by pressing their Guild card again)
   function candidates(L) {
     let list = [...L.root.querySelectorAll(SEL)].filter(e => e !== L.root && !e.disabled && !e.closest(NOFOCUS) && vis(e));
     if (L.scene === 'vb') { const pn = document.getElementById('vb-panel'); if (pn && vis(pn)) { const inP = list.filter(e => pn.contains(e)); if (inP.length) list = inP; } }      // the volleyball result / perk-swap panel owns the pad while it is open
@@ -15619,7 +15627,7 @@ const GP = (() => {
   }
   function press(el) {
     if (!el) return;
-    if ((el.classList.contains('fslot') && el.classList.contains('has')) || (el.onpointerdown && !el.onclick && !el.matches('button'))) {      // tap-to-pick / dorm cards and seats use pointer events     // formation slot: tap-to-pick / tap-to-swap uses pointer events
+    if ((el.classList.contains('fslot') && el.classList.contains('has') && el.onpointerdown) || (el.onpointerdown && !el.onclick && !el.matches('button'))) {      // tap-to-pick / dorm cards and seats use pointer events     // formation slot: tap-to-pick / tap-to-swap uses pointer events
       const [x, y] = ctr(el); S.synth = true;
       const o = { bubbles: true, clientX: x, clientY: y, button: 0, pointerId: 1, pointerType: 'mouse' };
       el.dispatchEvent(new PointerEvent('pointerdown', o)); document.dispatchEvent(new PointerEvent('pointerup', o)); S.synth = false;
