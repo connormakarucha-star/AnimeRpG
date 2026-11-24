@@ -11410,7 +11410,9 @@ async function qmGo(i) {
 async function qmEnter() {               // what happens when the party arrives somewhere new
   const m = quest.map, x = m.n[m.at];
   if (x.type === 'clue') { huntClue(m, x); x.done = true; saveQuest(); return renderMap(); }
-  if (x.type === 'camp') { x.done = true; quest.party.forEach(u => { u.campHeal = 0; }); return goCamp(); }
+  if (x.type === 'camp') { x.done = true; quest.party.forEach(u => { u.campHeal = 0; });
+    if (m.hunt && !m.bossDone) { m.hunt.msg = `⛺ <b>A campsite.</b> Make camp to rest or scout, or keep moving.`; saveQuest(); return renderMap(); }      // hunts: the camp is optional (the button and pad X stay)
+    return goCamp(); }
   if (x.type === 'spring') return springEnter();
   if (x.type === 'event' || x.type === 'wagon') { quest.eventDone = false; quest.node = Math.min(quest.def.nodes.length - 2, quest.map.n.filter(y => (y.type === 'fight' || y.type === 'elite') && y.done).length); return openEvent(); }
   if (x.type === 'fight' || x.type === 'elite' || x.type === 'boss') { quest.node = x.fi; if (x.type === 'boss') await travel('boss'); return startNode(); }
