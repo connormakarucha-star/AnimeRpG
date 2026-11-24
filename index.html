@@ -7411,6 +7411,7 @@ function ringSvg(u, bfx, sk) {
 }
 function intentIcons(u) {          // rings mode: the enemy's move as icons, and the portrait of whoever it will really land on (taunts and Shield Wall included)
   if (u.trollPart && u.state !== 'armoured') return '<span class="ii" title="Broken: no attack until it grows back"><b class="ii-i">🦴</b></span>';
+  if (u.trollPart && u.intent && u.intent.wind) return '<span class="ii charge" title="Winding up a Death Roll: it rolls over everyone next round. Break its body before then to stop it."><b class="ii-i">🌀</b><span class="ii-arrow">›</span><b class="ii-i all">👥</b></span>';
   if (u.trollPart && u.intent && u.skills[u.intent.i] && u.skills[u.intent.i].t === 'squeeze') return `<span class="ii" title="Holds her under"><b class="ii-i">🌊</b><span class="ii-arrow">›</span><span class="ip port-box atk" data-port="${u.intent.target.id}"></span></span>`;
   if (FB && u.final) return `<span class="intent">${intentText(u)}</span>`;
   const it = u.intent; if (!it) return ''; if (stunned(u)) return '<span class="ii" title="Stunned: skips its turn"><b class="ii-i">💤</b></span>'; if (it.skip) return '';
@@ -9348,7 +9349,7 @@ async function battle() {
    The parts share one HP pool (TROLL.hp, scaled like any fight); it dies from HP, not from losing parts. Each part has its own small armour (TROLL.armour):
    breaking it shuts that part's skill off for TROLL.regrow of the troll's turns, then the armour grows back. While a part is broken, statuses land through it
    (they tick on the troll's turn). No stun from breaking; ice/shock still stun, but never two of its turns in a row (it shakes the second off).
-   Skills: Club (club arm) · Bile (head: poison at everyone) · Regenerate (body: below TROLL.regenAt HP, at most every TROLL.regenEvery turns, never while burning)
+   Skills: Club (club arm) · Bile (head: poison at everyone) · Death Roll (body: telegraphed wind-up every TROLL.rollEvery turns, then hits everyone; break the body to cancel). Passive Troll blood: regen unless hit by fire
    · Flail (always in the rotation). Area attacks against it: the HP damage counts once (the other parts take the break only).
    Grab: after any attack that hit a broken hero, if the drowning arm is intact and nobody is held, it grabs the frontmost one and holds her under the water.
    She's out of the fight and takes TROLL.drown each of its turns. Break the drowning arm to free her.
@@ -9356,8 +9357,11 @@ async function battle() {
 /* A hunt beast's passive (a template for future beasts: give its shared state T a passive like this). At the end of every round it heals heal × max HP and each
    part with its armour up regains armour × its max armour, unless something with its weakness (stop) hit it that round. The troll: troll blood, stopped by fire. */
 const TROLL_PASSIVE = { icon: '💚', name: 'Troll blood', heal: .02, armour: .1, stop: 'fire', stopIcon: '🔥', stopTxt: 'fire' };
-const TROLL = { hp: 1400, spd: 7, regrow: 2, regenAt: .7, regenEvery: 3, regen: .08, drown: 18,
-  armour: { club: 34, drown: 34, head: 30, body: 44 },
+/* 2026-11-23 (Connor: "long, tanky, anti-climactic, not very difficult" → shorter and more dangerous): 30% less HP, ~20% less armour per part (breaks come
+   sooner), ~25% harder hits, drowning hurts more, the body's telegraphed Death Roll (rollEvery of its own turns; break the body during the wind-up to stop it),
+   and at the den it's cornered: every hit +cornered. */
+const TROLL = { hp: 1000, spd: 7, regrow: 2, drown: 24, rollEvery: 3, rollFirst: 2, cornered: 1.15,
+  armour: { club: 28, drown: 28, head: 24, body: 36 },
   weak: {
     nest:  { icon: '🔥', name: 'Torched nest', clue: 'Scorched reeds and a smell of smoke: its nest is near.', fx: 'its body starts the fight broken (no Flail at first)' },
     fish:  { icon: '🐟', name: 'Spoiled fishing grounds', clue: 'Rotten fish heaped by the water: its larder.', fx: 'its head starts the fight broken (no Bile at first)' },
@@ -9368,17 +9372,17 @@ const TROLL = { hp: 1400, spd: 7, regrow: 2, regenAt: .7, regenEvery: 3, regen: 
    away until it grows back (TROLL.regrow of that part's own turns) - the hunt's main trick. No more Regenerate (the body flails instead), and it can't be stunned:
    breaking parts is how you stop its attacks. Damage per hit is set like a regular enemy's, since there are four of them. */
 const TROLL_PARTS = [
-  { k: 'club', name: 'Club Arm', tag: 'CLUB', spd: 8, skills: [{ n: 'Club', t: 'dmg', r: 'melee', d: [26, 31], chip: true, brk: 18, cd: 0 }] },
-  { k: 'drown', name: 'Drowning Arm', tag: 'GRAB', spd: 6, skills: [{ n: 'Grab', t: 'dmg', r: 'melee', d: [14, 17], chip: true, brk: 12, cd: 0, grab: true }, { n: 'Hold Under', t: 'squeeze', cd: 0 }] },
-  { k: 'head', name: 'Head', tag: 'HEAD', spd: 7, skills: [{ n: 'Bile', t: 'dmg', r: 'ranged', d: [12, 14], el: 'poison', brk: 14, cd: 3, all: true }, { n: 'Bite', t: 'dmg', r: 'melee', d: [16, 19], chip: true, brk: 10, cd: 0 }] },
-  { k: 'body', name: 'Body', tag: 'BODY', spd: 5, skills: [{ n: 'Flail', t: 'dmg', r: 'melee', d: [18, 22], chip: true, brk: 10, cd: 0 }] }];
+  { k: 'club', name: 'Club Arm', tag: 'CLUB', spd: 8, skills: [{ n: 'Club', t: 'dmg', r: 'melee', d: [32, 38], chip: true, brk: 20, cd: 0 }] },
+  { k: 'drown', name: 'Drowning Arm', tag: 'GRAB', spd: 6, skills: [{ n: 'Grab', t: 'dmg', r: 'melee', d: [17, 21], chip: true, brk: 14, cd: 0, grab: true }, { n: 'Hold Under', t: 'squeeze', cd: 0 }] },
+  { k: 'head', name: 'Head', tag: 'HEAD', spd: 7, skills: [{ n: 'Bile', t: 'dmg', r: 'ranged', d: [15, 17], el: 'poison', brk: 16, cd: 3, all: true }, { n: 'Bite', t: 'dmg', r: 'melee', d: [20, 24], chip: true, brk: 12, cd: 0 }] },
+  { k: 'body', name: 'Body', tag: 'BODY', spd: 5, skills: [{ n: 'Flail', t: 'dmg', r: 'melee', d: [22, 27], chip: true, brk: 12, cd: 0 }, { n: 'Death Roll', t: 'dmg', r: 'melee', d: [30, 36], chip: true, brk: 22, cd: 0, all: true, roll: true }] }];
 function trollBuild(sc, h) {
   const W = (h && h.weak) || [], T = { hp: 0, maxHp: 0, parts: [], held: null, passive: TROLL_PASSIVE, stopped: false };
   const parts = TROLL_PARTS.map(P => {
-    const core = P.k === 'body', sk = P.skills.map(x => ({ ...x }));
+    const core = P.k === 'body', corner = h && h.fled ? TROLL.cornered : 1, sk = P.skills.map(x => ({ ...x, ...(x.d ? { d: x.d.map(v => Math.round(v * corner)) } : {}) }));      // cornered at the den: hits harder
     const u = make({ id: 'e_troll_' + P.k, boss: true, name: 'Troll · ' + P.name, short: P.name, tag: P.tag, hp: TROLL.hp * (W.includes('bones') ? .88 : 1), brk: 1, spd: P.spd, weak: ['fire'], resist: ['poison'], skills: sk }, 'e', sc);
     u.maxBreak = u.breakBar = Math.max(1, Math.round(TROLL.armour[P.k] * ((P.k === 'club' || P.k === 'drown') && W.includes('wound') ? .6 : 1)));
-    u.troll = T; u.trollPart = P.k; u.noTurn = false; u.trollCore = core; u.regrow = 0;
+    u.troll = T; u.trollPart = P.k; u.noTurn = false; u.trollCore = core; u.regrow = 0; if (core) { u.rollCd = TROLL.rollFirst; u.winding = false; }
     if ((P.k === 'body' && W.includes('nest')) || (P.k === 'head' && W.includes('fish'))) { u.state = 'broken'; u.breakBar = 0; u.regrow = TROLL.regrow; }
     return u; });
   T.maxHp = parts[0].maxHp; T.hp = T.maxHp; T.parts = parts;
@@ -9393,10 +9397,11 @@ function trollChoose(u) {                     // each part's own move this round
   const live = () => party.filter(x => isAlive(x) && !x.drowned);
   if (u.trollPart === 'drown' && T.held && isAlive(T.held)) return { i: 1, target: T.held };       // holding someone: keeps her under
   if (u.trollPart === 'head') return u.cd[0] <= 1 && Math.random() < .6 ? { i: 0, target: null } : { i: 1, target: weightedHero() };
+  if (u.trollPart === 'body') { if (u.winding) return { i: 1, target: null }; if (u.rollCd <= 0) return { wind: true, skip: true }; }      // (skip: no attack this turn, as far as everything else is concerned)      // Death Roll: a turn winding up, then it rolls over everyone
   return live().length ? { i: 0, target: weightedHero() } : { skip: true };
 }
 function trollIntent(u) {
-  const it = u.intent; if (u.state !== 'armoured') return '🦴 regrowing'; if (!it || it.skip) return '';
+  const it = u.intent; if (u.state !== 'armoured') return '🦴 regrowing'; if (it && it.wind) return '▶ 🌀 rears up: Death Roll next round (break its body!)'; if (!it || it.skip) return '';
   const s = u.skills[it.i]; return s.t === 'squeeze' ? `▶ 🌊 holds ${it.target ? it.target.short : 'her'} under` : s.all ? `▶ ${s.n} (everyone)` : `▶ ${s.n} → ${it.target ? it.target.short : '?'}`;
 }
 async function trollTurn(u) {                 // one part's turn
@@ -9412,6 +9417,7 @@ async function trollTurn(u) {                 // one part's turn
   const hh = quest && quest.map && quest.map.hunt;
   if (hh && !hh.fled && T.hp <= T.maxHp * HUNT.flee) return trollFlee(u, hh);
   if (u.state !== 'armoured') {                                                       // broken: no attack, the armour grows back over its turns
+    if (u.winding) { u.winding = false; u.rollCd = TROLL.rollEvery; log(`💢 Its body cracked open mid-roll: the Death Roll is broken off!`, 'log-player'); floatText(u, '💢 ROLL STOPPED', 'tag'); sfx('break'); await sleep(450); }
     if (u.regrow > 0) u.regrow--;
     if (u.regrow <= 0) { u.state = 'armoured'; u.breakBar = u.maxBreak; floatText(u, '🦴 REGROWN', 'tag'); log(`The troll's ${u.short.toLowerCase()} hardens again: ${u.skills[0].n} is back.`, 'log-status'); }
     else { log(`🦴 The troll's ${u.short.toLowerCase()} is still broken (${u.regrow} more turn${u.regrow > 1 ? 's' : ''}).`, 'log-status'); floatText(u, '🦴 REGROWING', 'tag'); }
@@ -9419,8 +9425,11 @@ async function trollTurn(u) {                 // one part's turn
   }
   let it = u.intent; u.intent = null;
   if (!it || it.skip || (it.target && (!isAlive(it.target) || (it.target.drowned && u.skills[it.i].t !== 'squeeze'))) || u.cd[it.i] > 0) it = trollChoose(u);
-  if (it.skip) return;
+  if (u.trollCore) u.rollCd = Math.max(0, (u.rollCd || 0) - 1);
+  if (it.skip && !it.wind) return;
+  if (it.wind) { u.winding = true; trollFx('flail'); shake(3); sfx('hit', 'phys', true, false, true); log(`🌀 The troll rears up and coils: a <b>Death Roll</b> is coming at everyone next round. Break its body to stop it!`, 'log-enemy'); floatText(u, '🌀 WINDING UP', 'tag hurt'); render(); await sleep(600); return; }
   const s = u.skills[it.i];
+  if (s.roll) { u.winding = false; u.rollCd = TROLL.rollEvery; trollFx('flail'); shake(6); }
   if (s.t === 'squeeze') { trollFx('grab'); await trollDrownTick(T); render(); return; }
   if (!it.target) it.target = s.all ? party.find(x => isAlive(x) && !x.drowned) : weightedHero();
   if (!it.target) return;
@@ -11498,7 +11507,7 @@ function finishQuestWin() {              // home with everything: gold, the boss
      aggressive  = by day moves away from the party; from twilight it comes for them, and attacks first if it reaches them (ambush: HUNT.ambush of HP).
    You see it when it's within HUNT.see steps. Walk onto it to fight. At HUNT.flee of its HP it breaks off and flees to its den, bleeding, and heals
    HUNT.denHeal of its max HP every party move until you catch it (it only flees once). Rewards: gold, a guaranteed relic, a perk. */
-const HUNT = { size: [28, 32], clues: 11, camps: 2, events: 4, elites: 3, every: 3, terr: 2, ambush: .12, see: 2, flee: .35, denHeal: .04,
+const HUNT = { size: [28, 32], clues: 11, camps: 2, events: 4, elites: 3, every: 3, terr: 2, ambush: .12, see: 2, flee: .6, denHeal: .04,
   clueR: 2, scoutR: 2, rest: .2, restMoves: 2, sound: .22, soundGap: 3, backstory: 6, decor: 26,
   temper: { territorial: 1, wandering: 1, aggressive: 1 } };
 const HUNT_TEMPER = { territorial: ['A Territorial', 'It keeps to its own stretch of river, and leaves few signs outside it.'], wandering: ['A Wandering', 'It roams the whole marsh, and keeps out of sight.'],
