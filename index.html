@@ -9360,7 +9360,7 @@ const TROLL_PASSIVE = { icon: '💚', name: 'Troll blood', heal: .02, armour: .1
 /* 2026-11-23 (Connor: "long, tanky, anti-climactic, not very difficult" → shorter and more dangerous): 30% less HP, ~20% less armour per part (breaks come
    sooner), ~25% harder hits, drowning hurts more, the body's telegraphed Death Roll (rollEvery of its own turns; break the body during the wind-up to stop it),
    and at the den it's cornered: every hit +cornered. */
-const TROLL = { hp: 1000, spd: 7, regrow: 2, drown: 24, rollEvery: 3, rollFirst: 2, cornered: 1.15,
+const TROLL = { hp: 1000, spd: 7, regrow: 2, drown: 10, rollEvery: 3, rollFirst: 2, cornered: 1.15,
   armour: { club: 28, drown: 28, head: 24, body: 36 },
   weak: {
     nest:  { icon: '🔥', name: 'Torched nest', clue: 'Scorched reeds and a smell of smoke: its nest is near.', fx: 'its body starts the fight broken (no Flail at first)' },
@@ -11026,7 +11026,7 @@ function startNode() {
   order = []; actor = null; cur = null; sel = null; waiting = null; over = false;
   lastSummary = null; { const sb = document.getElementById('btn-summary'); if (sb) sb.style.display = 'none'; }
   $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = '';
-  $('end-buttons').style.display = 'none';
+  $('end-buttons').style.display = 'none'; endSub = ''; $('end-banner').classList.remove('on');      // clear the last fight's result banner
   $('turn-indicator').innerText = 'Preparing...';
   $('battle-sub').textContent = quest.dev ? 'Quick Battle (developer mode)' : quest.map ? `${TOD_NAME[todOf().phase]}${node.boss && !quest.bonus ? ' · BOSS' : quest.bonus ? ' · Event fight' : ''}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''} · Quest gold: ${quest.gold}` : quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''} · Quest gold: ${quest.gold}`;
   $('enemy-head').textContent = node.name.toUpperCase();
