@@ -2868,6 +2868,7 @@ body.calm .ring .rb-beat,body.calm .ring .rb-drip{animation:none}
   <p class="tt-ver">PROTOTYPE</p>
   <div class="menu" id="menu-main">
     <button id="btn-continue" onclick="doContinue()">Continue</button>
+    <button id="btn-ngp" onclick="openPanel('ngp')" style="display:none">🔥 New Game+</button>
     <button id="btn-new" onclick="doNew()">New Game</button>
     <button onclick="openPanel('data')">Export / Import Save</button>
     <button onclick="startDev()" style="opacity:.8">🛠 Developer Mode</button>
@@ -2876,6 +2877,12 @@ body.calm .ring .rb-beat,body.calm .ring .rb-drip{animation:none}
   <div class="panel" id="panel-confirm">
     <div>Starting a new game will <b>erase your saved progress</b>. This can't be undone unless you exported your save first. Continue?</div>
     <button class="danger" onclick="startNew()">Yes, erase and start over</button>
+    <button onclick="openPanel(null)">Cancel</button>
+  </div>
+  <div class="panel" id="panel-ngp">
+    <div><b>🔥 New Game+</b>: the whole game again from the beginning, on a harder difficulty. All eight heroes are with you from the start.<br><br>
+      <b>You keep:</b> skins, relics, perks and flaws, Potential, gold, Frost Crystals and items.<br><b>Starts over:</b> the story, quests, regions and town.<br><br>This <b>replaces your current save</b> (export it first if you want a copy).</div>
+    <button class="danger" onclick="startNGPlus()">Start New Game+</button>
     <button onclick="openPanel(null)">Cancel</button>
   </div>
   <div class="panel" id="panel-data">
@@ -4088,7 +4095,7 @@ Object.keys(POT_HERO).forEach(hid => { const C = POT_HERO[hid];
   [[1, C.t1], [2, C.t2], [3, [C.t3]]].forEach(([tier, kinds]) => kinds.forEach(kind => { const o = potBuild(hid, tier, kind); if (o) POT_OPTS[o.id] = o; })); });
 const potList = (hid, tier) => Object.values(POT_OPTS).filter(o => o.hero === hid && o.tier === tier);
 const potState = hid => { game.pot = game.pot || {}; return game.pot[hid] || (game.pot[hid] = { owned: [], active: {} }); };
-const potTierOpen = tier => !!devMode || questCleared(POTENTIAL.unlock[tier]);
+const potTierOpen = tier => !!devMode || ngOn() || questCleared(POTENTIAL.unlock[tier]);
 const potAwake = hid => true;          // Potential is open for every hero: each tier unlocks for all 8 when its Act 3 quest is cleared (potTierOpen); no first dive needed
 const potActiveIds = hid => { const a = (game && game.pot && game.pot[hid] && game.pot[hid].active) || {}; return [1, 2, 3].map(t => a[t]).filter(id => POT_OPTS[id] && potTierOpen(POT_OPTS[id].tier) && potAwake(hid)); };
 const potHas = (hid, kind) => potActiveIds(hid).some(id => POT_OPTS[id].kind === kind);
@@ -4768,7 +4775,7 @@ const BOOK = {
   endgame: [
     { k: 'phases', h: 'Boss phases', when: anyCleared, b: () => [`Bosses change tactics as their HP drops (ⓘ shows when): they hit harder, learn new skills, raise barriers or call allies.`] },
     { k: 'final', h: 'The Final Stand', when: () => QUEST_GROUPS[2].ids.every(questCleared), b: () => [`All eight heroes, on two fronts, against one foe. There are no camps and no gold: you bring your bag. The shopkeeper helps between rounds, and a stranger may lend a hand. If everyone falls, time rolls back to before you set out and nothing is lost.`] },
-    { k: 'ngp', h: 'New Game+', when: () => !!(game.cleared && game.cleared.final), b: () => [`Once the Final Stand is won, the whole game opens again, harder: more enemy HP and damage, more elites, more gold and better boss drops; from NG+2 bosses also make a last stand at 25% HP. You keep every hero, relic, perk and skin. Pick the difficulty on the quest screen.`] }
+    { k: 'ngp', h: 'New Game+', when: () => !!(game.ngOpen || game.ng), b: () => [`Start <b>New Game+</b> from the title screen: the whole game from the beginning, with all eight heroes and everything they own. Enemies are stronger, elites more common, gold and boss drops better, and bosses make a last stand at 25% HP.`] },
   ]
 };
 function bookSections(ch) {
@@ -4807,7 +4814,7 @@ function guideHtml(guideTab) {          // one section's text (used by the ⚙�
     ${g(`💉 <b>Tonic</b> (Jean): heals, but ${Math.round(TONIC.repay * 100)}% of it returns as ☠️ <b>poison that ignores armour</b> (a net heal). ⚗️ <b>Untested Potions</b>: the party deals more physical damage for ${BREW.dur} turns (more while poisoned), then everyone is poisoned. 🦇 <b>Immortal</b> (Tyr): HP cannot fall below 1. Her Undying Night fires by itself, once per battle, when a blow would kill her.`)}
     <h4>Bosses and New Game+</h4>
     ${g(`🔥 <b>Boss phases</b>: bosses change tactics when their HP drops (ⓘ shows the thresholds): they hit harder, learn new skills, throw up barriers, molt or call allies. From New Game+ 2 they also make a last stand at 25% HP.`)}
-    ${g(`🔥 <b>New Game+</b>: once the Final Stand is won, the whole game opens again on a harder difficulty (more enemy HP and damage, more elites, more gold and better boss drops). You keep every hero, relic, trait and skin. Pick the difficulty on the quest screen.`)}
+    ${g(`🔥 <b>New Game+</b>: once the Final Stand is won, start it from the title screen: the whole game again from the beginning on a harder difficulty, with all eight heroes from the start. You keep skins, relics, perks, Potential, gold, crystals and items.`)}
     <h4>Defeat and recovery</h4>
     ${g(`Heroes who fall are not lost: they get back up with 1 HP before the next fight. Each run has only a few camps, placed at random after the first couple of fights, so ration your supplies. If your whole party falls the quest ends and you keep only half the gold you carried. At camp, eat <b>Field Rations</b> to heal the party and use <b>Repair Kits</b> on a hero's armour. Buy both in the town Shop.`)}`;
   else if (guideTab === 'credits') h = `<h4>Credits</h4>${g(`<b>Sound effects:</b> Kenney Impact Sounds, Kenney RPG Audio and Kenney Interface Sounds, by Kenney Vleugels (<a href="https://kenney.nl" target="_blank" rel="noopener">kenney.nl</a>), licensed CC0.`, 'good')}${g(`<b>Magic sound effects:</b> Basic Spell Impacts and Healing Spell Impacts by Lentikula (<a href="https://lentikula.itch.io/" target="_blank" rel="noopener">lentikula.itch.io</a>), licensed CC0.`, 'good')}${g(`Music and ambience are generated in the game for now.`, '')}`
@@ -5190,13 +5197,14 @@ function refreshTitle() {
   try { titleBg(); } catch (e) { }
   const s = readSave(), c = $('btn-continue'), info = $('title-info');
   c.disabled = !s;
-  c.innerHTML = s ? `Continue<br><small>Quests: ${s.stats.won} cleared · ${s.stats.lost} failed${s.quest ? ' · quest in progress' : ''} · ${fmtDate(s.updated)}</small>` : 'Continue';
+  { const b = $('btn-ngp'); if (b) b.style.display = s && s.ngOpen ? '' : 'none'; }
+  c.innerHTML = s ? `Continue<br><small>${s.ng ? '🔥 NG+ · ' : ''}Quests: ${s.stats.won} cleared · ${s.stats.lost} failed${s.quest ? ' · quest in progress' : ''} · ${fmtDate(s.updated)}</small>` : 'Continue';
   info.className = 'info'; info.textContent = '';
   if (!storageOk) { info.className = 'info warn'; info.textContent = "Saving is unavailable in this browser (private mode?). Progress won't be kept."; }
   else if (!s && hasRawSave()) { info.className = 'info warn'; info.textContent = "A save was found but can't be read (damaged, or from a newer version). Starting a new game will replace it."; }
 }
 function openPanel(name) {
-  ['confirm', 'data'].forEach(n => $('panel-' + n).classList.toggle('show', n === name));
+  ['confirm', 'data', 'ngp'].forEach(n => $('panel-' + n).classList.toggle('show', n === name));
   $('menu-main').style.display = name ? 'none' : '';
   $('title-info').style.display = name ? 'none' : '';
   importArmed = false; $('data-msg').textContent = '';
@@ -5237,6 +5245,17 @@ function startGame() {
 function doContinue() { game = readSave(); if (!game) { refreshTitle(); return; } startGame(); }
 function doNew() { if (readSave() || hasRawSave()) openPanel('confirm'); else startNew(); }
 function startNew() { game = newSave(); writeSave(); startGame(); }
+function startNGPlus() {               // New Game+: a fresh save that keeps what the heroes own (see tierUnlock)
+  const o = readSave(); if (!o || !o.ngOpen) return openPanel(null);
+  const n = newSave();
+  ['gold', 'crystals', 'items', 'relics', 'equip', 'traits', 'skins', 'pot', 'curse', 'faustGrow', 'lake', 'dived', 'hunts', 'final', 'stats', 'coach', 'guideSeen', 'gymMigrated']
+    .forEach(k => { if (o[k] !== undefined) n[k] = JSON.parse(JSON.stringify(o[k])); });
+  n.roster = HEROES.map(h => h.id); n.ng = 1; n.ngOpen = true; n.story = { seen: Object.fromEntries(Object.keys(STORY_JOIN).map(k => [k, 1])), v2: 1 };      // everyone is already here: skip the recruit scenes
+  n.ngRuns = (o.ngRuns || 0) + 1;
+  n.shop = { stock: rollStock(n.relics) };
+  n.notices = [{ type: 'ngstart' }];
+  game = n; openPanel(null); writeSave(); startGame();
+}
 
 function exportSave() {
   const s = readSave();
@@ -5412,9 +5431,7 @@ const QUEST_GROUPS = [
    To add a tier, add a line here (everything else follows). Tune the numbers freely: they are the whole difficulty knob. */
 const TIERS = [
   { name: 'Normal', short: '' },
-  { name: 'New Game+ 1', short: 'NG+1', hp: 1.2,  atk: 1.15, gold: 1.25, elite: 1.5, relic: 0.05 },
-  { name: 'New Game+ 2', short: 'NG+2', hp: 1.4,  atk: 1.3,  gold: 1.5,  elite: 2,   relic: 0.10, lastStand: true },
-  { name: 'New Game+ 3', short: 'NG+3', hp: 1.65, atk: 1.45, gold: 1.75, elite: 2.5, relic: 0.15, lastStand: true }
+  { name: 'New Game+', short: 'NG+', hp: 1.2,  atk: 1.15, gold: 1.25, elite: 1.5, relic: 0.05, lastStand: true }      // placeholder numbers: NG+ is to be rebalanced to Act 3 strength throughout
 ];
 const MAX_TIER = TIERS.length - 1;
 const tierDef = n => TIERS[Math.max(0, Math.min(MAX_TIER, n | 0))] || TIERS[0];
@@ -5429,11 +5446,13 @@ const questOpen = id => { if (id === 'final') return finalOpen(); const g = grou
 const FINAL_QUEST = { id: 'final', name: 'The Final Stand', icon: '🌌', desc: 'Beyond the last peak something waits, with two bodies and one life. Bring eight heroes in two parties of four and fight it on both fronts at once. If you fall, the world rolls back to the moment before you set out.' };
 const finalSlots = Array(8).fill(null);                  // slots 0-3 = LEFT FRONT (0 = front line), 4-7 = RIGHT FRONT
 let finalSel = -1;
-function tierUnlock() {          // every quest beaten on the current top difficulty opens the next one (returns true when it did)
-  const t = game && game.tiers; if (!t || t.max >= MAX_TIER) return false;
-  if (!(game.cleared && game.cleared.final)) return false;            // New Game+ waits for the Final Stand to be won (not just Act 3)
-  if (!QUESTS.every(q => tierCleared(q.id) >= t.max)) return false;
-  t.max++; game.notices.push({ type: 'tier', id: t.max }); return true;
+/* NEW GAME+ (one loop): winning the Final Stand sets game.ngOpen and the title screen shows a New Game+ button. It starts the game over from the beginning (story, quests,
+   regions) on the NG+ difficulty (game.ng = 1), with all 8 heroes from the start and everything they own carried over: skins, relics, perks, Potential, gold, crystals, items. See startNGPlus. */
+const ngOn = () => !!(game && game.ng);
+const curTier = () => devMode ? Math.max(0, Math.min(MAX_TIER, (game && game.tiers && game.tiers.pick) | 0)) : (ngOn() ? 1 : 0);
+function tierUnlock() {          // the Final Stand is won: New Game+ opens on the title screen (returns true when it just did)
+  if (!game || game.ngOpen || !(game.cleared && game.cleared.final)) return false;
+  game.ngOpen = true; game.notices.push({ type: 'tier', id: 1 }); return true;
 }
 const frostOpen = () => groupOpen(QUEST_GROUPS[2]);          // clearing all three Tidelands quests opens Act 3 and the winter gear skins
 const coastOpen = () => groupOpen(QUEST_GROUPS[1]);          // also what unlocks the hero skins
@@ -5443,13 +5462,13 @@ const coastOpen = () => groupOpen(QUEST_GROUPS[1]);          // also what unlock
 const LEGEND_ON = true, LEGEND = 'gym wear';
 const legendOwned = hid => { if (!LEGEND_ON) return false; const C = POT_HERO[hid], st = game && game.pot && game.pot[hid]; return !!(C && st && Array.isArray(st.owned) && st.owned.includes(hid + '.' + C.t3)); };
 const skinLabel = n => n === LEGEND ? '🥊 Gym wear' : (n || 'Default');
-const skinOf = id => { const sk = game && coastOpen() && game.skins && game.skins[id]; return sk && !(sk === 'winter gear' && !frostOpen()) && !(sk === LEGEND && !legendOwned(id)) ? sk : null; };
+const skinOf = id => { const sk = game && (coastOpen() || ngOn()) && game.skins && game.skins[id]; return sk && !(sk === 'winter gear' && !(frostOpen() || ngOn())) && !(sk === LEGEND && !legendOwned(id)) ? sk : null; };
 function skinsFor(id) {
-  if (!coastOpen()) return [];                          // skins stay hidden until the Tidelands open
+  if (!coastOpen() && !ngOn()) return [];              // skins stay hidden until the Tidelands open (always open in New Game+)
   const names = new Set(SKIN_HINTS[id] || []);
   if (manifest) Object.keys(manifest).forEach(k => { const m = k.match(/^([^/]+)\/armoured - ([^/]+)\//); if (m && m[1] === id) names.add(m[2]); });
   if (legendOwned(id)) names.add(LEGEND);              // the legendary look is listed once earned, art or not (missing files fall back to armoured/)
-  return [...names].filter(n => !STATE_SKINS.includes(n) && (n !== 'winter gear' || frostOpen()) && (n !== LEGEND || legendOwned(id)));          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
+  return [...names].filter(n => !STATE_SKINS.includes(n) && (n !== 'winter gear' || frostOpen() || ngOn()) && (n !== LEGEND || legendOwned(id)));          // folders: armoured - swimsuit (Act 2), armoured - winter gear (Act 3)
 }
 function stateFolder(u) {                         // the art folder for a unit's current state
   if (u.immortalLook) return FX.spicy ? `armoured - ${IMMORTAL.look}` : 'broken';      // Tyr's immortal look (see IMMORTAL); with Fanservice off she turns in her broken art (underwear) instead. Missing pictures fall back along artChain
@@ -10372,11 +10391,18 @@ function showNotice() {                      // pending pop-ups (saved, so they 
     $('notice-skills').textContent = '';
     return;
   }
+  if (n && n.type === 'ngstart') {
+    box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🔥'; $('notice-btn').textContent = 'Bring it on!';
+    $('notice-title').textContent = '🔥 New Game+';
+    $('notice-text').textContent = 'Back to the beginning, with all eight heroes and everything they own. The enemies are stronger this time.';
+    $('notice-skills').textContent = tierText(tierDef(1));
+    return;
+  }
   if (n && n.type === 'tier' && n.id >= 1 && n.id <= MAX_TIER) {
     const T = tierDef(n.id);
     box.classList.add('show'); $('notice-sprite').style.fontSize = '3rem'; $('notice-sprite').className = 'mini-sprite'; delete $('notice-sprite').dataset.port; $('notice-sprite').textContent = '🔥'; $('notice-btn').textContent = 'Bring it on!';
     $('notice-title').textContent = `🔥 ${T.name} unlocked!`;
-    $('notice-text').textContent = n.id === 1 ? 'The Final Stand is won. The whole game can now be played again on a harder difficulty, keeping all your heroes, relics, traits and skins. Pick the difficulty when you embark.' : `A harder difficulty is open: ${T.name}. Clear every quest on the current one to climb higher.`;
+    $('notice-text').textContent = n.id === 1 ? 'The Final Stand is won. Start New Game+ from the title screen: the whole game again from the beginning, harder, with all eight heroes and everything they own (skins, relics, perks, Potential, gold and crystals). Until then this save stays as it is.' : `A harder difficulty is open: ${T.name}. Clear every quest on the current one to climb higher.`;
     $('notice-skills').textContent = tierText(T);
     return;
   }
@@ -10675,7 +10701,7 @@ function wireFormation() {
 }
 let pickedQuest = null;     // id of the quest chosen on the quest select screen
 const questGold = q => q.nodes.reduce((a, n) => a + n.gold, 0);
-function pickTier(i) { if (i < 0 || i > game.tiers.max) return; game.tiers.pick = i; writeSave(); renderQuests(); }
+function pickTier(i) { if (!devMode || i < 0 || i > game.tiers.max) return; game.tiers.pick = i; writeSave(); renderQuests(); }
 function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.querySelector('#qmap .mnode.on[data-q="' + id + '"]'))) return; const was = pickedQuest === 'final'; pickedQuest = id; renderQuests(); if (was !== (id === 'final')) renderParty(true); }      // into or out of the Final Stand: swap the 4-hero party board for the two-front 8-hero one (and back)
 
 /* ---- the world map ----
@@ -10777,7 +10803,7 @@ function buildQuestMap() {
   } else mapSeenSet(stage);
 }
 function renderQuests(full) {
-  const T = tierDef(game.tiers.pick), tg = T.gold || 1;
+  const T = tierDef(curTier()), tg = T.gold || 1;
   const card = q => {
     const on = q.id === pickedQuest, c = q.camps ?? 1, e = q.events ?? 1;
     return `<div class="pick quest-pick${on ? ' on' : ''}" onclick="pickQuest('${q.id}')">
@@ -10785,7 +10811,7 @@ function renderQuests(full) {
         <div class="sk">${q.nodes.length} battles, ${c} camp${c === 1 ? '' : 's'} and ${e} random event${e === 1 ? '' : 's'}, boss at the end · up to ${Math.round(questGold(q) * tg)} gold${q.unlocks && !game.roster.includes(q.unlocks) ? ` · defeat the boss to unlock ${heroById(q.unlocks).name.split(' ')[0]}` : ''}${tierCleared(q.id) >= game.tiers.pick ? ' · ✔ cleared' + (game.tiers.pick ? ' on ' + T.short : '') : ''}</div></div>
       ${on ? '<div class="slot">✓</div>' : ''}</div>`;
   };
-  const tiers = game.tiers, tbar = tiers.max > 0 ? `<div class="tierbar"><b>🔥 Difficulty</b>${TIERS.slice(0, tiers.max + 1).map((t, i) => `<button class="tierbtn${tiers.pick === i ? ' on' : ''}" onclick="pickTier(${i})">${i ? t.short : 'Normal'}</button>`).join('')}${tiers.max < MAX_TIER ? '<span class="tiernext">next: clear every quest on ' + (tiers.max ? TIERS[tiers.max].short : 'Normal') + '</span>' : ''}<div class="tierinfo">${tierText(T)}</div></div>` : '';
+  const tiers = game.tiers, tbar = devMode && tiers.max > 0 ? `<div class="tierbar"><b>🔥 Difficulty</b>${TIERS.slice(0, tiers.max + 1).map((t, i) => `<button class="tierbtn${tiers.pick === i ? ' on' : ''}" onclick="pickTier(${i})">${i ? t.short : 'Normal'}</button>`).join('')}${tiers.max < MAX_TIER ? '<span class="tiernext">next: clear every quest on ' + (tiers.max ? TIERS[tiers.max].short : 'Normal') + '</span>' : ''}<div class="tierinfo">${tierText(T)}</div></div>` : '';
   if (full || !$('qmap')) buildQuestMap();
   document.querySelectorAll('#qmap .mnode').forEach(n => n.classList.toggle('on', n.dataset.q === pickedQuest));
   const pq = pickedQuest === 'final' ? FINAL_QUEST : QUESTS.find(q => q.id === pickedQuest), isFinal = pq === FINAL_QUEST;
@@ -10806,7 +10832,7 @@ function questCard(pq, isFinal, tbar) {
   const grp = isFinal ? null : QUEST_GROUPS.find(g => g.ids.includes(pq.id)), T = QC_TINT[isFinal ? 'final' : grp ? grp.id : 'lands'];
   const bossId = isFinal ? null : ((pq.nodes[pq.nodes.length - 1] || {}).enemies || []).find(id => (enemyById(id) || {}).boss), boss = bossId && enemyById(bossId);
   const items = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<span class="qc-it${game.items[it.id] ? '' : ' none'}" title="${it.name}">${it.icon}<b>${game.items[it.id] || 0}</b></span>`).join('');
-  const cleared = !isFinal && tierCleared(pq.id) >= game.tiers.pick;
+  const cleared = !isFinal && questCleared(pq.id);
   let stats, drops;
   if (isFinal) {
     const n = finalSlots.filter(Boolean).length, e = game.final && game.final.ending;
@@ -10817,11 +10843,11 @@ function questCard(pq, isFinal, tbar) {
     stats = [['~' + N, 'places'], [F, 'fights'], [C, 'camps'], [E, 'events']];
     drops = `<span class="qc-chip t${act}">Tier ${ROMAN[act]} relics</span>${act > 1 ? `<span class="qc-chip reg">${act === 2 ? 'Coast-only' : 'Mountain-only'}</span>` : ''}`
       + (pq.unlocks && heroById(pq.unlocks) && !game.roster.includes(pq.unlocks) ? `<span class="qc-chip new">Frees ${heroById(pq.unlocks).name.split(' ')[0]}</span>` : '')
-      + `<span class="qc-chip gold" title="Gold from fights at Normal by day; more at night and on harder difficulties">🪙 ${Math.round(questGold(pq) * (tierDef(game.tiers.pick).gold || 1))}+</span>`;
+      + `<span class="qc-chip gold" title="Gold from fights at Normal by day; more at night and on harder difficulties">🪙 ${Math.round(questGold(pq) * (tierDef(curTier()).gold || 1))}+</span>`;
   }
   return `<section class="qc" style="--qa:${T[0]};--qb:${T[1]};--qc:${T[2]}">
     <div class="qc-band"><div class="qc-boss" id="qc-boss"></div>
-      <div class="qc-head"><small>${cleared ? `<b class="qc-done" title="Cleared${game.tiers.pick ? ' on ' + tierDef(game.tiers.pick).short : ''}">✔ CLEARED</b>` : ''}${isFinal ? 'THE EDGE OF THE WORLD' : (grp ? grp.name.toUpperCase() : '')}</small><h3>${pq.name}</h3>${boss ? `<small class="qc-bn">Boss: ${boss.name}</small>` : ''}</div></div>
+      <div class="qc-head"><small>${cleared ? `<b class="qc-done" title="Cleared${curTier() ? ' on ' + tierDef(curTier()).short : ''}">✔ CLEARED</b>` : ''}${isFinal ? 'THE EDGE OF THE WORLD' : (grp ? grp.name.toUpperCase() : '')}</small><h3>${pq.name}</h3>${boss ? `<small class="qc-bn">Boss: ${boss.name}</small>` : ''}</div></div>
     <div class="qc-body">
       <div class="qc-stats">${stats.map(([n, l]) => `<div><b>${n}</b><span>${l}</span></div>`).join('')}</div>
       <div class="qc-row"><span class="qc-lbl">${isFinal ? 'The stakes' : 'Can drop'}</span><span class="qc-chips">${drops}</span></div>
@@ -10989,7 +11015,7 @@ function startQuickBattle() {
 
 async function startQuest(ids, questId) {
   quest = { def: QUESTS.find(q => q.id === questId) || QUESTS[0], node: 0, gold: 0, party: ids.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }), items: {} };
-  quest.tier = devMode ? Math.max(0, Math.min(MAX_TIER, game.tiers.pick | 0)) : Math.max(0, Math.min(game.tiers.max, game.tiers.pick | 0));
+  quest.tier = curTier();
   quest.plan = rollPlan(quest.def, quest.tier);
   quest.map = genMap(quest.def, quest.plan);                     // every quest is a map to explore now (the Final Stand never comes through here)
   if (devMode) Object.defineProperty(quest, 'gold', { get: () => 999999, set: () => {}, enumerable: true, configurable: true });     // unlimited camp shopping
@@ -11570,7 +11596,7 @@ function genHunt(def, rng = RAND.rng) {
 async function startHunt(ids, hid = 'hunt_troll') {
   const def = HUNT_DEFS.find(d => d.id === hid); if (!def || !ids.length) return;
   quest = { def, node: 0, gold: 0, party: ids.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }), items: {} };
-  quest.tier = 0; quest.plan = huntPlan(def); quest.map = genHunt(def);
+  quest.tier = curTier(); quest.plan = huntPlan(def); quest.map = genHunt(def);
   if (devMode) Object.defineProperty(quest, 'gold', { get: () => 999999, set: () => {}, enumerable: true, configurable: true });
   Object.keys(ITEMS).forEach(id => { quest.items[id] = game.items[id] || 0; game.items[id] = 0; });
   saveQuest(); showMap();
