@@ -2611,6 +2611,7 @@ img.smokepuff{background:none;border-radius:0}
 #menu-btn{position:fixed;right:10px;bottom:10px;z-index:120;width:40px;height:40px;border-radius:50%;padding:0;font-size:1.25rem;background:rgba(20,18,32,.88);border:1px solid #4a4a6e;line-height:1}
 body.in-battle #menu-btn{top:6px;bottom:auto;right:12px;width:34px;height:34px;font-size:1.05rem}
 #battle-scene .fxbar{right:54px!important}
+#btn-flee{border-color:rgba(255,120,100,.6)!important;color:#ffc2b6!important}#btn-flee:disabled{opacity:.45}
 .optrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#12121a;border:1px solid #262638;border-radius:8px;padding:10px 12px;margin:6px 0;text-align:left}
 .optrow small{display:block;color:#9a9ab8;font-size:.68rem;margin-top:2px;font-weight:normal}
 .optsw{min-width:64px;padding:8px 12px;font-weight:bold;border-radius:20px}
@@ -2806,7 +2807,7 @@ body.calm .ring .rb-beat,body.calm .ring .rb-drip{animation:none}
 </head>
 <body>
 <button id="menu-btn" onclick="$('title') && !$('title').classList.contains('hide') ? openGuide() : pauseToggle()" title="Menu (Esc): resume, options and guide, return to title">⚙️</button>
-<div id="pause" onclick="if (event.target === this) pauseClose()"><div class="pz"><div class="pz-h"></div><button class="primary" onclick="pauseClose()">▶ Resume</button><button onclick="pauseClose();openGuide()">⚙️ Options &amp; Controls</button><button onclick="pauseClose();openBook($('battle-scene').classList.contains('show') ? 'field' : undefined)">📖 Guide Book</button><button id="pz-title" onclick="pauseAskTitle(true)">🏠 Return to Title</button><div class="pz-ask" id="pz-ask"><span>🏠 ?</span><button class="danger" onclick="location.reload()">✔ Yes</button><button class="primary" onclick="pauseAskTitle(false)">✖ No</button></div></div></div>
+<div id="pause" onclick="if (event.target === this) pauseClose()"><div class="pz"><div class="pz-h"></div><button class="primary" onclick="pauseClose()">▶ Resume</button><button onclick="pauseClose();openGuide()">⚙️ Options &amp; Controls</button><button onclick="pauseClose();openBook($('battle-scene').classList.contains('show') ? 'field' : undefined)">📖 Guide Book</button><button id="pz-flee" onclick="pauseClose();huntFleeAsk()" style="display:none">🏃 Flee to camp</button><button id="pz-title" onclick="pauseAskTitle(true)">🏠 Return to Title</button><div class="pz-ask" id="pz-ask"><span>🏠 ?</span><button class="danger" onclick="location.reload()">✔ Yes</button><button class="primary" onclick="pauseAskTitle(false)">✖ No</button></div></div></div>
 <div id="film"></div>
 <div id="fade"></div>
 <div id="rotate"><b>📱</b>Turn your phone sideways<small style="font-size:1rem;color:#9a9ab8">The game is played in landscape</small></div>
@@ -3195,7 +3196,7 @@ body.calm .ring .rb-beat,body.calm .ring .rb-drip{animation:none}
 <h1>Anime RPG Prototype</h1>
 <div class="subtitle" id="battle-sub">Quest battle</div>
 <div id="action-line"></div>
-<div class="fxbar"><button id="btn-book" onclick="openBook('field')" title="The guide book (Select on a pad)">📖 Guide</button><button id="btn-log" onclick="toggleLog()">📜 Log</button><button id="btn-speed" onclick="cycleSpeed()" title="Battle speed">⏩ 1×</button></div>
+<div class="fxbar"><button id="btn-flee" onclick="huntFleeAsk()" title="Break off: the party runs to the nearest camp (uses this hero's turn)" style="display:none">🏃 Flee</button><button id="btn-book" onclick="openBook('field')" title="The guide book (Select on a pad)">📖 Guide</button><button id="btn-log" onclick="toggleLog()">📜 Log</button><button id="btn-speed" onclick="cycleSpeed()" title="Battle speed">⏩ 1×</button></div>
 
 <div id="game-container">
   <div id="order"></div>
@@ -7691,6 +7692,7 @@ function render() {
   document.body.classList.toggle('rings', FX.rings !== false);        // health rings instead of bars (PC battle; see ringSvg)
   document.body.classList.toggle('bt-wait', !!waiting);          // your turn: the quiet battle bars come up a little
   if (!dmgRun) { dmgRun = true; requestAnimationFrame(dmgLoop); } requestAnimationFrame(trollLayer); trollHud();
+  { const f = $('btn-flee'); if (f) { const on = huntFight(); f.style.display = on ? '' : 'none'; f.disabled = !huntCanFlee(); } }
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
   if (FB) fbHud();
@@ -7994,7 +7996,7 @@ function inspect(team, idx) {
 const pauseOpen = () => $('pause').classList.contains('show');
 function pauseAskTitle(on) { $('pz-ask').classList.toggle('on', on); $('pz-title').style.display = on ? 'none' : ''; }
 function pauseClose() { $('pause').classList.remove('show'); pauseAskTitle(false); }
-function pauseToggle() { if (pauseOpen()) return pauseClose(); $('pause').classList.add('show'); pauseAskTitle(false); const b = $('pause').querySelector('button.primary'); if (b) b.focus && 0; }
+function pauseToggle() { if (pauseOpen()) return pauseClose(); $('pause').classList.add('show'); { const f = $('pz-flee'); if (f) f.style.display = huntCanFlee() ? '' : 'none'; } pauseAskTitle(false); const b = $('pause').querySelector('button.primary'); if (b) b.focus && 0; }
 function pauseAllowed() {
   const t = $('title'); if (t && !t.classList.contains('hide')) return false;
   if (['film', 'spa-cutin', 'tm-full', 'notice', 'summary'].some(id => { const e = $(id); return e && e.classList.contains('show'); })) return false;
@@ -9168,6 +9170,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
     render();
     act = await input;
     cur = null; sel = null; selItem = null; invOpen = false; render();
+    if (act && act.flee) { quest.partyFled = true; return; }          // hunt: the party breaks off (checkEnd takes it from here)
   } else {
     $('turn-indicator').innerText = `${u.name} is acting...`;
     await sleep(140);
@@ -9245,6 +9248,7 @@ async function takeTurn(u, bonus = false) {      // bonus: an extra action insid
 // Whole party down = quest over, only HALF the carried gold goes home.
 function checkEnd() {
   if (quest && quest.trollFled && !over) return trollFledEnd();
+  if (quest && quest.partyFled && !over) return huntPartyFlee();
   const won = !enemies.some(isAlive), lost = !party.some(x => isAlive(x) && !x.drowned);
   if (!won && !lost) return false;
   setSpot([]); over = true; actor = null; cur = null; waiting = null; blizzStop();
@@ -9379,7 +9383,7 @@ const TROLL_PASSIVE = { icon: '💚', name: 'Troll blood', heal: .02, armour: .1
 /* 2026-11-23 (Connor: "long, tanky, anti-climactic, not very difficult" → shorter and more dangerous): 30% less HP, ~20% less armour per part (breaks come
    sooner), ~25% harder hits, drowning hurts more, the body's telegraphed Death Roll (rollEvery of its own turns; break the body during the wind-up to stop it),
    and at the den it's cornered: every hit +cornered. */
-const TROLL = { hp: 1000, spd: 7, regrow: 2, drown: 10, rollEvery: 3, rollFirst: 2, cornered: 1.15,
+const TROLL = { hp: 1000, spd: 7, regrow: 2, drown: 10, rollEvery: 3, rollFirst: 2, cornered: 1.15, resume: .75,      // resume: after the party flees, below this share of its HP it rests in its den (see huntPartyFlee)
   armour: { club: 28, drown: 28, head: 24, body: 36 },
   weak: {
     nest:  { icon: '🔥', name: 'Torched nest', clue: 'Scorched reeds and a smell of smoke: its nest is near.', fx: 'its body starts the fight broken (no Flail at first)' },
@@ -9490,6 +9494,40 @@ function trollFledEnd() {                    // the fight ends without a winner:
   const main = $('btn-end-main'); main.textContent = '🩸 Follow the blood trail'; main.onclick = () => { saveQuest(); showMap(); };
   { const o = $('btn-end-alt'); if (o) o.remove(); }
   endShow(); render(); saveQuest(); return true;
+}
+
+/* THE PARTY FLEES (hunts only): on a hero's turn, 🏃 Flee (battle bar or the Esc menu) breaks off the fight. The party runs to the nearest camp (time passes for the
+   distance) and the troll goes back to its den, keeping its wounds. Below TROLL.resume of its HP it rests there, healing HUNT.denHeal a move, until it's back to that
+   and then hunts as before; above it, it carries on at once. If it had already fled to its den, it just stays there, healing. */
+const huntFight = () => !!(quest && quest.map && quest.map.hunt && !quest.map.bossDone && !over && enemies.some(e => e.troll) && $('battle-scene').classList.contains('show'));
+const huntCanFlee = () => huntFight() && !!waiting && !!cur && cur.team === 'p';
+function huntFleeAsk() { if (!huntCanFlee()) return; if (sel !== null || invOpen || selItem) cancelPick(); finish({ flee: true }); }
+function huntPartyFlee() {
+  const m = quest.map, h = m.hunt, T = (enemies.find(e => e.troll) || {}).troll;
+  quest.partyFled = false; if (T && T.held) trollFree(T);
+  setSpot([]); over = true; actor = null; cur = null; waiting = null; blizzStop();
+  party.forEach(u => { u.drowned = false; });
+  if (T) { h.trollHp = T.hp; h.trollMax = T.maxHp; }
+  const d = huntBfs(m, m.at), camps = m.n.map((x, i) => i).filter(i => m.n[i].type === 'camp' && i !== h.den && d[i] < 1e9).sort((a, b) => d[a] - d[b]);
+  const to = camps.length ? camps[0] : 0, steps = Math.max(1, d[to] || 1);
+  if (to !== m.at) { m.at = to; m.n[to].seen = true; if (m.n[to].type === 'camp' && !m.n[to].done) { m.n[to].done = true; quest.party.forEach(u => { u.campHeal = 0; }); } } m.t += steps;
+  if (!h.fled) {                                                    // it lumbers home and licks its wounds, or goes straight back to the hunt
+    const path = huntSteps(m, h.troll, h.den);
+    if (path) for (let k = 1; k < path.length; k++) h.trail.push({ a: path[k - 1], b: path[k], t: m.t, blood: false, found: false });
+    h.troll = m.boss = h.den; h.resting = h.trollHp < h.trollMax * TROLL.resume;
+  }
+  for (let k = 0; k < steps; k++) huntHeal(m);
+  h.msg = h.fled || h.resting ? `🏃 <b>You broke off and ran for camp.</b> The troll has gone back to its den to heal.` : `🏃 <b>You broke off and ran for camp.</b> The troll is still on the prowl.`;
+  log(`<strong style="color:#ffb74d">🏃 The party breaks off and runs for the nearest camp!</strong>`, 'log-status'); sfx('defeat');
+  $('turn-indicator').innerText = 'The party falls back to camp';
+  const main = $('btn-end-main'); main.textContent = '⛺ To camp'; main.onclick = () => { saveQuest(); showMap(); };
+  { const o = $('btn-end-alt'); if (o) o.remove(); }
+  endShow(); render(); saveQuest(); return true;
+}
+function huntHeal(m) {                           // one move of time for a wounded troll: it heals in its den (fled, or resting after the party ran)
+  const h = m.hunt; if (!(h.fled || h.resting) || h.trollHp == null || !h.trollMax) return;
+  h.trollHp = Math.min(h.trollMax, h.trollHp + Math.round(h.trollMax * HUNT.denHeal));
+  if (h.resting && h.trollHp >= h.trollMax * TROLL.resume) { h.resting = false; h.msg = '🔊 <b>A rested roar from its den.</b> The troll is on the prowl again.'; trollRoar(.5); }
 }
 
 function trollPartBroken(p) {                // hook from the armour-break code
@@ -11620,7 +11658,7 @@ function huntArrive(m) {                         // the party has just stepped o
 function huntNext(m) {                           // where the beast goes on its move
   const h = m.hunt, dP = huntBfs(m, m.at), opts = m.adj[h.troll].filter(j => j && j !== m.at), sight = j => dP[j] <= HUNT.see;
   if (h.fleeing) { const p = huntSteps(m, h.troll, h.den); return p && p.length > 1 && p[1] !== m.at ? p[1] : null; }
-  if (h.fled || !opts.length) return null;                    // wounded: it holes up in its den
+  if (h.fled || h.resting || !opts.length) return null;      // wounded: it holes up in its den
   if (h.temper === 'territorial') { const o = opts.filter(j => h.terr.includes(j) || j === h.den), o2 = o.filter(j => !sight(j)); return o2.length ? choose(o2, Math.random) : o.length ? choose(o, Math.random) : null; }
   if (h.temper === 'wandering') { const o = opts.filter(j => !sight(j)); return choose(o.length ? o : opts, Math.random); }
   if (todOf(m).phase === 'day') { const away = opts.filter(j => dP[j] > dP[h.troll]).sort((a, b) => dP[b] - dP[a]); return away.length ? away[0] : null; }
@@ -11629,7 +11667,7 @@ function huntNext(m) {                           // where the beast goes on its 
 }
 function huntTick(m) {                           // one move of time passes: the beast's turn on the board
   const h = m.hunt; if (m.bossDone) return false;
-  if (h.fled && h.trollHp != null && h.trollMax) h.trollHp = Math.min(h.trollMax, h.trollHp + Math.round(h.trollMax * HUNT.denHeal));
+  huntHeal(m);
   h.tick = (h.tick || 0) + 1;
   if (h.tick % HUNT.every === 0) { const to = huntNext(m); if (to != null && to !== h.troll) { h.trail.push({ a: h.troll, b: to, t: m.t, blood: !!h.fleeing, found: false }); h.troll = m.boss = to; if (h.fleeing && to === h.den) h.fleeing = false; } }
   if (h.troll === m.at) { h.meet = 'ambush'; return true; }
