@@ -569,6 +569,36 @@ body.dev #btn-quick{display:inline-block}
 .dmgprev{font-size:.7rem;font-weight:bold;color:#e0e0f0;margin-left:4px}
 .shield{color:#4fc3f7;font-weight:bold;margin-left:4px}
 .rowtag{font-size:.56rem;letter-spacing:.08em;padding:1px 5px;border-radius:3px;margin-right:4px;background:#26263a;color:#9aa0c0}.rowtag.f{color:#4dd0e1}
+#hboard{display:none;position:fixed;inset:0;z-index:118;background:radial-gradient(ellipse at 50% 40%,#3b2a1a 0,#1a120b 70%,#0c0805 100%);font-family:'Segoe UI',Tahoma,sans-serif}
+#hboard.show{display:block}
+#hboard h2{position:absolute;top:1.2vh;left:0;right:0;text-align:center;margin:0;font-family:Georgia,serif;font-size:min(3.8vh,2.1vw);letter-spacing:.2em;color:#f0c060;text-shadow:0 2px 8px #000}
+#hboard .hb-sub{position:absolute;top:6.4vh;left:0;right:0;text-align:center;font-size:min(1.7vh,.95vw);color:#c8b48c}
+#hboard .hb-wood{position:absolute;inset:10.5vh 5.6vw 8vh;border-radius:14px;background:repeating-linear-gradient(90deg,#5b3b20 0 7.4vw,#4d311a 7.4vw 7.6vw,#62412a 7.6vw 15vw,#4d311a 15vw 15.2vw);box-shadow:inset 0 0 0 10px #2e1d0f,inset 0 0 60px rgba(0,0,0,.7),0 20px 50px rgba(0,0,0,.6)}
+#hboard .hb-row{position:absolute;inset:14vh 6vw 11vh;display:flex;gap:3.4vw;justify-content:center;align-items:flex-start}
+#hboard .hb-p{all:unset;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;position:relative;width:min(24vw,44vh);height:min(68vh,40vw);padding:2.4vh 1.5vw;background:linear-gradient(170deg,#e9d8b0,#d9c08c);color:#3a2412;border-radius:4px;box-shadow:0 12px 26px rgba(0,0,0,.55);font-family:Georgia,serif;cursor:pointer;transition:transform .15s,box-shadow .15s;font-size:min(1.8vh,1vw)}
+#hboard .hb-p:nth-child(1){transform:rotate(-1.6deg)}#hboard .hb-p:nth-child(2){transform:rotate(.8deg)}#hboard .hb-p:nth-child(3){transform:rotate(1.8deg)}
+#hboard button.hb-p:hover,#hboard button.hb-p.gp-focus{transform:rotate(0) translateY(-8px) scale(1.04);box-shadow:0 0 0 4px #f0c060,0 0 40px rgba(240,192,96,.55),0 14px 30px rgba(0,0,0,.6);z-index:2}
+#hboard .hb-p.on{box-shadow:0 0 0 4px #7fd07f,0 12px 26px rgba(0,0,0,.55)}
+#hboard .hb-p::before{content:'';position:absolute;top:-10px;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#8a1a10);box-shadow:0 3px 4px rgba(0,0,0,.6)}
+#hboard .hb-act{font-family:'Segoe UI',sans-serif;font-size:.72em;letter-spacing:.22em;font-weight:700;text-transform:uppercase;color:#7a5530;text-align:center}
+#hboard .hb-want{text-align:center;font-size:1.75em;font-weight:700;letter-spacing:.3em;margin:.1em 0 .4em;color:#5a1620}
+#hboard .hb-art{height:30%;flex:none;border:3px solid #6b4a2a;background:radial-gradient(circle at 50% 60%,#3b5a33,#16241a);display:flex;align-items:center;justify-content:center;font-size:5.5em;position:relative;overflow:hidden}
+#hboard .hb-art img{width:100%;height:100%;object-fit:cover}
+#hboard .hb-name{text-align:center;font-size:1.55em;font-weight:700;margin:.5em 0 .2em}
+#hboard .hb-chips{display:flex;flex-wrap:wrap;gap:.35em;justify-content:center;font-family:'Segoe UI',sans-serif;margin:.4em 0 .6em}
+#hboard .hb-c{font-size:.78em;font-weight:600;padding:.25em .65em;border-radius:1em;background:#3a2412;color:#f3e2bd}#hboard .hb-c.tm{background:#7a1c14;color:#ffe2d4}#hboard .hb-c.ps{background:#245a2c}#hboard .hb-c.wk{background:#8a3a0a}
+#hboard .hb-beh{font-size:.9em;line-height:1.35;text-align:center;font-style:italic;color:#4a3018}
+#hboard .hb-for{text-align:center;font-family:'Segoe UI',sans-serif;font-size:.78em;color:#7a5530;margin-top:.5em}#hboard .hb-for b{color:#5a1620}#hboard .hb-for i{color:#2d6a35;font-style:normal}
+#hboard .hb-rew{position:absolute;left:1.5vw;right:1.5vw;bottom:2vh;border-top:2px dashed #8a6a40;padding-top:1vh;display:flex;justify-content:space-around;gap:.4em;font-family:'Segoe UI',sans-serif;font-weight:700;font-size:.92em;text-align:center}
+#hboard .hb-rew small{display:block;font-size:.65em;font-weight:600;color:#7a5530;text-transform:uppercase;letter-spacing:.08em}
+#hboard .hb-rew .rar-rare{color:#1f5aa8}#hboard .hb-rew .rar-epic{color:#7a2aa8}#hboard .hb-rew .rar-common{color:#3a2412}
+#hboard .hb-drop{margin:1em .3em 0;padding:.6em .8em;border:2px solid #8a6a40;border-radius:6px;background:rgba(255,255,255,.25);text-align:center;font-family:'Segoe UI',sans-serif;font-size:.85em}#hboard .hb-drop b{display:block;font-size:1.1em;margin-bottom:.2em}#hboard .hb-drop span{color:#4a3018}#hboard .hb-drop,#hboard .hb-drop b{color:#3a2412}#hboard .hb-drop.rar-rare b{color:#1f5aa8}#hboard .hb-drop.rar-epic b{color:#7a2aa8}#hboard .hb-drop.rar-epic{border-color:#a070c8}#hboard .hb-drop.rar-rare{border-color:#5a8ad0}
+#hboard .hb-p.lock{filter:grayscale(.85) brightness(.55);cursor:default}#hboard .hb-p.lock .hb-art{background:#2a2a2a}
+#hboard .hb-p.empty{filter:grayscale(.5) brightness(.75)}
+#hboard .hb-seal{position:absolute;inset:auto 0;text-align:center;font-family:'Segoe UI',sans-serif;font-size:.17em;font-weight:700;color:#ddd}#hboard .hb-seal{background:rgba(0,0,0,.8);padding:.6em .8em;margin:0 8%;border-radius:10px}
+#hboard .hb-back{position:absolute;top:1.6%;left:1.2%;z-index:3}
+.mnode.board .pin{background:radial-gradient(circle at 40% 35%,#7a4a22,#3a2210)!important;border-color:#f0c060!important}
+.qc-boss.qc-hunt{display:flex;align-items:center;justify-content:center;font-size:3.2rem}
 #notice{display:none;position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.78);align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 #notice.show{display:flex}
 .notice-box{background:#1a1a24;border:2px solid #ff758c;border-radius:12px;padding:20px;max-width:380px;width:100%;box-sizing:border-box;text-align:center;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 30px rgba(255,117,140,.35)}
@@ -855,6 +885,7 @@ body.calm #qm-board .qm-rain,body.calm #qm-board .qm-mist,body.calm #qm-board .q
 #troll-layer .tl-part{transition:opacity .3s,filter .3s;transform-box:fill-box}
 #troll-layer .tl-part .crack{opacity:0;transition:opacity .3s}
 #troll-layer .tl-part.brk{filter:brightness(.55) saturate(.4)}#troll-layer .tl-part.brk .crack{opacity:.9}
+#troll-layer .bz-p.act{animation:bzAct .6s ease-out}@keyframes bzAct{40%{transform:scale(1.35);filter:drop-shadow(0 0 14px #ff8a3c)}}#troll-layer .bz-p{transform-origin:center;transform-box:fill-box}#troll-layer .bz-body.hurt{filter:brightness(1.8)}#troll-layer .bz-body.air{animation:bzAir 2.4s ease-in-out infinite}@keyframes bzAir{50%{transform:translateY(-14px)}}
 #troll-layer .tl-part.tg{filter:drop-shadow(0 0 8px #ffd54f) drop-shadow(0 0 3px #ffd54f)}
 #troll-layer .spew{opacity:0}
 #troll-layer[data-fx="spew"] .spew{animation:trSpew .7s ease-out}
@@ -2648,6 +2679,7 @@ body.lowhp.in-battle::after{content:"";position:fixed;inset:0;z-index:64;pointer
 #party-select .fin-row .fslot .pos{font-size:.55rem}
 body.fbfight:not(.dev) .combatant-card.fbboss .bar-container:has(.hp-fill),body.fbfight:not(.dev) .combatant-card.fbboss .hpnum{display:none}
 #battle-scene .figure.fbwake{animation:fbWake .9s ease-out}@keyframes fbWake{0%{filter:brightness(3.2) saturate(0);scale:.94}35%{filter:brightness(1.8);scale:1.08}100%{filter:none;scale:1}}
+.fb-guest.cameo img,.fb-guest.cameo video{filter:drop-shadow(0 0 16px rgba(170,205,255,.65))}
 .fb-guest{position:fixed;z-index:75;pointer-events:none;will-change:transform}.fb-guest img{display:block;height:100%;width:auto;filter:drop-shadow(0 0 22px rgba(255,236,150,.8))}
 @keyframes fbOut{to{opacity:0;transform:translateX(40px) scale(.9);filter:brightness(2)}}
 @keyframes fbIn{from{opacity:0;transform:translateX(-40px) scale(.9);filter:brightness(2)}}
@@ -2808,6 +2840,7 @@ body.calm .ring .rb-beat,body.calm .ring .rb-drip{animation:none}
 <body>
 <button id="menu-btn" onclick="$('title') && !$('title').classList.contains('hide') ? openGuide() : pauseToggle()" title="Menu (Esc): resume, options and guide, return to title">⚙️</button>
 <div id="pause" onclick="if (event.target === this) pauseClose()"><div class="pz"><div class="pz-h"></div><button class="primary" onclick="pauseClose()">▶ Resume</button><button onclick="pauseClose();openGuide()">⚙️ Options &amp; Controls</button><button onclick="pauseClose();openBook($('battle-scene').classList.contains('show') ? 'field' : undefined)">📖 Guide Book</button><button id="pz-flee" onclick="pauseClose();huntFleeAsk()" style="display:none">🏃 Flee to camp</button><button id="pz-title" onclick="pauseAskTitle(true)">🏠 Return to Title</button><div class="pz-ask" id="pz-ask"><span>🏠 ?</span><button class="danger" onclick="location.reload()">✔ Yes</button><button class="primary" onclick="pauseAskTitle(false)">✖ No</button></div></div></div>
+<div id="hboard" onclick="if (event.target === this) closeBoard()"></div>
 <div id="film"></div>
 <div id="fade"></div>
 <div id="rotate"><b>📱</b>Turn your phone sideways<small style="font-size:1rem;color:#9a9ab8">The game is played in landscape</small></div>
@@ -7124,6 +7157,11 @@ function bump(u, cls) {          // quick visual nudge on a unit's figure: 'hurt
    One look per quest id; the fight number shifts the layout and the boss fight burns a little hotter. */
 const BGT = {
   hunt_troll: { sky: ['#0b130e', '#1f3324', '#4f6a3e'], far: '#16241a', mid: '#0e1811', ground: ['#1d2a1a', '#070b07'], glow: '#a9d36a', fx: 'wisps' },
+  hunt_fox: { sky: ['#1a0c08', '#5a2410', '#e0803a'], far: '#3a1a10', mid: '#24100a', ground: ['#3a2416', '#0f0806'], glow: '#ffb35c', fx: 'petals' },
+  hunt_leshen: { sky: ['#070b08', '#16241a', '#3a4a30'], far: '#121c12', mid: '#0a120a', ground: ['#1a2416', '#050805'], glow: '#c06060', fx: 'wisps' },
+  hunt_jelly: { sky: ['#040a18', '#0c2446', '#2a6a9a'], far: '#081a30', mid: '#051222', ground: ['#0a2236', '#02070d'], glow: '#7fd8ff', fx: 'rain' },
+  hunt_roc: { sky: ['#0c0e14', '#2a3040', '#6a7890'], far: '#1c2230', mid: '#12161e', ground: ['#c8d4e0', '#6a7888'], glow: '#ffe680', fx: 'rain' },
+  hunt_wyvern: { sky: ['#0a1220', '#24405e', '#9ac4e8'], far: '#1a3048', mid: '#10203a', ground: ['#dce8f4', '#7a90a8'], glow: '#bfe8ff', fx: 'dust' },
   ruins: { sky: ['#1d1119', '#5a2f2c', '#d98a45'], far: '#3a2229', mid: '#24161c', ground: ['#3a2a2a', '#0f0a0e'], glow: '#ffb15c', fx: 'dust' },
   cove:  { sky: ['#050f18', '#0d3446', '#2f8793'], far: '#0a2a38', mid: '#071a24', ground: ['#0d2a36', '#03090d'], glow: '#7fe3ff', fx: 'rain' },
   crypt: { sky: ['#0a0810', '#1e1830', '#46405e'], far: '#1c1729', mid: '#120d1b', ground: ['#1e1c26', '#07060a'], glow: '#9be21b', fx: 'wisps' },
@@ -7431,7 +7469,7 @@ function ringSvg(u, bfx, sk) {
 }
 function intentIcons(u) {          // rings mode: the enemy's move as icons, and the portrait of whoever it will really land on (taunts and Shield Wall included)
   if (u.trollPart && u.state !== 'armoured') return '<span class="ii" title="Broken: no attack until it grows back"><b class="ii-i">🦴</b></span>';
-  if (u.trollPart && u.intent && u.intent.wind) return '<span class="ii charge" title="Winding up a Death Roll: it rolls over everyone next round. Break its body before then to stop it."><b class="ii-i">🌀</b><span class="ii-arrow">›</span><b class="ii-i all">👥</b></span>';
+  if (u.trollPart && u.intent && u.intent.wind) return `<span class="ii charge" title="Winding up ${u.skills[u.troll.B.tele.i].n}: it hits everyone next round. Break its ${u.short.toLowerCase()} before then to stop it."><b class="ii-i">${u.troll.B.tele.icon}</b><span class="ii-arrow">›</span><b class="ii-i all">👥</b></span>`;
   if (u.trollPart && u.intent && u.skills[u.intent.i] && u.skills[u.intent.i].t === 'squeeze') return `<span class="ii" title="Holds her under"><b class="ii-i">🌊</b><span class="ii-arrow">›</span><span class="ip port-box atk" data-port="${u.intent.target.id}"></span></span>`;
   if (FB && u.final) return `<span class="intent">${intentText(u)}</span>`;
   const it = u.intent; if (!it) return ''; if (stunned(u)) return '<span class="ii" title="Stunned: skips its turn"><b class="ii-i">💤</b></span>'; if (it.skip) return '';
@@ -8007,6 +8045,7 @@ function pauseAllowed() {
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape' || e.repeat) return;
   if (pauseOpen()) { pauseClose(); e.stopImmediatePropagation(); return; }
+  if (boardOpen()) { closeBoard(); e.stopImmediatePropagation(); return; }
   if (waiting && cur && (sel !== null || invOpen || selItem) && $('battle-scene').classList.contains('show') && !$('inspect').classList.contains('show')) { cancelPick(); e.stopImmediatePropagation(); return; }      // Esc backs out of a pick first
   if (typeof dormMenuEl !== 'undefined' && dormMenuEl) return;
   if ($('inspect').classList.contains('show')) return;
@@ -8432,7 +8471,10 @@ async function counterAttack(t, u) {             // Seria's Shield Bash answers 
   } finally { countering = false; }
 }
 async function hit(u, t, s) {
-  if (t.troll && t.troll.passive && s.el === t.troll.passive.stop && s.t === 'dmg') t.troll.stopped = true;      // its weakness landed: no passive at the end of this round
+  if (t.troll && t.troll.passive && s.el === t.troll.passive.stop && s.t === 'dmg') { if (!t.troll.stopped && t.troll.passive.kind === 'thorns') { log(`${t.troll.passive.stopIcon} The ${t.troll.passive.stopTxt} scorches its thorns away: melee is safe for the rest of this round!`, 'log-player'); setTimeout(() => floatText(t, '🔥 THORNS BURNT', 'tag'), 150); } t.troll.stopped = true; }      // its weakness landed: no passive at the end of this round
+  if (s.t === 'dmg' && t.troll && u.team === 'p' && t.troll.passive && t.troll.passive.kind === 'flying' && rangeOf(s) !== 'ranged' && !beastGrounded(t.troll) && Math.random() < t.troll.passive.dodge) {      // the roc in the air: melee whiffs, ranged always connects
+    log(`🪶 ${bzThe()} wheels away into the sky: ${u.name}'s ${s.n} finds only air! Ranged attacks, or break its wings.`, 'log-status'); floatText(t, '🪶 AIRBORNE', 'tag'); sfx('swing'); render(); await sleep(320); return;
+  }
   if (s.t === 'dmg' && t.stealth > 0 && t.team !== u.team && Math.random() < EVADE.stealth) {      // Irae in stealth: the attack finds nothing
     log(`💨 ${t.name} is hidden in the shadows: ${u.name}'s ${s.n} misses!`, 'log-status'); floatText(t, '💨 MISS', 'tag'); sfx('swing'); render(); await sleep(320); return;
   }
@@ -8453,6 +8495,8 @@ async function hit(u, t, s) {
     log(`🧊 The frost shell around ${t.name} shatters: ${u.name} takes ${hit0 - u.hp} ice damage and is frozen!`, 'log-status'); floatText(u, hit0 - u.hp, 'e-ice'); applyStatus(u, 'ice', sh);
   }                                       // a barrier soaks HP damage and also shields the armour from this hit's break damage
   t.hp = lethalGuard(t, t.hp - dmg);                           // never below 0, even for a frame (and immortal units stop at 1)
+  if (t.troll && t.troll.passive && t.troll.passive.kind === 'thorns' && !t.troll.stopped && u.team === 'p' && s.t === 'dmg' && !s.splash && rangeOf(s) === 'melee' && isAlive(u) && !countering) {      // the leshen's thorns: a melee hit costs blood
+    setTimeout(() => { if (!isAlive(u)) return; log(`🌿 Thornhide: ${u.name} tears herself on its thorns and starts bleeding. Burn the thorns with fire, or hit it from range.`, 'log-enemy'); { const P = t.troll.passive, have = u.statuses.find(x => x.type === 'bleed'); if (have) { have.dur = Math.max(have.dur, P.dur); have.dot = Math.max(have.dot, P.dot); } else u.statuses.push({ type: 'bleed', dot: P.dot, stun: false, dur: P.dur }); } floatText(u, '🌿 THORNS', 'tag hurt'); render(); }, 120); }
   if (t.grip && dmg > 0) gripHit(t, dmg);                      // the Carapace King's claw lets go after enough damage
   if (u && u.gripHits && t.team === 'p' && dmg > 0) u.gripHits.push(t);
   if (dmg > 0 && t.stealth > 0) { t.stealth = 0; t.stealthFresh = false; log(`🌫️ ${t.name} is hit and loses her stealth!`, 'log-status'); }
@@ -9264,7 +9308,7 @@ function checkEnd() {
   }
   if (lost) {
     const kept = Math.floor(quest.gold / 2), gz = gooseDies('The party fell.');
-    game.gold += kept; game.stats.lost++; game.quest = null; game.shop = { stock: rollStock(game.relics) };
+    game.gold += kept; game.stats.lost++; game.quest = null; townRefresh();
     const pn = returnItems(false);
     if (!(quest.map && quest.map.bossDone)) awardTraits(false);
     hubNote = quest.map && quest.map.bossDone ? `Your party fell after beating the boss. The quest still counts as cleared, but the boss's drop is lost and only half your gold made it home: +${kept} (of ${quest.gold} carried).${pn}`
@@ -9305,7 +9349,7 @@ function checkEnd() {
       const drop = rollDrop(quest.def, game.relics, (tierDef(quest.tier).relic || 0) + partySum('relicLuck', quest.party));      // the boss may drop a relic (cursed relics can raise the odds)
       game.curse = game.curse || {}; quest.party.forEach(u => (game.equip[u.id] || []).forEach(id => { if (RELICS[id] && RELICS[id].cursed) game.curse[id] = (game.curse[id] || 0) + 1; }));      // cursed relics worn to the end of a quest count toward purifying
       if (drop) { game.relics.push(drop); game.notices.push({ type: 'relic', id: drop }); }
-      game.shop = { stock: rollStock(game.relics) };
+      townRefresh();
       const pn = returnItems(true);
       const un = quest.def.unlocks;
       if (un && heroById(un) && !game.roster.includes(un)) { game.roster.push(un); game.notices.push({ type: 'unlock', id: un }); }   // first clear unlocks the hero
@@ -9343,6 +9387,7 @@ async function battle() {
   log(`${curNode().name}: ${party.length} hero${party.length > 1 ? 'es' : ''} face ${enemies.length} enem${enemies.length > 1 ? 'ies' : 'y'}.`);
   for (let round = 1; ; round++) {
     if (round > 1) await beastPassive();             // the end of the last round: a hunt beast's passive
+    if (round > 1 && !over) await allyCameo(round);     // Act 1 recruits lend a hand in their own quest's boss fight (first clear only)
     roundNo = round; log(`— Round ${round} —`, 'log-round'); blizzTick(round);
     if (round > 1 && (round - 1) % PIPER.every === 0 && partySum('piper') && !partySum('piperSafe') && (quest.ratsCalled || 0) < PIPER.max && enemyById('e_rat')) {      // the Piper keeps calling rats into the gaps
       const i = enemies.findIndex(e => !isAlive(e) && !e.boss && !e.final); if (i >= 0) { enemies[i] = piperRat(); quest.ratsCalled = (quest.ratsCalled || 0) + 1; render(); floatText(enemies[i], '🎶 RAT!', 'tag'); log("🎶 The Piper's tune calls another rat out of the dark!", 'log-status'); await sleep(450); } }
@@ -9399,14 +9444,100 @@ const TROLL_PARTS = [
   { k: 'drown', name: 'Drowning Arm', tag: 'GRAB', spd: 6, skills: [{ n: 'Grab', t: 'dmg', r: 'melee', d: [17, 21], chip: true, brk: 14, cd: 0, grab: true }, { n: 'Hold Under', t: 'squeeze', cd: 0 }] },
   { k: 'head', name: 'Head', tag: 'HEAD', spd: 7, skills: [{ n: 'Bile', t: 'dmg', r: 'ranged', d: [15, 17], el: 'poison', brk: 16, cd: 3, all: true }, { n: 'Bite', t: 'dmg', r: 'melee', d: [20, 24], chip: true, brk: 12, cd: 0 }] },
   { k: 'body', name: 'Body', tag: 'BODY', spd: 5, skills: [{ n: 'Flail', t: 'dmg', r: 'melee', d: [22, 27], chip: true, brk: 12, cd: 0 }, { n: 'Death Roll', t: 'dmg', r: 'melee', d: [30, 36], chip: true, brk: 22, cd: 0, all: true, roll: true }] }];
-function trollBuild(sc, h) {
-  const W = (h && h.weak) || [], T = { hp: 0, maxHp: 0, parts: [], held: null, passive: TROLL_PASSIVE, stopped: false };
-  const parts = TROLL_PARTS.map(P => {
-    const core = P.k === 'body', corner = h && h.fled ? TROLL.cornered : 1, sk = P.skills.map(x => ({ ...x, ...(x.d ? { d: x.d.map(v => Math.round(v * corner)) } : {}) }));      // cornered at the den: hits harder
-    const u = make({ id: 'e_troll_' + P.k, boss: true, name: 'Troll · ' + P.name, short: P.name, tag: P.tag, hp: TROLL.hp * (W.includes('bones') ? .88 : 1), brk: 1, spd: P.spd, weak: ['fire'], resist: ['poison'], skills: sk }, 'e', sc);
-    u.maxBreak = u.breakBar = Math.max(1, Math.round(TROLL.armour[P.k] * ((P.k === 'club' || P.k === 'drown') && W.includes('wound') ? .6 : 1)));
-    u.troll = T; u.trollPart = P.k; u.noTurn = false; u.trollCore = core; u.regrow = 0; if (core) { u.rollCd = TROLL.rollFirst; u.winding = false; }
-    if ((P.k === 'body' && W.includes('nest')) || (P.k === 'head' && W.includes('fish'))) { u.state = 'broken'; u.breakBar = 0; u.regrow = TROLL.regrow; }
+/* ============ HUNT BEASTS (registry) ============ (2026-11-24) Every hunt beast works like the troll: four PARTS in the four enemy slots (two front = melee reach, two back),
+   one shared HP pool, each part with its own armour that regrows (regrow of its own turns), a telegraphed big attack on one part (tele: a wind-up turn, then it lands;
+   break that part during the wind-up to cancel it), a passive with a counter, and clue-weaknesses from the hunt's edge elites (weak: eff = broken parts / armour cut / hp cut).
+   Passive kinds: regen (troll: heals unless hit by `stop`) · aura (fox: burns the party each round unless hit by `stop`) · thorns (leshen: melee attackers bleed, off for
+   the round once hit by `stop`) · arc (jellyfish: its shock attacks jump to the heroes beside the target) · flying (roc: melee misses `dodge` of the time while its `part`
+   is armoured; ranged always hits) · blizzard (wyvern: the fight is a blizzard; torches). dotMul: an ailment that hurts it extra (jellyfish: bleed).
+   Art: the troll is drawn in code; the others use a stand-in (their emoji over the slots) until assets/beast/<key>/ art arrives (see beastArt). */
+const BEASTS = {
+  troll: { key: 'troll', the: 'the troll', icon: '🧌', ...TROLL, parts: TROLL_PARTS, passive: TROLL_PASSIVE, weakEl: ['fire'], resist: ['poison'], water: true,
+    tele: { part: 'body', i: 1, icon: '🌀', wind: 'rears up and coils', float: 'WINDING UP', cut: 'Its body cracked open mid-roll: the Death Roll is broken off!' },
+    weak: { nest: { ...TROLL.weak.nest, eff: { broken: ['body'] } }, fish: { ...TROLL.weak.fish, eff: { broken: ['head'] } }, wound: { ...TROLL.weak.wound, eff: { armour: ['club', 'drown'], by: .6 } }, bones: { ...TROLL.weak.bones, eff: { hp: .88 } } } },
+  fox: { key: 'fox', roar: 2.4, the: 'the fox', icon: '🦊', hp: 775, dmg: 1.1, spd: 8, regrow: 2, cornered: 1.15, resume: .75, rollEvery: 3, rollFirst: 2,
+    armour: { claw: 20, jaws: 18, tails: 22, body: 26 }, weakEl: ['ice'], resist: ['fire'],
+    passive: { kind: 'aura', icon: '🔥', name: 'Foxfire', dmg: 4, el: 'fire', stop: 'ice', stopIcon: '❄️', stopTxt: 'frost' },
+    parts: [
+      { k: 'claw', name: 'Claws', tag: 'CLAW', icon: '🐾', spd: 8, skills: [{ n: 'Rake', t: 'dmg', r: 'melee', d: [17, 20], chip: true, brk: 14, cd: 0 }] },
+      { k: 'jaws', name: 'Jaws', tag: 'JAWS', icon: '🦷', spd: 7, skills: [{ n: 'Bite', t: 'dmg', r: 'melee', d: [19, 23], chip: true, brk: 12, cd: 0 }] },
+      { k: 'tails', name: 'Nine Tails', tag: 'TAILS', icon: '🔥', spd: 9, skills: [{ n: 'Fox Fire', t: 'dmg', r: 'ranged', d: [9, 11], el: 'fire', brk: 10, cd: 3, all: true }, { n: 'Fireball', t: 'dmg', r: 'ranged', d: [15, 18], el: 'fire', brk: 12, cd: 0 }, { n: 'Inferno', t: 'dmg', r: 'ranged', d: [20, 24], el: 'fire', brk: 18, cd: 0, all: true, roll: true }] },
+      { k: 'body', name: 'Body', tag: 'BODY', icon: '🦊', spd: 5, skills: [{ n: 'Pounce', t: 'dmg', r: 'melee', d: [16, 19], chip: true, brk: 12, cd: 0 }] }],
+    tele: { part: 'tails', i: 2, icon: '🔥', wind: 'fans out all nine tails, blazing', float: 'TAILS FLARE', cut: 'Its tails gutter out: the Inferno fizzles!' },
+    weak: { shrine: { icon: '⛩️', name: 'Desecrated shrine', clue: 'A fox shrine, its offerings scattered: this is its place.', fx: 'its tails start the fight broken (no fire at first)', eff: { broken: ['tails'] } },
+      trap: { icon: '🪤', name: 'Sprung trap', clue: 'A steel trap, sprung, with orange fur in its teeth.', fx: 'its claws and jaws have 40% less armour', eff: { armour: ['claw', 'jaws'], by: .6 } },
+      spring: { icon: '❄️', name: 'Cold spring', clue: 'Steam rises from scorched snow by an icy spring.', fx: 'its body starts the fight broken', eff: { broken: ['body'] } },
+      kits: { icon: '🦴', name: 'Abandoned den', clue: 'An old den, long empty. It hunts alone now.', fx: '12% less HP', eff: { hp: .88 } } },
+    clues: ['Paw prints, each one scorched into the grass.', 'A ring of foxfire, still flickering.', 'Ash where a tree used to stand.', 'Nine long furrows in the dirt, side by side.', 'A rabbit, cooked where it ran.', 'Orange fur caught on a thorn.', 'Smoke curls from a hollow log.', 'Laughter? No. Just the wind.', 'The snow has melted in a perfect line.'] },
+  leshen: { key: 'leshen', roar: 0.75, the: 'the leshen', icon: '🌳', hp: 1040, dmg: 1.3, spd: 6, regrow: 2, cornered: 1.15, resume: .75, rollEvery: 3, rollFirst: 2,
+    armour: { vine: 18, root: 22, head: 20, trunk: 30 }, weakEl: ['fire'], resist: ['bleed', 'poison'],
+    passive: { kind: 'thorns', icon: '🌿', name: 'Thornhide', el: 'bleed', dot: 7, dur: 2, stop: 'fire', stopIcon: '🔥', stopTxt: 'fire' },
+    parts: [
+      { k: 'vine', name: 'Thorn Vines', tag: 'VINES', icon: '🌿', spd: 8, skills: [{ n: 'Thorn Whip', t: 'dmg', r: 'melee', d: [12, 15], el: 'bleed', brk: 12, cd: 0 }, { n: 'Briar Storm', t: 'dmg', r: 'ranged', d: [11, 14], el: 'bleed', brk: 14, cd: 0, all: true, roll: true }] },
+      { k: 'root', name: 'Grasping Roots', tag: 'ROOTS', icon: '🪵', spd: 6, skills: [{ n: 'Root Crush', t: 'dmg', r: 'melee', d: [18, 22], chip: true, brk: 16, cd: 0 }] },
+      { k: 'head', name: 'Antlered Skull', tag: 'SKULL', icon: '💀', spd: 7, skills: [{ n: 'Wail', t: 'dmg', r: 'ranged', d: [9, 11], brk: 10, cd: 3, all: true }, { n: 'Gore', t: 'dmg', r: 'melee', d: [17, 21], chip: true, brk: 12, cd: 0 }] },
+      { k: 'trunk', name: 'Trunk', tag: 'TRUNK', icon: '🌳', spd: 4, skills: [{ n: 'Bramble Slam', t: 'dmg', r: 'melee', d: [16, 20], chip: true, brk: 12, cd: 0 }] }],
+    tele: { part: 'vine', i: 1, icon: '🌿', wind: 'draws its vines back like a bowstring', float: 'VINES COIL', cut: 'Its vines are cut down: the Briar Storm never comes!' },
+    weak: { stump: { icon: '🪓', name: 'Felled grove', clue: 'Fresh stumps, cut by woodsmen. It is still angry.', fx: 'its vines start the fight broken', eff: { broken: ['vine'] } },
+      salt: { icon: '🧂', name: 'Salted earth', clue: 'Someone salted the ground here. Nothing grows.', fx: 'its roots start the fight broken', eff: { broken: ['root'] } },
+      rot: { icon: '🍄', name: 'Heart rot', clue: 'Black fungus eating into a fallen bough.', fx: 'its trunk and skull have 40% less armour', eff: { armour: ['trunk', 'head'], by: .6 } },
+      burn: { icon: '🔥', name: 'Old burn', clue: 'A blackened scar where lightning struck it once.', fx: '12% less HP', eff: { hp: .88 } } },
+    clues: ['Thorns grow through the path where there was none yesterday.', 'An antler, tangled in briars.', 'The trees lean in, all the same way.', 'Crows, hundreds of them, silent.', 'A deer, wrapped in vines and still.', 'Sap bleeds from a cut in the bark, red as blood.', 'Roots heave up the earth in a long line.', 'The birdsong stops, all at once.', 'A ring of mushrooms, freshly trampled.'] },
+  jelly: { key: 'jelly', roar: 1.7, the: 'the jellyfish', icon: '🪼', hp: 950, dmg: .92, spd: 7, regrow: 2, cornered: 1.15, resume: .75, rollEvery: 3, rollFirst: 2, water: true,
+    armour: { sting: 26, lash: 26, bell: 24, core: 34 }, weakEl: ['bleed'], resist: ['shock'], dotMul: { bleed: 2.5 },
+    passive: { kind: 'arc', icon: '⚡', name: 'Living current', frac: .4 },
+    parts: [
+      { k: 'sting', name: 'Stinging Tendril', tag: 'STING', icon: '⚡', spd: 8, skills: [{ n: 'Sting', t: 'dmg', r: 'melee', d: [24, 28], el: 'shock', brk: 16, cd: 0, arc: true }] },
+      { k: 'lash', name: 'Lashing Tendril', tag: 'LASH', icon: '〰️', spd: 7, skills: [{ n: 'Lash', t: 'dmg', r: 'melee', d: [28, 33], chip: true, brk: 16, cd: 0 }] },
+      { k: 'bell', name: 'Bell', tag: 'BELL', icon: '🔔', spd: 6, skills: [{ n: 'Pulse', t: 'dmg', r: 'ranged', d: [13, 15], el: 'shock', brk: 12, cd: 3, all: true }, { n: 'Zap', t: 'dmg', r: 'ranged', d: [20, 24], el: 'shock', brk: 14, cd: 0, arc: true }] },
+      { k: 'core', name: 'Glowing Core', tag: 'CORE', icon: '💠', spd: 5, skills: [{ n: 'Drift Slam', t: 'dmg', r: 'melee', d: [21, 25], chip: true, brk: 12, cd: 0 }, { n: 'Thunderbloom', t: 'dmg', r: 'ranged', d: [28, 33], el: 'shock', brk: 20, cd: 0, all: true, roll: true }] }],
+    tele: { part: 'core', i: 1, icon: '⚡', wind: 'glows brighter and brighter, crackling', float: 'CHARGING', cut: 'Its core flickers out: the Thunderbloom is lost!' },
+    weak: { net: { icon: '🕸️', name: 'Torn net', clue: 'A fishing net, burnt through in a hundred places.', fx: 'its stinging tendril starts the fight broken', eff: { broken: ['sting'] } },
+      hook: { icon: '🪝', name: 'Barbed hooks', clue: 'Broken whaling hooks wash up, still barbed.', fx: 'its tendrils have 40% less armour', eff: { armour: ['sting', 'lash'], by: .6 } },
+      drain: { icon: '🔋', name: 'Spent charge', clue: 'Dead fish in a ring, all facing in: it spent itself here.', fx: 'its bell starts the fight broken (no Pulse at first)', eff: { broken: ['bell'] } },
+      scar: { icon: '🩸', name: 'Old scars', clue: 'Torn jelly on the rocks, and a trail of it.', fx: '12% less HP', eff: { hp: .88 } } },
+    clues: ['The water glows faintly blue.', 'A boat, overturned, its hull scorched.', 'Dead fish float belly-up in a ring.', 'Your hair stands on end near the water.', 'Translucent slime coats the rocks.', 'A gull drops from the sky, twitching.', 'Something huge pulses under the surface.', 'The tide pools hum.', 'A crab, cooked in its shell.'] },
+  roc: { key: 'roc', roar: 3.2, the: 'the roc', icon: '🦅', hp: 1530, dmg: 1.12, spd: 9, regrow: 2, cornered: 1.15, resume: .75, rollEvery: 3, rollFirst: 2,
+    armour: { talon: 34, beak: 32, wings: 30, body: 44 }, weakEl: [], resist: ['shock', 'ice'],
+    passive: { kind: 'flying', icon: '🪶', name: 'Airborne', part: 'wings', dodge: .55 },
+    parts: [
+      { k: 'talon', name: 'Talons', tag: 'TALON', icon: '🦶', spd: 9, skills: [{ n: 'Rend', t: 'dmg', r: 'melee', d: [34, 40], chip: true, brk: 20, cd: 0 }] },
+      { k: 'beak', name: 'Beak', tag: 'BEAK', icon: '⚡', spd: 7, skills: [{ n: 'Thunder Cry', t: 'dmg', r: 'ranged', d: [30, 35], el: 'shock', brk: 18, cd: 2 }, { n: 'Peck', t: 'dmg', r: 'melee', d: [28, 32], chip: true, brk: 14, cd: 0 }] },
+      { k: 'wings', name: 'Wings', tag: 'WINGS', icon: '🪶', spd: 8, skills: [{ n: 'Frost Gale', t: 'dmg', r: 'ranged', d: [17, 20], el: 'ice', brk: 14, cd: 3, all: true }, { n: 'Ice Feathers', t: 'dmg', r: 'ranged', d: [28, 32], el: 'ice', brk: 14, cd: 0 }] },
+      { k: 'body', name: 'Body', tag: 'BODY', icon: '🦅', spd: 6, skills: [{ n: 'Buffet', t: 'dmg', r: 'melee', d: [24, 28], chip: true, brk: 12, cd: 0 }, { n: 'Storm Dive', t: 'dmg', r: 'melee', d: [36, 42], el: 'shock', brk: 22, cd: 0, all: true, roll: true }] }],
+    tele: { part: 'body', i: 1, icon: '🌩️', wind: 'climbs high into the storm', float: 'CLIMBING', cut: 'Its body is battered out of the climb: no Storm Dive!' },
+    weak: { nest: { icon: '🪺', name: 'Raided nest', clue: 'An eyrie, its eggs smashed. It will be reckless.', fx: 'its body and beak have 40% less armour', eff: { armour: ['body', 'beak'], by: .6 } },
+      arrow: { icon: '🏹', name: 'Broken arrows', clue: 'Hunters\' arrows, snapped, and a few grey feathers.', fx: 'its wings start the fight broken (it starts on the ground)', eff: { broken: ['wings'] } },
+      talon: { icon: '🦴', name: 'Cracked talon', clue: 'A great claw, split, wedged in the rock.', fx: 'its talons start the fight broken', eff: { broken: ['talon'] } },
+      old: { icon: '🪶', name: 'Moulting', clue: 'Feathers everywhere: it is moulting.', fx: '12% less HP', eff: { hp: .88 } } },
+    clues: ['A feather as long as a spear.', 'Lightning strikes the same peak twice.', 'A goat skeleton on a ledge no goat could reach.', 'A shadow crosses the snow. Nothing above.', 'Rocks, scorched and frost-cracked together.', 'Huge talon marks in the ice.', 'A shriek on the wind, far off.', 'The clouds circle one mountain.', 'Snow blown clean off a ridge in one stroke.'] },
+  wyvern: { key: 'wyvern', roar: 1.2, the: 'the wyvern', icon: '🐉', hp: 1660, dmg: 1.12, spd: 7, regrow: 2, cornered: 1.15, resume: .75, rollEvery: 3, rollFirst: 2,
+    armour: { claw: 36, tail: 34, head: 32, body: 46 }, weakEl: ['fire'], resist: ['ice'],
+    passive: { kind: 'blizzard', icon: '🌨️', name: "Winter's breath" },
+    parts: [
+      { k: 'claw', name: 'Claws', tag: 'CLAW', icon: '🐾', spd: 8, skills: [{ n: 'Rake', t: 'dmg', r: 'melee', d: [34, 40], chip: true, brk: 20, cd: 0 }] },
+      { k: 'tail', name: 'Tail', tag: 'TAIL', icon: '🦎', spd: 7, skills: [{ n: 'Tail Sweep', t: 'dmg', r: 'melee', d: [20, 24], chip: true, brk: 14, cd: 3, all: true }, { n: 'Tail Spike', t: 'dmg', r: 'melee', d: [32, 38], chip: true, brk: 16, cd: 0 }] },
+      { k: 'head', name: 'Head', tag: 'HEAD', icon: '❄️', spd: 7, skills: [{ n: 'Frost Bite', t: 'dmg', r: 'melee', d: [30, 35], el: 'ice', brk: 14, cd: 0 }, { n: 'Frost Breath', t: 'dmg', r: 'ranged', d: [32, 38], el: 'ice', brk: 22, cd: 0, all: true, roll: true }] },
+      { k: 'body', name: 'Body', tag: 'BODY', icon: '🐉', spd: 5, skills: [{ n: 'Wing Buffet', t: 'dmg', r: 'melee', d: [26, 30], chip: true, brk: 12, cd: 0 }] }],
+    tele: { part: 'head', i: 1, icon: '❄️', wind: 'draws a long, freezing breath', float: 'INHALING', cut: 'Its head is cracked: the breath comes out as a cough!' },
+    weak: { egg: { icon: '🥚', name: 'Frozen clutch', clue: 'Eggs frozen solid in a cave. It guards them still.', fx: 'its body and head have 40% less armour', eff: { armour: ['body', 'head'], by: .6 } },
+      chain: { icon: '⛓️', name: 'Broken chains', clue: 'Old chains on the rocks: someone tried to bind it.', fx: 'its claws start the fight broken', eff: { broken: ['claw'] } },
+      spear: { icon: '🗡️', name: 'Old spear', clue: 'A dragonslayer\'s spear, snapped, its tip missing.', fx: 'its tail starts the fight broken', eff: { broken: ['tail'] } },
+      thaw: { icon: '♨️', name: 'Hot spring', clue: 'A hot spring it keeps away from. Heat hurts it.', fx: '12% less HP', eff: { hp: .88 } } },
+    clues: ['Frost spreads across the rock in the shape of wings.', 'An avalanche, fresh, with a trench down the middle.', 'Icicles hang from a cave mouth like teeth.', 'The cold here bites through furs.', 'Huge clawed tracks, filled with fresh snow.', 'A frozen bear, mid-stride.', 'A roar shakes snow off the pines.', 'Scales, blue-white, big as shields.', 'The wind stops. Then it howls.'] }
+};
+const BZ = () => BEASTS[(quest && quest.def && quest.def.hunt) || 'troll'] || BEASTS.troll;      // the beast of the hunt in progress
+const bzThe = (cap = true) => { const t = BZ().the; return cap ? t[0].toUpperCase() + t.slice(1) : t; };
+function trollBuild(sc, h) {                  // the hunt's beast (BZ()): its four parts over one HP pool
+  const B = BZ(), W = (h && h.weak) || [], T = { hp: 0, maxHp: 0, parts: [], held: null, passive: B.passive, stopped: false, B };
+  const eff = W.map(k => (B.weak[k] || {}).eff).filter(Boolean), hpK = eff.reduce((a, e) => a * (e.hp || 1), 1);
+  const parts = B.parts.map(P => {
+    const corner = (h && h.fled ? B.cornered : 1) * (B.dmg || 1), sk = P.skills.map(x => ({ ...x, ...(x.d ? { d: x.d.map(v => Math.round(v * corner)) } : {}) }));      // cornered at the den: hits harder
+    const u = make({ id: `e_${B.key}_${P.k}`, boss: true, name: `${B.the.replace(/^the /, '').replace(/^./, c => c.toUpperCase())} · ${P.name}`, short: P.name, tag: P.tag, hp: B.hp * hpK, brk: 1, spd: P.spd, weak: B.weakEl.slice(), resist: B.resist.slice(), skills: sk }, 'e', sc);
+    const cut = eff.filter(e => e.armour && e.armour.includes(P.k)).reduce((a, e) => a * e.by, 1);
+    u.maxBreak = u.breakBar = Math.max(1, Math.round(B.armour[P.k] * cut));
+    u.troll = T; u.trollPart = P.k; u.partIcon = P.icon || ''; u.noTurn = false; u.trollCore = P.k === B.parts[3].k; u.tele = P.k === B.tele.part; u.regrow = 0; if (u.tele) { u.rollCd = B.rollFirst; u.winding = false; }
+    if (eff.some(e => e.broken && e.broken.includes(P.k))) { u.state = 'broken'; u.breakBar = 0; u.regrow = B.regrow; }
     return u; });
   T.maxHp = parts[0].maxHp; T.hp = T.maxHp; T.parts = parts;
   if (h) { h.trollMax = T.maxHp; if (h.trollHp != null) T.hp = Math.max(1, Math.min(T.maxHp, h.trollHp)); }      // the second fight: as wounded as you left it (plus what it healed)
@@ -9418,59 +9549,87 @@ const trollOk = (T, k) => trollPart(T, k).state === 'armoured';
 function trollChoose(u) {                     // each part's own move this round
   const T = u.troll; if (u.state !== 'armoured') return { skip: true };          // broken: it spends its turns growing back
   const live = () => party.filter(x => isAlive(x) && !x.drowned);
-  if (u.trollPart === 'drown' && T.held && isAlive(T.held)) return { i: 1, target: T.held };       // holding someone: keeps her under
-  if (u.trollPart === 'head') return u.cd[0] <= 1 && Math.random() < .6 ? { i: 0, target: null } : { i: 1, target: weightedHero() };
-  if (u.trollPart === 'body') { if (u.winding) return { i: 1, target: null }; if (u.rollCd <= 0) return { wind: true, skip: true }; }      // (skip: no attack this turn, as far as everything else is concerned)      // Death Roll: a turn winding up, then it rolls over everyone
-  return live().length ? { i: 0, target: weightedHero() } : { skip: true };
+  if (u.trollPart === 'drown' && T.held && isAlive(T.held)) return { i: 1, target: T.held };       // (the troll) holding someone: keeps her under
+  if (u.tele) { if (u.winding) return { i: T.B.tele.i, target: null }; if (u.rollCd <= 0) return { wind: true, skip: true }; }      // the big telegraphed attack: a wind-up turn, then it lands
+  if (!live().length) return { skip: true };
+  const ok = u.skills.map((s, i) => i).filter(i => !u.skills[i].roll && u.skills[i].t !== 'squeeze' && u.cd[i] <= 1);
+  const special = ok.filter(i => u.skills[i].cd > 0), basic = ok.filter(i => !(u.skills[i].cd > 0));
+  const i = special.length && (Math.random() < .6 || !basic.length) ? special[0] : basic.length ? basic[0] : 0, s = u.skills[i];
+  return { i, target: s.all ? null : weightedHero() };
 }
 function trollIntent(u) {
-  const it = u.intent; if (u.state !== 'armoured') return '🦴 regrowing'; if (it && it.wind) return '▶ 🌀 rears up: Death Roll next round (break its body!)'; if (!it || it.skip) return '';
+  const it = u.intent, Tl = u.troll.B.tele; if (u.state !== 'armoured') return '🦴 regrowing'; if (it && it.wind) return `▶ ${Tl.icon} ${Tl.wind}: ${u.skills[Tl.i].n} next round (break its ${u.short.toLowerCase()}!)`; if (!it || it.skip) return '';
   const s = u.skills[it.i]; return s.t === 'squeeze' ? `▶ 🌊 holds ${it.target ? it.target.short : 'her'} under` : s.all ? `▶ ${s.n} (everyone)` : `▶ ${s.n} → ${it.target ? it.target.short : '?'}`;
 }
 async function trollTurn(u) {                 // one part's turn
   const T = u.troll;
-  if (u.statuses.some(x => x.stun)) { u.statuses = u.statuses.filter(x => !x.stun); log(`💢 The troll shrugs off the stun.`, 'log-status'); floatText(u, '💢 UNFAZED', 'tag'); }
+  const B = T.B;
+  if (u.statuses.some(x => x.stun)) { u.statuses = u.statuses.filter(x => !x.stun); log(`💢 ${bzThe()} shrugs off the stun.`, 'log-status'); floatText(u, '💢 UNFAZED', 'tag'); }
   u.cd = u.cd.map(c => Math.max(0, c - 1));
   for (const st of u.statuses.filter(x => x.dot)) {                                   // ailments on this part hurt the whole beast, on this part's turn
-    if (!isAlive(u)) break; const tick = st.dot; u.hp = lethalGuard(u, u.hp - tick); if (T.passive && STATUS_EL && STATUS_EL[st.type] === T.passive.stop) T.stopped = true;
-    log(`The troll's ${u.short.toLowerCase()} takes ${tick} damage from ${st.type}!`, 'log-status'); render(); floatText(u, tick, 'dot'); sfx('hit', STATUS_FX[st.type] || 'phys', false, false, true); trollFx('hurt'); await sleep(380);
+    if (!isAlive(u)) break; const tick = Math.round(st.dot * ((B.dotMul || {})[st.type] || 1)); u.hp = lethalGuard(u, u.hp - tick); if (T.passive && STATUS_EL && STATUS_EL[st.type] === T.passive.stop) T.stopped = true;
+    log(`${bzThe()}'s ${u.short.toLowerCase()} takes ${tick} damage from ${st.type}!${tick > st.dot ? ' It is weak to it!' : ''}`, 'log-status'); render(); floatText(u, tick, 'dot'); sfx('hit', STATUS_FX[st.type] || 'phys', false, false, true); trollFx('hurt'); await sleep(380);
     if (--st.dur <= 0) u.statuses = u.statuses.filter(x => x !== st);
     if (!isAlive(u)) { await fall(u); return; }
   }
   const hh = quest && quest.map && quest.map.hunt;
   if (hh && !hh.fled && T.hp <= T.maxHp * HUNT.flee) return trollFlee(u, hh);
   if (u.state !== 'armoured') {                                                       // broken: no attack, the armour grows back over its turns
-    if (u.winding) { u.winding = false; u.rollCd = TROLL.rollEvery; log(`💢 Its body cracked open mid-roll: the Death Roll is broken off!`, 'log-player'); floatText(u, '💢 ROLL STOPPED', 'tag'); sfx('break'); await sleep(450); }
+    if (u.winding) { u.winding = false; u.rollCd = B.rollEvery; log(`💢 ${B.tele.cut}`, 'log-player'); floatText(u, '💢 STOPPED', 'tag'); sfx('break'); await sleep(450); }
     if (u.regrow > 0) u.regrow--;
-    if (u.regrow <= 0) { u.state = 'armoured'; u.breakBar = u.maxBreak; floatText(u, '🦴 REGROWN', 'tag'); log(`The troll's ${u.short.toLowerCase()} hardens again: ${u.skills[0].n} is back.`, 'log-status'); }
-    else { log(`🦴 The troll's ${u.short.toLowerCase()} is still broken (${u.regrow} more turn${u.regrow > 1 ? 's' : ''}).`, 'log-status'); floatText(u, '🦴 REGROWING', 'tag'); }
+    if (u.regrow <= 0) { u.state = 'armoured'; u.breakBar = u.maxBreak; floatText(u, '🦴 REGROWN', 'tag'); log(`${bzThe()}'s ${u.short.toLowerCase()} hardens again: ${u.skills[0].n} is back.`, 'log-status');
+      if (T.passive && T.passive.kind === 'flying' && u.trollPart === T.passive.part) { log(`🪶 ${bzThe()} beats its wings and takes to the air again! Melee attacks will miss half the time.`, 'log-enemy'); floatText(u, '🪶 AIRBORNE', 'tag hurt'); } }
+    else { log(`🦴 ${bzThe()}'s ${u.short.toLowerCase()} is still broken (${u.regrow} more turn${u.regrow > 1 ? 's' : ''}).`, 'log-status'); floatText(u, '🦴 REGROWING', 'tag'); }
     u.intent = null; render(); await sleep(420); return;
   }
   let it = u.intent; u.intent = null;
   if (!it || it.skip || (it.target && (!isAlive(it.target) || (it.target.drowned && u.skills[it.i].t !== 'squeeze'))) || u.cd[it.i] > 0) it = trollChoose(u);
-  if (u.trollCore) u.rollCd = Math.max(0, (u.rollCd || 0) - 1);
+  if (u.tele) u.rollCd = Math.max(0, (u.rollCd || 0) - 1);
   if (it.skip && !it.wind) return;
-  if (it.wind) { u.winding = true; trollFx('flail'); shake(3); sfx('hit', 'phys', true, false, true); log(`🌀 The troll rears up and coils: a <b>Death Roll</b> is coming at everyone next round. Break its body to stop it!`, 'log-enemy'); floatText(u, '🌀 WINDING UP', 'tag hurt'); render(); await sleep(600); return; }
+  if (it.wind) { u.winding = true; trollFx('flail', u); shake(3); sfx('hit', 'phys', true, false, true); log(`${B.tele.icon} ${bzThe()} ${B.tele.wind}: <b>${u.skills[B.tele.i].n}</b> hits everyone next round. Break its ${u.short.toLowerCase()} to stop it!`, 'log-enemy'); floatText(u, `${B.tele.icon} ${B.tele.float}`, 'tag hurt'); render(); await sleep(600); return; }
   const s = u.skills[it.i];
-  if (s.roll) { u.winding = false; u.rollCd = TROLL.rollEvery; trollFx('flail'); shake(6); }
+  if (s.roll) { u.winding = false; u.rollCd = B.rollEvery; trollFx('flail', u); shake(6); }
   if (s.t === 'squeeze') { trollFx('grab'); await trollDrownTick(T); render(); return; }
   if (!it.target) it.target = s.all ? party.find(x => isAlive(x) && !x.drowned) : weightedHero();
   if (!it.target) return;
-  trollFx(u.trollPart === 'head' ? (s.all ? 'spew' : 'flail') : u.trollPart === 'club' ? 'club' : u.trollPart === 'drown' ? 'grab' : 'flail');
+  trollFx(u.trollPart === 'head' ? (s.all ? 'spew' : 'flail') : u.trollPart === 'club' ? 'club' : u.trollPart === 'drown' ? 'grab' : 'flail', u);
   await perform(u, it.i, it.target);
+  if (s.arc && T.passive && T.passive.kind === 'arc' && !s.all && isAlive(u) && !over) await beastArc(u, s, it.target);      // the jellyfish: the current jumps to whoever stands beside her
   if (s.grab && !T.held && isAlive(u) && !over && isAlive(it.target) && !it.target.drowned && it.target.state !== 'armoured') await trollGrab(T, it.target);      // the grab: a hero whose armour is broken gets dragged under
   render();
 }
 const STATUS_EL = { burn: 'fire', bleed: 'bleed', poison: 'poison', chill: 'ice', shock: 'shock' };      // which element an ailment's ticks count as
-async function beastPassive() {               // end of a round: the hunt beast's passive (TROLL_PASSIVE), unless its weakness hit it this round
+async function beastPassive() {               // end of a round: the hunt beast's passive (see BEASTS), unless its counter hit it this round
   const b = enemies.find(e => e.troll && isAlive(e)), T = b && b.troll, P = T && T.passive; if (!P) return;
-  if (T.stopped) { T.stopped = false; log(`${P.stopIcon} The ${P.stopTxt} keeps its wounds open: no ${P.name.toLowerCase()} this round.`, 'log-player'); floatText(b, `${P.stopIcon} NO REGEN`, 'tag'); await sleep(350); return; }
-  const add = Math.min(T.maxHp - T.hp, Math.round(T.maxHp * P.heal)); let arm = 0;
-  T.parts.forEach(p => { if (p.state !== 'armoured' || p.breakBar >= p.maxBreak) return; const a = Math.min(p.maxBreak - p.breakBar, Math.max(1, Math.round(p.maxBreak * P.armour))); p.breakBar += a; arm += a; });
-  if (add <= 0 && !arm) return;
-  T.hp += add; trollFx('regen'); sfx('heal');
-  log(`${P.icon} ${P.name}: the troll's wounds knit${add ? ` (+${add} HP)` : ''}${arm ? ' and its hide thickens' : ''}. Hit it with ${P.stopTxt} to stop it.`, 'log-heal');
-  if (add) floatText(T.parts.find(p => p.trollCore) || b, '+' + add, 'heal'); render(); trollHud(); await sleep(500);
+  const was = T.stopped; T.stopped = false;
+  if (P.kind === 'regen') {
+    if (was) { log(`${P.stopIcon} The ${P.stopTxt} keeps its wounds open: no ${P.name.toLowerCase()} this round.`, 'log-player'); floatText(b, `${P.stopIcon} NO REGEN`, 'tag'); await sleep(350); return; }
+    const add = Math.min(T.maxHp - T.hp, Math.round(T.maxHp * P.heal)); let arm = 0;
+    T.parts.forEach(p => { if (p.state !== 'armoured' || p.breakBar >= p.maxBreak) return; const a = Math.min(p.maxBreak - p.breakBar, Math.max(1, Math.round(p.maxBreak * P.armour))); p.breakBar += a; arm += a; });
+    if (add <= 0 && !arm) return;
+    T.hp += add; trollFx('regen'); sfx('heal');
+    log(`${P.icon} ${P.name}: ${bzThe(false)}'s wounds knit${add ? ` (+${add} HP)` : ''}${arm ? ' and its hide thickens' : ''}. Hit it with ${P.stopTxt} to stop it.`, 'log-heal');
+    if (add) floatText(T.parts.find(p => p.trollCore) || b, '+' + add, 'heal'); render(); trollHud(); await sleep(500); return;
+  }
+  if (P.kind === 'aura') {                    // the fox: its fire licks at everyone, unless frost cooled it this round
+    if (was) { log(`${P.stopIcon} The ${P.stopTxt} has cooled it: no ${P.name} this round.`, 'log-player'); floatText(b, `${P.stopIcon} COOLED`, 'tag'); await sleep(350); return; }
+    const hit = party.filter(x => isAlive(x) && !x.drowned); if (!hit.length) return;
+    trollFx('spew'); sfx('hit', 'fire', false, false, true);
+    log(`${P.icon} ${P.name} licks at the whole party: -${P.dmg} each. Hit it with ${P.stopTxt} to cool it.`, 'log-enemy');
+    for (const h of hit) { h.hp = lethalGuard(h, h.hp - P.dmg); floatText(h, P.dmg, 'e-fire'); }
+    render(); await sleep(450);
+    for (const h of hit) if (!isAlive(h)) await fall(h);
+    return;
+  }
+  if (P.kind === 'thorns' && was) { log(`${P.stopIcon} Its thorns grow back.`, 'log-status'); }
+}
+async function beastArc(u, s, t) {            // Living current: the shock jumps to the heroes beside the one it hit, for P.frac of the damage
+  const P = u.troll.passive, i = party.indexOf(t), nb = [party[i - 1], party[i + 1]].filter(x => x && isAlive(x) && !x.drowned); if (!nb.length) return;
+  for (const n of nb) { try { arcBolt && arcBolt(t, n); } catch (e) {} }
+  log(`${P.icon} ${P.name}: the shock arcs through the water to ${nb.map(x => x.short).join(' and ')}!`, 'log-enemy');
+  await sleep(200);
+  for (const n of nb) await hit(u, n, { ...s, d: s.d.map(v => Math.max(1, Math.round(v * P.frac))), noDodge: true, arc: false, brk: Math.round((s.brk || 0) * P.frac) });
+  render();
 }
 async function trollFlee(u, h) {             // badly hurt: it breaks off and runs for its den, bleeding
   const T = u.troll; if (T.held) trollFree(T);
@@ -9482,15 +9641,15 @@ async function trollFlee(u, h) {             // badly hurt: it breaks off and ru
   } else { const o = m.adj[h.troll].filter(j => j && j !== m.at).sort((a, b) => dP[b] - dP[a]), to = o[0]; h.fleeing = false;      // already home: it backs off one step
     if (to != null) { h.trail.push({ a: h.troll, b: to, t: m.t, blood: true, found: true }); h.troll = m.boss = to; } }
   h.msg = `🩸 <b>It fled toward its den, bleeding.</b> Follow the blood before it heals.`;
-  say('The troll flees!'); trollFx('flee'); sfx('defeat'); shake(2);
-  log(`<strong style="color:#ffb74d">🩸 The troll bellows, tears free and crashes away through the reeds, bleeding! Follow the blood trail before it heals.</strong>`, 'log-status');
+  say(`${bzThe()} flees!`); trollFx('flee'); sfx('defeat'); shake(2);
+  log(`<strong style="color:#ffb74d">🩸 ${bzThe()} tears free and crashes away, bleeding! Follow the blood trail before it heals.</strong>`, 'log-status');
   const L = document.querySelector('#troll-layer'); if (L) L.classList.add('fled');
   quest.trollFled = true; render(); await sleep(1100);
 }
 function trollFledEnd() {                    // the fight ends without a winner: back to the board to give chase
   setSpot([]); over = true; actor = null; cur = null; waiting = null; blizzStop(); quest.trollFled = false;
   party.forEach(u => { u.drowned = false; });
-  $('turn-indicator').innerText = 'The troll flees!';
+  $('turn-indicator').innerText = `${bzThe()} flees!`;
   const main = $('btn-end-main'); main.textContent = '🩸 Follow the blood trail'; main.onclick = () => { saveQuest(); showMap(); };
   { const o = $('btn-end-alt'); if (o) o.remove(); }
   endShow(); render(); saveQuest(); return true;
@@ -9514,10 +9673,10 @@ function huntPartyFlee() {
   if (!h.fled) {                                                    // it lumbers home and licks its wounds, or goes straight back to the hunt
     const path = huntSteps(m, h.troll, h.den);
     if (path) for (let k = 1; k < path.length; k++) h.trail.push({ a: path[k - 1], b: path[k], t: m.t, blood: false, found: false });
-    h.troll = m.boss = h.den; h.resting = h.trollHp < h.trollMax * TROLL.resume;
+    h.troll = m.boss = h.den; h.resting = h.trollHp < h.trollMax * BZ().resume;
   }
   for (let k = 0; k < steps; k++) huntHeal(m);
-  h.msg = h.fled || h.resting ? `🏃 <b>You broke off and ran for camp.</b> The troll has gone back to its den to heal.` : `🏃 <b>You broke off and ran for camp.</b> The troll is still on the prowl.`;
+  h.msg = h.fled || h.resting ? `🏃 <b>You broke off and ran for camp.</b> ${bzThe()} has gone back to its den to heal.` : `🏃 <b>You broke off and ran for camp.</b> ${bzThe()} is still on the prowl.`;
   log(`<strong style="color:#ffb74d">🏃 The party breaks off and runs for the nearest camp!</strong>`, 'log-status'); sfx('defeat');
   $('turn-indicator').innerText = 'The party falls back to camp';
   const main = $('btn-end-main'); main.textContent = '⛺ To camp'; main.onclick = () => { saveQuest(); showMap(); };
@@ -9527,12 +9686,13 @@ function huntPartyFlee() {
 function huntHeal(m) {                           // one move of time for a wounded troll: it heals in its den (fled, or resting after the party ran)
   const h = m.hunt; if (!(h.fled || h.resting) || h.trollHp == null || !h.trollMax) return;
   h.trollHp = Math.min(h.trollMax, h.trollHp + Math.round(h.trollMax * HUNT.denHeal));
-  if (h.resting && h.trollHp >= h.trollMax * TROLL.resume) { h.resting = false; h.msg = '🔊 <b>A rested roar from its den.</b> The troll is on the prowl again.'; trollRoar(.5); }
+  if (h.resting && h.trollHp >= h.trollMax * BZ().resume) { h.resting = false; h.msg = `🔊 <b>A rested roar from its den.</b> ${bzThe()} is on the prowl again.`; trollRoar(.5); }
 }
 
 function trollPartBroken(p) {                // hook from the armour-break code
-  const T = p.troll; p.regrow = TROLL.regrow;
-  log(`🦴 The troll's ${p.short.toLowerCase()} is broken: no ${p.skills[0].n} for ${TROLL.regrow} of its turns.`, 'log-player');
+  const T = p.troll; p.regrow = T.B.regrow;
+  log(`🦴 ${bzThe()}'s ${p.short.toLowerCase()} is broken: no ${p.skills[0].n} for ${T.B.regrow} of its turns.`, 'log-player');
+  if (T.passive && T.passive.kind === 'flying' && p.trollPart === T.passive.part) { log(`🪶 <b>Its wings are broken: ${bzThe(false)} crashes to the ground!</b> Melee attacks land again.`, 'log-player'); setTimeout(() => floatText(p, '🪶 GROUNDED', 'tag'), 200); }
   if (p.trollPart === 'drown' && T.held) trollFree(T);
 }
 async function trollGrab(T, h) {
@@ -9547,12 +9707,12 @@ function trollFree(T) {
 }
 async function trollDrownTick(T) {
   const h = T.held; if (!h) return; if (!isAlive(h)) { T.held = null; h.drowned = false; return; }
-  h.hp = lethalGuard(h, h.hp - TROLL.drown); log(`🌊 ${h.name} is held under: -${TROLL.drown} HP.`, 'log-status'); floatText(h, TROLL.drown, 'hurt'); render(); await sleep(380);
+  const dn = T.B.drown || 10; h.hp = lethalGuard(h, h.hp - dn); log(`🌊 ${h.name} is held under: -${dn} HP.`, 'log-status'); floatText(h, dn, 'hurt'); render(); await sleep(380);
   if (!isAlive(h)) { T.held = null; h.drowned = false; await fall(h); }
 }
 // ---- the stand-in troll, drawn across the four enemy slots ----
 let trollFxT = 0;
-function trollFx(kind) { const L = document.querySelector('#troll-layer'); if (!L) return; L.dataset.fx = kind; clearTimeout(trollFxT); trollFxT = setTimeout(() => { delete L.dataset.fx; }, kind === 'regen' ? 900 : 700); }
+function trollFx(kind, u) { const L = document.querySelector('#troll-layer'); if (!L) return; L.dataset.fx = kind; L.dataset.part = u && u.trollPart || ''; clearTimeout(trollFxT); trollFxT = setTimeout(() => { delete L.dataset.fx; }, kind === 'regen' ? 900 : 700); }
 function trollLayer() {
   const bf = document.querySelector('#battle-scene .battlefield'), T = enemies.length && enemies[0].troll || (enemies.find(e => e.troll) || {}).troll;
   let L = document.querySelector('#troll-layer');
@@ -9560,6 +9720,7 @@ function trollLayer() {
   if (!L) { L = document.createElement('div'); L.id = 'troll-layer'; bf.appendChild(L); }
   const B = bf.getBoundingClientRect(), k = bf.offsetWidth ? B.width / bf.offsetWidth : 1, cards = $('enemy-cards').children;
   if (!B.width || !$('battle-scene').classList.contains('show')) return;
+  if (T.B && T.B.key !== 'troll') return beastLayer(T, bf, L, B, k, cards);
   const at = key => { const p = trollPart(T, key), c = cards[enemies.indexOf(p)], f = c && (c.querySelector('.floor') || c); if (!f) return null; const r = f.getBoundingClientRect(); return { x: (r.left + r.width / 2 - B.left) / k, y: (r.top + r.height / 2 - B.top) / k, c }; };
   const A = at('club'), D = at('drown'), Hd = at('head'), Bd = at('body'); if (!A || !D || !Hd || !Bd) return;
   const S = Math.abs(Bd.x - A.x) / 3 || 120, G = Math.max(A.y, D.y, Hd.y, Bd.y) - S * .15, dir = Bd.x > A.x ? 1 : -1, W = bf.offsetWidth, Ht = bf.offsetHeight;
@@ -9594,11 +9755,40 @@ function trollLayer() {
     const want = [B.left + (grip[0] - dir * S * .45) * k, B.top + (G + S * .08) * k]; f.style.translate = `${Math.round((want[0] - c0[0]) / kx)}px ${Math.round((want[1] - c0[1]) / ky)}px`; });
 }
 
+const beastGrounded = T => !!(T.passive && T.passive.kind === 'flying' && T.parts.some(p => p.trollPart === T.passive.part && p.state !== 'armoured'));
+function passiveTip(P) {                       // one line on what the beast's passive does and how to stop it
+  return P.kind === 'regen' ? `${P.name}: heals ${Math.round(P.heal * 100)}% HP and ${Math.round(P.armour * 100)}% armour at the end of each round, unless hit with ${P.stopTxt} that round`
+    : P.kind === 'aura' ? `${P.name}: burns every hero for ${P.dmg} at the end of each round, unless hit with ${P.stopTxt} that round`
+    : P.kind === 'thorns' ? `${P.name}: every melee hit on it makes the attacker bleed, until it's hit with ${P.stopTxt} (off for the rest of that round)`
+    : P.kind === 'arc' ? `${P.name}: its shock attacks jump to the heroes either side of the target, for ${Math.round(P.frac * 100)}% damage. Bleed hurts it far more than usual`
+    : P.kind === 'flying' ? `${P.name}: melee attacks miss ${Math.round(P.dodge * 100)}% of the time while its wings are up. Ranged attacks always hit. Break its wings to ground it`
+    : P.kind === 'blizzard' ? `${P.name}: the whole fight is a blizzard. Light a torch to keep the cold off` : P.name;
+}
+/* Stand-in art for the other beasts: the beast's emoji standing over its four slots, and a round badge on each part (dims when broken, glows when you can target it).
+   Real art goes in assets/beast/<key>/idle.png (one picture of the whole beast, facing left, standing on the ground line); it replaces the emoji when it's there. */
+const BEAST_ART = {};
+function beastLayer(T, bf, L, B, k, cards) {
+  const key = T.B.key; if (!(key in BEAST_ART)) { BEAST_ART[key] = null; findAsset(`${ANIM.base}/beast/${key}/idle`).then(a => { BEAST_ART[key] = a ? a.url : null; }); }
+  const pts = T.parts.map(p => { const c = cards[enemies.indexOf(p)], f = c && (c.querySelector('.floor') || c); if (!f) return null; const r = f.getBoundingClientRect(); return { p, c, x: (r.left + r.width / 2 - B.left) / k, y: (r.top + r.height / 2 - B.top) / k }; });
+  if (pts.some(x => !x)) return;
+  const xs = pts.map(q => q.x), S = Math.abs(Math.max(...xs) - Math.min(...xs)) / 3 || 120, G = Math.max(...pts.map(q => q.y)) - S * .15, W = bf.offsetWidth, Ht = bf.offsetHeight, cx = (Math.max(...xs) + Math.min(...xs)) / 2;
+  const dead = !isAlive(T.parts[0]), fx = L.dataset.fx, part = L.dataset.part, art = BEAST_ART[key], air = T.passive && T.passive.kind === 'flying' && !beastGrounded(T);
+  const size = S * 1.7, by = G - S * (air ? 2.6 : 2.0);
+  L.className = dead ? 'dead' : '';
+  L.innerHTML = `<svg viewBox="0 0 ${W} ${Ht}" width="${W}" height="${Ht}">
+    ${T.B.water ? `<rect x="0" y="${G - S * .22}" width="${W}" height="${Ht - G + S * .22}" fill="#163042" opacity=".7"/><path d="M0,${G - S * .22} ${Array.from({ length: 24 }, (_, i) => `Q${(i + .5) * W / 24},${G - S * .22 - 6} ${(i + 1) * W / 24},${G - S * .22}`).join(' ')}" stroke="#9fd0e8" stroke-width="2" fill="none" opacity=".55"/>` : ''}
+    <g class="bz-body${fx === 'hurt' ? ' hurt' : ''}${air ? ' air' : ''}">${art ? `<image href="${art}" x="${cx - size * .75}" y="${G - size * 1.15}" width="${size * 1.5}" height="${size * 1.2}" preserveAspectRatio="xMidYMax meet"/>`
+      : `<ellipse cx="${cx}" cy="${G - S * .05}" rx="${S * 1.5}" ry="${S * .18}" fill="#000" opacity="${air ? .18 : .35}"/><text x="${cx}" y="${by + size * .35}" font-size="${size}" text-anchor="middle" opacity=".92">${T.B.icon}</text>`}</g>
+    ${pts.map(({ p, c, x, y }) => { const brk = p.state !== 'armoured', tg = c.classList.contains('targetable'), r = S * .26, py = y - S * .55;
+      return `<g class="tl-part bz-p${brk ? ' brk' : ''}${tg ? ' tg' : ''}${fx && part === p.trollPart ? ' act' : ''}"><circle cx="${x}" cy="${py}" r="${r}" fill="${brk ? '#2a2420' : '#1b1b2a'}" stroke="${brk ? '#7a5a3a' : '#e8d8b0'}" stroke-width="3" stroke-dasharray="${brk ? '6 5' : '0'}"/>
+        <text x="${x}" y="${py + r * .36}" font-size="${r * 1.05}" text-anchor="middle">${p.partIcon || '◆'}</text>${brk ? `<path d="M${x - r * .5},${py - r * .6} l${r * .3},${r * .5} l-${r * .2},${r * .4} l${r * .35},${r * .5}" stroke="#ffcf8a" stroke-width="3" fill="none"/>` : ''}</g>`; }).join('')}
+  </svg>`;
+}
 function trollHud() {                        // one HP bar for the whole beast
   let hb = document.getElementById('troll-hud'); const tp = enemies.find(e => e.troll);
   if (!tp) { if (hb) hb.remove(); return; }
   if (!hb) { hb = document.createElement('div'); hb.id = 'troll-hud'; $('battle-scene').appendChild(hb); }
-  const T = tp.troll; hb.innerHTML = `<b>🧌 ${(quest && quest.map && quest.map.hunt && quest.map.hunt.title) || 'River Troll'}</b><div class="th-bar"><i style="width:${Math.max(0, T.hp / T.maxHp * 100)}%"></i></div><span>${Math.max(0, T.hp)} / ${T.maxHp}${T.held ? ` · 🌊 ${T.held.short} is drowning` : ''}</span>${T.passive ? `<em class="th-pass${T.stopped ? ' off' : ''}" title="${T.passive.name}: heals ${Math.round(T.passive.heal * 100)}% HP and ${Math.round(T.passive.armour * 100)}% armour at the end of each round, unless hit with ${T.passive.stopTxt} that round">${T.stopped ? T.passive.stopIcon : T.passive.icon} ${T.passive.name}${T.stopped ? ' stopped' : ''}</em>` : ''}`;
+  const T = tp.troll; hb.innerHTML = `<b>${T.B.icon} ${(quest && quest.map && quest.map.hunt && quest.map.hunt.title) || T.B.the}</b><div class="th-bar"><i style="width:${Math.max(0, T.hp / T.maxHp * 100)}%"></i></div><span>${Math.max(0, T.hp)} / ${T.maxHp}${T.held ? ` · 🌊 ${T.held.short} is drowning` : ''}</span>${T.passive ? `<em class="th-pass${T.stopped || beastGrounded(T) ? ' off' : ''}" title="${passiveTip(T.passive)}">${T.stopped ? T.passive.stopIcon : T.passive.icon} ${T.passive.name}${T.stopped ? ' stopped' : beastGrounded(T) ? ': grounded' : ''}</em>` : ''}`;
 }
 /* ============ FINAL BOSS (dev-only framework) ============
    Two fights at once on two screens: LEFT FRONT (party A faces right, boss body L on the right) and RIGHT FRONT (everything mirrored: party B faces left, boss body R on the left).
@@ -9707,7 +9897,7 @@ function fbHud() {
 function fbBubble(anchor, text, cls = '') {
   const bf = document.querySelector('#battle-scene .battlefield'); if (!bf || !anchor || !anchor.isConnected) return;
   const r = anchor.getBoundingClientRect(), b = bf.getBoundingClientRect(), d = document.createElement('div');
-  d.className = 'fb-bub ' + cls; d.textContent = text; d.style.left = (r.left + r.width / 2 - b.left) + 'px'; d.style.top = (r.top - b.top + r.height * .12) + 'px';
+  d.className = 'fb-bub ' + cls; d.textContent = text; d.style.left = Math.max(130, Math.min(b.width - 130, r.left + r.width / 2 - b.left)) + 'px'; d.style.top = (r.top - b.top + r.height * .12) + 'px';
   bf.appendChild(d); setTimeout(() => d.remove(), 2600);
 }
 function fbMarkDowns() { fbAll().forEach(u => { if (u.hp <= 0 && !u.downSeq) { u.downSeq = ++FB.seq; (FB.downEv = FB.downEv || []).push(FB.round); } else if (u.hp > 0) u.downSeq = 0; }); }
@@ -10014,6 +10204,57 @@ function fbCleanup() {
   document.body.classList.remove('fbfight');
   const bf = document.querySelector('#battle-scene .battlefield'); if (bf) { bf.classList.remove('fb', 'fbm', 'fbfade', 'fbpair'); bf.querySelectorAll('.fb-shop,.fb-bub,.fb-potion').forEach(x => x.remove()); }
   const h = document.querySelector('#battle-scene .team-column .column-header'); if (h) h.textContent = 'PLAYER PARTY';
+}
+/* ============ ALLY CAMEOS ============ (Connor 2026-11-25) In Act 1, the hero you are recruiting helps out in the boss fight of her own quest, the first time
+   through (until the quest is cleared / she joins). She isn't a party member: she slides in at the edge of the screen, does one move and leaves, like the Final
+   Stand's guest. The very first time (once per save, game.cameoSeen) it opens with a banner and a line; after that she drops in now and then (chance a round,
+   at least `gap` rounds apart, at most `max` times a fight). Her picture: assets/<hero>/armoured/idle (and skillN while she acts, if it exists). */
+const CAMEO = {
+  ruins:  { hero: 'vesper', skill: 2, first: "Stand back. This one's mine.", lines: ['Again!', 'Keep up!', 'Light it up!'], chance: .3, gap: 2, max: 3 },
+  yokai:  { hero: 'irae',   skill: 1, first: 'Let me handle this.', lines: ['My turn.', 'Behind you.', "Didn't see me, did you?"], chance: .35, gap: 2, max: 3 },
+  plague: { hero: 'jean',   skill: 2, first: 'Drink up. Trust me.', lines: ['Bottoms up!', 'Doctor\'s orders.', 'Side effects are temporary!'], chance: .3, gap: 3, max: 2 },
+  crypt:  { hero: 'tyr',    skill: 1, first: 'The dead are MY business.', lines: ['Mine.', 'Hungry...', 'You first.'], chance: .35, gap: 2, max: 3 }
+};
+async function allyCameo(round) {
+  const C = quest && !quest.bonus && !FB && CAMEO[quest.def.id], node = curNode(); if (!C || !node || !node.boss) return;
+  if (questCleared(quest.def.id) || game.roster.includes(C.hero) || party.some(u => u.id === C.hero)) return;      // first completion only: once she's with you, she fights as one of you
+  const st = quest.cameo = quest.cameo && quest.cameo.node === quest.node ? quest.cameo : { node: quest.node, n: 0, last: -9 };
+  const foes = enemies.filter(e => isAlive(e) && !e.noTurn); if (!foes.length || !party.some(isAlive)) return;
+  game.cameoSeen = game.cameoSeen || {}; const first = !game.cameoSeen[C.hero];
+  if (!first && (st.n >= C.max || round - st.last < C.gap || Math.random() >= C.chance)) return;
+  st.n++; st.last = round; if (first) { game.cameoSeen[C.hero] = true; writeSave(); }
+  const H = heroById(C.hero), cu = make(H, 'p'); cu.cameo = true; const sk = { ...H.skills[C.skill] };
+  const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, ht = vh * .62;
+  const idle = await findStill(`${ANIM.base}/${C.hero}/armoured/idle`), pose = await findAsset(`${ANIM.base}/${C.hero}/armoured/skill${C.skill + 1}`);
+  const g = document.createElement('div'); g.className = 'fb-guest cameo'; g.style.cssText = `height:${ht}px;left:${vw * .1}px;top:${vh * .97 - ht}px;width:0`;
+  const pic = a => a && ['mp4', 'webm'].includes(a.ext) ? `<video src="${a.url}" muted autoplay playsinline style="position:absolute;left:0;top:0;height:100%;transform:translateX(-50%)"></video>` : `<img src="${a ? a.url : ''}" draggable="false" style="position:absolute;left:0;top:0;height:100%;transform:translateX(-50%)">`;
+  g.innerHTML = idle ? pic(idle) : `<div class="fb-shopph" style="transform:translateX(-50%)">✨<small>${H.name.toUpperCase()}</small></div>`;
+  document.body.appendChild(g); g.animate([{ transform: `translateX(${-vw * .4}px)`, opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }], { duration: dspd(420), easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
+  sfx('swing'); await sleep(dspd(480));
+  if (first) { banner(`✨ ${H.name.toUpperCase()} JOINS THE FIGHT`, 'phase', 'for now'); log(`✨ ${H.name} steps in from the edge of the battle!`, 'log-heal'); }
+  { const d = document.createElement('div'); d.className = 'fb-bub hero'; d.textContent = first ? C.first : choose(C.lines, Math.random);      // above her picture (the battlefield's bubbles sit under it)
+    Object.assign(d.style, { position: 'fixed', zIndex: 80, left: Math.max(140, vw * .1) + 'px', top: (vh * .97 - ht * .96) + 'px' }); document.body.appendChild(d); setTimeout(() => d.remove(), 2400); }
+  await sleep(first ? 1500 : 900);
+  if (pose && idle) { g.innerHTML = pic(pose); }
+  const boss = foes.find(e => e.boss) || foes[0], pickT = () => C.hero === 'irae' && (first || Math.random() < .6) ? boss : choose(foes, Math.random);
+  try {
+    if (sk.t === 'brew') {                    // Jean: Untested Potions for the whole party (the buff now, the poison bill later)
+      sfx('charge', 'poison'); const who = party.filter(x => isAlive(x) && !x.drowned);
+      who.forEach(a => { a.brew = { turns: BREW.dur, fresh: false }; floatText(a, '⚗️ BREWED', 'ward'); const fe = figs.get(a); if (fe) { fe.classList.add('fbglow'); setTimeout(() => fe.classList.remove('fbglow'), 900); } });
+      log(`⚗️ ${H.name} hands round her untested potions: everyone hits harder for ${BREW.dur} turns, then pays for it.`, 'log-status'); render(); await sleep(dspd(700));
+    } else if (sk.all) {                      // Vesper: Thunderstorm on every foe
+      for (const t of foes) { try { await skyBolt(t, { small: true }); } catch (e) {} if (isAlive(t)) await hit(cu, t, { ...sk, noDodge: true, aoe: 0 }); }
+    } else {                                  // Irae's Backstab / Tyr's Crimson Bite: she dashes over, hits, and is gone
+      const t = pickT(), fe = figs.get(t), tb = fe && fe.isConnected ? figBox(fe) : null;
+      if (tb) { const dx = tb.cx - vw * .1 - tb.w * .7; g.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], { duration: dspd(260), easing: 'ease-in', fill: 'forwards' }); await sleep(dspd(260)); }
+      try { slashArc(t, C.hero === 'tyr' ? 'gaebolg' : 'harpe'); } catch (e) {}
+      const k = C.hero === 'irae' ? sk.stealthMul || 1 : 1;
+      if (isAlive(t)) await hit(cu, t, { ...sk, d: sk.d.map(v => Math.round(v * k)), noDodge: true, move: null, taunt: false });
+    }
+  } catch (e) { console.warn('cameo', e); }
+  render(); await sleep(dspd(600));
+  g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(380), easing: 'ease-in', fill: 'forwards' }); await sleep(dspd(400)); g.remove();
+  if (first) log(`💨 ${H.name} melts back into the edges of the fight. She'll be around.`, 'log-status');
 }
 async function fbToss(t, revive) {   // the shopkeeper runs on, tosses a potion, they banter
   const bf = document.querySelector('#battle-scene .battlefield'), arr = FB.units[t.side];
@@ -10740,7 +10981,7 @@ function wireFormation() {
 let pickedQuest = null;     // id of the quest chosen on the quest select screen
 const questGold = q => q.nodes.reduce((a, n) => a + n.gold, 0);
 function pickTier(i) { if (!devMode || i < 0 || i > game.tiers.max) return; game.tiers.pick = i; writeSave(); renderQuests(); }
-function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.querySelector('#qmap .mnode.on[data-q="' + id + '"]'))) return; const was = pickedQuest === 'final'; pickedQuest = id; renderQuests(); if (was !== (id === 'final')) renderParty(true); }      // into or out of the Final Stand: swap the 4-hero party board for the two-front 8-hero one (and back)
+function pickQuest(id) { if (id === 'board') return openBoard(); if (!questOpen(id) || (pickedQuest === id && document.querySelector('#qmap .mnode.on[data-q="' + id + '"]'))) return; const was = pickedQuest === 'final'; pickedQuest = id; renderQuests(); if (was !== (id === 'final')) renderParty(true); }      // into or out of the Final Stand: swap the 4-hero party board for the two-front 8-hero one (and back)
 
 /* ---- the world map ----
    One painted world (MAP_SVG, or assets/ui/map_world.* if you draw one: same 16:9 frame, whole world visible) and a camera that zooms out as areas open:
@@ -10748,6 +10989,7 @@ function pickQuest(id) { if (!questOpen(id) || (pickedQuest === id && document.q
    To move a quest button, change its [x, y] in MAP_NODES; to change what each stage shows, change MAP_CAMS ({x, y, w}: top-left corner and width, in % of the world). */
 const MAP_NODES = { plague: [23, 97, '🐀'], ruins: [10, 86, '🏛️'], yokai: [22, 72, '⛩️'], crypt: [34, 86, '⚰️'], cove: [46, 76, '🐚'], lighthouse: [58, 88, '🗼'], beach: [70, 72, '🏖️'], pass: [58, 20, '⛰️'], valley: [74, 12, '🏔️'], castle: [90, 22, '🏰'], final: [93, 47, '🌌'] };
 const MAP_CAMS = { 1: { x: 2, y: 56, w: 44 }, 2: { x: 3, y: 28, w: 72 }, 3: { x: 0, y: 0, w: 100 } };
+const MAP_BOARD = [6, 66];      // the Hunt Board's pin (not on the route)
 const MAP_ROUTE = ['ruins', 'plague', 'yokai', 'crypt', 'cove', 'lighthouse', 'beach', 'pass', 'valley', 'castle', 'final'];
 const mapStage = () => frostOpen() ? 3 : coastOpen() ? 2 : 1;
 const mapSeenGet = () => { try { return Math.max(1, Math.min(3, +localStorage.getItem('animeRpgMapSeen') || 1)); } catch (e) { return 1; } };
@@ -10827,9 +11069,10 @@ function buildQuestMap() {
   const fog = (grp, x, y, w, h) => groupOpen(QUEST_GROUPS[grp]) ? '' : `<div class="mfog" data-g="${QUEST_GROUPS[grp].id}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;background:radial-gradient(ellipse at 50% 50%,rgba(26,34,52,.97) 35%,rgba(26,34,52,.85) 62%,transparent 100%)"></div>`;
   const nodes = MAP_ROUTE.filter(open).map(id => { const q = id === 'final' ? FINAL_QUEST : QUESTS.find(x => x.id === id), [x, y, ic] = MAP_NODES[id];
     return `<button class="mnode${id === pickedQuest ? ' on' : ''}${id === 'final' ? ' final' : ''}" data-q="${id}" style="--x:${x};--y:${y}"><span class="pin">${ic}${questCleared(id) ? '<i class="ck">✔</i>' : ''}</span><span class="nm">${q.name}</span></button>`; }).join('');
+  const bnode = boardAny() ? `<button class="mnode board${isHuntId(pickedQuest) ? ' on' : ''}" data-q="board" style="--x:${MAP_BOARD[0]};--y:${MAP_BOARD[1]}"><span class="pin">🎯</span><span class="nm">Hunt Board</span></button>` : '';
   const nodeFogs = [];                       // fog sits over what is still locked, and lifts when it opens
   const html = `<div class="qmap nt" id="qmap"><div class="mworld"><div class="mart" id="mart">${`<svg class="mart" viewBox="0 0 1600 900" preserveAspectRatio="none" overflow="visible">${MAP_SVG}</svg>`}</div>
-    ${fog(1, 40, 48, 62, 60)}${fog(2, 42, -8, 64, 52)}${nodes}</div><div class="qm-title">The Known World</div>${stage < 3 ? `<div class="qm-hint">${mapHint(stage)}</div>` : ''}</div>`;
+    ${fog(1, 40, 48, 62, 60)}${fog(2, 42, -8, 64, 52)}${bnode}${nodes}</div><div class="qm-title">The Known World</div>${stage < 3 ? `<div class="qm-hint">${mapHint(stage)}</div>` : ''}</div>`;
   $('quest-list').innerHTML = html + '<div id="quest-detail"></div>';
   const box = $('qmap'); mapApply(box, seen); void box.offsetWidth; box.classList.remove('nt');
   box.querySelector('.mworld').addEventListener('transitionend', e => { if (e.propertyName === 'transform' && e.target.classList.contains('mworld')) placeQuestCard(); });      // re-seat the card once the camera settles
@@ -10851,16 +11094,18 @@ function renderQuests(full) {
   };
   const tiers = game.tiers, tbar = devMode && tiers.max > 0 ? `<div class="tierbar"><b>🔥 Difficulty</b>${TIERS.slice(0, tiers.max + 1).map((t, i) => `<button class="tierbtn${tiers.pick === i ? ' on' : ''}" onclick="pickTier(${i})">${i ? t.short : 'Normal'}</button>`).join('')}${tiers.max < MAX_TIER ? '<span class="tiernext">next: clear every quest on ' + (tiers.max ? TIERS[tiers.max].short : 'Normal') + '</span>' : ''}<div class="tierinfo">${tierText(T)}</div></div>` : '';
   if (full || !$('qmap')) buildQuestMap();
-  document.querySelectorAll('#qmap .mnode').forEach(n => n.classList.toggle('on', n.dataset.q === pickedQuest));
+  if (isHuntId(pickedQuest) && !huntSlotOf(pickedQuest)) pickedQuest = null;      // that notice came down
+  const HS = huntSlotOf(pickedQuest);
+  document.querySelectorAll('#qmap .mnode').forEach(n => n.classList.toggle('on', n.dataset.q === pickedQuest || (n.dataset.q === 'board' && !!HS)));
   const pq = pickedQuest === 'final' ? FINAL_QUEST : QUESTS.find(q => q.id === pickedQuest), isFinal = pq === FINAL_QUEST;
   const sup = Object.values(ITEMS).map(it => game.items[it.id] ? `${it.icon} ${game.items[it.id]} ${it.name}${game.items[it.id] > 1 && !/s$/.test(it.name) ? 's' : ''}` : '').filter(Boolean).join(' · ');
   const fcard = () => { const n = finalSlots.filter(Boolean).length, done = game.cleared && game.cleared.final, e = game.final && game.final.ending; return `<div class="pick quest-pick on"><div><strong>🌌 ${pq.name}</strong><br>${pq.desc}<div class="sk">Two fronts · one boss · no gold, no camps · ${n}/8 heroes chosen${done ? ' · ✔ beaten' + (e === 'good' ? ' (good ending)' : e === 'bad' ? ' (bad ending)' : '') : ''}</div></div><div class="slot">✓</div></div>`; };
   let bq = $('btn-start-quest');
   if (!bq) { bq = document.createElement('button'); bq.className = 'primary em-begin'; bq.id = 'btn-start-quest'; bq.onclick = beginQuest; }      // (a map rebuild can take the button with it: make a new one)
   if (bq.parentElement !== $('em-map')) $('em-map').appendChild(bq);      // the Begin button lives in the quest card; park it while the card is rebuilt
-  $('quest-detail').innerHTML = pq ? questCard(pq, isFinal, tbar) : '';
+  $('quest-detail').innerHTML = HS ? huntCard(HS) : pq ? questCard(pq, isFinal, tbar) : '';
   bq.disabled = !pickedQuest || (isFinal ? finalSlots.includes(null) : !picked.length);
-  bq.textContent = isFinal ? 'BEGIN THE FINAL STAND' : 'BEGIN QUEST'; bq.classList.toggle('fin', isFinal);
+  bq.textContent = isFinal ? 'BEGIN THE FINAL STAND' : HS ? 'BEGIN THE HUNT' : 'BEGIN QUEST'; bq.classList.toggle('fin', isFinal);
   const go = $('qc-go'); if (go) go.appendChild(bq);
   qcBoss(pq); placeQuestCard(); setTimeout(placeQuestCard, 80); setTimeout(placeQuestCard, 900);
 }
@@ -10894,6 +11139,21 @@ function questCard(pq, isFinal, tbar) {
       <div id="qc-go"></div>
     </div></section>`;
 }
+function huntCard(H) {                    // the quest card for a hunt taken from the board
+  const d = HUNT_DEFS.find(x => x.id === H.id), G = QUEST_GROUPS[H.act - 1], T = QC_TINT[G.id], tm = HUNT_TEMPER[H.temper] || ['', ''], r = H.relic && RELICS[H.relic];
+  const items = Object.values(ITEMS).filter(it => !it.hidden || !it.hidden()).map(it => `<span class="qc-it${game.items[it.id] ? '' : ' none'}" title="${it.name}">${it.icon}<b>${game.items[it.id] || 0}</b></span>`).join('');
+  const stats = [['~' + Math.round((HUNT.size[0] + HUNT.size[1]) / 2), 'places'], [d.nodes.filter(n => !n.troll && !n.boss).length, 'elites'], [d.camps ?? HUNT.camps, 'camps'], [d.events ?? HUNT.events, 'events']];
+  const drops = (r ? `<span class="qc-chip rar-${r.rarity}" title="${r.desc || ''}">${r.icon} ${r.name}</span>` : '') + `<span class="qc-chip gold">🪙 ${huntBounty(d)}+</span>`;
+  return `<section class="qc" style="--qa:${T[0]};--qb:${T[1]};--qc:${T[2]}">
+    <div class="qc-band"><div class="qc-boss qc-hunt">${d.icon || '🐾'}</div>
+      <div class="qc-head"><small>🎯 HUNT · ${G.name.toUpperCase()}</small><h3>${d.beast || d.name}</h3><small class="qc-bn">${HB_TEMPER[H.temper] || ''} ${tm[0].replace(/^An? /, '')}: ${tm[1]}</small></div></div>
+    <div class="qc-body">
+      <div class="qc-stats">${stats.map(([n, l]) => `<div><b>${n}</b><span>${l}</span></div>`).join('')}</div>
+      <div class="qc-row"><span class="qc-lbl">Will drop</span><span class="qc-chips">${drops}</span></div>
+      <div class="qc-row"><span class="qc-lbl">In the bag</span><span class="qc-bag">${items}</span></div>
+      <div id="qc-go"></div>
+    </div></section>`;
+}
 function qcBoss(pq) {                     // the boss's own picture in the card's banner, if it has art
   const box = $('qc-boss'); if (!box || !pq || pq === FINAL_QUEST) return;
   const id = ((pq.nodes[pq.nodes.length - 1] || {}).enemies || []).find(x => (enemyById(x) || {}).boss); if (!id) return;
@@ -10915,6 +11175,7 @@ function beginQuest() {
   if (storyOn() || !$('party-select').classList.contains('show') || performance.now() - questLaunchAt < 4000) return;      // only once: a second press (click, Enter, pad Start) while a quest is launching would start it again and empty the bag
   if (pickedQuest === 'final') { if (finalSlots.includes(null)) return; finalSave(); questLaunchAt = performance.now(); return startFinalReal([...finalSlots]); }
   if (!picked.length) return;
+  { const HS = huntSlotOf(pickedQuest); if (HS) { game.lastParty = [...picked]; writeSave(); questLaunchAt = performance.now(); return startHunt([...picked], HS.id, HS); } }
   const pre = 'pre_' + pickedQuest, S = storySave();      // a recruit's quest: her scene plays the first time you set out
   if (STORY[pre] && S && !S.seen[pre] && !questCleared(pickedQuest)) { S.seen[pre] = 1; writeSave(); storyRun(STORY[pre]).then(() => beginQuest()); return; }
   game.lastParty = [...picked]; writeSave();
@@ -11080,8 +11341,8 @@ function startNode() {
   quest._sc = { hp: (qs.hp || 1) * (ns.hp || 1) * (T.hp || 1) * (quest.bonus && quest.bonus.hp || 1) * D.hp, atk: (qs.atk || 1) * (ns.atk || 1) * (T.atk || 1) * D.atk };
   enemies = node.troll && !quest.bonus ? trollBuild(quest._sc, quest.map && quest.map.hunt) : buildEnemies(ids, mods2, quest._sc);
   party.forEach(u => { u.drowned = false; });
-  $('battle-scene').classList.toggle('swamp', !!(quest.def.hunt && node.troll && !quest.bonus));
-  if (node.troll && quest.ambush) { quest.ambush = false; party.filter(isAlive).forEach(u => { u.hp = Math.max(1, u.hp - Math.round(u.maxHp * HUNT.ambush)); }); setTimeout(() => { log(`<strong style="color:#ff5252">👁️ AMBUSH! The troll bursts from the river and catches the party off guard!</strong>`); party.forEach(u => floatText(u, '👁️ AMBUSHED', 'tag hurt')); }, 600); }
+  $('battle-scene').classList.toggle('swamp', !!(quest.def.hunt && node.troll && !quest.bonus && BZ().water));
+  if (node.troll && quest.ambush) { quest.ambush = false; party.filter(isAlive).forEach(u => { u.hp = Math.max(1, u.hp - Math.round(u.maxHp * HUNT.ambush)); }); setTimeout(() => { log(`<strong style="color:#ff5252">👁️ AMBUSH! ${bzThe()} bursts out and catches the party off guard!</strong>`); party.forEach(u => floatText(u, '👁️ AMBUSHED', 'tag hurt')); }, 600); }
   if (partySum('piper') && enemyById('e_rat')) { const ok = enemies.map((e, i) => i).filter(i => !enemies[i].boss && !enemies[i].final && enemies[i].id !== 'e_rat');      // The Pied Piper: one foe becomes a rat
     if (ok.length) { const i = choose(ok, Math.random), was = enemies[i].name; enemies[i] = piperRat(); setTimeout(() => log(`🎶 The Piper plays: ${was} turns into a plague rat!`, 'log-status'), 400); } }
   quest.ratsCalled = 0; aegisArmed = null;
@@ -11482,13 +11743,13 @@ async function qmEnter() {               // what happens when the party arrives 
   if (x.type === 'fight' || x.type === 'elite' || x.type === 'boss') { quest.node = x.fi; if (x.type === 'boss') await travel('boss'); return startNode(); }
   renderMap();
 }
-function qmDoneHere() { const m = quest && quest.map; if (m) { const x = m.n[m.at]; if (m.hunt && x.weak && !x.done && !m.hunt.weak.includes(x.weak)) { m.hunt.weak.push(x.weak); m.hunt.msg = `${TROLL.weak[x.weak].icon} <b>${TROLL.weak[x.weak].name}</b>: ${TROLL.weak[x.weak].fx}`; } x.done = true; m.fresh = []; } }
+function qmDoneHere() { const m = quest && quest.map; if (m) { const x = m.n[m.at]; if (m.hunt && x.weak && !x.done && !m.hunt.weak.includes(x.weak)) { m.hunt.weak.push(x.weak); m.hunt.msg = `${BZ().weak[x.weak].icon} <b>${BZ().weak[x.weak].name}</b>: ${BZ().weak[x.weak].fx}`; } x.done = true; m.fresh = []; } }
 const qmCanLeave = () => { const m = quest && quest.map; if (!m) return false; const x = m.n[m.at]; return m.bossDone || x.type === 'start' || x.type === 'camp'; };
 function qmLeave() {                     // walk home: keep everything you carry. Before the boss the quest is not cleared.
   const m = quest && quest.map; if (!m || !qmCanLeave() || qmBusy) return;
   if (m.bossDone) return finishQuestWin();
-  if (m.hunt) { game.gold += quest.gold; game.quest = null; const pn = returnItems(true); hubNote = `You gave up the hunt. You brought home ${quest.gold} gold.${pn}`; endCard('left', quest.gold); quest = null; writeSave(); return showScene('hub'); }
-  game.gold += quest.gold; game.quest = null; game.shop = { stock: rollStock(game.relics) };
+  if (m.hunt) { game.gold += quest.gold; game.quest = null; townRefresh(); const pn = returnItems(true); hubNote = `You gave up the hunt. You brought home ${quest.gold} gold.${pn}`; endCard('left', quest.gold); quest = null; writeSave(); return showScene('hub'); }
+  game.gold += quest.gold; game.quest = null; townRefresh();
   const pn = returnItems(true), gz = gooseDies('Greed turned back early.');
   hubNote = `You left ${quest.def.name} before facing its boss. You brought home ${quest.gold} gold.${pn} The quest is not cleared.${gz}`;
   endCard('left', quest.gold); quest = null; writeSave(); showScene('hub');
@@ -11533,7 +11794,8 @@ function bossCleared() {                 // the boss is down: the quest is clear
   const m = quest.map; m.bossDone = true; m.n[m.at].done = true;
   if (quest.def.hunt) {                  // a hunt: gold, a guaranteed relic and a perk. Hunts never count as cleared quests.
     game.stats.won++; game.hunts = (game.hunts || 0) + 1;
-    m.drop = rollDrop(quest.def, game.relics, 1); if (m.drop && midasEats(RELICS[m.drop])) m.drop = null;
+    game.huntBeat = game.huntBeat || {}; game.huntBeat[quest.def.id] = (game.huntBeat[quest.def.id] || 0) + 1;
+    const hr = quest.huntRelic; m.drop = hr && RELICS[hr] && !game.relics.includes(hr) ? hr : rollDrop(quest.def, game.relics, 1); if (m.drop && midasEats(RELICS[m.drop])) m.drop = null;      // the notice's relic (unless you got it meanwhile)
     awardTraits(true); return; }
   const coastWas = coastOpen(), beachWas = beachOpen(), frostWas = frostOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
   const qt = quest.tier || 0; game.tiers.cleared[quest.def.id] = Math.max(tierCleared(quest.def.id), qt); tierUnlock();
@@ -11553,7 +11815,7 @@ function finishQuestWin() {              // home with everything: gold, the boss
   if (quest.party.some(u => u.rel && u.rel.faust && !(u.downs > 0) && !u.faustDead)) game.faustGrow = Math.min(FAUST.cap, (game.faustGrow || 0) + FAUST.grow);      // a clean quest feeds the bargain
   game.gold += quest.gold; game.quest = null; const cry = questCrystals(quest);
   if (drop && RELICS[drop] && !game.relics.includes(drop)) { game.relics.push(drop); game.notices.push({ type: 'relic', id: drop }); }
-  game.shop = { stock: rollStock(game.relics) };
+  townRefresh();
   const pn = returnItems(true);
   hubNote = `Quest complete!${qt ? ' (' + tierDef(qt).short + ')' : ''} You brought home ${quest.gold} gold${cry ? ` and ❄️ ${cry} Frost Crystals` : ''}.${pn}${drop && RELICS[drop] ? ` The boss dropped ${RELICS[drop].icon} ${RELICS[drop].name}!` : ''}`;
   endCard('won', quest.gold, cry); quest = null; writeSave(); showScene('hub');
@@ -11563,7 +11825,7 @@ function finishQuestWin() {              // home with everything: gold, the boss
    THE TRAIL: every move the beast makes leaves tracks between two places (a short old trail exists from the start, leading to its den). You only see a
    stretch of trail once you find it: by standing at either end, from a clue (HUNT.clueR steps around), or by scouting from a camp. Tracks fade with age;
    after it flees, its tracks are blood. CLUES sit toward the middle: they find nearby tracks (or give a direction) and some reveal an edge elite.
-   EDGE ELITES weaken the beast for the showdown (TROLL.weak). SOUNDS: now and then, while it's out of sight, it roars: a rough direction and distance
+   EDGE ELITES weaken the beast for the showdown (BZ().weak). SOUNDS: now and then, while it's out of sight, it roars: a rough direction and distance
    and a ripple on the board where the sound came from (HUNT.sound chance per move, at least HUNT.soundGap moves apart).
    CAMPS: Make camp (rations, kits) as usual, plus 🔭 Scout (once per camp: costs 1 move, reveals HUNT.scoutR steps around and the tracks there)
    and 💤 Rest (heal HUNT.rest of max HP, costs HUNT.restMoves moves).
@@ -11576,10 +11838,25 @@ function finishQuestWin() {              // home with everything: gold, the boss
 const HUNT = { size: [28, 32], clues: 11, camps: 2, events: 4, elites: 3, every: 3, terr: 2, ambush: .12, see: 2, flee: .6, denHeal: .04,
   clueR: 2, scoutR: 2, rest: .2, restMoves: 2, sound: .22, soundGap: 3, backstory: 6, decor: 26,
   temper: { territorial: 1, wandering: 1, aggressive: 1 } };
-const HUNT_TEMPER = { territorial: ['A Territorial', 'It keeps to its own stretch of river, and leaves few signs outside it.'], wandering: ['A Wandering', 'It roams the whole marsh, and keeps out of sight.'],
+const HUNT_TEMPER = { territorial: ['A Territorial', 'It keeps to its own territory, and leaves few signs outside it.'], wandering: ['A Wandering', 'It roams the whole land, and keeps out of sight.'],
   aggressive: ['An Aggressive', 'By day it keeps away from you. From twilight, it hunts YOU.'] };
 const HUNT_DEFS = [
-  { id: 'hunt_troll', hunt: 'troll', name: 'River Troll', act: 2, relicDrop: 1, camps: 2, events: 3,
+  { id: 'hunt_fox', hunt: 'fox', name: 'Nine-Tailed Fox', beast: 'The Nine-Tailed Fox', icon: '🦊', passive: ['🔥', 'Foxfire'], weak: ['❄️', 'cooled by frost'], act: 1, relicDrop: 1, camps: 2, events: 3,
+    nodes: [{ name: "The beast's leavings", enemies: ['e_crab'], gold: 50, scale: { hp: 1.15 } }, { name: "The beast's leavings", enemies: ['e_crab'], gold: 50, scale: { hp: 1.15 } },
+            { name: "The beast's leavings", enemies: ['e_crab'], gold: 50, scale: { hp: 1.15 } }, { name: 'The Nine-Tailed Fox', boss: true, troll: true, enemies: [], gold: 180 }] },
+  { id: 'hunt_leshen', hunt: 'leshen', name: 'Leshen', beast: 'The Leshen', icon: '🌳', passive: ['🌿', 'Thornhide'], weak: ['🔥', 'burnt by fire'], act: 1, relicDrop: 1, camps: 2, events: 3,
+    nodes: [{ name: "The beast's leavings", enemies: ['e_crab'], gold: 50, scale: { hp: 1.15 } }, { name: "The beast's leavings", enemies: ['e_crab'], gold: 50, scale: { hp: 1.15 } },
+            { name: "The beast's leavings", enemies: ['e_crab'], gold: 50, scale: { hp: 1.15 } }, { name: 'The Leshen', boss: true, troll: true, enemies: [], gold: 180 }] },
+  { id: 'hunt_jelly', hunt: 'jelly', name: 'Stormbell Jellyfish', beast: 'The Stormbell', icon: '🪼', passive: ['⚡', 'Living current'], weak: ['🩸', 'weak to bleed'], act: 2, relicDrop: 1, camps: 2, events: 3,
+    nodes: [{ name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } }, { name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } },
+            { name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } }, { name: 'The Stormbell', boss: true, troll: true, enemies: [], gold: 260 }] },
+  { id: 'hunt_roc', hunt: 'roc', name: 'Storm Roc', beast: 'The Storm Roc', icon: '🦅', passive: ['🪶', 'Airborne'], weak: ['🏹', 'ranged grounds it'], act: 3, relicDrop: 1, camps: 2, events: 3,
+    nodes: [{ name: "The beast's leavings", enemies: ['e_crab'], gold: 95, scale: { hp: 1.15 } }, { name: "The beast's leavings", enemies: ['e_crab'], gold: 95, scale: { hp: 1.15 } },
+            { name: "The beast's leavings", enemies: ['e_crab'], gold: 95, scale: { hp: 1.15 } }, { name: 'The Storm Roc', boss: true, troll: true, enemies: [], gold: 340 }] },
+  { id: 'hunt_wyvern', hunt: 'wyvern', name: 'Frost Wyvern', beast: 'The Frost Wyvern', icon: '🐉', passive: ['🌨️', "Winter's breath"], weak: ['🔥', 'bring torches'], act: 3, relicDrop: 1, camps: 2, events: 3,
+    nodes: [{ name: "The beast's leavings", enemies: ['e_crab'], gold: 95, scale: { hp: 1.15 } }, { name: "The beast's leavings", enemies: ['e_crab'], gold: 95, scale: { hp: 1.15 } },
+            { name: "The beast's leavings", enemies: ['e_crab'], gold: 95, scale: { hp: 1.15 } }, { name: 'The Frost Wyvern', boss: true, troll: true, blizzard: true, enemies: [], gold: 340 }] },
+  { id: 'hunt_troll', hunt: 'troll', name: 'River Troll', beast: 'The River Troll', icon: '🧌', passive: ['💚', 'Troll blood'], weak: ['🔥', 'weak to fire'], act: 2, relicDrop: 1, camps: 2, events: 3,
     nodes: [{ name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } }, { name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } },
             { name: "The beast's leavings", enemies: ['e_crab'], gold: 70, scale: { hp: 1.15 } }, { name: 'The River Troll', boss: true, troll: true, enemies: [], gold: 260 }] }
 ];
@@ -11595,17 +11872,17 @@ function huntPlan(def) {                     // the edge elites: fights from the
   return { nodes, mods, adds: [] };
 }
 const huntBfs = (m, a) => { const d = m.n.map(() => 1e9), q = [a]; d[a] = 0; while (q.length) { const x = q.shift(); for (const y of m.adj[x]) if (d[y] > d[x] + 1) { d[y] = d[x] + 1; q.push(y); } } return d; };
-function genHunt(def, rng = RAND.rng) {
+function genHunt(def, rng = RAND.rng, force = null) {      // force: the temper the Hunt Board notice promised
   const H = HUNT, N = H.size[0] + Math.floor(rng() * (H.size[1] - H.size[0] + 1)), { n, adj, dist } = mapLayout(N, rng);
   const cx = n.reduce((a, x) => a + x.x, 0) / N, cy = n.reduce((a, x) => a + x.y, 0) / N, cen = n.map(x => Math.hypot((x.x - cx) * 16 / 9, x.y - cy)), maxD = Math.max(...dist);
-  const tw = Object.entries(H.temper); let r = rng() * tw.reduce((a, [, w]) => a + w, 0), temper = tw[0][0]; for (const [id, w] of tw) { r -= w; if (r < 0) { temper = id; break; } }
+  const tw = Object.entries(H.temper); let r = rng() * tw.reduce((a, [, w]) => a + w, 0), temper = tw[0][0]; for (const [id, w] of tw) { r -= w; if (r < 0) { temper = id; break; } } if (force && H.temper[force] != null) temper = force;
   n[0].type = 'start'; n[0].seen = n[0].done = n[0].visited = true;
   let free = n.map((_, i) => i).filter(i => i);
   const grab = (k, list) => { const out = []; for (const i of list) { if (out.length >= k) break; if (free.includes(i)) { out.push(i); free = free.filter(x => x !== i); } } return out; };
   const edge = free.filter(i => dist[i] >= 3).sort((a, b) => cen[b] - cen[a] + (rng() - .5) * .08), elites = [];
   for (const i of edge) { if (elites.length >= H.elites) break; if (elites.some(j => adj[j].includes(i) || Math.hypot((n[i].x - n[j].x) * 16 / 9, n[i].y - n[j].y) < .35)) continue; elites.push(i); }
   free = free.filter(i => !elites.includes(i));
-  const wk = Object.keys(TROLL.weak).sort(() => rng() - .5).slice(0, elites.length);
+  const wk = Object.keys((BEASTS[def.hunt] || BEASTS.troll).weak).sort(() => rng() - .5).slice(0, elites.length);
   elites.forEach((i, k) => { n[i].type = 'elite'; n[i].fi = k; n[i].weak = wk[k]; });
   const far = free.filter(i => dist[i] >= Math.max(3, Math.ceil(maxD * .55))), den = far.length ? choose(far, rng) : free[free.length - 1]; free = free.filter(i => i !== den);
   const m0 = { n, adj }, dDen = huntBfs(m0, den), terr = n.map((_, i) => i).filter(i => i && dDen[i] <= H.terr);
@@ -11631,13 +11908,60 @@ function genHunt(def, rng = RAND.rng) {
     hunt: { troll: den, den, terr, temper, title: `${HUNT_TEMPER[temper][0]} ${def.name}`, weak: [], meet: null, msg: HUNT_TEMPER[temper][1], tick: 0, trail, fled: false, fleeing: false,
       trollHp: null, trollMax: null, lastSound: -9, ping: null, decor, water } };
 }
-async function startHunt(ids, hid = 'hunt_troll') {
+async function startHunt(ids, hid = 'hunt_troll', slot = null) {      // slot: the Hunt Board notice (its temper and the relic the beast will drop)
   const def = HUNT_DEFS.find(d => d.id === hid); if (!def || !ids.length) return;
   quest = { def, node: 0, gold: 0, party: ids.map(id => { const u = make(heroById(id), 'p'); applyRelics(u, game.equip[id] || [], game.traits[id] || []); return u; }), items: {} };
-  quest.tier = curTier(); quest.plan = huntPlan(def); quest.map = genHunt(def);
+  quest.tier = curTier(); quest.plan = huntPlan(def); quest.map = genHunt(def, RAND.rng, slot && slot.temper); quest.huntRelic = (slot && slot.relic) || null;
   if (devMode) Object.defineProperty(quest, 'gold', { get: () => 999999, set: () => {}, enumerable: true, configurable: true });
   Object.keys(ITEMS).forEach(id => { quest.items[id] = game.items[id] || 0; game.items[id] = 0; });
   saveQuest(); showMap();
+}
+/* ============ THE HUNT BOARD ============ (Connor 2026-11-24) A 🎯 pin on the embark map opens a board of wanted posters: one hunt per act, a random beast from that act's
+   HUNT_DEFS with its temper and the relic it will drop already rolled, so the poster can show them. Every return to town re-rolls all of them (townRefresh).
+   Taking a notice puts the hunt in the quest card like any quest: pick a party, BEGIN THE HUNT. */
+const HB_ACTS = [1, 2, 3], HB_TEMPER = { territorial: '🏞️', wandering: '👣', aggressive: '🌙' };
+const isHuntId = id => !!(id && HUNT_DEFS.some(d => d.id === id));
+function boardRoll() {
+  if (!game) return; const b = { slots: {} }, taken = [];
+  HB_ACTS.forEach(a => { const pool = HUNT_DEFS.filter(d => d.act === a); if (!pool.length) return;
+    const d = choose(pool, Math.random), tw = Object.entries(HUNT.temper); let r = Math.random() * tw.reduce((x, [, w]) => x + w, 0), t = tw[0][0]; for (const [id, w] of tw) { r -= w; if (r < 0) { t = id; break; } }
+    const rp = relicPool(game.relics, a).filter(x => !taken.includes(x.id)), rel = rp.length ? pickWeighted(rp, RELIC.dropWeight).id : null; if (rel) taken.push(rel);
+    b.slots[a] = { id: d.id, temper: t, relic: rel }; });
+  game.board = b;
+}
+function townRefresh() { game.shop = { stock: rollStock(game.relics) }; boardRoll(); }      // every return to town: new shop stock, new hunts
+const boardSlot = a => { if (!game.board || !game.board.slots) boardRoll(); return game.board.slots[a] || null; };
+const boardAny = () => HB_ACTS.some(a => actOpen(a) && boardSlot(a));
+const huntSlotOf = id => { if (!isHuntId(id)) return null; for (const a of HB_ACTS) { const sl = actOpen(a) && boardSlot(a); if (sl && sl.id === id) return { act: a, ...sl }; } return null; };
+const huntBounty = d => d.nodes.reduce((x, n) => x + (n.gold || 0), 0);
+const boardOpen = () => $('hboard').classList.contains('show');
+function openBoard() {
+  const grp = a => QUEST_GROUPS[a - 1], R = ['', 'I', 'II', 'III'];
+  const poster = a => {
+    const G = grp(a), head = `<div class="hb-act">Act ${R[a]} · ${G.name}</div><div class="hb-want">WANTED</div>`;
+    if (!actOpen(a)) return `<div class="hb-p lock">${head}<div class="hb-art"><span>${G.icon}</span><div class="hb-seal">🔒 Opens with ${G.name}</div></div><div class="hb-name">? ? ?</div><div class="hb-beh">Nobody has been that far yet.</div></div>`;
+    const sl = boardSlot(a), d = sl && HUNT_DEFS.find(x => x.id === sl.id);
+    if (!d) return `<div class="hb-p lock empty">${head}<div class="hb-art"><span>📜</span></div><div class="hb-name">No beast sighted</div><div class="hb-beh">Nothing worth hunting here. Yet.</div></div>`;
+    const tm = HUNT_TEMPER[sl.temper] || ['', ''], r = sl.relic && RELICS[sl.relic], beat = (game.huntBeat || {})[d.id] || 0, on = pickedQuest === d.id;
+    return `<button class="hb-p${on ? ' on' : ''}" data-a="${a}" onclick="boardTake(${a})">${head}
+      <div class="hb-art" data-h="${d.hunt}"><span>${d.icon || '🐾'}</span></div>
+      <div class="hb-name">${d.beast || d.name}</div>
+      <div class="hb-chips"><span class="hb-c tm">${HB_TEMPER[sl.temper] || ''} ${tm[0].replace(/^An? /, '')}</span>${d.passive ? `<span class="hb-c ps">${d.passive[0]} ${d.passive[1]}</span>` : ''}${d.weak ? `<span class="hb-c wk">${d.weak[0]} ${d.weak[1]}</span>` : ''}</div>
+      <div class="hb-beh">${tm[1]}</div>
+      <div class="hb-for">Made for <b>Act ${R[a]}</b> heroes${beat ? ` · <i>✔ beaten ${beat === 1 ? 'once' : beat + '×'}</i>` : ''}</div>
+      ${r ? `<div class="hb-drop rar-${r.rarity}"><b>${r.icon} ${r.name}</b><span>${r.desc || ''}</span></div>` : ''}
+      <div class="hb-rew"><span>🪙 ${huntBounty(d)}+<small>bounty</small></span><span>🗝️ ${r ? r.rarity[0].toUpperCase() + r.rarity.slice(1) : 'A'}<small>relic drop</small></span><span>🗺️ ~${Math.round((HUNT.size[0] + HUNT.size[1]) / 2)}<small>places</small></span></div></button>`;
+  };
+  $('hboard').innerHTML = `<button class="back-tl hb-back" onclick="closeBoard()">◀ Back</button><h2>🎯 HUNT BOARD</h2><div class="hb-sub">One beast per land. New notices every time you come home.</div>
+    <div class="hb-wood"></div><div class="hb-row">${HB_ACTS.map(poster).join('')}</div>`;
+  $('hboard').classList.add('show');
+  $('hboard').querySelectorAll('.hb-art[data-h]').forEach(el => findAsset(`${ANIM.base}/ui/hunt/${el.dataset.h}`).then(x => { if (x && el.isConnected) el.innerHTML = `<img src="${x.url}" alt="" draggable="false">`; }));      // poster art: assets/ui/hunt/<beast>.png
+  try { uiTick && uiTick(); } catch (e) {}
+}
+function closeBoard() { $('hboard').classList.remove('show'); const n = document.querySelector('#qmap .mnode[data-q="board"]'); if (n && typeof padFocus === 'function') padFocus(n); }
+function boardTake(a) {
+  const sl = boardSlot(a); if (!sl) return;
+  const was = pickedQuest === 'final'; pickedQuest = sl.id; closeBoard(); renderQuests(); if (was) renderParty(true);
 }
 function startHuntDev() { const ids = picked.length ? picked.slice(0, 4) : game.roster.slice(0, 4); startHunt(ids); }
 function huntSteps(m, a, b) {                 // the shortest way between two places over every road (the beast knows its river): [a, ..., b]
@@ -11681,10 +12005,10 @@ function huntSound(m) {                          // XCOM-style: now and then you
   trollRoar(d <= 4 ? .9 : d <= 7 ? .55 : .3);
 }
 function huntClue(m, x) {
-  const h = m.hunt, got = huntFindTrail(m, m.at, HUNT.clueR); let msg = `🔍 ${choose(HUNT_CLUE, Math.random)} `;
+  const h = m.hunt, got = huntFindTrail(m, m.at, HUNT.clueR); let msg = `🔍 ${choose(BZ().clues || HUNT_CLUE, Math.random)} `;
   if (got.length) { const e = got.reduce((a, b) => b.t > a.t ? b : a); msg += `You pick up its trail nearby: ${huntAge(m, e.t)}.`; }
   else msg += `The signs point <b>${huntDir(x, m.n[h.troll])}</b>.`;
-  if (x.reveal != null) { const e = m.n[x.reveal]; e.seen = true; e.revealed = true; const W = TROLL.weak[e.weak];
+  if (x.reveal != null) { const e = m.n[x.reveal]; e.seen = true; e.revealed = true; const W = BZ().weak[e.weak];
     msg += `<br>${W.icon} ${W.clue} Something guards it to the <b>${huntDir(x, e)}</b> (${W.name}).`; }
   h.msg = msg;
 }
@@ -11705,7 +12029,8 @@ function huntRest() {                            // camp: rest (heals, but time 
 function trollRoar(vol = .6) {                   // a synthesised roar (no sound file needed)
   try { if (sndMuted || !ac()) return; const t0 = actx.currentTime, g = actx.createGain(), lp = actx.createBiquadFilter(), o = actx.createOscillator(), n = actx.createBufferSource();
     lp.type = 'lowpass'; lp.frequency.setValueAtTime(380, t0); lp.frequency.linearRampToValueAtTime(160, t0 + 1.4);
-    o.type = 'sawtooth'; o.frequency.setValueAtTime(62, t0); o.frequency.linearRampToValueAtTime(84, t0 + .35); o.frequency.linearRampToValueAtTime(48, t0 + 1.5);
+    const pk = BZ().roar || 1; lp.frequency.setValueAtTime(380 * pk, t0); lp.frequency.linearRampToValueAtTime(160 * pk, t0 + 1.4);
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(62 * pk, t0); o.frequency.linearRampToValueAtTime(84 * pk, t0 + .35); o.frequency.linearRampToValueAtTime(48 * pk, t0 + 1.5);
     n.buffer = anoise; n.loop = true; const ng = actx.createGain(); ng.gain.value = .5;
     g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.35 * vol * FX.sfx, t0 + .18); g.gain.exponentialRampToValueAtTime(.001, t0 + 1.6);
     o.connect(lp); n.connect(ng); ng.connect(lp); lp.connect(g); g.connect(asfx); o.start(t0); n.start(t0); o.stop(t0 + 1.7); n.stop(t0 + 1.7); } catch (e) {}
@@ -11740,7 +12065,7 @@ function huntThunder() {                         // a lightning flash and a roll
 function huntBoard(m, box, pull) {             // terrain, the trail, the beast (when close), the latest sound and message
   const h = m.hunt, here = m.at, d = huntSteps(m, here, h.troll), near = d ? d.length - 1 : 99;
   huntTerrain(m, box); $('qboard').classList.add('hunt'); if (!huntThunderT) huntThunder();
-  let tr = box.querySelector('.qm-troll'); if (!tr) { tr = document.createElement('div'); tr.className = 'qm-troll'; tr.textContent = '🧌'; box.querySelector('.qm-nodes').after(tr); }
+  let tr = box.querySelector('.qm-troll'); if (!tr) { tr = document.createElement('div'); tr.className = 'qm-troll'; tr.textContent = BZ().icon; box.querySelector('.qm-nodes').after(tr); }
   const vis = !m.bossDone && m.n[h.troll].seen && near <= HUNT.see;
   tr.classList.toggle('on', vis); tr.classList.toggle('hurt', !!h.fled); tr.style.left = (m.n[h.troll].x * 100) + '%'; tr.style.top = (m.n[h.troll].y * 100) + '%';
   pull.className = 'qm-pull';
@@ -11756,7 +12081,7 @@ function huntBoard(m, box, pull) {             // terrain, the trail, the beast 
   nt.innerHTML = h.msg || ''; nt.classList.toggle('on', !!h.msg);
 }
 function huntTitle(m, T) {
-  const h = m.hunt, wk = h.weak.map(k => TROLL.weak[k].icon).join(' ');
+  const h = m.hunt, wk = h.weak.map(k => BZ().weak[k].icon).join(' ');
   return `<small>HUNT · ${h.title.toUpperCase()}${wk ? ' · weakened: ' + wk : ''}</small><b>${m.bossDone ? 'The beast is slain' : h.fled ? 'Follow the blood' : h.hunting ? 'It is hunting you…' : 'Track the beast'}</b>`;
 }
 // ---- drawing the board ----
@@ -11772,7 +12097,7 @@ function renderMap(first) {
   const here = m.at, near = new Set(m.adj[here]);
   const nodes = m.n.map((x, i) => { if (!x.seen) return '';
     const unk = m.hunt && !x.visited && !x.revealed && !x.scouted && x.type !== 'start';      // a hunt: you don't know what's there until you go (or scout)
-    const ic = unk ? '❔' : x.type === 'boss' && !x.done ? QM_ICON.boss : x.done && x.type !== 'start' && x.type !== 'camp' ? '✓' : QM_ICON[x.type] + (x.weak && !x.done ? `<i class="qm-wk">${TROLL.weak[x.weak].icon}</i>` : '');
+    const ic = unk ? '❔' : x.type === 'boss' && !x.done ? QM_ICON.boss : x.done && x.type !== 'start' && x.type !== 'camp' ? '✓' : QM_ICON[x.type] + (x.weak && !x.done ? `<i class="qm-wk">${BZ().weak[x.weak].icon}</i>` : '');
     const reach = !!qmPath(m, i) && i !== here, cost = reach ? qmPath(m, i).length : 0;
     return `<button class="qm-n t-${unk ? 'unk' : x.type}${x.done ? ' done' : ''}${i === here ? ' here' : ''}${near.has(i) ? ' near' : ''}${m.fresh && m.fresh.includes(i) ? ' fresh' : ''}" style="${P(i)}" ${reach && !qmBusy ? '' : 'disabled'} onclick="qmGo(${i})"
       data-i="${i}" onmouseenter="qmTip(${i})" onfocus="qmTip(${i})" onmouseleave="qmTip(-1)" aria-label="${QM_NAME[x.type]}"><span>${ic}</span>${reach ? `<i class="cost">${cost}</i>` : ''}</button>`; }).join('');
@@ -11797,7 +12122,7 @@ function qmTip(i) {
   if (i < 0) { el.classList.remove('on'); return; }
   const x = m.n[i], path = i === m.at ? [] : qmPath(m, i), T = todOf(m), after = todOf({ ...m, t: m.t + (path ? path.length : 0) });
   const unk = m.hunt && !x.visited && !x.revealed && !x.scouted && x.type !== 'start';
-  const what = unk ? 'Unexplored: no telling what is there' : x.done && x.type !== 'start' && x.type !== 'camp' ? (x.type === 'boss' ? 'The lair (cleared)' : 'Cleared') : x.weak ? `An elite guards it: ${TROLL.weak[x.weak].name}` : QM_NAME[x.type];
+  const what = unk ? 'Unexplored: no telling what is there' : x.done && x.type !== 'start' && x.type !== 'camp' ? (x.type === 'boss' ? 'The lair (cleared)' : 'Cleared') : x.weak ? `An elite guards it: ${BZ().weak[x.weak].name}` : QM_NAME[x.type];
   el.innerHTML = `<b>${QM_ICON[x.type]} ${what}</b>${i === m.at ? '<span>You are here</span>' : path ? `<span>${path.length} move${path.length > 1 ? 's' : ''}${after.phase !== T.phase ? ` · arrives at ${TOD_NAME[after.phase].toLowerCase()}` : ''}</span>` : ''}`;
   el.style.left = (x.x * 100) + '%'; el.style.top = (x.y * 100) + '%'; el.classList.add('on');
 }
@@ -15909,7 +16234,7 @@ const GP = (() => {
     if (shown('pause')) return { root: shown('pause'), modal: 'pause' };
     for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
     if (typeof dormMenuEl !== 'undefined' && dormMenuEl && dormMenuEl.isConnected) return { root: dormMenuEl, modal: 'rcmenu' };           // the dorm's swap menu floats outside the scene
-    for (const id of ['gbook', 'guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice']) { const e = shown(id); if (e) return { root: e, modal: id }; }
+    for (const id of ['gbook', 'guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice', 'hboard']) { const e = shown(id); if (e) return { root: e, modal: id }; }
     const t = document.getElementById('title'); if (t && !t.classList.contains('hide')) return { root: t };
     const sc = document.querySelector('.scene.show'); if (sc && sc.id === 'dive' && typeof diveLive !== 'undefined' && diveLive()) return { root: sc, skip: true, noClick: true };
     return { root: sc || document.body, scene: sc && sc.id };
@@ -15991,6 +16316,7 @@ const GP = (() => {
     if (L.skip) return L.root.click();
     if (L.modal === 'pause') return $('pz-ask').classList.contains('on') ? pauseAskTitle(false) : pauseClose();
     if (L.modal === 'rcmenu') return closeDormMenu();
+    if (L.modal === 'hboard') return closeBoard();
     if (L.modal === 'gbook') return closeBook();
     if (L.modal === 'guide') return closeGuide();
     if (L.modal === 'pot-modal') return closePot();
@@ -16010,7 +16336,7 @@ const GP = (() => {
     const nodes = [...document.querySelectorAll('#qmap .mnode')], f = S.focus;
     if (f && f.classList.contains('mnode')) {
       const i = nodes.indexOf(f), d = rep('rt') ? 1 : rep('lf') ? -1 : 0;
-      if (d && nodes.length) { const n = nodes[Math.max(0, Math.min(nodes.length - 1, i + d))]; if (n !== f) { pickQuest(n.dataset.q); const nn = document.querySelector('#qmap .mnode[data-q="' + n.dataset.q + '"]') || n; setFocus(nn); try { sfx('click'); } catch (_) {} } }
+      if (d && nodes.length) { const n = nodes[Math.max(0, Math.min(nodes.length - 1, i + d))]; if (n !== f) { if (n.dataset.q !== 'board') pickQuest(n.dataset.q); const nn = document.querySelector('#qmap .mnode[data-q="' + n.dataset.q + '"]') || n; setFocus(nn); try { sfx('click'); } catch (_) {} } }
     }
     if (edge('Y') && f && f.querySelector && f.querySelector('.info')) f.querySelector('.info').click();
     else if (edge('Y')) { const t = document.querySelector('#form-row .fslot.has') || document.querySelector('#form-row .fslot'); if (t) { setFocus(t); S.skipY = true; } }
