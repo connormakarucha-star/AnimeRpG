@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1100">
 <script>
@@ -19,7 +21,15 @@ if (matchMedia('(pointer:coarse)').matches) (function () {
 </script>
 <title>Mote in the Celestial Fire</title>
 <style>
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#121216;color:#e0e0e6;margin:0;padding:10px;min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column;align-items:center}
+/* FONTS (Connor 2026-11-25, option B): Shippori Mincho for titles, M PLUS Rounded 1c for text. Local files in assets/fonts/ come first (the offline .exe),
+   then Google Fonts (the web version), then the old system fonts. */
+@font-face{font-family:'MoteTitle';src:url('assets/fonts/ShipporiMincho-Bold.woff2') format('woff2'),url('assets/fonts/ShipporiMincho-Bold.ttf') format('truetype');font-weight:500 900;font-display:swap}
+@font-face{font-family:'MoteText';src:url('assets/fonts/MPLUSRounded1c-Regular.woff2') format('woff2'),url('assets/fonts/MPLUSRounded1c-Regular.ttf') format('truetype');font-weight:100 499;font-display:swap}
+@font-face{font-family:'MoteText';src:url('assets/fonts/MPLUSRounded1c-Bold.woff2') format('woff2'),url('assets/fonts/MPLUSRounded1c-Bold.ttf') format('truetype');font-weight:500 900;font-display:swap}
+:root{--ft:'MoteTitle','Shippori Mincho',Georgia,'Times New Roman',serif;--fb:'MoteText','M PLUS Rounded 1c','Segoe UI',Tahoma,sans-serif}
+h1,h2,h3,.tt-name{font-family:var(--ft)}
+button,input,select,textarea{font-family:inherit}
+body{font-family:var(--fb);background:#121216;color:#e0e0e6;margin:0;padding:10px;min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column;align-items:center}
 h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .subtitle{font-size:.75rem;color:#a0a0b0;margin-bottom:10px;text-align:center}
 #game-container{width:100%;max-width:720px;background:#1a1a24;border:2px solid #2a2a3c;border-radius:12px;padding:12px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.6)}
@@ -51,7 +61,9 @@ h1{margin:0 0 2px;font-size:1.3rem;color:#ff758c;text-align:center}
 .combatant-card.targetable.team-p{border-color:#4fc3f7}
 .figure.hurt{animation:hurt .4s}
 .figure.hurtfig{animation:hurtShake .5s ease-out}
-.figure.brokenfig .spr{filter:saturate(.45) brightness(.82);rotate:-4deg;transform-origin:50% 100%}
+#battle-scene .figure .spr{filter:url(#sceneLit)}body.calm #battle-scene .figure .spr,body.nolit #battle-scene .figure .spr{filter:none}
+#battle-scene .combatant-card:not(.tpart) .figure::after{content:'';position:absolute;left:18%;right:18%;bottom:-1.5%;height:5%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.5),rgba(0,0,0,0) 70%);z-index:-1;pointer-events:none}
+.figure.brokenfig .spr{filter:url(#sceneLit) saturate(.45) brightness(.82);rotate:-4deg;transform-origin:50% 100%}
 @keyframes hurtShake{0%{translate:0 0;filter:brightness(2.4)}15%{translate:-9px 0}30%{translate:7px -2px;filter:brightness(1.5)}50%{translate:-5px 0}70%{translate:3px 0}100%{translate:0 0}}
 @keyframes hurt{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}100%{transform:none}}
 .figure{transition:filter .12s}
@@ -444,9 +456,10 @@ body.dorm-dragging .dorm-room .seat[data-slot]{outline:2px dashed rgba(255,213,7
 #camp-bg .fog{position:absolute;left:-30%;width:160%;height:26%;background:radial-gradient(ellipse at 50% 50%,rgba(210,225,235,.38),rgba(210,225,235,0) 68%);filter:blur(10px);animation:fogDrift 38s linear infinite alternate}
 #camp-bg .fog.f2{animation-duration:55s;animation-direction:alternate-reverse;opacity:.8}
 @keyframes fogDrift{from{transform:translateX(-8%)}to{transform:translateX(8%)}}
-#camp-bg .snow{position:absolute;inset:-10% 0 0 0;background-image:radial-gradient(circle,#fff 0 1.6px,transparent 2.4px),radial-gradient(circle,#dfeeff 0 1.1px,transparent 1.9px);background-size:170px 170px,110px 110px;background-position:0 0,40px 60px;opacity:.75;animation:snowFall 14s linear infinite}
+#camp-bg .snow{position:absolute;inset:-10% 0 0 0;background-image:radial-gradient(circle,#fff 0 1.6px,transparent 2.4px),radial-gradient(circle,#dfeeff 0 1.1px,transparent 1.9px);background-size:170px 170px,110px 110px;background-position:0 0,40px 60px;opacity:.75;animation:snowFall 14s linear infinite,snowSway 5s ease-in-out infinite alternate}
 #camp-bg .snow.s2{background-size:260px 260px,190px 190px;opacity:.5;animation-duration:22s;animation-delay:-6s}
-@keyframes snowFall{from{transform:translateY(-110px)}to{transform:translateY(60px)}}
+@keyframes snowFall{from{background-position:0 0,40px 60px}to{background-position:-170px 340px,-70px 390px}}      /* moves by whole tiles of BOTH layers, so the loop never jumps */
+@keyframes snowSway{from{transform:translateX(-8px)}to{transform:translateX(8px)}}
 #camp-bg .fly{position:absolute;width:5px;height:5px;border-radius:50%;background:#d8ff9a;box-shadow:0 0 8px 3px rgba(200,255,120,.6);animation:flyDrift 7s ease-in-out infinite alternate}
 @keyframes flyDrift{from{transform:translate(0,0);opacity:.2}50%{opacity:1}to{transform:translate(30px,-26px);opacity:.3}}
 #camp-bg .fireglow{position:absolute;left:50%;top:62%;width:70%;height:70%;transform:translate(-50%,-50%);background:radial-gradient(ellipse,rgba(255,150,60,.34),rgba(255,120,40,.12) 40%,transparent 68%);animation:glowPulse 2.4s ease-in-out infinite alternate}
@@ -569,33 +582,34 @@ body.dev #btn-quick{display:inline-block}
 .dmgprev{font-size:.7rem;font-weight:bold;color:#e0e0f0;margin-left:4px}
 .shield{color:#4fc3f7;font-weight:bold;margin-left:4px}
 .rowtag{font-size:.56rem;letter-spacing:.08em;padding:1px 5px;border-radius:3px;margin-right:4px;background:#26263a;color:#9aa0c0}.rowtag.f{color:#4dd0e1}
-#hboard{display:none;position:fixed;inset:0;z-index:118;background:radial-gradient(ellipse at 50% 40%,#3b2a1a 0,#1a120b 70%,#0c0805 100%);font-family:'Segoe UI',Tahoma,sans-serif}
+html.demo .em-back{display:none!important}
+#hboard{display:none;position:fixed;inset:0;z-index:118;background:radial-gradient(ellipse at 50% 40%,#3b2a1a 0,#1a120b 70%,#0c0805 100%);font-family:var(--fb)}
 #hboard.show{display:block}
-#hboard h2{position:absolute;top:1.2vh;left:0;right:0;text-align:center;margin:0;font-family:Georgia,serif;font-size:min(3.8vh,2.1vw);letter-spacing:.2em;color:#f0c060;text-shadow:0 2px 8px #000}
+#hboard h2{position:absolute;top:1.2vh;left:0;right:0;text-align:center;margin:0;font-family:var(--ft);font-size:min(3.8vh,2.1vw);letter-spacing:.2em;color:#f0c060;text-shadow:0 2px 8px #000}
 #hboard .hb-sub{position:absolute;top:6.4vh;left:0;right:0;text-align:center;font-size:min(1.7vh,.95vw);color:#c8b48c}
 #hboard .hb-wood{position:absolute;inset:10.5vh 5.6vw 8vh;border-radius:14px;background:repeating-linear-gradient(90deg,#5b3b20 0 7.4vw,#4d311a 7.4vw 7.6vw,#62412a 7.6vw 15vw,#4d311a 15vw 15.2vw);box-shadow:inset 0 0 0 10px #2e1d0f,inset 0 0 60px rgba(0,0,0,.7),0 20px 50px rgba(0,0,0,.6)}
 #hboard .hb-row{position:absolute;inset:14vh 6vw 11vh;display:flex;gap:3.4vw;justify-content:center;align-items:flex-start}
-#hboard .hb-p{all:unset;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;position:relative;width:min(24vw,44vh);height:min(68vh,40vw);padding:2.4vh 1.5vw;background:linear-gradient(170deg,#e9d8b0,#d9c08c);color:#3a2412;border-radius:4px;box-shadow:0 12px 26px rgba(0,0,0,.55);font-family:Georgia,serif;cursor:pointer;transition:transform .15s,box-shadow .15s;font-size:min(1.8vh,1vw)}
+#hboard .hb-p{all:unset;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-start;position:relative;width:min(24vw,44vh);height:min(68vh,40vw);padding:2.4vh 1.5vw;background:linear-gradient(170deg,#e9d8b0,#d9c08c);color:#3a2412;border-radius:4px;box-shadow:0 12px 26px rgba(0,0,0,.55);font-family:var(--ft);cursor:pointer;transition:transform .15s,box-shadow .15s;font-size:min(1.8vh,1vw)}
 #hboard .hb-p:nth-child(1){transform:rotate(-1.6deg)}#hboard .hb-p:nth-child(2){transform:rotate(.8deg)}#hboard .hb-p:nth-child(3){transform:rotate(1.8deg)}
 #hboard button.hb-p:hover,#hboard button.hb-p.gp-focus{transform:rotate(0) translateY(-8px) scale(1.04);box-shadow:0 0 0 4px #f0c060,0 0 40px rgba(240,192,96,.55),0 14px 30px rgba(0,0,0,.6);z-index:2}
 #hboard .hb-p.on{box-shadow:0 0 0 4px #7fd07f,0 12px 26px rgba(0,0,0,.55)}
 #hboard .hb-p::before{content:'';position:absolute;top:-10px;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a7a,#8a1a10);box-shadow:0 3px 4px rgba(0,0,0,.6)}
-#hboard .hb-act{font-family:'Segoe UI',sans-serif;font-size:.72em;letter-spacing:.22em;font-weight:700;text-transform:uppercase;color:#7a5530;text-align:center}
+#hboard .hb-act{font-family:var(--fb);font-size:.72em;letter-spacing:.22em;font-weight:700;text-transform:uppercase;color:#7a5530;text-align:center}
 #hboard .hb-want{text-align:center;font-size:1.75em;font-weight:700;letter-spacing:.3em;margin:.1em 0 .4em;color:#5a1620}
 #hboard .hb-art{height:30%;flex:none;border:3px solid #6b4a2a;background:radial-gradient(circle at 50% 60%,#3b5a33,#16241a);display:flex;align-items:center;justify-content:center;font-size:5.5em;position:relative;overflow:hidden}
 #hboard .hb-art img{width:100%;height:100%;object-fit:cover}
 #hboard .hb-name{text-align:center;font-size:1.55em;font-weight:700;margin:.5em 0 .2em}
-#hboard .hb-chips{display:flex;flex-wrap:wrap;gap:.35em;justify-content:center;font-family:'Segoe UI',sans-serif;margin:.4em 0 .6em}
+#hboard .hb-chips{display:flex;flex-wrap:wrap;gap:.35em;justify-content:center;font-family:var(--fb);margin:.4em 0 .6em}
 #hboard .hb-c{font-size:.78em;font-weight:600;padding:.25em .65em;border-radius:1em;background:#3a2412;color:#f3e2bd}#hboard .hb-c.tm{background:#7a1c14;color:#ffe2d4}#hboard .hb-c.ps{background:#245a2c}#hboard .hb-c.wk{background:#8a3a0a}
 #hboard .hb-beh{font-size:.9em;line-height:1.35;text-align:center;font-style:italic;color:#4a3018}
-#hboard .hb-for{text-align:center;font-family:'Segoe UI',sans-serif;font-size:.78em;color:#7a5530;margin-top:.5em}#hboard .hb-for b{color:#5a1620}#hboard .hb-for i{color:#2d6a35;font-style:normal}
-#hboard .hb-rew{position:absolute;left:1.5vw;right:1.5vw;bottom:2vh;border-top:2px dashed #8a6a40;padding-top:1vh;display:flex;justify-content:space-around;gap:.4em;font-family:'Segoe UI',sans-serif;font-weight:700;font-size:.92em;text-align:center}
+#hboard .hb-for{text-align:center;font-family:var(--fb);font-size:.78em;color:#7a5530;margin-top:.5em}#hboard .hb-for b{color:#5a1620}#hboard .hb-for i{color:#2d6a35;font-style:normal}
+#hboard .hb-rew{position:absolute;left:1.5vw;right:1.5vw;bottom:2vh;border-top:2px dashed #8a6a40;padding-top:1vh;display:flex;justify-content:space-around;gap:.4em;font-family:var(--fb);font-weight:700;font-size:.92em;text-align:center}
 #hboard .hb-rew small{display:block;font-size:.65em;font-weight:600;color:#7a5530;text-transform:uppercase;letter-spacing:.08em}
 #hboard .hb-rew .rar-rare{color:#1f5aa8}#hboard .hb-rew .rar-epic{color:#7a2aa8}#hboard .hb-rew .rar-common{color:#3a2412}
-#hboard .hb-drop{margin:1em .3em 0;padding:.6em .8em;border:2px solid #8a6a40;border-radius:6px;background:rgba(255,255,255,.25);text-align:center;font-family:'Segoe UI',sans-serif;font-size:.85em}#hboard .hb-drop b{display:block;font-size:1.1em;margin-bottom:.2em}#hboard .hb-drop span{color:#4a3018}#hboard .hb-drop,#hboard .hb-drop b{color:#3a2412}#hboard .hb-drop.rar-rare b{color:#1f5aa8}#hboard .hb-drop.rar-epic b{color:#7a2aa8}#hboard .hb-drop.rar-epic{border-color:#a070c8}#hboard .hb-drop.rar-rare{border-color:#5a8ad0}
+#hboard .hb-drop{margin:1em .3em 0;padding:.6em .8em;border:2px solid #8a6a40;border-radius:6px;background:rgba(255,255,255,.25);text-align:center;font-family:var(--fb);font-size:.85em}#hboard .hb-drop b{display:block;font-size:1.1em;margin-bottom:.2em}#hboard .hb-drop span{color:#4a3018}#hboard .hb-drop,#hboard .hb-drop b{color:#3a2412}#hboard .hb-drop.rar-rare b{color:#1f5aa8}#hboard .hb-drop.rar-epic b{color:#7a2aa8}#hboard .hb-drop.rar-epic{border-color:#a070c8}#hboard .hb-drop.rar-rare{border-color:#5a8ad0}
 #hboard .hb-p.lock{filter:grayscale(.85) brightness(.55);cursor:default}#hboard .hb-p.lock .hb-art{background:#2a2a2a}
 #hboard .hb-p.empty{filter:grayscale(.5) brightness(.75)}
-#hboard .hb-seal{position:absolute;inset:auto 0;text-align:center;font-family:'Segoe UI',sans-serif;font-size:.17em;font-weight:700;color:#ddd}#hboard .hb-seal{background:rgba(0,0,0,.8);padding:.6em .8em;margin:0 8%;border-radius:10px}
+#hboard .hb-seal{position:absolute;inset:auto 0;text-align:center;font-family:var(--fb);font-size:.17em;font-weight:700;color:#ddd}#hboard .hb-seal{background:rgba(0,0,0,.8);padding:.6em .8em;margin:0 8%;border-radius:10px}
 #hboard .hb-back{position:absolute;top:1.6%;left:1.2%;z-index:3}
 .mnode.board .pin{background:radial-gradient(circle at 40% 35%,#7a4a22,#3a2210)!important;border-color:#f0c060!important}
 .qc-boss.qc-hunt{display:flex;align-items:center;justify-content:center;font-size:3.2rem}
@@ -670,7 +684,7 @@ body.dev #btn-quick{display:inline-block}
   #party-select #quest-detail .qc{position:absolute;z-index:46;width:350px;left:auto;right:1.4%;bottom:14px}
   #party-select #quest-detail .qc[style*="top"]{bottom:auto;right:auto}
   #party-select .em-map > .em-begin{display:none}
-  #party-select .qc #btn-start-quest{position:static;display:block;width:100%;margin:0;height:50px;border-radius:12px;border:1px solid #ffd88a;background:linear-gradient(#b8862e,#7a5418);color:#fff8e6;font:800 1.05rem 'Cinzel','Palatino Linotype',Georgia,serif;letter-spacing:.14em;box-shadow:0 0 18px rgba(255,200,100,.35)}
+  #party-select .qc #btn-start-quest{position:static;display:block;width:100%;margin:0;height:50px;border-radius:12px;border:1px solid #ffd88a;background:linear-gradient(#b8862e,#7a5418);color:#fff8e6;font:800 1.05rem var(--ft);letter-spacing:.14em;box-shadow:0 0 18px rgba(255,200,100,.35)}
   #party-select .qc #btn-start-quest:not(:disabled):hover,body.gp #party-select .qc #btn-start-quest.gp-focus{filter:brightness(1.15);box-shadow:0 0 26px rgba(255,200,100,.6)}
   #party-select .qc #btn-start-quest:disabled{filter:grayscale(.8) brightness(.6)}
   .gc-hover-dummy{}
@@ -683,7 +697,7 @@ body.dev #btn-quick{display:inline-block}
 .qc-boss img{height:100%;width:auto;max-width:none;filter:drop-shadow(0 0 14px color-mix(in srgb,var(--qa) 60%,transparent));scale:-1 1}
 .qc-head{position:relative;z-index:1;padding:14px 30% 10px 16px}
 .qc-head small{display:block;font-size:.62rem;letter-spacing:.18em;font-weight:800;color:var(--qa);text-shadow:0 1px 3px #000}
-.qc-head h3{margin:2px 0 0;font:800 1.35rem/1.1 'Cinzel','Palatino Linotype',Georgia,serif;color:#fff;text-shadow:0 2px 6px #000}
+.qc-head h3{margin:2px 0 0;font:800 1.35rem/1.1 var(--ft);color:#fff;text-shadow:0 2px 6px #000}
 .qc-done{display:inline-block;margin-right:8px;padding:1px 7px;border-radius:999px;background:#2e7d32;color:#e8ffe8;letter-spacing:.1em}
 .qc-head .qc-bn{margin-top:3px;letter-spacing:.04em;font-weight:700;color:#e8dcc8;text-transform:none;font-size:.72rem}
 .qc-body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:10px}
@@ -718,7 +732,7 @@ body.dev #btn-quick{display:inline-block}
 #gc-hover.on{opacity:1;translate:0 0}
 .gh-band{display:flex;align-items:flex-end;gap:12px;padding:12px 14px 10px;background:radial-gradient(circle at 25% 50%,color-mix(in srgb,var(--ec) 45%,transparent),color-mix(in srgb,var(--ec) 10%,#0e0a14) 75%)}
 .gh-p.mini-sprite{width:64px!important;height:64px!important;border-radius:12px;border:2px solid var(--ec)!important}
-.gh-band h3{margin:0;font:800 1.25rem 'Cinzel','Palatino Linotype',Georgia,serif;color:#fff}.gh-band small{font-size:.62rem;letter-spacing:.14em;font-weight:800;color:var(--ec)}
+.gh-band h3{margin:0;font:800 1.25rem var(--ft);color:#fff}.gh-band small{font-size:.62rem;letter-spacing:.14em;font-weight:800;color:var(--ec)}
 .gh-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:10px 14px 4px;text-align:center}
 .gh-stats div{background:rgba(255,255,255,.05);border-radius:8px;padding:5px 2px}.gh-stats b{display:block;font-size:1.05rem}.gh-stats span{font-size:.62rem;color:#c6b89a}
 .gh-row{display:flex;justify-content:space-between;gap:10px;padding:6px 14px;font-size:.74rem;border-top:1px solid rgba(217,180,106,.12)}
@@ -741,10 +755,10 @@ body.calm .gate .fslot.has::before,body.calm .gate .fslot.has::after{animation:n
 /* ===== Celestial panels: the Menu, the pause screen and the title's save panel share the title screen's violet-and-gold look ===== */
 .guide-box,#pause .pz,#title .panel{background:linear-gradient(#171026,#0c0816) padding-box,linear-gradient(135deg,#6b4fa8,#d9b46a 50%,#6b4fa8) border-box!important;border:2px solid transparent!important;border-radius:16px!important;box-shadow:0 0 40px rgba(120,90,220,.28),0 18px 50px rgba(0,0,0,.6)!important}
 #guide,#pause{background:radial-gradient(ellipse at 50% 40%,rgba(30,18,52,.78),rgba(4,3,10,.9))}
-.guide-box .rm-head b{font:800 1.2rem Georgia,'Times New Roman',serif;letter-spacing:.12em;color:#f2e6ff}
+.guide-box .rm-head b{font:800 1.2rem var(--ft);letter-spacing:.12em;color:#f2e6ff}
 .guide-tabs button{background:rgba(255,255,255,.05);border:1px solid rgba(200,180,255,.22);color:#d9cff0;border-radius:999px;padding:6px 14px;font-size:.78rem}
 .guide-tabs button.sel,.guide-tabs button.on{background:rgba(140,100,230,.35);border-color:#c8b0ff;color:#fff}
-#guide-body h4{color:#e6c88a;font:800 .85rem Georgia,serif;letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid rgba(217,180,106,.25);padding-bottom:4px}
+#guide-body h4{color:#e6c88a;font:800 .85rem var(--ft);letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid rgba(217,180,106,.25);padding-bottom:4px}
 .optrow{background:linear-gradient(100deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid rgba(200,180,255,.14);border-radius:12px;transition:border-color .15s,box-shadow .15s,translate .15s}
 .optrow:hover{border-color:rgba(217,180,106,.5);box-shadow:0 0 14px rgba(140,100,230,.25);translate:2px 0}
 .optrow b{color:#f2e6ff}.optrow small{color:#a99fc4}
@@ -755,7 +769,7 @@ body.calm .gate .fslot.has::before,body.calm .gate .fslot.has::after{animation:n
 .optsw.off{background:rgba(0,0,0,.3);border-color:rgba(200,180,255,.2);color:#9a90b8}
 #pause .pz{min-width:min(340px,86vw);padding:26px 30px;gap:12px}
 #pause .pz-h{font-size:0;height:auto;opacity:1}
-#pause .pz-h::after{content:'PAUSED';font:700 1.6rem 'Cinzel','Palatino Linotype',Georgia,serif;letter-spacing:.42em;padding-left:.42em;color:#f3ecff;text-shadow:0 0 18px rgba(170,130,255,.7)}
+#pause .pz-h::after{content:'PAUSED';font:700 1.6rem var(--ft);letter-spacing:.42em;padding-left:.42em;color:#f3ecff;text-shadow:0 0 18px rgba(170,130,255,.7)}
 #pause .pz button,#title .panel button{background:rgba(14,9,30,.55);border:1px solid rgba(190,160,255,.35);color:#efe8ff;border-radius:999px;letter-spacing:.1em;transition:background .2s,border-color .2s,box-shadow .2s,translate .2s}
 #pause .pz button:not(:disabled):hover,#title .panel button:not(:disabled):hover,body.gp #pause .pz button.gp-focus,body.gp #title .panel button.gp-focus{background:rgba(70,40,140,.6);border-color:#cdb6ff;box-shadow:0 0 18px rgba(170,130,255,.55);translate:0 -1px}
 #pause .pz button.primary{background:linear-gradient(rgba(110,70,200,.6),rgba(60,30,120,.6));border-color:#cdb6ff}
@@ -773,7 +787,7 @@ body.calm .gate .fslot.has::before,body.calm .gate .fslot.has::after{animation:n
     --rs-bg:linear-gradient(90deg,rgba(40,92,96,.45),rgba(18,52,58,.82) 14%);-webkit-backdrop-filter:blur(12px) saturate(1.2);backdrop-filter:blur(12px) saturate(1.2)}
   #train-select .rside{--acc:#ff7a62;--glow:rgba(255,110,90,.45);--ink:#fff0e8;--sub:#e6c0b0;--rc-bg:linear-gradient(100deg,#3e211a,#26140f);--rc-bd:rgba(255,140,110,.26);
     --rs-bg:linear-gradient(90deg,rgba(24,12,10,.78),rgba(26,14,11,.97) 14%),repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 3px,transparent 3px 58px),linear-gradient(#2c1813,#1a0e0b)}
-  .rside .rs-h{position:relative;font:800 .9rem Georgia,'Times New Roman',serif;letter-spacing:.24em;color:var(--ink);text-align:center;margin:4px 6px 12px;padding:9px 0 10px;
+  .rside .rs-h{position:relative;font:800 .9rem var(--ft);letter-spacing:.24em;color:var(--ink);text-align:center;margin:4px 6px 12px;padding:9px 0 10px;
     background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--acc) 22%,transparent) 20%,color-mix(in srgb,var(--acc) 22%,transparent) 80%,transparent);border-top:1px solid color-mix(in srgb,var(--acc) 55%,transparent);border-bottom:1px solid color-mix(in srgb,var(--acc) 55%,transparent);text-shadow:0 0 12px var(--glow)}
   .rside .rs-h::before,.rside .rs-h::after{content:'✦';position:absolute;top:50%;translate:0 -50%;font-size:.6rem;color:var(--acc)}
   .rside .rs-h::before{left:8px}.rside .rs-h::after{right:8px}
@@ -900,6 +914,30 @@ body.calm #qm-board .qm-rain,body.calm #qm-board .qm-mist,body.calm #qm-board .q
 #troll-layer.fled svg{animation:trFlee 1.1s ease-in forwards}@keyframes trFlee{to{transform:translateX(40%);opacity:0}}
 #troll-layer.dead svg{animation:trDie 1.6s ease-in forwards}@keyframes trDie{to{transform:translateY(30%);opacity:0}}
 #troll-layer .bubbles circle{animation:trBub 1.8s linear infinite}@keyframes trBub{from{transform:translateY(0);opacity:.9}to{transform:translateY(-60px);opacity:0}}
+#order .pt-ic{display:inline-flex;align-items:center;justify-content:center;font-size:1.35em;line-height:1;background:radial-gradient(circle at 50% 40%,#3a2a20,#120c08)}
+#boss-hud{position:absolute;left:50%;top:clamp(116px,14.5vh,146px);translate:-50% 0;width:min(620px,56vw);z-index:30;pointer-events:none;display:flex;flex-direction:column;gap:8px}
+.bh-hp{position:relative;height:clamp(20px,2.6vh,26px);border-radius:4px;background:linear-gradient(#1a0508,#2a080d);border:1.5px solid #4a0d14;box-shadow:0 0 0 1px rgba(0,0,0,.7),0 3px 10px rgba(0,0,0,.6),inset 0 2px 6px rgba(0,0,0,.8)}
+.bh-hp i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.bh-hp .lag{background:linear-gradient(#f6b8b8,#d86a6a);opacity:.6;transition:width .7s ease-in .45s}
+.bh-hp .fill{background:linear-gradient(180deg,color-mix(in srgb,var(--c0) 75%,#fff) 0,var(--c0) 30%,var(--c1) 100%);box-shadow:0 0 10px color-mix(in srgb,var(--c0) 60%,transparent);transition:width .22s ease-out}
+.bh-hp .fill::after{content:'';position:absolute;right:-3px;top:-2px;bottom:-2px;width:6px;border-radius:50%;background:var(--c0);filter:blur(1px)}
+.bh-hp .fill u{position:absolute;bottom:-7px;width:5px;height:9px;border-radius:0 0 50% 50%/0 0 70% 70%;background:var(--c1);animation:bhDrip 2.4s ease-in infinite}
+.bh-hp .fill u:nth-child(1){right:10%}.bh-hp .fill u:nth-child(2){right:42%;animation-delay:1.1s;height:7px}.bh-hp .fill u:nth-child(3){right:70%;animation-delay:.5s}
+@keyframes bhDrip{0%{transform:scaleY(.3);transform-origin:top;opacity:1}70%{transform:scaleY(1.2);opacity:1}100%{transform:scaleY(1.6) translateY(4px);opacity:0}}
+.bh-hp.beat{animation:bhBeat .75s ease-in-out infinite}@keyframes bhBeat{0%,100%{filter:brightness(1)}18%{filter:brightness(1.45)}30%{filter:brightness(1.05)}45%{filter:brightness(1.3)}}
+.bh-hp b{position:absolute;left:0;right:0;top:50%;translate:0 -50%;text-align:center;font-family:var(--ft);font-size:clamp(12px,1.6vh,16px);letter-spacing:.14em;text-transform:uppercase;color:#ffd77a;text-shadow:0 1px 0 #3a1400,0 0 6px #000,0 0 2px #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 70px}
+.bh-hp em{position:absolute;right:8px;top:50%;translate:0 -50%;font-style:normal;font-size:clamp(10px,1.3vh,12px);color:#ffd9d9;text-shadow:0 1px 2px #000;font-variant-numeric:tabular-nums}
+.bh-hp s{position:absolute;left:8px;top:50%;translate:0 -50%;text-decoration:none;font-size:12px;color:#d9c4ff;text-shadow:0 1px 2px #000}
+.bh-arm{position:relative;height:clamp(9px,1.25vh,12px);width:84%;margin:0 auto;border-radius:2px;background:#1b2028;border:1px solid #0a0d12;box-shadow:inset 0 1px 3px rgba(0,0,0,.8),0 2px 6px rgba(0,0,0,.5)}
+.bh-arm i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(180deg,#f4f8fc 0,#c4cfdb 35%,#9aa8b8 60%,#3e4856 100%);border-right:1px solid #fff;transition:width .3s ease-out}
+.bh-arm::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(10,14,20,.85) calc(10% - 1px) 10%);pointer-events:none}
+.bh-arm span{position:absolute;right:-46px;top:50%;translate:0 -50%;font-size:11px;color:#dfe7f0;text-shadow:0 1px 2px #000;white-space:nowrap}
+.bh-arm.broken{background:repeating-linear-gradient(135deg,#2a1d12 0 6px,#1a120b 6px 12px);border-color:#5e3d06}.bh-arm.broken::after{display:none}
+.bh-arm.broken span{right:auto;left:50%;translate:-50% -50%;color:#ffcf6a;font-weight:700;letter-spacing:.1em;font-size:10px}
+.bh.fin .bh-name{text-align:center;font-family:var(--ft);letter-spacing:.14em;text-transform:uppercase;color:#ffd77a;font-size:clamp(12px,1.6vh,16px);text-shadow:0 0 6px #000;margin-bottom:3px}
+.bh.fin .bh-arm{height:clamp(12px,1.6vh,15px)}
+body.fbfight #fb-hud .fbh-brk{display:none}body.fbfight #fb-hud{top:clamp(170px,21vh,200px)!important}
+#troll-hud .bh-hp{margin:2px 0 3px}
 #troll-hud{position:absolute;left:50%;top:clamp(118px,15vh,150px);translate:-50% 0;width:min(520px,60vw);text-align:center;color:#eaf4e0;z-index:30;pointer-events:none;font-size:clamp(12px,.95vw,15px);text-shadow:0 1px 3px #000}
 #troll-hud b{display:block;letter-spacing:.06em}#troll-hud .th-bar{height:12px;border-radius:7px;background:rgba(0,0,0,.6);border:1px solid rgba(220,255,200,.4);overflow:hidden;margin:3px 0}
 #troll-hud .th-bar i{display:block;height:100%;background:linear-gradient(90deg,#4caf50,#9ccc65);transition:width .4s}
@@ -966,10 +1004,15 @@ body.calm .qm-n,body.calm .qm-pc img,body.calm .qm-pull::after{animation:none!im
 .sb-cam>div{position:absolute;inset:0}
 .sb-bg,.sb-snow{background:center/100% 100% no-repeat}
 .sb-sky.snowy::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,#fff 0 1.4px,transparent 2.2px),radial-gradient(circle,#dfeeff 0 1px,transparent 1.8px);background-size:90px 90px,60px 60px;background-position:0 0,30px 40px;opacity:.8;animation:sbSnowIn 9s linear infinite}
-@keyframes sbSnowIn{from{background-position:0 0,30px 40px}to{background-position:-20px 270px,10px 220px}}
+@keyframes sbSnowIn{from{background-position:0 0,30px 40px}to{background-position:-90px 270px,-30px 220px}}
 body.calm .sb-sky.snowy::after{animation:none}.sb-bg>svg{width:100%;height:100%}
 .sb-grade{mix-blend-mode:multiply;pointer-events:none;z-index:900}
 .sb-steamL{pointer-events:none;z-index:1}
+.sb-steamF{position:absolute;inset:0;pointer-events:none;z-index:800;mix-blend-mode:screen}
+.sb-wisp{position:absolute;aspect-ratio:.55;opacity:0;filter:blur(10px);animation:sbWisp var(--t) ease-in-out infinite;animation-delay:var(--d);
+  background:radial-gradient(40% 22% at 46% 78%,rgba(255,255,255,var(--o)),transparent 70%),radial-gradient(34% 20% at 58% 52%,rgba(255,255,255,calc(var(--o) * .8)),transparent 70%),radial-gradient(28% 18% at 44% 28%,rgba(255,255,255,calc(var(--o) * .55)),transparent 70%)}
+@keyframes sbWisp{0%{opacity:0;transform:translate(-50%,-30%) rotate(0) scale(.7,.5)}25%{opacity:1}55%{transform:translate(calc(-50% + var(--sx) * .5),-62%) rotate(calc(var(--r) * -.6)) scale(.95,.9)}80%{opacity:.6}100%{opacity:0;transform:translate(calc(-50% + var(--sx)),-95%) rotate(var(--r)) scale(1.25,1.3)}}
+body.calm .sb-wisp{animation:none;opacity:.35;transform:translate(-50%,-60%)}
 .sb-heroes{z-index:2;pointer-events:none}
 .sb-wx{position:absolute;pointer-events:none;z-index:3}
 .sb-hero{all:unset;position:absolute;display:block;pointer-events:none}
@@ -1162,7 +1205,7 @@ body.calm #travel{display:none!important}
 #guide-body .g.book-hint{border-color:#7a5a2a;background:#1e1810}
 /* ---- the guide book (town) ---- */
 #gbook{display:none;position:fixed;inset:0;z-index:186;background:radial-gradient(ellipse at 40% 45%,rgba(40,30,60,.72),rgba(4,3,10,.9));align-items:center;justify-content:center;overflow:hidden;
-  --bh:min(80vh,46vw);font-family:Georgia,'Palatino Linotype','Book Antiqua',serif}
+  --bh:min(80vh,46vw);font-family:var(--ft)}
 #gbook.show{display:flex;animation:sumIn .3s ease-out}
 .gb-stage{display:flex;align-items:center;justify-content:center;gap:calc(var(--bh)*.02);transform:translateX(calc(var(--bh)*-.04))}
 .gb-angel{position:relative;flex:none;height:calc(var(--bh)*1.14);display:flex;align-items:flex-end;justify-content:center;margin-right:calc(var(--bh)*-.06);z-index:2;pointer-events:none}
@@ -1200,7 +1243,7 @@ body.calm .gb-bob,body.calm .gb-shadow,body.calm .gb-glow,body.calm .gb-motes{an
 .gb-tabs button.new::after{content:'';position:absolute;right:.5em;top:.45em;width:.55em;height:.55em;border-radius:50%;background:#ffd36a;box-shadow:0 0 6px #ffb52a}
 .gb-flow .gb-hero{break-before:column}.gb-flow .gb-chap+.gb-hero{break-before:auto}.gb-flow .gb-col{break-before:column}   /* a hero = one spread: card and skills on the left, how she works on the right */
 .gb-flow .gb-hh{display:flex;align-items:baseline;justify-content:space-between;gap:.6em;border-bottom:2px solid rgba(122,31,43,.35);margin:.2em 0 .3em}
-.gb-flow .gb-hh b{font-size:1.35em;color:#5a1620;font-family:Georgia,serif}.gb-flow .gb-hh span{color:#6b4a2a;font-size:.9em}
+.gb-flow .gb-hh b{font-size:1.35em;color:#5a1620;font-family:var(--ft)}.gb-flow .gb-hh span{color:#6b4a2a;font-size:.9em}
 .gb-flow .gb-stats{color:#6b4a2a;font-size:.9em;margin:.1em 0 .4em}
 .gb-flow .gb-sk{margin:.3em 0;padding-left:.6em;border-left:2px solid rgba(122,31,43,.3)}.gb-flow .gb-sk b{color:#6b2a12}
 .gb-chap{text-align:center;margin:0 0 .4em;break-after:avoid;break-inside:avoid}
@@ -1209,7 +1252,7 @@ body.calm .gb-bob,body.calm .gb-shadow,body.calm .gb-glow,body.calm .gb-motes{an
 .gb-chap i{display:block;color:#a07a40;font-style:normal;letter-spacing:.5em;margin-top:.2em}
 .gb-num{position:absolute;bottom:3%;font-size:clamp(9px,calc(var(--bh)*.018),14px);color:#8a6a40;font-style:italic}
 .gb-num.l{left:7%}.gb-num.r{right:7%}
-.gb-turn{position:absolute;bottom:2%;width:calc(var(--bh)*.07);height:calc(var(--bh)*.07);border-radius:50%;border:1px solid rgba(120,80,40,.35);background:rgba(255,248,230,.6);color:#6b3a1a;font-size:calc(var(--bh)*.045);line-height:1;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif}
+.gb-turn{position:absolute;bottom:2%;width:calc(var(--bh)*.07);height:calc(var(--bh)*.07);border-radius:50%;border:1px solid rgba(120,80,40,.35);background:rgba(255,248,230,.6);color:#6b3a1a;font-size:calc(var(--bh)*.045);line-height:1;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--ft)}
 .gb-turn.prev{left:15%}.gb-turn.next{right:15%}
 .gb-turn:hover:not(:disabled){background:#fff6e0;box-shadow:0 0 12px rgba(200,150,60,.5)}
 .gb-turn:disabled{opacity:.25;cursor:default}
@@ -1325,7 +1368,7 @@ body.fn-on #battle-scene .control-panel,body.fn-on #order,body.fn-on #fb-hud,bod
 .mfog.gone{opacity:0}
 .qm-hint{position:absolute;z-index:40;right:2%;top:3%;max-width:46%;background:rgba(14,18,28,.85);border:1px solid #4a5a78;border-radius:10px;padding:.4em .8em;font-size:max(.62rem,1.2cqw);line-height:1.35;color:#c9d4ea}
 .qm-hint b{color:#fff}.qm-hint .ok{color:#7ee787}
-.qm-title{position:absolute;z-index:40;left:2%;top:3%;font:700 max(.8rem,1.8cqw) Georgia,serif;color:#f2dca8;text-shadow:0 2px 6px #000;letter-spacing:.06em}
+.qm-title{position:absolute;z-index:40;left:2%;top:3%;font:700 max(.8rem,1.8cqw) var(--ft);color:#f2dca8;text-shadow:0 2px 6px #000;letter-spacing:.06em}
 #quest-detail .pick{margin:6px 0}
 
 /* ---- scene banners for Party / Spa / Training select ---- */
@@ -1341,7 +1384,7 @@ body.fn-on #battle-scene .control-panel,body.fn-on #order,body.fn-on #fb-hud,bod
 .gate .fslot{background:rgba(14,12,24,.45);backdrop-filter:blur(1px)}
 .gate-torch{animation:srFlick 2.6s ease-in-out infinite}
 /* ---- Quest report ledger ---- */
-.rm-box.ledger{position:relative;max-width:660px;color:#3a2a1a;font-family:Georgia,'Times New Roman',serif;border:0;border-radius:4px;padding:26px 30px 24px;
+.rm-box.ledger{position:relative;max-width:660px;color:#3a2a1a;font-family:var(--ft);border:0;border-radius:4px;padding:26px 30px 24px;
   background:radial-gradient(ellipse at 50% 0,rgba(255,255,255,.35),transparent 60%),repeating-linear-gradient(transparent 0 31px,rgba(120,80,40,.13) 31px 32px),linear-gradient(#e9d9b3,#d9c18f);
   background-size:auto,auto,auto;box-shadow:0 14px 40px rgba(0,0,0,.65),inset 0 0 60px rgba(120,80,30,.35);
   clip-path:polygon(0 1%,3% 0,8% 1.2%,14% .2%,22% 1%,30% 0,40% 1%,50% .2%,60% 1.2%,70% 0,80% 1%,90% .2%,100% 1%,99.4% 20%,100% 40%,99.2% 60%,100% 80%,99.4% 100%,92% 99%,80% 100%,70% 99%,60% 100%,50% 99%,38% 100%,25% 99%,12% 100%,4% 99%,0 100%,.6% 80%,0 60%,.8% 40%,0 20%)}
@@ -1370,7 +1413,7 @@ body.fn-on #battle-scene .control-panel,body.fn-on #order,body.fn-on #fb-hud,bod
 .ledger .sumflip{text-align:center;margin-top:12px}.ledger .sumflip button{background:#3a2a1a;color:#f4e6c8;border:1px solid #8a6a3a;border-radius:4px;padding:6px 14px;font-family:inherit}
 .ledger .sumpage{animation:sumFlip .35s ease-out}@keyframes sumFlip{from{transform:rotateY(80deg);opacity:0}to{transform:none;opacity:1}}
 #sum-stamp{position:relative;text-align:right;padding:16px 8px 0;min-height:64px;pointer-events:none}
-.stamp{display:inline-block;font:900 1.9rem/1 Georgia,serif;letter-spacing:.14em;padding:.15em .45em;border:.2em solid currentColor;border-radius:6px;transform:rotate(-11deg);opacity:0;mix-blend-mode:multiply;filter:url(#inkRough)}
+.stamp{display:inline-block;font:900 1.9rem/1 var(--ft);letter-spacing:.14em;padding:.15em .45em;border:.2em solid currentColor;border-radius:6px;transform:rotate(-11deg);opacity:0;mix-blend-mode:multiply;filter:url(#inkRough)}
 .stamp.ok{color:#2a6a34}.stamp.bad{color:#a02424}.stamp.mid{color:#6a5a2a}
 .stamp.go{animation:stampIn .45s cubic-bezier(.2,.9,.3,1.2) .5s forwards}
 @keyframes stampIn{0%{opacity:0;transform:rotate(-11deg) scale(2.6)}70%{opacity:.95;transform:rotate(-11deg) scale(.94)}100%{opacity:.88;transform:rotate(-11deg) scale(1)}}
@@ -1443,7 +1486,7 @@ body.calm .breath{display:none}
 .dvi-bg{inset:0;background:center/100% 100% no-repeat}
 .dvi-bg.none{background:linear-gradient(transparent 38%,#e6eef5 38%,#c9d6e2);}.dvi-bg.none::after{content:"";position:absolute;left:43%;top:54%;width:24%;height:13%;background:#0d2236;border-radius:6px;transform:skewX(-20deg)}
 .dvi-snowf{inset:0;pointer-events:none;background-image:radial-gradient(circle at 23% 31%,#fff 0 2px,transparent 2.8px),radial-gradient(circle at 71% 64%,#f0f6ff 0 1.3px,transparent 2px),radial-gradient(circle at 48% 12%,#fff 0 2.6px,transparent 3.4px),radial-gradient(circle at 87% 83%,#e8f1ff 0 1px,transparent 1.7px);background-size:157px 163px,97px 89px,233px 241px,61px 67px;opacity:.85;animation:dviSnow 9s linear infinite}
-@keyframes dviSnow{from{background-position:0 0,13px 29px,51px 7px,5px 41px}to{background-position:-60px 652px,-23px 445px,-90px 723px,-10px 268px}}
+@keyframes dviSnow{from{background-position:0 0,13px 29px,51px 7px,5px 41px}to{background-position:-157px 652px,-84px 474px,-182px 730px,-56px 309px}}
 .dvi-fig{left:var(--fx,33%);top:calc(var(--fy,74%) - var(--fh,44%));height:var(--fh,44%);width:0;transform-origin:0 100%}
 .dvi-a,.dvi-b{position:absolute;left:0;bottom:0;height:100%;transform:translateX(-50%);transition:opacity .25s}
 .dvi-a img,.dvi-b img,.dvi-sink img{height:100%;width:auto;max-width:none;display:block}
@@ -1494,7 +1537,7 @@ body.calm .dvi-snowf{animation:none}
 .rv-t.blessed{box-shadow:inset 0 0 12px rgba(255,230,150,.35)}
 .rv-t:hover,.rv-t:focus-visible,body.gp .rv-t.gp-focus{transform:translateY(-2px);box-shadow:0 0 14px rgba(200,170,255,.6);outline:none}
 .rv-t.on{box-shadow:0 0 0 2px #ffd88a,0 0 16px rgba(255,216,138,.5)}
-.rv-t .tier{position:absolute;right:3px;top:2px;font:800 .62rem Georgia,serif;color:#ffe4a0;background:rgba(0,0,0,.55);border-radius:4px;padding:0 3px}
+.rv-t .tier{position:absolute;right:3px;top:2px;font:800 .62rem var(--ft);color:#ffe4a0;background:rgba(0,0,0,.55);border-radius:4px;padding:0 3px}
 .rv-t .reg{position:absolute;left:3px;top:1px;font-size:.66rem}
 .rv-t .pur{position:absolute;left:4px;top:1px;color:#ffe08a;font-size:.8rem;text-shadow:0 0 6px #ffd54f}
 .rv-t .who{position:absolute;left:2px;right:2px;bottom:2px;font-size:.56rem;font-weight:700;color:#fff;background:rgba(60,40,110,.85);border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1503,7 +1546,7 @@ body.calm .dvi-snowf{animation:none}
 .rv-det{background:rgba(255,255,255,.03);border:1px solid rgba(200,180,255,.15);border-radius:12px;padding:14px;overflow:auto;display:flex;flex-direction:column;gap:8px}
 .rv-big{position:relative;align-self:center;width:96px;height:96px;border-radius:16px;border:2px solid #3a3550;display:flex;align-items:center;justify-content:center;font-size:3.2rem;background:radial-gradient(circle,rgba(255,255,255,.1),rgba(0,0,0,.3))}
 .rv-big.relic-rare{border-color:#4fc3f7}.rv-big.relic-epic{border-color:#d49bff}.rv-big.relic-cursed{border-color:#9cff6a}
-.rv-big i{position:absolute;right:5px;top:3px;font:800 .8rem Georgia,serif;color:#ffe4a0;font-style:normal}
+.rv-big i{position:absolute;right:5px;top:3px;font:800 .8rem var(--ft);color:#ffe4a0;font-style:normal}
 .rv-name{text-align:center;font-size:1.15rem;font-weight:800;color:#fff}
 .rv-meta{text-align:center;font-size:.74rem;color:#b0a6cc;text-transform:capitalize}
 .rv-desc{font-size:.92rem;color:#efeaff;line-height:1.4;background:rgba(0,0,0,.25);border-radius:8px;padding:8px 10px}
@@ -1523,10 +1566,10 @@ body.calm .pot-rune{animation:none}
 #pot-modal .pot-box{position:relative;z-index:1;background:linear-gradient(#171028,#0b0716) padding-box,linear-gradient(135deg,#8b6cff,#ffd88a 50%,#8b6cff) border-box;border:2px solid transparent;border-radius:14px;box-shadow:0 0 0 1px rgba(255,216,138,.18),0 0 40px rgba(139,108,255,.35),0 18px 50px rgba(0,0,0,.7);color:#e9e2ff}
 #pot-modal .pot-box::before{content:"✦";position:absolute;left:8px;top:2px;color:#ffd88a;font-size:.8rem;opacity:.8}
 #pot-modal .rm-head{border-bottom:1px solid rgba(255,216,138,.25);padding-bottom:8px}
-#pot-title{font-family:Georgia,'Times New Roman',serif;letter-spacing:.06em;font-size:1.15rem;background:linear-gradient(90deg,#ffe9b0,#c9b6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+#pot-title{font-family:var(--ft);letter-spacing:.06em;font-size:1.15rem;background:linear-gradient(90deg,#ffe9b0,#c9b6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
 #pot-title .pot-cry{-webkit-text-fill-color:#8fe0ff}
 #pot-modal .rm-head button{background:rgba(139,108,255,.15);border:1px solid #6b55b8;color:#e9e2ff}
-.pot-tier .dh{display:flex;align-items:center;gap:8px;color:#ffd88a;font-family:Georgia,serif;letter-spacing:.18em;font-size:.72rem;margin:12px 0 4px}
+.pot-tier .dh{display:flex;align-items:center;gap:8px;color:#ffd88a;font-family:var(--ft);letter-spacing:.18em;font-size:.72rem;margin:12px 0 4px}
 .pot-tier .dh::before,.pot-tier .dh::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,216,138,.45),transparent)}
 .pot-opt{background:linear-gradient(90deg,rgba(70,48,130,.32),rgba(20,14,40,.6));border:1px solid #3d2f6e;transition:box-shadow .25s,border-color .25s,transform .15s}
 .pot-opt:hover{border-color:#8b6cff;transform:translateX(2px)}
@@ -1656,7 +1699,7 @@ body.calm .pot-back svg.tt{animation:none!important}
 .dc-strip .dcs:hover{border-color:#9ab}
 .dc-strip .arr{font-size:1.1rem;padding:.3em .7em}
 .rside{margin:8px 0;text-align:left}
-.rs-h{font:700 .78rem 'Segoe UI',sans-serif;letter-spacing:.12em;color:#c8b8e8;margin:2px 2px 8px;text-transform:uppercase}
+.rs-h{font:700 .78rem var(--fb);letter-spacing:.12em;color:#c8b8e8;margin:2px 2px 8px;text-transform:uppercase}
 .rs-h small{display:block;font-weight:400;letter-spacing:0;text-transform:none;color:#8a8aab;margin-top:3px;font-size:.72rem;line-height:1.3}
 .rlist{display:flex;flex-direction:column;gap:6px}
 .rlist .rc{cursor:pointer;touch-action:auto}
@@ -2360,8 +2403,8 @@ button:not(:disabled):active,.clk:active,.rc:active,.dcs:active{filter:brightnes
 .st-wx{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s}
 .st-wx.rain{opacity:1;background:linear-gradient(180deg,rgba(30,40,60,.35),rgba(20,26,40,.2)),repeating-linear-gradient(105deg,transparent 0 9px,rgba(200,220,255,.22) 9px 10px,transparent 10px 23px);background-size:100% 100%,240px 240px;animation:stRain .45s linear infinite}
 @keyframes stRain{to{background-position:0 0,-60px 240px}}
-.st-wx.snow{opacity:1;background:radial-gradient(circle,rgba(255,255,255,.9) 0 2px,transparent 2.5px) 0 0/90px 90px,radial-gradient(circle,rgba(255,255,255,.6) 0 1.5px,transparent 2px) 40px 30px/60px 60px,linear-gradient(180deg,rgba(200,220,255,.18),rgba(255,255,255,.08));animation:stSnow 6s linear infinite}
-@keyframes stSnow{to{background-position:30px 90px,10px 90px,0 0}}
+.st-wx.snow{opacity:1;background:radial-gradient(circle,rgba(255,255,255,.9) 0 2px,transparent 2.5px) 0 0/90px 90px,radial-gradient(circle,rgba(255,255,255,.6) 0 1.5px,transparent 2px) 40px 30px/60px 60px,linear-gradient(180deg,rgba(200,220,255,.18),rgba(255,255,255,.08));animation:stSnow 12s linear infinite}
+@keyframes stSnow{from{background-position:0 0,40px 30px,0 0}to{background-position:-90px 270px,-20px 210px,0 0}}
 .st-wx.sun{opacity:1;background:radial-gradient(ellipse 70% 50% at 80% 0%,rgba(255,236,170,.35),transparent 70%)}
 .st-ball{position:fixed;left:0;top:0;z-index:7;font-size:clamp(30px,4vw,64px);line-height:1;pointer-events:none;margin:-.5em 0 0 -.5em;filter:drop-shadow(0 4px 3px rgba(0,0,0,.5))}
 .st-actor.topple-l .figure{transition:transform .25s cubic-bezier(.5,0,.8,.4) .05s,translate .25s ease-in .18s;transform-origin:50% 100%;transform:rotate(-90deg);translate:0 60vh}
@@ -2443,7 +2486,7 @@ body.calm #title-bg *{animation:none!important}
 #title-bg.spin .tb-tw{z-index:1}
 #title>*:not(#title-bg):not(.tt-name):not(.tt-ver){position:relative;z-index:1}
 #title>.tt-name,#title>.tt-ver{z-index:1}
-#title h2.tt-name{position:absolute;top:6vh;left:0;right:0;margin:0;text-align:center;font-family:'Cinzel','Trajan Pro','Palatino Linotype','Book Antiqua',Georgia,serif;font-weight:700;color:#f3ecff;letter-spacing:.32em;font-size:clamp(46px,7.2vw,132px);line-height:1;text-shadow:0 0 18px rgba(170,130,255,.75),0 0 46px rgba(120,80,230,.55),0 3px 6px rgba(0,0,0,.8);padding-left:.32em;pointer-events:none;animation:ttGlow 6s ease-in-out infinite alternate}
+#title h2.tt-name{position:absolute;top:6vh;left:0;right:0;margin:0;text-align:center;font-family:var(--ft);font-weight:700;color:#f3ecff;letter-spacing:.32em;font-size:clamp(46px,7.2vw,132px);line-height:1;text-shadow:0 0 18px rgba(170,130,255,.75),0 0 46px rgba(120,80,230,.55),0 3px 6px rgba(0,0,0,.8);padding-left:.32em;pointer-events:none;animation:ttGlow 6s ease-in-out infinite alternate}
 #title h2.tt-name span{display:block;margin-top:.35em;font-size:.3em;letter-spacing:.42em;font-weight:400;color:#d9ccff;padding-left:.42em}
 @keyframes ttGlow{to{text-shadow:0 0 24px rgba(190,150,255,.95),0 0 64px rgba(140,90,250,.7),0 3px 6px rgba(0,0,0,.8)}}
 #title p.tt-ver{position:absolute;left:18px;bottom:12px;margin:0;font-size:.7rem;color:rgba(220,210,255,.45);letter-spacing:.2em}
@@ -2801,10 +2844,11 @@ body.calm .talk-mark,body.calm .talk-mark span{animation:none}
 #btn-start-quest.fin{letter-spacing:.06em;white-space:nowrap;font-size:.92em}
 #end-banner{position:fixed;left:50%;top:30%;translate:-50% -50%;z-index:31;display:none;flex-direction:column;align-items:center;gap:6px;pointer-events:none;text-align:center}
 #end-banner.on{display:flex;animation:endIn .5s ease-out both}
-#end-banner b{font:700 clamp(40px,5vw,84px)/1 Georgia,serif;letter-spacing:.08em;text-transform:uppercase;color:#ffe27a;text-shadow:0 0 18px rgba(255,190,60,.55),0 4px 0 #3a2208,0 6px 16px rgba(0,0,0,.8)}
+#end-banner b{font:700 clamp(40px,5vw,84px)/1 var(--ft);letter-spacing:.08em;text-transform:uppercase;color:#ffe27a;text-shadow:0 0 18px rgba(255,190,60,.55),0 4px 0 #3a2208,0 6px 16px rgba(0,0,0,.8)}
 #end-banner.bad b{color:#ff8a8a;text-shadow:0 0 18px rgba(255,60,60,.5),0 4px 0 #3a0808,0 6px 16px rgba(0,0,0,.8)}
 #end-banner span:not(:empty){font-weight:700;font-size:1.05rem;color:#f3ead6;background:rgba(10,8,20,.75);border:1px solid rgba(255,215,120,.35);border-radius:999px;padding:6px 16px}
 @keyframes endIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+#battle-scene .column-header{visibility:hidden}      /* 'PLAYER PARTY' / the enemy group's name: the scene says it already (Connor 2026-11-25) */
 #coach{position:fixed;inset:0;z-index:90;background:rgba(6,4,14,.45);opacity:0;transition:opacity .25s;cursor:pointer}#coach.on{opacity:1}
 #coach .ck-box{position:fixed;border:2px solid #ffd54f;border-radius:12px;box-shadow:0 0 0 3px rgba(255,213,79,.18),0 0 18px rgba(255,213,79,.45);pointer-events:none}
 #coach .ck-tip{position:fixed;translate:-50% 0;max-width:240px;padding:7px 12px;border-radius:10px;background:#fff6dc;color:#2a1a08;font-weight:700;font-size:.92rem;line-height:1.25;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none}
@@ -2899,13 +2943,13 @@ body.calm .ring .rb-beat,body.calm .ring .rb-drip{animation:none}
 <div id="title">
   <div id="title-bg"></div>
   <h2 class="tt-name">MOTE<span>in the Celestial Fire</span></h2>
-  <p class="tt-ver">PROTOTYPE</p>
+  <p class="tt-ver" id="tt-ver"></p>
   <div class="menu" id="menu-main">
     <button id="btn-continue" onclick="doContinue()">Continue</button>
     <button id="btn-ngp" onclick="openPanel('ngp')" style="display:none">🔥 New Game+</button>
     <button id="btn-new" onclick="doNew()">New Game</button>
     <button onclick="openPanel('data')">Export / Import Save</button>
-    <button onclick="startDev()" style="opacity:.8">🛠 Developer Mode</button>
+    <button id="btn-devmode" onclick="startDev()" style="opacity:.8">🛠 Developer Mode</button>
   </div>
   <div class="info" id="title-info"></div>
   <div class="panel" id="panel-confirm">
@@ -3487,7 +3531,7 @@ const ENEMIES = [
   { id:'e_shuten', boss:true, weak:['shock'], resist:['fire'], name:'Oni Lord Shuten', short:'Shuten', tag:'SHUTEN', hp:300, brk:95, spd:8, phases:[{ at:.5, msg:'Shuten drains the sake cup and flies into a rage! Flaming phantoms of the oni step out of the smoke!', atk:1.3, cleanse:true, clones:2, add:[{ n:'Blood Frenzy', t:'dmg', r:'melee', d:[21,24], el:'bleed', brk:20, cd:3 }] }], skills:[
     { n:'Kanabo Crush',  t:'dmg', r:'melee',  d:[17,20], cd:0 },
     { n:'Demon Fire',    t:'dmg', r:'ranged', d:[13,16], el:'fire',  brk:25, cd:2 },
-    { n:'Oni Hide',      t:'barrier', p:28, cd:4 } ] },
+    { n:'Grand Slam',    t:'dmg', r:'melee',  d:[19,23], chip:true, brk:42, cd:3, slam:true, launch:true } ] },      // her close-up home run (BOSSTAGE.e_shuten): big break, and the hero she hits goes flying (just for show)
   // ---- ACT 3: the frostbound peaks (frost, horror and the restless undead; weak to fire almost across the board) ----
   { id:'e_husk', role:'front', weak:['fire'], resist:['ice','poison'], frontMod:-0.1, name:'Frostbitten Husk', tag:'HUSK', hp:130, brk:50, spd:5, skills:[
     { n:'Frozen Claw',  t:'dmg', r:'melee',  d:[14,16], cd:0 },
@@ -4625,7 +4669,7 @@ const ANGEL_SVG = `<svg viewBox="0 0 300 600"><defs><linearGradient id="agRobe" 
   <path d="M110 100C104 64 196 64 190 100C196 140 206 176 200 200C182 160 118 160 100 200C94 176 104 140 110 100Z" fill="#f0cf78"/>
   <path d="M150 150C110 160 100 220 106 300C96 420 80 520 70 594L230 594C220 520 204 420 194 300C200 220 190 160 150 150Z" fill="url(#agRobe)"/>
   <circle cx="150" cy="112" r="36" fill="#ffe8d4"/><ellipse cx="150" cy="56" rx="44" ry="11" fill="none" stroke="#ffe08a" stroke-width="6"/>
-  <text x="150" y="430" text-anchor="middle" font-size="17" fill="#7a6a9a" font-family="Georgia">GUIDING ANGEL</text></svg>`;
+  <text x="150" y="430" text-anchor="middle" font-size="17" fill="#7a6a9a" style="font-family:var(--ft)">GUIDING ANGEL</text></svg>`;
 let bookTab = 'basics', bookSpread = 0, bookPages = 2, bookBusy = false, angelArt;
 const BOOK_SEEN = 'animeRpgBookSeen';
 function bookSeen() { try { return !!localStorage.getItem(BOOK_SEEN); } catch (e) { return true; } }
@@ -5105,7 +5149,21 @@ let over = false;
 // so older saves get upgraded instead of breaking. Saves are per browser and per device.
 const START_GOLD = 0;     // gold a brand new game starts with: nothing, you live off the starting supplies and your first run's winnings
 const START_ITEMS = { potion: 6, ration: 4, kit: 3 };   // starting bag: enough to clear the first quest if played well (a bare run is still a gamble; perks and relics improve the odds)
-const SAVE = { key: 'animeRpgSave', version: 12, prefix: 'ARPG1:' };   // prefix marks the export format, not the save version
+/* ============ DEMO MODE ============ (Connor 2026-11-25) The same file runs as the PC demo when DEMO_BUILD is true (the demo packaging flips it) or the page is opened
+   with ?demo. The demo is one quest and one hunt, both Act 1: The Night Parade (its opening scene, Irae's cameo, Irae joins) and then a Hunt Board with one beast.
+   - Party: the starting four (Seria, Aria, Iris, Aneesah) + Irae after the Night Parade. Everyone starts with a fixed set of Tier I perks (DEMO_CFG.perks).
+   - The Night Parade's first clear also drops a cache of Tier I relics (DEMO_CFG.relics), enough for the whole group's Act 1 builds: equip them on each hero's ⓘ page.
+   - No town or shop: every quest and hunt starts with the same bag (DEMO_CFG.bag), refilled each time. "Back to town" goes to the embark screen.
+   - The rest of the world map is hidden; the Hunt Board shows the demo beast, and the Act II and III posters are sealed ("in the full game").
+   - Beating the hunt shows a thank-you notice. Its own save slot (it never touches the full game's save). */
+const DEMO_BUILD = false;
+const DEMO = (() => { try { return DEMO_BUILD || /[?&]demo\b/.test(location.search); } catch (e) { return DEMO_BUILD; } })();
+if (DEMO) document.documentElement.classList.add('demo');
+const DEMO_CFG = { quest: 'yokai', hunt: 'hunt_fox', bag: { ration: 4, potion: 6, kit: 4, torch: 0 },
+  perks: { seria: ['plated', 'bracing', 'hardy', 'quick'], aria: ['hardy', 'steady', 'quick', 'attuned'], iris: ['keen', 'opportunist', 'sharp', 'pyro'], aneesah: ['keen', 'sharp', 'attuned', 'storm'], irae: ['keen', 'opportunist', 'sharp', 'bloodletter'] },
+  relics: ['pauldron', 'giants_heart', 'bulwark_sigil', 'hourglass', 'whetstone', 'breakers_mark', 'arcane_lens', 'glass_ring', 'hunters_eye', 'vampiric_fang', 'iron_band', 'swift_boots'],
+  wishlist: '' };      // the store page link for the end-of-demo notice, once there is one
+const SAVE = { key: DEMO ? 'animeRpgDemoSave' : 'animeRpgSave', version: 12, prefix: 'ARPG1:' };   // prefix marks the export format, not the save version
 const migrations = {
   // Each entry upgrades a save FROM that version to the next one.
   1: s => { s.roster = HEROES.filter(h => !h.locked).map(h => h.id); s.lastParty = []; s.scene = 'hub'; s.version = 2; return s; },
@@ -5231,6 +5289,7 @@ function refreshTitle() {
   try { titleBg(); } catch (e) { }
   const s = readSave(), c = $('btn-continue'), info = $('title-info');
   c.disabled = !s;
+  if (DEMO) { $('tt-ver').textContent = 'DEMO'; ['btn-devmode', 'btn-ngp'].forEach(id => { const b = $(id); if (b) b.style.display = 'none'; }); }
   { const b = $('btn-ngp'); if (b) b.style.display = s && s.ngOpen ? '' : 'none'; }
   c.innerHTML = s ? `Continue<br><small>${s.ng ? '🔥 NG+ · ' : ''}Quests: ${s.stats.won} cleared · ${s.stats.lost} failed${s.quest ? ' · quest in progress' : ''} · ${fmtDate(s.updated)}</small>` : 'Continue';
   info.className = 'info'; info.textContent = '';
@@ -5278,7 +5337,8 @@ function startGame() {
 }
 function doContinue() { game = readSave(); if (!game) { refreshTitle(); return; } startGame(); }
 function doNew() { if (readSave() || hasRawSave()) openPanel('confirm'); else startNew(); }
-function startNew() { game = newSave(); writeSave(); startGame(); }
+function startNew() { game = newSave(); if (DEMO) demoSetup(game); writeSave(); startGame(); }
+function demoSetup(g) { Object.entries(DEMO_CFG.perks).forEach(([id, t]) => { g.traits[id] = t.filter(x => TRAIT[x]); }); g.items = { ...DEMO_CFG.bag }; g.gold = 0; }
 function startNGPlus() {               // New Game+: a fresh save that keeps what the heroes own (see tierUnlock)
   const o = readSave(); if (!o || !o.ngOpen) return openPanel(null);
   const n = newSave();
@@ -7041,12 +7101,93 @@ document.addEventListener('keydown', e => {
    storm: x = where she hangs, hand = her raised hand (dx toward the party, up from the bottom, in picture heights), bolts = bolts per hero. */
 const BOSSTAGE = {
   e_final_l: { kind: 'scythe', h: 1.12, bottom: 1.1, x0: .80, windX: .88, tilt: 7, sweepTilt: -10, reach: .5, rake: .1, windMs: 210, sweepMs: 250, rakeMs: 230 },
+  e_shuten:  { kind: 'slam', h: .95, bottom: 1.06, gap: .15, windMs: 750, swingMs: 170, holdMs: 380, tilt: -8, swingTilt: 14 },      // Grand Slam: she comes up close beside her target (gap = screen widths to its right), winds up, swings
   e_final_r: { kind: 'storm', h: 1.1, bottom: 1.12, x: .68, hand: { dx: .2, up: .8 }, bolts: 3, chargeMs: 260, strikeMs: 520 }
 };
 async function bossStageAssets(u, i) {
+  if (BOSSTAGE[u.id] && BOSSTAGE[u.id].kind === 'slam') {        // Shuten's Grand Slam: wind-up picture (skill3) + swing picture (skill3_swing); stand-ins until they exist
+    if (u.clone || !document.body.animate) return null;
+    const a = (await firstAsset(u, 'skill' + (i + 1))) || (await firstAsset(u, 'idle')), b = (await firstAsset(u, 'skill' + (i + 1) + '_swing')) || a;
+    const still = x => x && x.ext !== 'mp4' && x.ext !== 'webm';
+    return { a: still(a) ? a : null, b: still(b) ? b : null };
+  }
   if (!u.final || !BOSSTAGE[u.id] || !MOVE.on || !wide() || FX.calm || !document.body.animate) return null;
   const a = (await firstAsset(u, 'skill' + (i + 1))) || (await firstAsset(u, 'idle'));
   return a && a.ext !== 'mp4' && a.ext !== 'webm' ? { a } : null;
+}
+/* ---- Oni Lord Shuten's GRAND SLAM (Connor 2026-11-25): she steps up close to the camera beside her target in her wind-up picture (knee up, kanabo back like a bat),
+   holds it, then snaps to the swing picture with a bat CRACK. The hit lands (big break). Then, in this order: the armour-break cut-in (if it broke) → the hero
+   goes flying, spinning off into the sky and vanishing in a twinkle (just for show, no game effect) → Shuten and the hero are back in the line → the hero's
+   banter line. Art: assets/e_shuten/<armoured|broken>/skill3 (wind-up) and skill3_swing (swing), facing LEFT; until they exist her idle stands in. */
+async function slamBegin(u, t, art) {
+  dashClear();
+  const el = figs.get(u), tf = t && figs.get(t); if (!el || !el.isConnected || !tf || !tf.isConnected) return null;
+  const A = figBox(el), B = figBox(tf); if (!A.w || !B.w) return null;
+  const K = BOSSTAGE[u.id], vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, flip = sprFlip(u);
+  const d0 = document.createElement('div'); d0.className = 'dashfx' + (flip ? ' flip' : '');
+  Object.assign(d0.style, { left: (A.cx - A.w / 2) + 'px', top: (A.bottom - A.h) + 'px', width: A.w + 'px', height: A.h + 'px', zIndex: 74 });
+  const im = document.createElement('img'); im.className = 'a'; im.src = (art.a || art.b || {}).url || ''; im.draggable = false; d0.appendChild(im); document.body.appendChild(d0);
+  if (!art.a) im.style.opacity = '0';
+  if (im.decode) await im.decode().catch(() => {});
+  const d = dashLive = { parts: [d0], el, tcard: null }; el.style.visibility = 'hidden';
+  const H = vh * K.h, S = H / (A.h * SPR_SCALE), dy = vh * K.bottom - A.bottom, tx = Math.min(vw * .9, B.cx + vw * K.gap);
+  const at = (x, sc, rot, lift = 0) => `translate(${x - A.cx}px,${dy - lift}px) rotate(${rot}deg) scale(${sc})`;
+  let cur = 'translate(0px,0px) scale(1)';
+  const move = async (to, ms, ease) => { const an = d0.animate([{ transform: cur }, { transform: to }], { duration: dspd(ms), easing: ease, fill: 'forwards' }); cur = to; await Promise.race([an.finished.catch(() => {}), sleep(dspd(ms) + 120)]); };
+  t.launchNext = true; t._flown = false; t._speak = null;
+  return {
+    async run() {
+      await move(at(tx + vw * .05, S, 0), 260, 'cubic-bezier(.2,.8,.3,1)');                       // up close, beside her target
+      sfx('charge', 'physical'); await move(at(tx + vw * .07, S * 1.03, K.tilt, vh * .015), K.windMs, 'ease-in-out');      // the wind-up: knee up, club back
+      if (art.b && art.b !== art.a) im.src = art.b.url;
+      batCrack(); shake(5);
+      const f = document.createElement('div'); Object.assign(f.style, { position: 'fixed', inset: 0, background: '#fff', opacity: 0, zIndex: 73, pointerEvents: 'none' }); document.body.appendChild(f); d.parts.push(f);
+      f.animate([{ opacity: .55 }, { opacity: 0 }], { duration: dspd(220), fill: 'forwards' });
+      await move(at(tx - vw * .02, S, K.swingTilt, 0), K.swingMs, 'cubic-bezier(.6,0,.4,1)');       // the swing
+      await sleep(dspd(K.holdMs));
+    },
+    async follow() {},
+    async home() {
+      if (t.launchNext && !t._flown && isAlive(t)) await launchFly(t);                          // no armour broke: she still sends them flying
+      t.launchNext = false;
+      if (dashLive === d) { const a = d0.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(260), easing: 'ease-in', fill: 'forwards' }); if (el.isConnected) el.style.visibility = ''; await Promise.race([a.finished.catch(() => {}), sleep(dspd(260) + 120)]); dashClear(); }
+      if (t._speak) { const k = t._speak; t._speak = null; await sleep(dspd(150)); speak(t, k); }  // the banter comes last
+    }
+  };
+}
+async function launchFly(t) {            // "blasting off again": spins away into the sky and vanishes with a twinkle, then is simply back in the line
+  t._flown = true;
+  const fe = figs.get(t); if (!fe || !fe.isConnected || !document.body.animate) return;
+  const B = figBox(fe), src = (fe.querySelector('img.spr') || fe.querySelector('img') || {}).src; if (!B.w || !src) return;
+  const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  const c = document.createElement('img'); c.src = src; c.draggable = false;
+  Object.assign(c.style, { position: 'fixed', left: (B.cx - B.w / 2) + 'px', top: (B.bottom - B.h) + 'px', width: B.w + 'px', height: B.h + 'px', objectFit: 'contain', zIndex: 75, pointerEvents: 'none', transformOrigin: '50% 50%' });
+  if (sprFlip(t)) c.style.transform = 'scaleX(-1)';
+  document.body.appendChild(c); fe.style.visibility = 'hidden'; sfx('whoosh', 'physical');
+  const ex = Math.max(vw * .06, B.cx - vw * .22), ey = vh * .08, dx = ex - B.cx, dyy = ey - (B.bottom - B.h / 2);
+  const fly = c.animate([{ transform: 'translate(0,0) rotate(0) scale(1)' }, { transform: `translate(${dx * .45}px,${dyy * .7}px) rotate(-540deg) scale(.55)`, offset: .45 }, { transform: `translate(${dx}px,${dyy}px) rotate(-1260deg) scale(.04)` }],
+    { duration: dspd(1150), easing: 'cubic-bezier(.25,.6,.4,1)', fill: 'forwards' });
+  await Promise.race([fly.finished.catch(() => {}), sleep(dspd(1150) + 150)]); c.remove();
+  const tw = document.createElement('div'); tw.textContent = '✦'; Object.assign(tw.style, { position: 'fixed', left: ex + 'px', top: ey + 'px', transform: 'translate(-50%,-50%)', fontSize: Math.round(vh * .05) + 'px', color: '#fff', textShadow: '0 0 12px #fff,0 0 24px #9fd4ff', zIndex: 75, pointerEvents: 'none' });
+  document.body.appendChild(tw); twinkleSnd();
+  const ta = tw.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.2) rotate(0)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.3) rotate(45deg)', offset: .35 }, { opacity: 0, transform: 'translate(-50%,-50%) scale(.3) rotate(90deg)' }], { duration: dspd(650), fill: 'forwards' });
+  await Promise.race([ta.finished.catch(() => {}), sleep(dspd(650) + 100)]); tw.remove();
+  await sleep(dspd(250));
+  if (fe.isConnected) { fe.style.visibility = ''; fe.animate([{ opacity: 0, transform: 'translateY(-30px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: dspd(320), easing: 'cubic-bezier(.3,1.4,.5,1)' }); }
+  await sleep(dspd(340));
+}
+function batCrack() {                    // a wooden CLACK (a 'batcrack' sound in the sound list replaces it)
+  if (SND.map && SND.map.batcrack) return sfx('batcrack');
+  try { if (sndMuted || !ac()) return; const t0 = actx.currentTime, n = actx.createBufferSource(), bp = actx.createBiquadFilter(), g = actx.createGain(), o = actx.createOscillator(), og = actx.createGain();
+    n.buffer = anoise; bp.type = 'bandpass'; bp.frequency.value = 1900; bp.Q.value = 2.2;
+    g.gain.setValueAtTime(.9 * FX.sfx, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + .09);
+    o.type = 'triangle'; o.frequency.setValueAtTime(820, t0); o.frequency.exponentialRampToValueAtTime(380, t0 + .07); og.gain.setValueAtTime(.45 * FX.sfx, t0); og.gain.exponentialRampToValueAtTime(.001, t0 + .1);
+    n.connect(bp); bp.connect(g); g.connect(asfx); o.connect(og); og.connect(asfx); n.start(t0); n.stop(t0 + .12); o.start(t0); o.stop(t0 + .12); } catch (e) {}
+}
+function twinkleSnd() {                  // the little 'ting' as they vanish over the horizon
+  if (SND.map && SND.map.twinkle) return sfx('twinkle');
+  try { if (sndMuted || !ac()) return; const t0 = actx.currentTime;
+    [2093, 3136].forEach((f, k) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t0 + k * .07); g.gain.linearRampToValueAtTime(.18 * FX.sfx, t0 + k * .07 + .01); g.gain.exponentialRampToValueAtTime(.001, t0 + k * .07 + .5); o.connect(g); g.connect(asfx); o.start(t0 + k * .07); o.stop(t0 + k * .07 + .55); }); } catch (e) {}
 }
 function jagPts(x1, y1, x2, y2, n, amp) {            // a jagged lightning line from one point to another
   const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len; let pts = '';
@@ -7054,6 +7195,7 @@ function jagPts(x1, y1, x2, y2, n, amp) {            // a jagged lightning line 
   return pts;
 }
 async function bossStageBegin(u, t, art, s) {
+  if (BOSSTAGE[u.id] && BOSSTAGE[u.id].kind === 'slam') return slamBegin(u, t, art);
   dashClear();
   const el = figs.get(u); if (!el || !el.isConnected) return null;
   const A = figBox(el); if (!A.w) return null;
@@ -7292,6 +7434,7 @@ function buildBg(id, node, last) {
 async function loadStageBg() {
   const b = document.querySelector('#battle-scene .battlefield'); if (!b || !quest) return;
   const id = quest.def.id, node = quest.node, last = node === quest.def.nodes.length - 1;
+  sceneLight(null, BGT[id] || BGT._);                // the palette's light at once; a painting refines it below
   let a = null;
   const nd = quest.def.nodes[node], bgn = (nd && nd.bg) || node + 1;
   for (const p of [`battle_${id}_${bgn}`, `battle_${id}`, 'battle_bg']) { a = await findAsset(`${ANIM.base}/ui/${p}`); if (a) break; }
@@ -7301,6 +7444,36 @@ async function loadStageBg() {
   b.querySelectorAll(':scope > .bgp').forEach(x => x.remove()); mikePaint(b, pic && id !== 'final' ? a.url : null, 'battle');
   if (!pic) b.prepend(buildBg(id, node, last));    // no picture: draw one in code
   todStage(b);
+  if (pic) sceneLight(a.url, null);
+}
+/* SCENE LIGHT (Connor 2026-11-25): every sprite in a fight takes the scene's light so it sits in the background instead of looking pasted on:
+   a soft tint of the scene's ambient colour, a rim of its key light along the top edges, and a soft contact shadow under the feet (CSS .figure::after).
+   The colours come from the painted background (sampled) or, for a drawn one, from its palette (BGT). One SVG filter (#sceneLit) shared by every sprite. */
+const LIT = { amb: .22, rim: .55 };
+document.addEventListener('DOMContentLoaded', () => sceneLitDefs()); setTimeout(() => { try { sceneLitDefs(); } catch (e) {} }, 0);      // the filter must exist before any sprite uses it
+function sceneLitDefs() {
+  if (document.getElementById('sceneLitSvg')) return;
+  document.body.insertAdjacentHTML('beforeend', `<svg id="sceneLitSvg" width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="sceneLit" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+    <feFlood id="slAmb" flood-color="#808080" flood-opacity="${LIT.amb}"/><feComposite in2="SourceAlpha" operator="in" result="amb"/>
+    <feBlend in="amb" in2="SourceGraphic" mode="soft-light" result="tinted"/>
+    <feOffset in="SourceAlpha" dx="0" dy="5" result="sh"/><feComposite in="SourceAlpha" in2="sh" operator="out" result="edge"/><feGaussianBlur in="edge" stdDeviation="1.6" result="edgeB"/>
+    <feFlood id="slKey" flood-color="#ffffff" flood-opacity="${LIT.rim}"/><feComposite in2="edgeB" operator="in" result="rim"/>
+    <feBlend in="rim" in2="tinted" mode="screen" result="lit"/><feComposite in="lit" in2="SourceAlpha" operator="in"/></filter></svg>`);
+}
+function sceneLight(url, T) {
+  sceneLitDefs();
+  const set = (amb, key) => { const a = document.getElementById('slAmb'), k = document.getElementById('slKey'); if (a) a.setAttribute('flood-color', amb); if (k) k.setAttribute('flood-color', key); };
+  if (T) set(T.mid ? mixHex(T.sky[1], T.glow, .35) : '#808080', T.glow || '#ffffff');
+  if (!url) return;
+  const im = new Image(); im.crossOrigin = 'anonymous';
+  im.onload = () => { try {                     // the painting's average colour = the ambient; its brightest band = the key light
+    const c = document.createElement('canvas'); c.width = 32; c.height = 18; const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0, 32, 18);
+    const d = g.getImageData(0, 0, 32, 18).data; let r = 0, gg = 0, bb = 0, n = 0, best = null, bl = -1;
+    for (let i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; bb += d[i + 2]; n++; const l = d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11; if (l > bl) { bl = l; best = [d[i], d[i + 1], d[i + 2]]; } }
+    const hx = v => Math.round(v).toString(16).padStart(2, '0'), amb = '#' + [r / n, gg / n, bb / n].map(hx).join(''), key = '#' + best.map(v => hx(Math.min(255, v * .6 + 255 * .4))).join('');
+    set(amb, key);
+  } catch (e) {} };
+  im.src = url;
 }
 
 /* ============ UI ============ */
@@ -7563,7 +7736,7 @@ function card(u, team, i) {
   return `<div class="${c.join(' ')}" onclick="pick('${team}',${i})">
     <div class="bubble">${extra}${incTxt}</div>
     <div class="figure-slot"></div>
-    <div class="floor">${FX.rings !== false ? ringSvg(u, bfx, sk) : ''}</div>
+    <div class="floor">${FX.rings !== false && !topBoss(u) ? ringSvg(u, bfx, sk) : ''}</div>
     <div class="stats-info">
       <div class="nm"><strong>${u.name}</strong>${team === 'p' && i === 0 ? '👑' : ''}<span class="spd">SPD ${u.spd} <b class="info" onclick="event.stopPropagation();inspect('${team}',${i})">ⓘ</b></span></div>
       <div class="tags">${u.trollPart && u.state !== 'armoured' && isAlive(u) ? `<span class="stealth-tag" style="background:#3a2a12;color:#ffd9a0" title="Its armour grows back after this many of the troll's turns">🦴 regrows in ${u.regrow}</span>` : ''}${u.chill >= 1 && blizz.on && isAlive(u) ? `<span class="stealth-tag" style="background:#1f3a5c;color:#bfe3ff" title="Cold slows you: your attacks can miss">❄️ hit ${Math.round(numbHit(u) * 100)}%</span>` : ''}${u.immortal > 0 ? `<span class="stealth-tag" title="HP cannot fall below 1">🦇 immortal ${u.immortal}</span>` : ''}${u.brew ? `<span class="elite-tag" title="+physical damage; poison when it wears off">⚗️ brewed ${u.brew.turns}</span>` : ''}${u.guardedBy && isAlive(u.guardedBy) ? `<span class="stealth-tag" title="Attacks aimed at this hero hit ${u.guardedBy.name} until her next turn">🤝 ${u.guardedBy.name.split(' ')[0]} guards</span>` : ''}${u.taunt && isAlive(u.taunt) ? `<span class="elite-tag" title="Its next attack must target ${u.taunt.name}">🎯 taunted</span>` : ''}${u.stealth > 0 ? `<span class="stealth-tag" title="Stealth: attacks bleed, enemies rarely target her and ${Math.round(EVADE.stealth * 100)}% of attacks miss. Any damage ends it">🌫️ ${u.stealth}</span>` : ''}${u.dr && u.dr.turns > 0 ? `<span class="stealth-tag" title="Takes ${Math.round(u.dr.mult * 100)}% less damage">🔰 −${Math.round(u.dr.mult * 100)}% ${u.dr.turns}</span>` : ''}${hasCharm(u) ? `<span class="elite-tag" title="Its next attack hits a friend">💘 charmed</span>` : ''}${u.mod ? `<span class="elite-tag" title="${ELITE.mods[u.mod].desc}">★ ${ELITE.mods[u.mod].name}</span>` : ''}${alive ? `<span class="rowtag ${front ? 'f' : 'b'}">${front ? 'FRONT' : 'BACK'}</span>` : ''}<span class="status-badge status-${u.state === 'super' ? 'super' : u.state}">${{ armoured: 'Armoured', broken: 'Broken', super: 'SUPER BROKEN' }[u.state]}</span>${st}${u.wrath ? ' <span class="shield" title="Dragon\'s Wrath: an extra strike on her next turn">🐉</span>' : ''}${u.icons ? `<span class="mt">${u.icons}</span>` : ''}${mt}${traitIcons(u) ? `<span class="mt" title="Traits (tap ⓘ)">${traitIcons(u)}</span>` : ''}</div>
@@ -7729,7 +7902,7 @@ function dmgLoop() {                       // runs every frame while the battle 
 function render() {
   document.body.classList.toggle('rings', FX.rings !== false);        // health rings instead of bars (PC battle; see ringSvg)
   document.body.classList.toggle('bt-wait', !!waiting);          // your turn: the quiet battle bars come up a little
-  if (!dmgRun) { dmgRun = true; requestAnimationFrame(dmgLoop); } requestAnimationFrame(trollLayer); trollHud();
+  if (!dmgRun) { dmgRun = true; requestAnimationFrame(dmgLoop); } requestAnimationFrame(trollLayer); trollHud(); bossHud();
   { const f = $('btn-flee'); if (f) { const on = huntFight(); f.style.display = on ? '' : 'none'; f.disabled = !huntCanFlee(); } }
   renderPanel(); if (typeof lowHpPulse === 'function') lowHpPulse();
   queueMicrotask(applyCamera);
@@ -7739,7 +7912,7 @@ function render() {
   mountFigures($('party-cards'), party, 'p'); mountFigures($('enemy-cards'), enemies, 'e'); syncThreats(); requestAnimationFrame(() => { try { syncThreats(); } catch (e) {} });
   [...party, ...enemies].forEach(syncAmbient);
   $('order').innerHTML = order.length ? `Round ${roundNo} · Turn order: ` + order.map(u =>
-    `<span class="oq ${u.team}${u === actor ? ' act' : ''}${isAlive(u) ? '' : ' dead'}${u.team === 'e' && u.rush ? ' rush' : ''}"${u.team === 'e' && u.rush ? ` title="Hurrying to shield: +${u.rush} speed this round"` : ''}><span class="mini-sprite port-box" data-port="${u.id}">${u.tag}</span>${u === actor ? `<b>${u.short}</b>` : u.short}</span>`).join('›') : '';
+    `<span class="oq ${u.team}${u === actor ? ' act' : ''}${isAlive(u) ? '' : ' dead'}${u.team === 'e' && u.rush ? ' rush' : ''}"${u.team === 'e' && u.rush ? ` title="Hurrying to shield: +${u.rush} speed this round"` : ''}>${u.trollPart ? `<span class="mini-sprite pt-ic" title="${u.short}">${u.partIcon || PART_ICON[u.trollPart] || '◆'}</span>` : `<span class="mini-sprite port-box" data-port="${u.id}">${u.tag}</span>`}${u === actor ? `<b>${u.short}</b>` : u.short}</span>`).join('›') : '';
   for (let i = 0; i < 3; i++) {
     const b = $('btn' + i);
     if (cur) {
@@ -7852,7 +8025,7 @@ function endShow() {                       // the fight is over: the buttons, an
   B.className = 'on' + (bad ? ' bad' : ''); B.querySelector('b').textContent = head; B.querySelector('span').textContent = [rest, endSub].filter(Boolean).join(' · ');
 }
 /* First fight: short labels point at what a new player can't guess (turn order, the rings, the red tally marks, enemy intents, the skill menu). Once per save (game.coach.battle); any click or key closes it. */
-let coachUp = false;
+let coachUp = false, coachClose = null;
 function coachBattle() {
   if (coachUp || devMode || !game || (game.coach && game.coach.battle) || !waiting || over || !$('battle-scene').classList.contains('show')) return;
   const box = q => {                         // the screen box of the first match (or of all matches, for "all:")
@@ -7874,6 +8047,7 @@ function coachBattle() {
   document.body.appendChild(o); requestAnimationFrame(() => o.classList.add('on'));
   const close = e => { if (e && e.type === 'keydown' && e.repeat) return; e && e.preventDefault && e.type !== 'keydown' && e.stopPropagation(); o.classList.remove('on'); setTimeout(() => o.remove(), 250); coachUp = false; removeEventListener('keydown', close, true); };
   o.addEventListener('pointerdown', close); setTimeout(() => addEventListener('keydown', close, true), 300);
+  coachClose = () => close(); const go = o.querySelector('.ck-go'); if (go) { go.onclick = e => { e.stopPropagation(); close(); }; if (document.body.classList.contains('gp') && typeof padFocus === 'function') setTimeout(() => padFocus(go), 60); }
 }
 function renderDia() {
   if (!$('battle-scene')) return;
@@ -8547,7 +8721,7 @@ async function hit(u, t, s) {
       t.breakBar -= brk;
       log(brk ? `${t.name}'s armour takes ${brk} break damage.` : `${t.name}'s barrier shields the armour.`, 'log-status');
       if (t.breakBar <= 0) {
-        t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2); if (t.team === 'p') t.cine = breakCine(t, 'armoured', 'broken').catch(() => {}).then(() => speak(t, 'broken')); else speak(t, 'broken');      // her line comes after the close-up, not over it
+        t.breakBar = 0; t.state = 'broken'; floatText(t, 'ARMOUR BROKEN!', 'tag'); shake(2); if (t.team === 'p') t.cine = breakCine(t, 'armoured', 'broken').catch(() => {}).then(() => t.launchNext ? launchFly(t).then(() => { t._speak = 'broken'; }) : speak(t, 'broken')); else speak(t, 'broken');      // her line comes after the close-up, not over it
         log(`<strong style="color:#ff5252">${t.name}'s armour is BROKEN!</strong>`);
         armourBreak(t, false);
         if (s.stunOnBreak && s.el && isAlive(t)) applyStatus(t, s.el, u);       // Vesper: a shock that breaks the armour stuns at once
@@ -8563,7 +8737,7 @@ async function hit(u, t, s) {
         t.break2 -= brk;
         log(brk ? `${t.name}'s damaged armour takes ${brk} break damage.` : `${t.name}'s barrier shields the damaged armour.`, 'log-status');
         if (t.break2 <= 0) {
-          t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3); flash('#ff1744', .3, 520); if (t.team === 'p') t.cine = breakCine(t, 'broken', 'super').catch(() => {}).then(() => speak(t, 'super')); else speak(t, 'super');
+          t.break2 = 0; t.state = 'super'; floatText(t, 'SUPER BROKEN!', 'tag hurt'); shake(3); flash('#ff1744', .3, 520); if (t.team === 'p') t.cine = breakCine(t, 'broken', 'super').catch(() => {}).then(() => t.launchNext ? launchFly(t).then(() => { t._speak = 'super'; }) : speak(t, 'super')); else speak(t, 'super');
           if (t.team === 'p' && FX.spicy) setTimeout(() => { const o = party.filter(x => x !== t && isAlive(x) && (VOICE[x.id] || {}).seeSuper); if (o.length) speak(choose(o, Math.random), 'seeSuper'); }, 1100);      // someone else notices
           log(`<strong style="color:#ff1744">${t.name} is SUPER BROKEN!</strong>`);
           armourBreak(t, true);
@@ -8633,10 +8807,10 @@ async function perform(u, i, target, opts) {      // opts.hold: do not walk home
   const film = seq || st3 || w3 || lp3 || fl3 || wv3 || ts ? null : await skillFilm(u, pk);
   if (film) { setSpot([]); await playFilm(film, u.mir); }
   let begun; const started = new Promise(r => begun = r);
-  const dashArt = !film && !seq && !st3 && !lp3 && !wv3 && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
+  const dashArt = !film && !seq && !st3 && !lp3 && !wv3 && !(s.slam && !u.clone) && s.t === 'dmg' && target && rangeOf(s) === 'melee' && !s.aoe && !s.storm ? await dashAssets(u, 'skill' + (i + 1)) : null;
   if (dashArt && i === 1) dashArt.hide = true;
   const stageArt = !film && !seq && !st3 && !lp3 && !wv3 && !dashArt && STAND[u.id] && STAND[u.id].i === i && s.t === 'dmg' && target ? await stageAssets(u, 'skill' + (i + 1)) : null;
-  const bossArt = !film && !seq && !st3 && !lp3 && !wv3 && !dashArt && !stageArt && u.final && s.t === 'dmg' && s.aoe && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
+  const bossArt = !film && !seq && !st3 && !lp3 && !wv3 && !stageArt && ((u.final && s.aoe && !dashArt) || (s.slam && !u.clone)) && s.t === 'dmg' && target ? await bossStageAssets(u, i) : null;                  // the final bosses' sweeps and storms swell up into the foreground
   if (wv3) setSpot([]);                                                                      // she touches every foe: nobody is dimmed
   const dash = st3 ? await stage3Begin(u, target, st3) : lp3 ? await leap3Begin(u, target, lp3) : wv3 ? await weave3Begin(u, target, wv3) : dashArt ? await dashBegin(u, target, dashArt) : stageArt ? await stageBegin(u, target, stageArt, s) : bossArt ? await bossStageBegin(u, target, bossArt, s) : null;               // two-picture dash strike (skill2 + skill2b), or a one-picture cast (Aneesah), else the normal lunge
   const sq = seq ? await seqBegin(u, seq) : w3 ? await ward3Begin(u, w3) : fl3 ? await flip3Begin(u, fl3) : ts ? await tossBegin(u, ts, s.t === 'tonic' ? [target] : party.filter(isAlive)) : null;
@@ -8949,7 +9123,7 @@ function rollEncounter(pool, size, budget, opts = {}) {
    fixed: always these; n + pool: that many rolled from the pool; adds: the reinforcements. */
 const BOSS_SQUAD = {
   e_boss:     { fixed: ['e_drone', 'e_drone'], adds: ['e_drone', 'e_drone'] },                         // the Warden and its defence drones
-  e_shuten:   { fixed: ['e_oni'], adds: ['e_oni'] },                                                   // a duellist: one oni at his side (his phantoms come later)
+  e_shuten:   { fixed: ['e_oni'], adds: ['e_oni'] },                                                   // a duellist: one oni at her side (her phantoms come later)
   e_necro:    { n: 3, pool: ['e_skel', 'e_ghoul', 'e_wraith', 'e_skel'], support: true, escortHp: .6, adds: ['e_skel', 'e_skel', 'e_ghoul'] },     // a horde of the dead (escortHp: each at 75% HP)
   e_ratking:  { fixed: ['e_rat', 'e_rat', 'e_rat'], escortHp: .75, adds: ['e_rat', 'e_rat', 'e_rat'] },               // the swarm
   e_crabking: { fixed: ['e_crab', 'e_crab'], adds: ['e_crab', 'e_crab'] }                              // crabs, obviously
@@ -9020,14 +9194,14 @@ async function reinforce(boss) {                 // a stunned-out boss on its ow
 const LAST_STAND = { at: .25, atk: 1.15, barrier: 25 };
 const phasesOf = b => { const l = (b.phases || []).map(p => ({ ...p })); if (b.boss && tierDef(quest && quest.tier).lastStand) l.push({ ...LAST_STAND }); return l.sort((x, y) => y.at - x.at); };
 /* ===== BOSS SIGNATURE MOVES (2026-11-20, built from systems already in the game) =====
-   Each runs at the start of that boss's turn (not while stunned). Knobs in BOSS_MOVES. Shuten's phantoms come from his phase (clones: 2), the Ice Queen's from her
+   Each runs at the start of that boss's turn (not while stunned). Knobs in BOSS_MOVES. Shuten's phantoms come from her phase (clones: 2), the Ice Queen's from her
    throne node (blizzard: true), the Siren already charms. */
 const BOSS_MOVES = {
   necro:   { every: 4, hp: .5 },                     // Raise Dead: when a minion is down and it's been 3+ of his turns since the last time, it gets back up at 50% HP
   ratking: { every: 3 },                             // Call the Swarm: when there's room (4 enemies at most) and it's been 3+ of his turns (2 was too much for Act 1), one more rat joins
   keeper:  { d: [10, 13], hits: 1, hits2: 2 },        // Lightning: every other turn the storm gathers, the next turn it strikes 1 hero (2 after phase 2), shock
   crab:    { every: 3, dot: 12, free: .12 },         // Claw Grip: every 3rd turn its attack ends in a grab: the hero it hit is pinned (out of the fight, 12 a turn) until it takes 12% of its max HP
-  clone:   { hp: .15, atk: .5 }                      // Shuten's phantoms: 15% of his max HP each, half his damage (full damage tripled his output), same moves, semi-transparent fire
+  clone:   { hp: .15, atk: .5 }                      // Shuten's phantoms: 15% of her max HP each, half her damage (full damage tripled his output), same moves, semi-transparent fire
 };
 /* THE CHARGED ATTACK (every quest boss): on its 5th turn, then every 7th, it spends the turn charging (a warning and a glow), and on its next turn
    it hits ALL the heroes. Damage = its average single attack × mult. A stun only delays it. Names per boss below. */
@@ -9114,8 +9288,9 @@ function gripFree(b, broke) {
   if (broke && isAlive(h)) { log(`💥 The claw cracks open and ${h.name} breaks free!`, 'log-heal'); floatText(h, 'FREE!', 'tag'); }
   render();
 }
-async function bossClones(b, n) {      // Shuten's flaming phantoms: weak copies with his moves
+async function bossClones(b, n) {      // Shuten's flaming phantoms: weak copies with her moves
   const room = Math.min(n, 4 - enemies.filter(isAlive).length); if (room <= 0) return;
+  if (await firstAsset(b, 'split')) await playAnim(b, 'split');      // her 'split' picture (arms up, club raised) as the phantoms step out
   const fresh = [];
   for (let k = 0; k < room; k++) {
     const c = make(enemyById(b.id), 'e', { hp: 1, atk: 1 }), hp = Math.round(b.maxHp * BOSS_MOVES.clone.hp);
@@ -9451,6 +9626,7 @@ const TROLL_PARTS = [
    the round once hit by `stop`) · arc (jellyfish: its shock attacks jump to the heroes beside the target) · flying (roc: melee misses `dodge` of the time while its `part`
    is armoured; ranged always hits) · blizzard (wyvern: the fight is a blizzard; torches). dotMul: an ailment that hurts it extra (jellyfish: bleed).
    Art: the troll is drawn in code; the others use a stand-in (their emoji over the slots) until assets/beast/<key>/ art arrives (see beastArt). */
+const PART_ICON = { club: '🪵', drown: '🌊', head: '🧌', body: '💪' };      // the troll's parts in the turn order (the others carry their own `icon`)
 const BEASTS = {
   troll: { key: 'troll', the: 'the troll', icon: '🧌', ...TROLL, parts: TROLL_PARTS, passive: TROLL_PASSIVE, weakEl: ['fire'], resist: ['poison'], water: true,
     tele: { part: 'body', i: 1, icon: '🌀', wind: 'rears up and coils', float: 'WINDING UP', cut: 'Its body cracked open mid-roll: the Death Roll is broken off!' },
@@ -9784,11 +9960,45 @@ function beastLayer(T, bf, L, B, k, cards) {
         <text x="${x}" y="${py + r * .36}" font-size="${r * 1.05}" text-anchor="middle">${p.partIcon || '◆'}</text>${brk ? `<path d="M${x - r * .5},${py - r * .6} l${r * .3},${r * .5} l-${r * .2},${r * .4} l${r * .35},${r * .5}" stroke="#ffcf8a" stroke-width="3" fill="none"/>` : ''}</g>`; }).join('')}
   </svg>`;
 }
+/* ============ BOSS BARS ============ (Connor 2026-11-25) Every boss's health and armour go in bars across the top of the screen instead of the ring under it.
+   HP: one bloody red bar that drains (a pale chunk shows the damage just done, then catches up), the boss's name in gold inside it, the same reds as the rings
+   (brighter and beating under 25%, drips as it gets low). Armour: under it, a steel plate bar that ticks down; empty and cracked while broken.
+   The final bosses show no health (their life is the shop cannon's business): just the armour bar. Hunt beasts keep their own panel, with the same HP bar. */
+const topBoss = u => !!(u && u.team === 'e' && u.boss && !u.trollPart && !u.clone);
+const BHLAG = {};
+const bhLagGo = h => requestAnimationFrame(() => requestAnimationFrame(() => h.querySelectorAll('.bh-hp').forEach(el => { const l = el.querySelector('.lag'), f = el.querySelector('.fill'); if (l && f) l.style.width = f.style.width; })));      // the pale chunk drains after a beat
+function bloodBar(key, name, hp, max, barrier) {
+  const f = Math.max(0, Math.min(1, max ? hp / max : 0)), T = RB.tiers.find(t => f >= t.min) || RB.tiers[3], lag = Math.max(f, BHLAG[key] ?? f);
+  BHLAG[key] = f;
+  return `<div class="bh-hp${T.beat && f > 0 ? ' beat' : ''}" data-k="${key}" style="--c0:${T.c[0]};--c1:${T.c[1]}"><i class="lag" style="width:${lag * 100}%"></i><i class="fill" style="width:${f * 100}%">${T.drips ? '<u></u><u></u>'.slice(0, T.drips * 7) : ''}</i>`
+    + `<b>${name}</b><em>${Math.max(0, Math.round(hp))} / ${max}</em>${barrier > 0 ? `<s title="Barrier">🛡️ ${barrier}</s>` : ''}</div>`;
+}
+function armourBar(u, stunTxt) {
+  if (stunTxt) return `<div class="bh-arm broken"><span>${stunTxt}</span></div>`;
+  if (u.state !== 'armoured') return `<div class="bh-arm broken"><span>💥 ARMOUR BROKEN</span></div>`;
+  const a = u.maxBreak ? Math.max(0, u.breakBar / u.maxBreak) : 0;
+  return `<div class="bh-arm"><i style="width:${a * 100}%"></i><span>🛡️ ${Math.max(0, Math.round(u.breakBar))}</span></div>`;
+}
+function bossHud() {
+  const sc = $('battle-scene'); let h = document.getElementById('boss-hud');
+  const bosses = sc && sc.classList.contains('show') && !enemies.some(e => e.troll) ? enemies.filter(e => topBoss(e) && isAlive(e)) : [];
+  if (!bosses.length) { if (h) h.remove(); return; }
+  if (!h) { h = document.createElement('div'); h.id = 'boss-hud'; sc.appendChild(h); }
+  const html = bosses.map(b => {
+    if (b.final) { const B = FB && FB.bosses ? FB.bosses[0] : b, st = FB && FB.stun > 0 ? `💥 BROKEN ${'●'.repeat(Math.max(0, FB.stun - 1))}${'○'.repeat(Math.max(0, FINAL.stunRounds - Math.max(0, FB.stun - 1)))}` : '';
+      return `<div class="bh fin"><div class="bh-name">${b.name}</div>${armourBar(B, st)}</div>`; }
+    return `<div class="bh">${bloodBar(b.id + (b.letter || ''), b.name, b.hp, b.maxHp, b.barrier || 0)}${armourBar(b)}</div>`;
+  }).join('');
+  if (h._last !== html) {                                       // rebuild only what changed, then let the lag chunk drain on the next frame
+    h.innerHTML = html; h._last = html;
+    bhLagGo(h);
+  }
+}
 function trollHud() {                        // one HP bar for the whole beast
   let hb = document.getElementById('troll-hud'); const tp = enemies.find(e => e.troll);
   if (!tp) { if (hb) hb.remove(); return; }
   if (!hb) { hb = document.createElement('div'); hb.id = 'troll-hud'; $('battle-scene').appendChild(hb); }
-  const T = tp.troll; hb.innerHTML = `<b>${T.B.icon} ${(quest && quest.map && quest.map.hunt && quest.map.hunt.title) || T.B.the}</b><div class="th-bar"><i style="width:${Math.max(0, T.hp / T.maxHp * 100)}%"></i></div><span>${Math.max(0, T.hp)} / ${T.maxHp}${T.held ? ` · 🌊 ${T.held.short} is drowning` : ''}</span>${T.passive ? `<em class="th-pass${T.stopped || beastGrounded(T) ? ' off' : ''}" title="${passiveTip(T.passive)}">${T.stopped ? T.passive.stopIcon : T.passive.icon} ${T.passive.name}${T.stopped ? ' stopped' : beastGrounded(T) ? ': grounded' : ''}</em>` : ''}`;
+  const T = tp.troll; const html = `${bloodBar('beast', `${T.B.icon} ${(quest && quest.map && quest.map.hunt && quest.map.hunt.title) || T.B.the}`, T.hp, T.maxHp, 0)}${T.held ? `<span>🌊 ${T.held.short} is drowning</span>` : ''}${T.passive ? `<em class="th-pass${T.stopped || beastGrounded(T) ? ' off' : ''}" title="${passiveTip(T.passive)}">${T.stopped ? T.passive.stopIcon : T.passive.icon} ${T.passive.name}${T.stopped ? ' stopped' : beastGrounded(T) ? ': grounded' : ''}</em>` : ''}`; if (hb._last !== html) { hb.innerHTML = html; hb._last = html; bhLagGo(hb); }
 }
 /* ============ FINAL BOSS (dev-only framework) ============
    Two fights at once on two screens: LEFT FRONT (party A faces right, boss body L on the right) and RIGHT FRONT (everything mirrored: party B faces left, boss body R on the left).
@@ -9983,7 +10193,7 @@ const CANNON_SVG = `<svg viewBox="0 0 640 700"><g fill="#3a3448" stroke="#14121c
   <circle cx="320" cy="500" r="120" fill="#4f5c78" stroke="#14121c" stroke-width="6"/>
   <rect x="190" y="250" width="260" height="170" fill="#8a5a3a" stroke="#14121c" stroke-width="6"/><path d="M160 260 L320 150 L480 260Z" fill="#a83a3a" stroke="#14121c" stroke-width="6"/>
   <rect x="290" y="330" width="60" height="90" fill="#3a2418"/><rect x="215" y="290" width="55" height="45" fill="#ffd77a"/><rect x="370" y="290" width="55" height="45" fill="#ffd77a"/>
-  <text x="320" y="245" text-anchor="middle" font-size="30" font-family="Georgia" fill="#fff2d0">SHOP</text></svg>`;
+  <text x="320" y="245" text-anchor="middle" font-size="30" style="font-family:var(--ft)" fill="#fff2d0">SHOP</text></svg>`;
 const CANNON_SVG_MUZZLE = { x: .9, y: .27 };       // where the stand-in's barrel ends
 let fnSkipped = false; const fnWaits = new Set();
 const fnWait = ms => fnSkipped || !ms ? Promise.resolve() : new Promise(r => { const done = () => { clearTimeout(t); fnWaits.delete(done); r(); }, t = setTimeout(done, ms); fnWaits.add(done); });
@@ -10223,37 +10433,29 @@ async function allyCameo(round) {
   game.cameoSeen = game.cameoSeen || {}; const first = !game.cameoSeen[C.hero];
   if (!first && (st.n >= C.max || round - st.last < C.gap || Math.random() >= C.chance)) return;
   st.n++; st.last = round; if (first) { game.cameoSeen[C.hero] = true; writeSave(); }
-  const H = heroById(C.hero), cu = make(H, 'p'); cu.cameo = true; const sk = { ...H.skills[C.skill] };
-  const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight, ht = vh * .62;
-  const idle = await findStill(`${ANIM.base}/${C.hero}/armoured/idle`), pose = await findAsset(`${ANIM.base}/${C.hero}/armoured/skill${C.skill + 1}`);
-  const g = document.createElement('div'); g.className = 'fb-guest cameo'; g.style.cssText = `height:${ht}px;left:${vw * .1}px;top:${vh * .97 - ht}px;width:0`;
-  const pic = a => a && ['mp4', 'webm'].includes(a.ext) ? `<video src="${a.url}" muted autoplay playsinline style="position:absolute;left:0;top:0;height:100%;transform:translateX(-50%)"></video>` : `<img src="${a ? a.url : ''}" draggable="false" style="position:absolute;left:0;top:0;height:100%;transform:translateX(-50%)">`;
-  g.innerHTML = idle ? pic(idle) : `<div class="fb-shopph" style="transform:translateX(-50%)">✨<small>${H.name.toUpperCase()}</small></div>`;
-  document.body.appendChild(g); g.animate([{ transform: `translateX(${-vw * .4}px)`, opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }], { duration: dspd(420), easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
+  const H = heroById(C.hero), cu = make(H, 'p'); cu.cameo = true;
+  /* She fights with her real skill, animations and all (Vesper's three-stage storm, Irae's close-up Backstab, Tyr's bite, Jean's pouch and potion toss):
+     a figure of her own, standing just left of the party line for the move, then gone. (Connor 2026-11-25) */
+  await findAsset(`${ANIM.base}/${C.hero}/armoured/idle`); await findAsset(`${ANIM.base}/${C.hero}/broken/idle`);
+  const vw = document.documentElement.clientWidth, sc = $('battle-scene'), c0 = document.querySelector('#party-cards .combatant-card');      // card 0 is the front of the line (the row is reversed): she steps in just ahead of it, facing the enemies
+  if (!sc || !c0 || over) return;
+  const R0 = c0.getBoundingClientRect(), S0 = sc.getBoundingClientRect();
+  const slot = document.createElement('div'); slot.className = 'combatant-card team-p cameo-card';
+  Object.assign(slot.style, { position: 'absolute', left: (R0.left - S0.left + R0.width * .42) + 'px', top: (R0.top - S0.top) + 'px', width: R0.width + 'px', height: R0.height + 'px', zIndex: 25, pointerEvents: 'none' });
+  const fig = figureEl(cu, 'p'), f0 = c0.querySelector('.figure'); slot.appendChild(fig); sc.appendChild(slot);
+  if (f0) { const fs = getComputedStyle(f0); fig.style.height = fs.height; fig.style.marginTop = fs.marginTop; }      // --figH lives on the party row, which she isn't in
+  slot.animate([{ transform: `translateX(${-vw * .12}px)`, opacity: 0, filter: 'brightness(3) blur(6px)' }, { transform: 'translateX(0)', opacity: 1, filter: 'none' }], { duration: dspd(420), easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
   sfx('swing'); await sleep(dspd(480));
   if (first) { banner(`✨ ${H.name.toUpperCase()} JOINS THE FIGHT`, 'phase', 'for now'); log(`✨ ${H.name} steps in from the edge of the battle!`, 'log-heal'); }
-  { const d = document.createElement('div'); d.className = 'fb-bub hero'; d.textContent = first ? C.first : choose(C.lines, Math.random);      // above her picture (the battlefield's bubbles sit under it)
-    Object.assign(d.style, { position: 'fixed', zIndex: 80, left: Math.max(140, vw * .1) + 'px', top: (vh * .97 - ht * .96) + 'px' }); document.body.appendChild(d); setTimeout(() => d.remove(), 2400); }
+  { const d = document.createElement('div'); d.className = 'fb-bub hero'; d.textContent = first ? C.first : choose(C.lines, Math.random);
+    const fr = fig.getBoundingClientRect(); Object.assign(d.style, { position: 'fixed', zIndex: 80, left: Math.max(140, fr.left + fr.width / 2) + 'px', top: Math.max(60, fr.top + fr.height * .08) + 'px' }); document.body.appendChild(d); setTimeout(() => d.remove(), 2400); }
   await sleep(first ? 1500 : 900);
-  if (pose && idle) { g.innerHTML = pic(pose); }
-  const boss = foes.find(e => e.boss) || foes[0], pickT = () => C.hero === 'irae' && (first || Math.random() < .6) ? boss : choose(foes, Math.random);
-  try {
-    if (sk.t === 'brew') {                    // Jean: Untested Potions for the whole party (the buff now, the poison bill later)
-      sfx('charge', 'poison'); const who = party.filter(x => isAlive(x) && !x.drowned);
-      who.forEach(a => { a.brew = { turns: BREW.dur, fresh: false }; floatText(a, '⚗️ BREWED', 'ward'); const fe = figs.get(a); if (fe) { fe.classList.add('fbglow'); setTimeout(() => fe.classList.remove('fbglow'), 900); } });
-      log(`⚗️ ${H.name} hands round her untested potions: everyone hits harder for ${BREW.dur} turns, then pays for it.`, 'log-status'); render(); await sleep(dspd(700));
-    } else if (sk.all) {                      // Vesper: Thunderstorm on every foe
-      for (const t of foes) { try { await skyBolt(t, { small: true }); } catch (e) {} if (isAlive(t)) await hit(cu, t, { ...sk, noDodge: true, aoe: 0 }); }
-    } else {                                  // Irae's Backstab / Tyr's Crimson Bite: she dashes over, hits, and is gone
-      const t = pickT(), fe = figs.get(t), tb = fe && fe.isConnected ? figBox(fe) : null;
-      if (tb) { const dx = tb.cx - vw * .1 - tb.w * .7; g.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], { duration: dspd(260), easing: 'ease-in', fill: 'forwards' }); await sleep(dspd(260)); }
-      try { slashArc(t, C.hero === 'tyr' ? 'gaebolg' : 'harpe'); } catch (e) {}
-      const k = C.hero === 'irae' ? sk.stealthMul || 1 : 1;
-      if (isAlive(t)) await hit(cu, t, { ...sk, d: sk.d.map(v => Math.round(v * k)), noDodge: true, move: null, taunt: false });
-    }
-  } catch (e) { console.warn('cameo', e); }
-  render(); await sleep(dspd(600));
-  g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(380), easing: 'ease-in', fill: 'forwards' }); await sleep(dspd(400)); g.remove();
+  const boss = foes.find(e => e.boss) || foes[0], sk = H.skills[C.skill];
+  let t = sk.t === 'brew' || ['heal', 'ward', 'barrier', 'aegis', 'brew'].includes(sk.t) ? party.find(x => isAlive(x) && !x.drowned) : C.hero === 'irae' && (first || Math.random() < .6) ? boss : choose(foes.filter(isAlive), Math.random);
+  if (C.hero === 'irae') cu.stealth = 1;                      // she was never seen coming: Backstab from the shadows
+  try { if (t && !over) await perform(cu, C.skill, t); } catch (e) { console.warn('cameo', e); }
+  render(); await sleep(dspd(500));
+  const out = slot.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dspd(380), easing: 'ease-in', fill: 'forwards' }); await Promise.race([out.finished.catch(() => {}), sleep(dspd(420))]); slot.remove();
   if (first) log(`💨 ${H.name} melts back into the edges of the fight. She'll be around.`, 'log-status');
 }
 async function fbToss(t, revive) {   // the shopkeeper runs on, tosses a potion, they banter
@@ -10496,7 +10698,8 @@ const elIcons = h => [...new Set([...h.skills.map(s => s.el), ...(h.elems || [])
 
 const FS_SCENES = ['hub', 'beach', 'vb', 'gear', 'spa-select', 'train-select', 'party-select', 'shop'];
 function showScene(name) {
-  if (name === 'quest-select') name = 'party-select';           // choosing the party and the quest is one screen now       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
+  if (name === 'quest-select') name = 'party-select';
+  if (DEMO && ['hub', 'shop', 'spa-select', 'train-select', 'beach', 'lake'].includes(name)) name = 'party-select';      // the demo has no town: everything comes home to the embark screen           // choosing the party and the quest is one screen now       // 'hub' | 'party-select' | 'battle-scene' | 'camp'
   if (name !== 'battle-scene' && typeof talkClear === 'function') talkClear();
   if (name !== 'battle-scene' && FB) fbCleanup();
   const rv = document.getElementById('tm-full'); if (rv) rv.className = '';
@@ -10505,7 +10708,7 @@ function showScene(name) {
   if (name === 'beach') renderBeach();
   if (name === 'beach-pick') renderBeachPick();
   if (name === 'lake') renderLake();
-  if (name === 'party-select') renderParty(true);
+  if (name === 'party-select') { renderParty(true); if (DEMO) setTimeout(() => { if (!storyCheck(showNotice)) showNotice(); }, 60); }      // the demo: story scenes and pop-ups play here (there is no town)
   if (name === 'dev-battle') renderDev();
   $('spa-bg').style.display = name === 'spa' ? 'block' : 'none'; if (name !== 'spa') { $('spa-fin').className = ''; $('spa-fin').innerHTML = ''; $('spa').classList.remove('fin-hide'); }
   if (name === 'spa-select') { spaGame = null; spaSel = null; renderSpaSelect(); }
@@ -10619,8 +10822,8 @@ function townSVG(v = 'day') {
     ['M86,414 L270,296 L454,414', 'M856,338 L1055,212 L1254,338', 'M540,330 Q585,326 600,306 H730 Q745,326 790,330', 'M600,306 L665,262 L730,306', 'M505,398 Q535,394 552,372 H778 Q795,394 825,398'].forEach(d => add(`<path d="${d}" fill="none" stroke="#f3f8fc" stroke-width="15" stroke-linejoin="round" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#bcd0e4" stroke-width="3" opacity=".7" transform="translate(0,9)"/>`));
     [[190, 770], [318, 790], [470, 800]].forEach(([x, y]) => add(`<ellipse cx="${x}" cy="${y + 40}" rx="50" ry="10" fill="#f3f8fc" opacity=".9"/>`));
     add(`<rect width="1600" height="900" fill="#4c6aa0" opacity=".24" style="mix-blend-mode:multiply"/>`); glows();
-    add(`<defs><pattern id="tFlA" width="320" height="320" patternUnits="userSpaceOnUse">${Array.from({ length: 14 }, () => `<circle cx="${f(R() * 320)}" cy="${f(R() * 320)}" r="${f(1.6 + R() * 2.2)}" fill="#fff" opacity=".85"/>`).join('')}<animateTransform attributeName="patternTransform" type="translate" from="0 0" to="-60 320" dur="9s" repeatCount="indefinite"/></pattern>
-      <pattern id="tFlB" width="400" height="400" patternUnits="userSpaceOnUse">${Array.from({ length: 12 }, () => `<circle cx="${f(R() * 400)}" cy="${f(R() * 400)}" r="${f(2.8 + R() * 3)}" fill="#fff" opacity=".6"/>`).join('')}<animateTransform attributeName="patternTransform" type="translate" from="0 0" to="-90 400" dur="6s" repeatCount="indefinite"/></pattern></defs><rect width="1600" height="900" fill="url(#tFlA)"/><rect width="1600" height="900" fill="url(#tFlB)"/>`);
+    add(`<defs><pattern id="tFlA" width="320" height="320" patternUnits="userSpaceOnUse">${Array.from({ length: 14 }, () => `<circle cx="${f(R() * 320)}" cy="${f(R() * 320)}" r="${f(1.6 + R() * 2.2)}" fill="#fff" opacity=".85"/>`).join('')}<animateTransform attributeName="patternTransform" type="translate" from="0 0" to="-320 1280" dur="36s" repeatCount="indefinite"/></pattern>
+      <pattern id="tFlB" width="400" height="400" patternUnits="userSpaceOnUse">${Array.from({ length: 12 }, () => `<circle cx="${f(R() * 400)}" cy="${f(R() * 400)}" r="${f(2.8 + R() * 3)}" fill="#fff" opacity=".6"/>`).join('')}<animateTransform attributeName="patternTransform" type="translate" from="0 0" to="-400 1600" dur="24s" repeatCount="indefinite"/></pattern></defs><rect width="1600" height="900" fill="url(#tFlA)"/><rect width="1600" height="900" fill="url(#tFlB)"/>`);
     add(`<rect width="1600" height="900" fill="#0a1020" opacity=".1"/></svg>`);
   } else add(`<rect width="1600" height="900" fill="#0a0716" opacity=".12"/></svg>`);
   return o.join('');
@@ -10668,6 +10871,15 @@ function showNotice() {                      // pending pop-ups (saved, so they 
     $('notice-title').textContent = `🧳 ${names} ${(n.ids || []).length > 1 ? 'have' : 'has'} left the guild`;
     $('notice-text').textContent = `The guild is now eight heroes: two for every role. Their relics are back in your bag${n.crystals ? `, and the ${n.crystals} 💎 spent on their Potential has been refunded` : ''}.`;
     $('notice-skills').textContent = '';
+    return;
+  }
+  if (n && (n.type === 'demoCache' || n.type === 'demoEnd')) {
+    const end = n.type === 'demoEnd', ns = $('notice-sprite');
+    box.classList.add('show'); ns.style.fontSize = '3rem'; ns.className = 'mini-sprite'; delete ns.dataset.port; ns.textContent = end ? '🏆' : '🎁'; $('notice-btn').textContent = end ? 'Keep playing' : 'To the armoury!';
+    $('notice-title').textContent = end ? 'Thank you for playing!' : 'A cache of relics';
+    $('notice-text').innerHTML = end ? `You've beaten the demo: the Night Parade and the hunt. The full game has three acts, eight heroes, six beasts to hunt and the Final Stand.${DEMO_CFG.wishlist ? ` <a href="${DEMO_CFG.wishlist}" target="_blank" rel="noopener">Wishlist it here</a>.` : ''} You can keep hunting as long as you like.`
+      : `The Night Parade's hoard: ${DEMO_CFG.relics.length} relics for your heroes. Open a hero's <b>ⓘ</b> page from the party board to equip them, then take a notice from the 🎯 <b>Hunt Board</b>.`;
+    $('notice-skills').innerHTML = end ? '' : DEMO_CFG.relics.filter(id => RELICS[id]).map(id => RELICS[id].icon).join(' ');
     return;
   }
   if (n && n.type === 'ngstart') {
@@ -10738,7 +10950,7 @@ function showNotice() {                      // pending pop-ups (saved, so they 
   }
   $('notice-title').textContent = `✨ ${h.name.split(' ')[0]} unlocked! ✨`;
   $('notice-sprite').textContent = h.tag; $('notice-sprite').className = 'mini-sprite port-box'; $('notice-sprite').dataset.port = h.id;
-  $('notice-text').textContent = h.unlockMsg || `${h.name} has joined your guild! You can now pick them in Party Select.`;
+  $('notice-text').textContent = DEMO ? `${h.name} has joined your guild! Pick her on the party board, and check her ⓘ page.` : h.unlockMsg || `${h.name} has joined your guild! You can now pick them in Party Select.`;
   $('notice-skills').textContent = `${h.name} · HP ${h.hp} · SPD ${h.spd} · ${h.skills.map(s => s.n).join(' · ')}`;
 }
 function dismissNotice() { if (game.notices.length) game.notices.shift(); writeSave(); showNotice(); }
@@ -11014,7 +11226,7 @@ const MAP_SVG = (() => {
   <path d="M560 -500 H2300 V430 C1500 390 1390 410 1300 370 C1180 340 1060 390 940 340 C820 310 700 350 620 270 C560 200 545 100 560 0Z" fill="#d6e4f0" stroke="#6f8aa6" stroke-width="5"/>
   <path d="M600 -500 H2300 V380 C1500 340 1390 360 1300 320 C1180 290 1060 340 940 290 C820 260 700 300 650 230 C600 170 590 80 600 0Z" fill="#eef5fb" opacity=".75"/>${fP}
   ${route}
-  <g transform="translate(1440 800)" opacity=".8"><circle r="56" fill="none" stroke="#e8d3a0" stroke-width="3"/><path d="M0 -50 L10 0 L0 50 L-10 0Z M-50 0 L0 -10 L50 0 L0 10Z" fill="#e8d3a0"/><text y="-62" text-anchor="middle" font-size="22" font-family="Georgia,serif" fill="#e8d3a0">N</text></g>
+  <g transform="translate(1440 800)" opacity=".8"><circle r="56" fill="none" stroke="#e8d3a0" stroke-width="3"/><path d="M0 -50 L10 0 L0 50 L-10 0Z M-50 0 L0 -10 L50 0 L0 10Z" fill="#e8d3a0"/><text y="-62" text-anchor="middle" font-size="22" font-family="var(--ft)" fill="#e8d3a0">N</text></g>
 `;
 })();
 function mapCam(stage) { const c = MAP_CAMS[stage], sc = 100 / c.w; return { t: `scale(${sc}) translate(${-c.x}%,${-c.y}%)`, inv: (1 / sc).toFixed(4) }; }
@@ -11052,6 +11264,7 @@ function mapApply(box, stage) {
 }
 addEventListener('resize', () => { const b = document.getElementById('qmap'); if (b && $('party-select').classList.contains('show')) { b.classList.add('nt'); mapApply(b, +b.dataset.stage || 1); void b.offsetWidth; b.classList.remove('nt'); } });
 function mapHint(stage) {
+  if (DEMO) return '';      // the demo: no 'open the next land' hint
   const g = QUEST_GROUPS.find(x => !groupOpen(x)); if (!g) return '';
   const n = g.requires.filter(questCleared).length, list = g.requires.map(id => `${questCleared(id) ? '✔' : '○'} ${(QUESTS.find(x => x.id === id) || {}).name}`).join('\n');      // compact: the quest names live in the tooltip
   return `<span title="To open ${g.name}, clear:\n${list}">🔒 <b>${g.name}</b> <span class="mh-pips">${g.requires.map(id => `<i class="${questCleared(id) ? 'ok' : ''}"></i>`).join('')}</span> <small>${n}/${g.requires.length} cleared</small></span>`;
@@ -11067,7 +11280,7 @@ function mapHitNode(e) {
 function buildQuestMap() {
   const stage = mapStage(), seen = Math.min(mapSeenGet(), stage), open = id => questOpen(id);
   const fog = (grp, x, y, w, h) => groupOpen(QUEST_GROUPS[grp]) ? '' : `<div class="mfog" data-g="${QUEST_GROUPS[grp].id}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;background:radial-gradient(ellipse at 50% 50%,rgba(26,34,52,.97) 35%,rgba(26,34,52,.85) 62%,transparent 100%)"></div>`;
-  const nodes = MAP_ROUTE.filter(open).map(id => { const q = id === 'final' ? FINAL_QUEST : QUESTS.find(x => x.id === id), [x, y, ic] = MAP_NODES[id];
+  const nodes = MAP_ROUTE.filter(open).filter(id => !DEMO || id === DEMO_CFG.quest).map(id => { const q = id === 'final' ? FINAL_QUEST : QUESTS.find(x => x.id === id), [x, y, ic] = MAP_NODES[id];
     return `<button class="mnode${id === pickedQuest ? ' on' : ''}${id === 'final' ? ' final' : ''}" data-q="${id}" style="--x:${x};--y:${y}"><span class="pin">${ic}${questCleared(id) ? '<i class="ck">✔</i>' : ''}</span><span class="nm">${q.name}</span></button>`; }).join('');
   const bnode = boardAny() ? `<button class="mnode board${isHuntId(pickedQuest) ? ' on' : ''}" data-q="board" style="--x:${MAP_BOARD[0]};--y:${MAP_BOARD[1]}"><span class="pin">🎯</span><span class="nm">Hunt Board</span></button>` : '';
   const nodeFogs = [];                       // fog sits over what is still locked, and lifts when it opens
@@ -11175,6 +11388,7 @@ function beginQuest() {
   if (storyOn() || !$('party-select').classList.contains('show') || performance.now() - questLaunchAt < 4000) return;      // only once: a second press (click, Enter, pad Start) while a quest is launching would start it again and empty the bag
   if (pickedQuest === 'final') { if (finalSlots.includes(null)) return; finalSave(); questLaunchAt = performance.now(); return startFinalReal([...finalSlots]); }
   if (!picked.length) return;
+  if (DEMO) game.items = { ...DEMO_CFG.bag };      // the demo: the same bag every time
   { const HS = huntSlotOf(pickedQuest); if (HS) { game.lastParty = [...picked]; writeSave(); questLaunchAt = performance.now(); return startHunt([...picked], HS.id, HS); } }
   const pre = 'pre_' + pickedQuest, S = storySave();      // a recruit's quest: her scene plays the first time you set out
   if (STORY[pre] && S && !S.seen[pre] && !questCleared(pickedQuest)) { S.seen[pre] = 1; writeSave(); storyRun(STORY[pre]).then(() => beginQuest()); return; }
@@ -11353,7 +11567,7 @@ function startNode() {
   $('log-box').innerHTML = '<button id="log-close" onclick="toggleLog()">✕ Close log</button>'; say(''); $('fx').innerHTML = '';
   $('end-buttons').style.display = 'none'; endSub = ''; $('end-banner').classList.remove('on');      // clear the last fight's result banner
   $('turn-indicator').innerText = 'Preparing...';
-  $('battle-sub').textContent = quest.dev ? 'Quick Battle (developer mode)' : quest.map ? `${TOD_NAME[todOf().phase]}${node.boss && !quest.bonus ? ' · BOSS' : quest.bonus ? ' · Event fight' : ''}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''} · Quest gold: ${quest.gold}` : quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''} · Quest gold: ${quest.gold}`;
+  $('battle-sub').textContent = quest.dev ? 'Quick Battle (developer mode)' : quest.map ? [quest.bonus ? 'Event fight' : '', quest.tier ? tierDef(quest.tier).short : '', `Quest gold: ${quest.gold}`].filter(Boolean).join(' · ') : quest.bonus ? `Event fight · Quest gold: ${quest.gold}` : `Fight ${quest.node + 1} of ${total}${node.boss ? ' · BOSS' : ''}${quest.tier ? ' · ' + tierDef(quest.tier).short : ''} · Quest gold: ${quest.gold}`;
   $('enemy-head').textContent = node.name.toUpperCase();
   blizzStart(node);
   showScene('battle-scene');
@@ -11796,7 +12010,7 @@ function bossCleared() {                 // the boss is down: the quest is clear
     game.stats.won++; game.hunts = (game.hunts || 0) + 1;
     game.huntBeat = game.huntBeat || {}; game.huntBeat[quest.def.id] = (game.huntBeat[quest.def.id] || 0) + 1;
     const hr = quest.huntRelic; m.drop = hr && RELICS[hr] && !game.relics.includes(hr) ? hr : rollDrop(quest.def, game.relics, 1); if (m.drop && midasEats(RELICS[m.drop])) m.drop = null;      // the notice's relic (unless you got it meanwhile)
-    awardTraits(true); return; }
+    awardTraits(true); if (DEMO && !game.demoDone) { game.demoDone = true; game.notices.push({ type: 'demoEnd' }); } return; }
   const coastWas = coastOpen(), beachWas = beachOpen(), frostWas = frostOpen(); game.cleared = game.cleared || {}; game.cleared[quest.def.id] = true;
   const qt = quest.tier || 0; game.tiers.cleared[quest.def.id] = Math.max(tierCleared(quest.def.id), qt); tierUnlock();
   game.stats.won++;
@@ -11805,6 +12019,7 @@ function bossCleared() {                 // the boss is down: the quest is clear
   game.curse = game.curse || {}; quest.party.forEach(u => (game.equip[u.id] || []).forEach(id => { if (RELICS[id] && RELICS[id].cursed) game.curse[id] = (game.curse[id] || 0) + 1; }));
   const un = quest.def.unlocks;
   if (un && heroById(un) && !game.roster.includes(un)) { game.roster.push(un); game.notices.push({ type: 'unlock', id: un }); }
+  if (DEMO && quest.def.id === DEMO_CFG.quest && !game.demoCache) { game.demoCache = true; DEMO_CFG.relics.forEach(id => { if (RELICS[id] && !game.relics.includes(id)) game.relics.push(id); }); game.notices.push({ type: 'demoCache' }); }
   if (!frostWas && frostOpen()) game.notices.push({ type: 'region', id: 'frost' });
   if (!coastWas && coastOpen()) game.notices.push({ type: 'region', id: 'coast' });
   if (!beachWas && beachOpen()) game.notices.push({ type: 'beach' });
@@ -11923,7 +12138,7 @@ const HB_ACTS = [1, 2, 3], HB_TEMPER = { territorial: '🏞️', wandering: '�
 const isHuntId = id => !!(id && HUNT_DEFS.some(d => d.id === id));
 function boardRoll() {
   if (!game) return; const b = { slots: {} }, taken = [];
-  HB_ACTS.forEach(a => { const pool = HUNT_DEFS.filter(d => d.act === a); if (!pool.length) return;
+  HB_ACTS.forEach(a => { const pool = HUNT_DEFS.filter(d => d.act === a && (!DEMO || d.id === DEMO_CFG.hunt)); if (!pool.length) return;
     const d = choose(pool, Math.random), tw = Object.entries(HUNT.temper); let r = Math.random() * tw.reduce((x, [, w]) => x + w, 0), t = tw[0][0]; for (const [id, w] of tw) { r -= w; if (r < 0) { t = id; break; } }
     const rp = relicPool(game.relics, a).filter(x => !taken.includes(x.id)), rel = rp.length ? pickWeighted(rp, RELIC.dropWeight).id : null; if (rel) taken.push(rel);
     b.slots[a] = { id: d.id, temper: t, relic: rel }; });
@@ -11931,7 +12146,7 @@ function boardRoll() {
 }
 function townRefresh() { game.shop = { stock: rollStock(game.relics) }; boardRoll(); }      // every return to town: new shop stock, new hunts
 const boardSlot = a => { if (!game.board || !game.board.slots) boardRoll(); return game.board.slots[a] || null; };
-const boardAny = () => HB_ACTS.some(a => actOpen(a) && boardSlot(a));
+const boardAny = () => DEMO ? questCleared(DEMO_CFG.quest) : HB_ACTS.some(a => actOpen(a) && boardSlot(a));
 const huntSlotOf = id => { if (!isHuntId(id)) return null; for (const a of HB_ACTS) { const sl = actOpen(a) && boardSlot(a); if (sl && sl.id === id) return { act: a, ...sl }; } return null; };
 const huntBounty = d => d.nodes.reduce((x, n) => x + (n.gold || 0), 0);
 const boardOpen = () => $('hboard').classList.contains('show');
@@ -11939,6 +12154,7 @@ function openBoard() {
   const grp = a => QUEST_GROUPS[a - 1], R = ['', 'I', 'II', 'III'];
   const poster = a => {
     const G = grp(a), head = `<div class="hb-act">Act ${R[a]} · ${G.name}</div><div class="hb-want">WANTED</div>`;
+    if (DEMO && a > 1) return `<div class="hb-p lock">${head}<div class="hb-art"><span>${G.icon}</span><div class="hb-seal">🔒 In the full game</div></div><div class="hb-name">? ? ?</div><div class="hb-beh">${a === 2 ? 'Something big stirs in the Tidelands.' : 'Something circles the frozen peaks.'}</div></div>`;
     if (!actOpen(a)) return `<div class="hb-p lock">${head}<div class="hb-art"><span>${G.icon}</span><div class="hb-seal">🔒 Opens with ${G.name}</div></div><div class="hb-name">? ? ?</div><div class="hb-beh">Nobody has been that far yet.</div></div>`;
     const sl = boardSlot(a), d = sl && HUNT_DEFS.find(x => x.id === sl.id);
     if (!d) return `<div class="hb-p lock empty">${head}<div class="hb-art"><span>📜</span></div><div class="hb-name">No beast sighted</div><div class="hb-beh">Nothing worth hunting here. Yet.</div></div>`;
@@ -12269,7 +12485,7 @@ function sbPlace(sp, s, sit, W, H) {      // the sprite's box in px on the stage
 // kind: 'spa' (town: everyone, pickable) | 'spring' (quest: the party). o = { act, tod, pick }
 async function sbOpen(host, kind, ids, o = {}) {
   const tok = {}; host._sbTok = tok;
-  host.innerHTML = `<div class="sb-stage"><div class="sb-cam"><div class="sb-sky"></div><div class="sb-bg"></div><div class="sb-snow"></div><div class="sb-steamL"></div><div class="sb-heroes"></div><div class="sb-grade"></div></div><canvas class="sb-wx"></canvas></div>`;
+  host.innerHTML = `<div class="sb-stage"><div class="sb-cam"><div class="sb-sky"></div><div class="sb-bg"></div><div class="sb-snow"></div><div class="sb-steamL"></div><div class="sb-heroes"></div><div class="sb-steamF"></div><div class="sb-grade"></div></div><canvas class="sb-wx"></canvas></div>`;
   const S = host._sb = { kind, act: o.act || 1, tod: o.tod || 'day', pick: !!o.pick, onPick: o.onPick || 'spaPick', noWx: !!o.noWx, skyCol: o.sky || null, grade: o.grade !== false, ar: SB.ar, sel: null, list: [], bg: null, snow: null };
   const pic = kind === 'spa' ? 'spa/spa' : kind === 'cabin' ? 'lake/cabin' : 'spa/hotspring';
   const [bg, snow] = await Promise.all([findAsset(`${ANIM.base}/ui/${pic}`), S.act === 3 && kind !== 'cabin' ? findAsset(`${ANIM.base}/ui/${pic}_snow`) : null]);
@@ -12301,6 +12517,10 @@ function sbBuild(host) {
   (SB.steam[S.kind] || []).forEach(([x, y, w]) => { for (let k = 0; k < Math.round(w / 2.2); k++) { const px = x + (Math.random() - .5) * w * .9, sz = w * (.25 + Math.random() * .3);
     s += `<i class="sb-steam" style="left:${px.toFixed(1)}%;top:${(y + (Math.random() - .5) * 3).toFixed(1)}%;width:${sz.toFixed(1)}%;aspect-ratio:1.8;--o:${o};--t:${(7 + Math.random() * 6).toFixed(1)}s;--d:${(-Math.random() * 12).toFixed(1)}s;--dx:${((Math.random() - .5) * 60).toFixed(0)}px;--dy:${(40 + Math.random() * 70).toFixed(0)}px"></i>`; } });
   st.querySelector('.sb-steamL').innerHTML = s;
+  let f = '';                                    // in front of the bathers: a few long, slow wisps that curl up off the water and drift (Connor 2026-11-25)
+  (SB.steam[S.kind] || []).forEach(([x, y, w]) => { for (let k = 0; k < Math.max(1, Math.round(w / 9)); k++) { const px = x + (Math.random() - .5) * w * .8, sz = w * (.35 + Math.random() * .25);
+    f += `<i class="sb-wisp" style="left:${px.toFixed(1)}%;top:${(y + 4 + Math.random() * 4).toFixed(1)}%;width:${sz.toFixed(1)}%;--o:${(o * .75).toFixed(2)};--t:${(11 + Math.random() * 7).toFixed(1)}s;--d:${(-Math.random() * 16).toFixed(1)}s;--sx:${((Math.random() - .5) * 8).toFixed(1)}vw;--r:${((Math.random() - .5) * 30).toFixed(0)}deg"></i>`; } });
+  st.querySelector('.sb-steamF').innerHTML = f;
   const hl = st.querySelector('.sb-heroes');
   hl.innerHTML = S.list.map(r => { const tag = S.pick ? 'button' : 'div';
     return `<${tag} class="sb-hero${S.pick ? " dp" : ""}${r.seat.flip ? ' flip' : ''}" data-id="${r.id}"${S.pick ? ` onclick="${S.onPick}('${r.id}')" aria-label="${(heroById(r.id) || {}).name || r.id}"` : ''}><img class="sb-ghost" src="${r.src}" alt="" draggable="false"><img class="sb-main" src="${r.src}" alt="" draggable="false"><span class="sb-fx"></span></${tag}>`; }).join('');
@@ -12734,7 +12954,7 @@ const SHOP_BG = `<defs><linearGradient id="sWall" x1="0" y1="0" x2="0" y2="1"><s
    <g><rect x="1160" y="470" width="90" height="60" rx="4" fill="#6a4a30"/><rect x="1270" y="480" width="60" height="50" rx="4" fill="#8a6a4a"/><rect x="1360" y="460" width="40" height="70" rx="6" fill="#5aa86a"/><rect x="1420" y="486" width="110" height="44" rx="4" fill="#4a3a5a"/></g></g>
   <!-- hanging herbs and sign -->
   <path d="M560 0 V70 M600 0 V90 M640 0 V60" stroke="#8a6a4a" stroke-width="3"/><path d="M548 70 q12 40 24 0Z M588 90 q12 40 24 0Z M628 60 q12 44 24 0Z" fill="#5a8a4a"/>
-  <g transform="translate(1010 40)"><path d="M0 0 V40 M180 0 V40" stroke="#1a110b" stroke-width="3"/><rect y="40" width="180" height="56" rx="6" fill="#6a4a30" stroke="#2a1c12" stroke-width="4"/><text x="90" y="78" text-anchor="middle" font-family="Georgia,serif" font-size="30" font-weight="700" fill="#f2d28a" letter-spacing="3">GENERAL</text></g>
+  <g transform="translate(1010 40)"><path d="M0 0 V40 M180 0 V40" stroke="#1a110b" stroke-width="3"/><rect y="40" width="180" height="56" rx="6" fill="#6a4a30" stroke="#2a1c12" stroke-width="4"/><text x="90" y="78" text-anchor="middle" font-family="var(--ft)" font-size="30" font-weight="700" fill="#f2d28a" letter-spacing="3">GENERAL</text></g>
   <!-- barrels and sacks -->
   <g><ellipse cx="90" cy="800" rx="80" ry="20" fill="#000" opacity=".4"/><rect x="30" y="650" width="120" height="150" rx="16" fill="#6a4a30"/><path d="M30 690 H150 M30 760 H150" stroke="#2a1c12" stroke-width="8"/></g>
   <g><ellipse cx="1510" cy="800" rx="90" ry="20" fill="#000" opacity=".4"/><path d="M1430 800 q-20 -110 40 -150 q70 -10 100 50 q20 60 0 100Z" fill="#b89a6a"/><path d="M1470 655 q40 -16 70 12" stroke="#7a6a4a" stroke-width="8" fill="none"/></g>
@@ -14758,8 +14978,12 @@ async function spaStage(g, won) {
   if (spaGame !== g) return;
   const okImg = a => a && ['png', 'jpg', 'webp'].includes(a.ext) ? a : null, calm = FX.calm;
   fin.innerHTML = `<div class="stage"><div class="cover169">${spaRoomSvg(okImg(room), okImg(table))}${seatHtml(id, 50, 76, { sc: 1.2, cls: 'spa-hero' })}</div></div>`;
-  fillSeats(fin); fin.className = 'on';
+  fin.className = 'on';
   const box = fin.querySelector('.cover169'), hero = fin.querySelector('.seat');
+  { const sp = await sbSprite(id);                                              // her spa sprite (+ its steam mask, or the neck-down steam with fanservice off); the camp sprite only if she has none
+    if (spaGame !== g) return;
+    if (sp && sp.own) { const src = !FX.spicy ? await sbCover(id, sp) : sp.url, el = hero.querySelector('.sp'); el.textContent = ''; const im = document.createElement('img'); im.src = src; im.draggable = false; el.appendChild(im); hero.classList.add('has-art', 'spa-own'); fogWake(); }
+    else fillSeats(fin); }
   if (won) {
     box.insertAdjacentHTML('beforeend', '<div class="spa-glow"></div>');
     const cols = ['#fff3a8', '#ffffff', '#ffd54f', '#c9f2ff'];
@@ -16232,6 +16456,7 @@ const GP = (() => {
   // which layer is on top right now
   function layer() {
     if (shown('pause')) return { root: shown('pause'), modal: 'pause' };
+    { const ck = document.getElementById('coach'); if (ck) return { root: ck, modal: 'coach' }; }      // the first-fight tips: a modal of their own, its one button focused (A or B closes them)
     for (const id of ['film', 'spa-cutin', 'tm-full']) { const e = shown(id); if (e) { if (id === 'tm-full' && [...e.querySelectorAll('button')].some(vis)) return { root: e }; return { root: e, skip: true }; } }
     if (typeof dormMenuEl !== 'undefined' && dormMenuEl && dormMenuEl.isConnected) return { root: dormMenuEl, modal: 'rcmenu' };           // the dorm's swap menu floats outside the scene
     for (const id of ['gbook', 'guide', 'pot-modal', 'relic-modal', 'summary', 'inspect', 'notice', 'hboard']) { const e = shown(id); if (e) return { root: e, modal: id }; }
@@ -16317,6 +16542,7 @@ const GP = (() => {
     if (L.modal === 'pause') return $('pz-ask').classList.contains('on') ? pauseAskTitle(false) : pauseClose();
     if (L.modal === 'rcmenu') return closeDormMenu();
     if (L.modal === 'hboard') return closeBoard();
+    if (L.modal === 'coach') return coachClose && coachClose();
     if (L.modal === 'gbook') return closeBook();
     if (L.modal === 'guide') return closeGuide();
     if (L.modal === 'pot-modal') return closePot();
@@ -16410,7 +16636,8 @@ const GP = (() => {
       if (L.skip) { if (!L.noClick && (edge('A') || edge('B') || edge('START'))) L.root.click(); }
       else {
         if (rep('up')) move(0, -1, L, list); if (rep('dn')) move(0, 1, L, list); if (rep('lf')) move(-1, 0, L, list); if (rep('rt')) move(1, 0, L, list);
-        if (edge('A')) { if (L.scene === 'party-select' && S.focus && S.focus.classList.contains('mnode')) { pickQuest(S.focus.dataset.q); const bq = $('btn-start-quest'); if (bq && !bq.disabled) bq.click(); else press(S.focus); } else press(S.focus); }      // embark: A on a quest = Begin Quest
+        if (edge('A')) { if (L.scene === 'party-select' && S.focus && S.focus.classList.contains('mnode') && S.focus.dataset.q === 'board') openBoard();      // the Hunt Board pin only opens the board (it never starts whatever quest was picked before)
+          else if (L.scene === 'party-select' && S.focus && S.focus.classList.contains('mnode')) { pickQuest(S.focus.dataset.q); const bq = $('btn-start-quest'); if (bq && !bq.disabled) bq.click(); else press(S.focus); } else press(S.focus); }      // embark: A on a quest = Begin Quest
         if (edge('B') && L.scene !== 'party-select') back(L);
         if (edge('X') && L.scene === 'battle-scene' && !diaOn() && !$('btn-items').disabled) $('btn-items').click();
         if (edge('Y') && S.focus && L.scene !== 'party-select') { const i = S.focus.querySelector && S.focus.querySelector('.info'); if (i) i.click(); }
